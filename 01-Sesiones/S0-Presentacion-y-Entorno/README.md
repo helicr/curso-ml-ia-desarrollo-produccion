@@ -1,9 +1,11 @@
 # S0: Presentación y entorno
 
-Duración propuesta: 2 horas.
+Duración: 2 horas (25 min Parte A, 15 min pausa, 70 min Parte B, 10 min cierre).
 
 ## Contenido
-Parte A: objetivos, recorrido, caso y entregas. Parte B: software, repositorio, Conda, SQLite, Docker, cloud, Codespaces y diagnóstico.
+Parte A: objetivos, recorrido, caso y entregas. Parte B: Git, VS Code, Miniconda, SQLite, repositorio,
+Docker y Kubernetes en Codespaces (sin instalación local), Google Cloud y diagnóstico.
+Red neuronal y LLM: ruta opcional, sin instalar nada en S0.
 
 ## Tarea
 Completar preparación y leer el caso.
@@ -11,4 +13,9 @@ Completar preparación y leer el caso.
 ## Evidencia
 Entorno comprobado antes de S1.
 
-Laboratorio y materiales completos: pendientes de implementación y validación.
+## Materiales
+- `slides/index.html`: presentación (33 diapositivas, sin dependencias externas).
+- `guion.md`: guion con tiempos por diapositiva.
+- `checklist.md`: diagnóstico de 12 comprobaciones.
+
+Laboratorio y materiales completos de las demás sesiones: pendientes de implementación y validación.

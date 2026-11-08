@@ -3,7 +3,8 @@
 Duración propuesta: 4 horas.
 
 ## Contenido
-Versionado, pruebas, automatización, registros, alertas, actualización y rollback.
+Versionado, pruebas, orquestación del pipeline con GitHub Actions (pruebas, construcción, publicación y despliegue),
+registros, alertas, actualización y rollback.
 
 ## Tarea
 Consolidar repositorio, informe y demostración.

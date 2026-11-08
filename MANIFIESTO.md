@@ -7,7 +7,13 @@
 - 01-Sesiones/S0-Presentacion-y-Entorno/evidencias/.gitkeep
 - 01-Sesiones/S0-Presentacion-y-Entorno/guion.md
 - 01-Sesiones/S0-Presentacion-y-Entorno/practica/.gitkeep
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/fuentes/plan-docente.html
 - 01-Sesiones/S0-Presentacion-y-Entorno/slides/index.html
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/licencias/ECharts-LICENSE.txt
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/licencias/OFL-Cascadia.txt
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/licencias/OFL-Figtree.txt
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/licencias/OFL-Selawik.txt
+- 01-Sesiones/S0-Presentacion-y-Entorno/slides/licencias/React-LICENSE.txt
 - 01-Sesiones/S0-Presentacion-y-Entorno/tarea/.gitkeep
 - 01-Sesiones/S0-Presentacion-y-Entorno/teoria/.gitkeep
 - 01-Sesiones/S1-Datos-y-Entrenamiento/README.md
@@ -37,6 +43,7 @@
 - 01-Sesiones/S5-MLOps-y-Operacion/teoria/.gitkeep
 - 02-Proyecto-Transversal/enunciado/README.md
 - 03-Entorno/conda/.gitkeep
+- 03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md
 - 03-Entorno/guias/preparacion-paso-a-paso.md
 - 03-Entorno/guias/requisitos.md
 - 03-Entorno/scripts/.gitkeep
@@ -64,4 +71,6 @@
 - 07-Recursos/.gitkeep
 - 07-Recursos/fuentes.md
 - 08-Evaluacion-Final/.gitkeep
+- ESTADO-DEL-PAQUETE.md
+- MANIFIESTO.md
 - README.md

@@ -1,14 +1,22 @@
 # Entorno del curso
 
-## Herramientas y cuentas
+## En tu equipo (obligatorio)
+- Git y cuenta GitHub.
 - VS Code: Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers.
 - Miniconda; entornos definitivos por publicar y probar.
-- Git y cuenta GitHub.
-- Docker Desktop o ruta Linux definida para el curso.
-- SQLite y visor de referencia por seleccionar.
-- Google Cloud CLI, cuenta elegible para trial y proyecto configurado.
-- Codespaces con Docker, kind y kubectl preconfigurados.
-- PyTorch para módulo neuronal; motor/modelo LLM por confirmar.
+- SQLite y visor de referencia (DB Browser for SQLite) por confirmar.
+- Google Cloud CLI, cuenta elegible para trial y proyecto configurado (o usar Cloud Shell, ver guía).
+
+## En la nube (sin instalar nada local)
+- Codespaces del curso con Docker, kind y kubectl preconfigurados.
+- GitHub Actions para orquestar pipelines y construir imágenes.
+- Google Cloud: Artifact Registry y Cloud Run.
+
+Docker Desktop local es **opcional**. GKE no es requisito.
+Ver `docker-y-kubernetes-sin-instalacion-local.md`.
+
+## Opcional (ampliaciones)
+PyTorch para el módulo neuronal; motor y modelo LLM por confirmar. No requieren GPU.
 
 ## Dependencias previstas, no versión definitiva
 pandas, PyArrow, scikit-learn, joblib, Jupyter, ipykernel,

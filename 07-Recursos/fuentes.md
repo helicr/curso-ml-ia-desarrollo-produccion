@@ -1,5 +1,7 @@
 # Fuentes
 
+- [McKinsey 2026, The state of AI](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai)
+- [Stack Overflow Developer Survey 2025](https://survey.stackoverflow.co/2025/)
 - [Anaconda 2020](https://www.anaconda.com/resources/whitepaper/state-of-data-science-2020)
 - [Hidden Technical Debt 2015](https://proceedings.neurips.cc/paper_files/paper/2015/file/86df7dcfd896fcaf2674f757a2463eba-Paper.pdf)
 - [Google Cloud MLOps](https://docs.cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)
