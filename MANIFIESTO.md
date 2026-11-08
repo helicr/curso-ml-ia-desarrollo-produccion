@@ -45,6 +45,7 @@
 - 02-Proyecto-Transversal/enunciado/README.md
 - 03-Entorno/conda/.gitkeep
 - 03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md
+- 03-Entorno/guias/migracion-on-premise-a-gcp.md
 - 03-Entorno/guias/preparacion-paso-a-paso.md
 - 03-Entorno/guias/requisitos.md
 - 03-Entorno/scripts/.gitkeep

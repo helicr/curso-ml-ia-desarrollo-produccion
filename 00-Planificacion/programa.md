@@ -6,6 +6,8 @@ que otra persona pueda usar, documentar y operar (enfoque MLOps).
 Lo relacionado con IA generativa es **opcional**: redes neuronales, LLM abiertos, RAG,
 agentes, MCP y la visión de LLMOps/IAOps/AgentOps. Quedan fuera del núcleo obligatorio.
 
+En S1 y S2 todo corre en local (on-premise simulado); en S3 se migra a GCP.
+
 Docker y Kubernetes **no se instalan en local**: se trabajan en Codespaces.
 Los pipelines se orquestan con GitHub Actions.
 
@@ -35,14 +37,19 @@ Tarea: Crear API propia, contenerizar y comparar predicciones.
 
 Evidencia: Avance en S3: API, contenedor y pruebas.
 
-## S3 · Despliegue en la nube · 4 horas (red neuronal opcional)
+## S3 · De local a GCP: migración y despliegue · 4 horas (red neuronal opcional)
 
-Contenido: Artifact Registry, Cloud Run, recursos y registros. Laboratorio acotado de Kubernetes
-en Codespaces. Opcional: práctica neuronal guiada con PyTorch.
+Contenido: Migrar de on-premise a GCP (evaluar, planificar, ejecutar y optimizar; rehost, replatform y refactor) y mapa de
+equivalencias. Práctica: datos raw a Cloud Storage, tablas master/fs/ml de SQLite a BigQuery con validación, Secret Manager y cuenta
+de servicio, Artifact Registry y Cloud Run, registros. Laboratorio de Kubernetes en Codespaces, si hay tiempo.
+Opcional: práctica neuronal guiada con PyTorch.
 
-Tarea: Desplegar el servicio de ML. Opcional: reproducir el módulo neuronal ligero.
+Tarea: Migrar el caso propio a GCP y desplegar el servicio, documentando inventario, validaciones y registros.
+Opcional: reproducir el módulo neuronal ligero.
 
-Evidencia: Avance en S4: despliegue y registros (más mediciones neuronales si se hace el módulo).
+Evidencia: Avance en S4: datos migrados y validados, servicio desplegado y registros.
+
+Guía: `03-Entorno/guias/migracion-on-premise-a-gcp.md`.
 
 ## S4 · Orquestación y CI/CD con GitHub Actions · 4 horas
 

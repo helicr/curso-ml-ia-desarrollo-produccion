@@ -20,6 +20,8 @@
   pipeline completo en S5 (pruebas, construcción, publicación y despliegue).
 - **S4 rediseñada:** pasa a «Orquestación y CI/CD con GitHub Actions» (núcleo). S5 se centra en versionado, deriva,
   monitoreo y rollback. El LLM abierto queda como sesión extra opcional (`06-Modulo-LLMs/`).
+- **Hilo de migración de on-premise a GCP:** lo local (SQLite, archivos, Docker, MLflow) en S1 y S2 hace de on-premise simulado;
+  S3 migra a GCP (Cloud Storage, BigQuery, Secret Manager, Artifact Registry, Cloud Run). El laboratorio de Kubernetes pasa a «si hay tiempo».
 - **MLflow en el núcleo, versión ligera:** seguimiento en S1, carga del modelo y firma como contrato en S2,
   registro desde el workflow en S4, registro de modelos con alias y rollback en S5. Backend SQLite y artefactos en carpeta local.
 - **S0:** Parte A 25 min, pausa 15, Parte B 70, cierre 10 (las slides son la referencia).
@@ -36,8 +38,9 @@
 9. **Fusionar `develop` en `main` antes de S0** y subir los commits a GitHub (requiere instalar el Claude GitHub App o hacerlo desde tu PC).
 10. Revisar visualmente el HTML en navegador antes de impartir (revisadas S0 en Chromium sin errores).
 11. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
-12. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
-13. Módulos opcionales: `05-Modulo-Redes-Neuronales` y `06-Modulo-LLMs` en la raíz son su ubicación definitiva (resuelto); falta el contenido de ambos.
+12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
+13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
+14. Módulos opcionales: `05-Modulo-Redes-Neuronales` y `06-Modulo-LLMs` en la raíz son su ubicación definitiva (resuelto); falta el contenido de ambos.
 
 ## Evaluación propuesta
 Conservar 20 % conocimiento, 40 % desempeño y 40 % producto por unidad,

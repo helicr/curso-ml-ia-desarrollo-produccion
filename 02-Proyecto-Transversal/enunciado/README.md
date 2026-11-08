@@ -8,7 +8,7 @@ Cada avance presenta: resultado, ejecución, pruebas, una decisión, dificultade
 ## Entregas
 1. Pipeline de datos, modelo y métricas (revisión S2).
 2. API y contenedor (S3).
-3. Despliegue (S4). Opcional: módulo neuronal.
+3. Migración a GCP y despliegue (S4). Opcional: módulo neuronal.
 4. Pipeline orquestado con GitHub Actions (S5).
 5. Repositorio e informe finales (posterior a S5).
 

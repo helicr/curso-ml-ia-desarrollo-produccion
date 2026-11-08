@@ -1,15 +1,20 @@
-# S3: Despliegue en la nube (red neuronal opcional)
+# S3: De local a GCP, migración y despliegue (red neuronal opcional)
 
 Duración propuesta: 4 horas.
 
 ## Contenido
-Artifact Registry, Cloud Run, recursos y registros. Laboratorio acotado de Kubernetes en Codespaces.
-Opcional: práctica neuronal guiada con PyTorch.
+Migración de on-premise a GCP: fases (evaluar, planificar, ejecutar, optimizar), estrategias (rehost, replatform, refactor)
+y mapa de equivalencias. Cloud Storage, BigQuery, Artifact Registry, Cloud Run, Secret Manager e IAM.
+Laboratorio acotado de Kubernetes en Codespaces, si hay tiempo. Opcional: práctica neuronal guiada con PyTorch.
+
+## Práctica
+Inventario; datos raw a Cloud Storage; tablas master/fs/ml de SQLite a BigQuery; validar conteos y esquemas;
+secretos y cuenta de servicio; imagen en Artifact Registry; despliegue en Cloud Run; registros.
 
 ## Tarea
-Desplegar el servicio de ML. Opcional: reproducir el módulo neuronal ligero.
+Migrar el caso propio a GCP y desplegar el servicio. Documentar inventario, validaciones, configuración y registros.
 
 ## Evidencia
-Avance en S4: despliegue y registros. Opcional: mediciones de la práctica neuronal.
+Avance en S4: datos migrados y validados, servicio desplegado y registros.
 
-Laboratorio y materiales completos: pendientes de implementación y validación.
+Guía: `03-Entorno/guias/migracion-on-premise-a-gcp.md`. Laboratorio y materiales: pendientes de implementación y validación.
