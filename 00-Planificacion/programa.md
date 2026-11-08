@@ -20,7 +20,7 @@ Evidencia: Entorno comprobado antes de S1.
 
 ## S1 · Datos y entrenamiento · 4 horas
 
-Contenido: Raw → master → fs → ml; particiones, entrenamiento, evaluación y artefactos.
+Contenido: Raw → master → fs → ml; particiones, entrenamiento, evaluación y artefactos. Seguimiento de experimentos con MLflow (versión ligera, 15–20 min).
 
 Tarea: Ejecutar scripts base y adaptar una transformación o variable.
 
@@ -28,7 +28,7 @@ Evidencia: Avance en S2: datos, modelo, métricas y explicación.
 
 ## S2 · API y Docker · 4 horas
 
-Contenido: Carga del modelo, preprocesamiento, FastAPI, validación, errores, Dockerfile e imagen
+Contenido: Carga del modelo (desde MLflow), preprocesamiento, FastAPI, validación, errores, Dockerfile e imagen
 (construida en Codespaces). Primer workflow de GitHub Actions que construye la imagen.
 
 Tarea: Crear API propia, contenerizar y comparar predicciones.
@@ -47,7 +47,7 @@ Evidencia: Avance en S4: despliegue y registros (más mediciones neuronales si s
 ## S4 · Orquestación y CI/CD con GitHub Actions · 4 horas
 
 Contenido: Workflows, runners y disparadores; secretos y autenticación con GCP sin claves; pruebas,
-pipeline raw → modelo, construcción y publicación de imagen, despliegue en Cloud Run con aprobación; depuración de workflows.
+pipeline raw → modelo, registro del modelo en MLflow, construcción y publicación de imagen, despliegue en Cloud Run con aprobación; depuración de workflows.
 
 Tarea: Orquestar el pipeline del caso propio con un workflow y documentarlo.
 
@@ -55,7 +55,7 @@ Evidencia: Avance en S5: workflow funcionando, historial de ejecuciones y una de
 
 ## S5 · MLOps y operación · 4 horas
 
-Contenido: Versionado de datos y modelos, deriva, monitoreo, registros y alertas, seguridad, actualización y rollback,
+Contenido: Versionado de datos y modelos (registro de MLflow con alias), deriva, monitoreo, registros y alertas, seguridad, actualización y rollback,
 introducción a costes.
 
 Tarea: Consolidar repositorio, informe y demostración.

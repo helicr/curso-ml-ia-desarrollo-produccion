@@ -31,3 +31,8 @@ htmlcov/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# MLflow
+mlflow.db
+mlruns/
+mlartifacts/

@@ -204,6 +204,13 @@ Por qué es "didáctica, no un feature store completo": son tablas SQLite regene
 - `artifacts/modelos/metadatos_<version>.json`: `version_datos` (hash SHA-256 del RAW y del snapshot de `ml_*`), commit de git, versiones de librerías, lista de features y su orden, rangos de entrenamiento (para monitoreo), semilla.
 - Baseline propuesto: `HistGradientBoostingClassifier` (nativo con nulos, rápido en CPU) y un baseline trivial con `LogisticRegression` + `StandardScaler`. Línea base ingenua: "recompra = recencia < 90 días". **Resultado: no ejecutado; no se reporta métrica.**
 
+### 3.7b MLflow (añadido tras la decisión del curso; sin probar)
+
+- S1: `mlflow.set_tracking_uri("sqlite:///mlflow.db")`, registrar parámetros, métricas y el modelo en cada ejecución; comparar ejecuciones en la interfaz.
+- S2: cargar el modelo desde MLflow; la firma (*signature*) del modelo sirve de referencia para el contrato de la API.
+- S4: el workflow entrena y registra el modelo. S5: registro con alias (p. ej. `champion`) para actualizar y volver a la versión anterior.
+- `mlflow.db`, `mlruns/` y `mlartifacts/` ya están en `.gitignore`. Pendiente: fijar la versión de MLflow.
+
 ### 3.8 SERVICIO Y MLOPS
 
 Contrato de la API (Pydantic):

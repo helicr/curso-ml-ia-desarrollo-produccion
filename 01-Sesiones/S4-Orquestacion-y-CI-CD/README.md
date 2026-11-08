@@ -7,7 +7,7 @@ Workflows, jobs, steps, runners y disparadores. Secretos, variables y entornos; 
 sin claves en el repositorio (Workload Identity Federation). Caché, artefactos y matrices. CI frente a CD y aprobaciones.
 
 ## Práctica
-Pruebas y calidad; ejecutar raw → master → fs → ml → modelo → métricas en el workflow; construir y publicar la imagen
+Pruebas y calidad; ejecutar raw → master → fs → ml → modelo → métricas en el workflow; registrar el modelo y sus métricas en MLflow; construir y publicar la imagen
 en Artifact Registry; desplegar en Cloud Run con aprobación manual; leer registros y depurar.
 
 ## Tarea

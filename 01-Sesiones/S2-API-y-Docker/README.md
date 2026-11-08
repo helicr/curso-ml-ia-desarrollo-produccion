@@ -3,7 +3,7 @@
 Duración propuesta: 4 horas.
 
 ## Contenido
-Carga del modelo, preprocesamiento, FastAPI, validación, errores, Dockerfile e imagen.
+Carga del modelo desde MLflow (la firma del modelo como referencia del contrato), preprocesamiento, FastAPI, validación, errores, Dockerfile e imagen.
 Docker se usa en Codespaces (sin instalación local). Primer workflow de GitHub Actions que construye la imagen.
 
 ## Tarea

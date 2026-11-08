@@ -19,7 +19,7 @@ Ver `docker-y-kubernetes-sin-instalacion-local.md`.
 PyTorch para el módulo neuronal; motor y modelo LLM por confirmar. No requieren GPU.
 
 ## Dependencias previstas, no versión definitiva
-pandas, PyArrow, scikit-learn, joblib, Jupyter, ipykernel,
+pandas, PyArrow, scikit-learn, joblib, MLflow, Jupyter, ipykernel,
 FastAPI, Uvicorn, Pydantic, pytest y requests/httpx.
 
 La implementación completa del instalador está pendiente. No se incluyen
