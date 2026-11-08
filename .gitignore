@@ -1,0 +1,33 @@
+# Entornos virtuales de Python (Windows y Linux)
+.venv/
+venv/
+env/
+ENV/
+
+# Bytecode y cachés de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secretos locales
+.env
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
