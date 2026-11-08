@@ -10,7 +10,7 @@ Todo lo que necesita Docker o Kubernetes se hace en la nube, y el portátil solo
 |---|---|---|
 | Construir y ejecutar imágenes (S2) | Codespace del curso (Docker) | Ninguna |
 | Laboratorio de Kubernetes (S3) | Codespace con `kind` y `kubectl` | Ninguna |
-| Orquestar el pipeline, construir y publicar imagen (S2, S5) | GitHub Actions | Ninguna |
+| Orquestar el pipeline, construir y publicar imagen (S2, S4) | GitHub Actions | Ninguna |
 | Desplegar el servicio (S3) | Cloud Run (no requiere Kubernetes) | `gcloud` o Cloud Shell |
 
 ## Opciones, en orden de preferencia
@@ -40,7 +40,7 @@ Workflow en `.github/workflows/` con disparadores `push`, `pull_request` y `work
 5. Publicar en Artifact Registry.
 6. Desplegar en Cloud Run (con aprobación manual mediante *environments* si se desea).
 
-Progresión sugerida: S2 construye la imagen (pasos 1 y 4); S5 completa el pipeline (2, 3, 5, 6) y practica el rollback.
+Progresión sugerida: S2 construye la imagen (pasos 1 y 4); S4 completa el pipeline (2, 3, 5, 6); S5 practica versionado, deriva y rollback.
 Autenticación con GCP: Workload Identity Federation, sin claves JSON ni secretos en el repositorio.
 
 ## Pendiente

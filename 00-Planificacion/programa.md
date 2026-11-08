@@ -44,24 +44,26 @@ Tarea: Desplegar el servicio de ML. Opcional: reproducir el módulo neuronal lig
 
 Evidencia: Avance en S4: despliegue y registros (más mediciones neuronales si se hace el módulo).
 
-## S4 · LLMs abiertos · 4 horas (sesión opcional)
+## S4 · Orquestación y CI/CD con GitHub Actions · 4 horas
 
-Contenido: Pesos, tokenizador, contexto, motor de inferencia, aplicación cliente y evaluación básica.
+Contenido: Workflows, runners y disparadores; secretos y autenticación con GCP sin claves; pruebas,
+pipeline raw → modelo, construcción y publicación de imagen, despliegue en Cloud Run con aprobación; depuración de workflows.
 
-Estado: contenido y horario por confirmar. Ver propuesta en `decisiones-y-pendientes.md`.
+Tarea: Orquestar el pipeline del caso propio con un workflow y documentarlo.
 
-Tarea: Opcional: adaptar aplicación consumidora y documentar respuestas y limitaciones.
-
-Evidencia: Avance en S5, solo si se realiza el módulo.
+Evidencia: Avance en S5: workflow funcionando, historial de ejecuciones y una decisión explicada.
 
 ## S5 · MLOps y operación · 4 horas
 
-Contenido: Versionado, pruebas, orquestación del pipeline con GitHub Actions, registros, alertas,
-actualización y rollback.
+Contenido: Versionado de datos y modelos, deriva, monitoreo, registros y alertas, seguridad, actualización y rollback,
+introducción a costes.
 
 Tarea: Consolidar repositorio, informe y demostración.
 
 Evidencia: Entrega posterior a S5; fecha por definir.
+
+## Módulo opcional: LLMs abiertos (sesión extra)
+Fuera del núcleo; ver `06-Modulo-LLMs/README.md`. Se imparte solo si hay tiempo.
 
 ## Dinámica
 S0: 25 min de Parte A, 15 min de pausa, 70 min de Parte B (entorno obligatorio) y 10 min de cierre = 120 min.

@@ -31,11 +31,11 @@
 - 01-Sesiones/S3-Despliegue-y-Redes-Neuronales/practica/.gitkeep
 - 01-Sesiones/S3-Despliegue-y-Redes-Neuronales/tarea/.gitkeep
 - 01-Sesiones/S3-Despliegue-y-Redes-Neuronales/teoria/.gitkeep
-- 01-Sesiones/S4-LLMs-Abiertos/README.md
-- 01-Sesiones/S4-LLMs-Abiertos/evidencias/.gitkeep
-- 01-Sesiones/S4-LLMs-Abiertos/practica/.gitkeep
-- 01-Sesiones/S4-LLMs-Abiertos/tarea/.gitkeep
-- 01-Sesiones/S4-LLMs-Abiertos/teoria/.gitkeep
+- 01-Sesiones/S4-Orquestacion-y-CI-CD/README.md
+- 01-Sesiones/S4-Orquestacion-y-CI-CD/evidencias/.gitkeep
+- 01-Sesiones/S4-Orquestacion-y-CI-CD/practica/.gitkeep
+- 01-Sesiones/S4-Orquestacion-y-CI-CD/tarea/.gitkeep
+- 01-Sesiones/S4-Orquestacion-y-CI-CD/teoria/.gitkeep
 - 01-Sesiones/S5-MLOps-y-Operacion/README.md
 - 01-Sesiones/S5-MLOps-y-Operacion/evidencias/.gitkeep
 - 01-Sesiones/S5-MLOps-y-Operacion/practica/.gitkeep
@@ -68,6 +68,7 @@
 - 04-Proyecto-Base/tests/.gitkeep
 - 05-Modulo-Redes-Neuronales/.gitkeep
 - 06-Modulo-LLMs/.gitkeep
+- 06-Modulo-LLMs/README.md
 - 07-Recursos/.gitkeep
 - 07-Recursos/fuentes.md
 - 08-Evaluacion-Final/.gitkeep
