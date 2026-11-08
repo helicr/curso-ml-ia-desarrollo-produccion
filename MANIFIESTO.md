@@ -41,6 +41,7 @@
 - 01-Sesiones/S5-MLOps-y-Operacion/practica/.gitkeep
 - 01-Sesiones/S5-MLOps-y-Operacion/tarea/.gitkeep
 - 01-Sesiones/S5-MLOps-y-Operacion/teoria/.gitkeep
+- 02-Proyecto-Transversal/dataset-candidatos.md
 - 02-Proyecto-Transversal/enunciado/README.md
 - 03-Entorno/conda/.gitkeep
 - 03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md
