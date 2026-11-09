@@ -19,6 +19,7 @@ Al terminar, la persona asistente puede:
 | 225–240 | Entrega y cierre | `tarea/README.md` · `slides/` diap. 18–20 |
 
 ## Contenido de esta carpeta
+- `index.html`: índice de la sesión (presentaciones, documentos y qué falta). Se genera con `00-Planificacion/indices-de-sesion/generar_indices.py`.
 - `slides/index.html`: presentación interactiva (20 diapositivas; flechas, **O** índice, **S** notas, **F** pantalla completa).
 - `guion.md`: guion del docente minuto a minuto.
 - `checklist.md`: comprobaciones del docente y del alumnado.
@@ -26,6 +27,7 @@ Al terminar, la persona asistente puede:
 - `practica/guia-laboratorio.md`: laboratorio paso a paso con presupuesto de tiempo.
 - `tarea/README.md` y `tarea/rubrica.md`: tarea y rúbrica (20/40/40).
 - `evidencias/plantilla-decision.md`: plantilla de la evidencia entregable.
+- PDF de la presentación y de los documentos (los exige la institución): `pdfs/S1-Datos-y-Entrenamiento/` en la raíz del repositorio; ver `pdfs/LEEME.md`.
 
 ## Qué está validado y qué no
 - **Validado (Linux, entorno `env-ia-mlops`):** los cuatro cuadernos y el paquete `ia_mlops` con la muestra y con el dato completo (resultados idénticos), 34 pruebas en verde, y la receta de la tarea (añadir `monto_180d`: pipeline completo y 30 pruebas rápidas en verde).

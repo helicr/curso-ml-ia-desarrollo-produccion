@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>S2 · API y Docker · Índice de la sesión · ML e IA: de desarrollo a producción</title>
+<style>
+:root{--bg:#031a33;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;--blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;--ok:#34d399;--warn:#fbbf24;--r:16px;
+--mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{background:radial-gradient(1100px 600px at 15% -5%,#07305a 0%,transparent 62%) no-repeat;color:var(--text);font:16px/1.5 var(--sans);min-height:100vh}
+a{color:var(--blue)}
+code{font-family:var(--mono);background:rgba(43,179,255,.14);padding:1px 6px;border-radius:6px;font-size:.88em;color:#d9efff;overflow-wrap:anywhere}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.sr{position:absolute;left:-9999px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+header.top{padding-top:30px;padding-bottom:6px;position:relative}
+.kick{color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:13px;font-weight:700}
+h1{display:flex;gap:16px;align-items:baseline;font-size:clamp(24px,4vw,36px);line-height:1.2;margin:6px 0 6px}
+h1 .num{font-family:var(--mono);color:var(--gold)}
+.meta{color:var(--muted);font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:700;border-radius:999px;padding:2px 12px;border:1px solid;white-space:nowrap}
+.chip.ok{color:var(--ok);border-color:var(--ok)}
+.chip.warn{color:var(--warn);border-color:var(--warn)}
+.res{margin-top:12px;color:#dcebfb;max-width:900px}
+.nota{margin-top:6px;font-size:14px;color:var(--muted);max-width:900px}
+.vecinas{position:absolute;right:24px;top:30px;display:flex;gap:8px}
+.vecinas a{text-decoration:none;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:14px;font-weight:600}
+.vecinas a:hover{border-color:var(--gold)}
+.modo{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-top:14px}
+.modo label{color:var(--text);cursor:pointer}
+.modo fieldset{border:0;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+main.wrap{padding-bottom:10px}
+.cols{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:22px;margin-top:22px}
+.col h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+ul{list-style:none}
+.col li+li{margin-top:10px}
+a.deck{display:block;padding:12px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);text-decoration:none;color:var(--text)}
+a.deck:hover{border-color:var(--gold)}
+a.deck .t{font-weight:700;margin-right:8px}
+a.deck .n{font-size:12px;color:#031a33;background:var(--blue);border-radius:999px;padding:1px 9px;font-weight:700;white-space:nowrap}
+a.deck .d{display:block;font-size:13px;color:var(--muted);margin-top:3px}
+a.deck .r{display:block;font:11.5px var(--mono);color:#7fa6cf;margin-top:4px;overflow-wrap:anywhere}
+a.doc{font-weight:600}
+a.pdf{display:inline-block;margin:6px 0 0 2px;font-size:12px;font-weight:700;letter-spacing:.04em;text-decoration:none;color:var(--gold);border:1px solid rgba(252,211,77,.6);border-radius:999px;padding:1px 11px}
+a.pdf:hover{background:rgba(252,211,77,.16)}
+a.doc+a.pdf{margin:0 0 0 10px}
+li .d{display:block;font-size:13px;color:var(--muted)}
+.auto{color:var(--warn)}
+.vacio{font-size:14px;color:var(--warn)}
+.falta{margin-top:26px;background:rgba(10,53,96,.45);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.falta h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.falta ul{display:flex;gap:8px;flex-wrap:wrap}
+.falta li{font-size:14px;border-radius:999px;padding:3px 12px;border:1px solid}
+.falta li.si{color:var(--ok);border-color:rgba(52,211,153,.55)}
+.falta li.no{color:var(--warn);border-color:var(--warn);background:rgba(251,191,36,.08)}
+.falta p{font-size:14px;color:var(--muted);margin-top:8px}
+footer.pie{margin:30px auto 40px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+footer.pie p+p{margin-top:6px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+@media(max-width:560px){.wrap{padding:0 14px}.vecinas{position:static;margin-top:10px}}
+@media print{body{background:#fff;color:#000}.modo,.vecinas{display:none}a.deck,.falta{border-color:#999;background:#fff;color:#000}
+a,a.deck .t,a.pdf{color:#000}.chip,.num{color:#000;border-color:#000}a.deck .d,.meta,.nota,li .d{color:#333}}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <p class="kick">Índice de la sesión · ML e IA: de desarrollo a producción</p>
+  <h1><span class="num">S2</span><span>API y Docker</span></h1>
+  <p class="meta">4 h · <code>01-Sesiones/S2-API-y-Docker</code> · <span class="chip warn">Solo README</span></p>
+  <p class="res">Carga del modelo desde MLflow, FastAPI, validación, Dockerfile e imagen (en Codespaces) y primer workflow de GitHub Actions.</p>
+  <div class="modo"><fieldset><legend class="sr">Dónde abrir los documentos</legend>
+    <span>Los documentos (.md, .py, .yml) se abren en:</span>
+    <label><input type="radio" name="modo" value="github"> GitHub (con conexión)</label>
+    <label><input type="radio" name="modo" value="local"> Esta carpeta (el navegador los muestra como texto o los descarga)</label></fieldset></div>
+  
+  <nav class="vecinas" aria-label="Otras sesiones"><a href="../S1-Datos-y-Entrenamiento/index.html" title="Datos y entrenamiento">← S1</a><a href="../S3-Despliegue-y-Redes-Neuronales/index.html" title="Despliegue en la nube (red neuronal opcional)">S3 →</a></nav>
+</header>
+<main class="wrap">
+  <div class="cols"><div class="col"><h2>Presentaciones</h2><p class="vacio">Todavía no hay presentaciones.</p></div><div class="col"><h2>Para el alumno</h2><ul><li><a class="doc" href="../../03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md" data-local="../../03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md" data-path="03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md" title="03-Entorno/guias/docker-y-kubernetes-sin-instalacion-local.md">Docker y Kubernetes sin instalación local</a><span class="d">Ya escrita: cómo trabajar con Docker en Codespaces.</span></li></ul></div><div class="col"><h2>Para el instructor</h2><ul><li><a class="doc" href="README.md" data-local="README.md" data-path="01-Sesiones/S2-API-y-Docker/README.md" title="01-Sesiones/S2-API-y-Docker/README.md">README de S2</a></li></ul></div></div>
+  <section class="falta"><h2>Qué hay y qué falta en esta sesión</h2><ul><li class="no"><span aria-hidden="true">✗</span> Presentación<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Guion<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Checklist<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Teoría<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Práctica<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Tarea<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Rúbrica<span class="sr"> (falta)</span></li><li class="no"><span aria-hidden="true">✗</span> Plantilla de la evidencia<span class="sr"> (falta)</span></li></ul><p>Falta: presentación, guion, checklist, teoría, práctica, tarea, rúbrica, plantilla de la evidencia.</p></section>
+</main>
+<footer class="wrap pie">
+  <p>«Material preparado» significa que el material existe, no que esté probado en Windows ni en el proyector: eso se detalla en ESTADO-DEL-PAQUETE.md y en 03-Entorno/VALIDACION.md.</p>
+  <p>Página generada desde <code>00-Planificacion/indices-de-sesion/contenido_indices.py</code> con <code>generar_indices.py</code>; no se edita a mano.
+  Si añades un archivo a esta carpeta, ejecuta el generador y aparecerá aquí. Rama de GitHub: <code>develop</code>.</p>
+</footer>
+<script>
+(function(){'use strict';
+var BASE="https://github.com/helicr/curso-ml-ia-desarrollo-produccion/blob/develop/",KEY='indice-curso-docs';
+function $$(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+function leer(){try{return localStorage.getItem(KEY)==='local'?'local':'github'}catch(e){return 'github'}}
+function guardar(v){try{localStorage.setItem(KEY,v)}catch(e){}}
+function aplicar(m){
+  $$('a[data-path]').forEach(function(a){
+    if(m==='github'){a.href=BASE+a.getAttribute('data-path');a.target='_blank';a.rel='noopener'}
+    else{a.href=a.getAttribute('data-local');a.removeAttribute('target');a.removeAttribute('rel')}
+  });
+  $$('input[name=modo]').forEach(function(r){r.checked=(r.value===m)});
+}
+aplicar(leer());
+$$('input[name=modo]').forEach(function(r){r.addEventListener('change',function(){if(r.checked){guardar(r.value);aplicar(r.value)}})});
+})();
+</script>
+</body>
+</html>
