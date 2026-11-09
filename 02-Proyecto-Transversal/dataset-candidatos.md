@@ -20,7 +20,10 @@ Tras permitir `archive.ics.uci.edu` y `www.kaggle.com` en la red del entorno, se
   - **Atribución obligatoria** (CC BY 4.0): Yeh, I. (2009). *Default of Credit Card Clients* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C55S3H;
     Moro, S., Rita, P., & Cortez, P. (2014). *Bank Marketing* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5K306.
   - **Espejos con licencia distinta:** una copia en Hugging Face del dataset de tarjetas declara CC0; vale la ficha de UCI, como ya pasó con OpenML y Online Retail II.
-  - **No verificado:** descarga, tamaño exacto, sha256, filas reales, valores ausentes, categorías no documentadas ni ningún modelo base. El proxy del entorno bloqueó `archive.ics.uci.edu` (403 en CONNECT) y no se buscó otra vía.
+  - **Datos recibidos y medidos (09/11/2026):** el proxy del entorno bloqueó `archive.ics.uci.edu` (403 en CONNECT) y no se buscó otra vía; el instructor adjuntó los archivos que descargó de UCI.
+    Los tamaños coinciden con los de las fichas. Hay sha256, perfilado y un modelo base rápido en `02-Proyecto-Transversal/verificacion-datos-tarea/`; el resumen está en `02-Proyecto-Transversal/enunciado/README.md`.
+    Lo medido corrige tres cosas: el `.xls` tiene **dos filas de encabezado**, las «incoherencias» de la ficha de Bank Marketing son dos archivos distintos (`bank-full` usa `primary/secondary/tertiary` y trae `unknown` en `contact`; `bank-additional-full` usa `basic.*` y no),
+    y en Bank Marketing la partición por orden de filas produce una deriva extrema (síes 5,6 % → 38,5 %). La documentación del zip confirma que `duration` debe descartarse en un modelo realista.
 
 Lo que sigue es el informe original, escrito cuando la red estaba bloqueada.
 

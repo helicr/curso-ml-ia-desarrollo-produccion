@@ -59,13 +59,13 @@
 12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
 13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
 14. Módulos opcionales: `05-Modulo-Redes-Neuronales` y `06-Modulo-LLMs` en la raíz son su ubicación definitiva (resuelto); falta el contenido de ambos.
-15. **Datos de la tarea (bloqueado en el contenedor):** el proxy bloquea `archive.ics.uci.edu`. Falta descargar `default of credit card clients.xls` y `bank-additional.zip`
-    (y, si se quiere, `bank.zip`), anotar tamaño y sha256, perfilar y escribir el script de descarga. Decidir si se incluye una copia en el repositorio (CC BY 4.0 lo permite, con atribución; pesan menos de 6 MB)
-    o si cada alumno la descarga de UCI.
-16. **Base de referencia de la tarea:** no existe. Para cada dataset (o al menos uno) hay que construir y probar RAW → MASTER → FS → ML, un modelo base y las pruebas, como se hizo con Online Retail II,
-    para poder dar un «resultado de referencia» y detectar errores antes que los alumnos.
-17. **Reglas de la tarea:** decidir si el alumno elige uno de los dos datasets o se asigna; fechar los avances; y definir si Bank Marketing se parte por orden de filas (no tiene columna de fecha)
-    y cómo se trata `duration` (no se conoce antes de llamar; ver el enunciado).
+15. **Datos de la tarea:** los archivos llegaron adjuntos el 09/11/2026 (el proxy sigue bloqueando `archive.ics.uci.edu`); hay sha256, perfilado y modelo base rápido en `02-Proyecto-Transversal/verificacion-datos-tarea/`.
+    Falta el script de descarga y decidir si se incluye una copia en el repositorio (CC BY 4.0 lo permite, con atribución; unos 11 MB descomprimidos, solo el `.xls` y `bank-additional-full.csv`; unos 6 MB si se guardan los zip originales) o si cada alumno la descarga de UCI.
+16. **Base de referencia de la tarea:** no existe. Para cada dataset (o al menos Default) hay que construir y probar RAW → MASTER → FS → ML, un modelo base y las pruebas, como se hizo con Online Retail II,
+    para poder dar un «resultado de referencia» y detectar errores antes que los alumnos. Orden de magnitud ya medido: Default, AUC de prueba 0,71–0,76.
+17. **Reglas de la tarea:** decidir si el alumno elige uno de los dos datasets o se asigna, y fechar los avances. Medido: Bank Marketing partido por orden de filas tiene una deriva extrema (AUC de prueba 0,51–0,58 sin `duration`);
+    decidir si se parte aleatoriamente (optimista), por orden de filas (ejercicio de deriva para S5) o si queda como opción avanzada. `duration` hay que excluirla (ver el enunciado).
+18. **`xlrd` en el entorno:** el `.xls` de Default no se lee con `env-ia-mlops` (trae `openpyxl`, no `xlrd`). Decidir entre añadir `xlrd` a `03-Entorno/conda/environment.yml` (y volver a validar el entorno) o entregar el archivo convertido a CSV.
 
 ## Evaluación propuesta
 Conservar 20 % conocimiento, 40 % desempeño y 40 % producto por unidad,

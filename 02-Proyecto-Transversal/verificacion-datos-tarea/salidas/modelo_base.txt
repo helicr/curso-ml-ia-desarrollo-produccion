@@ -1,0 +1,20 @@
+== Default of Credit Card Clients · partición aleatoria estratificada 70/15/15 (semilla 0)
+  filas train/valid/test: 21000 4500 4500 · tasa impago 0.221 0.221 0.221
+  regresión logística (crudo)  AUC valid 0.720 · test 0.709 | AP test 0.495 | prob. media test 0.219 (real 0.221)
+  boosting (crudo)             AUC valid 0.792 · test 0.761 | AP test 0.542 | prob. media test 0.219 (real 0.221)
+  logística (+6 variables FS)  AUC valid 0.762 · test 0.733 | AP test 0.487 | prob. media test 0.220 (real 0.221)
+  boosting (+6 variables FS)   AUC valid 0.794 · test 0.763 | AP test 0.549 | prob. media test 0.221 (real 0.221)
+
+== Bank Marketing (bank-additional-full) · partición por orden de filas 70/15/15
+ [con duration] por orden de filas
+  regresión logística          AUC valid 0.898 · test 0.652 | AP test 0.525 | prob. media test 0.178 (real 0.385)
+  boosting                     AUC valid 0.858 · test 0.697 | AP test 0.538 | prob. media test 0.172 (real 0.385)
+ [con duration] aleatoria estratificada (para comparar)
+  regresión logística          AUC valid 0.933 · test 0.935 | AP test 0.603 | prob. media test 0.113 (real 0.113)
+  boosting                     AUC valid 0.951 · test 0.950 | AP test 0.661 | prob. media test 0.114 (real 0.113)
+ [sin duration] por orden de filas
+  regresión logística          AUC valid 0.664 · test 0.577 | AP test 0.447 | prob. media test 0.212 (real 0.385)
+  boosting                     AUC valid 0.560 · test 0.514 | AP test 0.416 | prob. media test 0.212 (real 0.385)
+ [sin duration] aleatoria estratificada (para comparar)
+  regresión logística          AUC valid 0.789 · test 0.787 | AP test 0.448 | prob. media test 0.111 (real 0.113)
+  boosting                     AUC valid 0.797 · test 0.804 | AP test 0.463 | prob. media test 0.112 (real 0.113)

@@ -1,0 +1,32 @@
+bank-additional-full: (41188, 21)
+columnas: ['age', 'job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'emp.var.rate', 'cons.price.idx', 'cons.conf.idx', 'euribor3m', 'nr.employed', 'y']
+nulos (NaN): 0
+
+«unknown» por columna: {'job': 330, 'marital': 80, 'education': 1731, 'default': 8597, 'housing': 990, 'loan': 990}
+target y: {'no': 36548, 'yes': 4640} · tasa sí: 0.1127
+duplicados exactos: 12
+pdays==999: 39673 · poutcome: {'nonexistent': 35563, 'failure': 4252, 'success': 1373}
+duration==0: 4 · y=yes entre ellos: 0
+  job {'admin.': 10422, 'blue-collar': 9254, 'technician': 6743, 'services': 3969, 'management': 2924, 'retired': 1720, 'entrepreneur': 1456, 'self-employed': 1421, 'housemaid': 1060, 'unemployed': 1014, 'student': 875, 'unknown': 330}
+  marital {'married': 24928, 'single': 11568, 'divorced': 4612, 'unknown': 80}
+  education {'university.degree': 12168, 'high.school': 9515, 'basic.9y': 6045, 'professional.course': 5243, 'basic.4y': 4176, 'basic.6y': 2292, 'unknown': 1731, 'illiterate': 18}
+  default {'no': 32588, 'unknown': 8597, 'yes': 3}
+  housing {'yes': 21576, 'no': 18622, 'unknown': 990}
+  loan {'no': 33950, 'yes': 6248, 'unknown': 990}
+  contact {'cellular': 26144, 'telephone': 15044}
+  month {'may': 13769, 'jul': 7174, 'aug': 6178, 'jun': 5318, 'nov': 4101, 'apr': 2632, 'oct': 718, 'sep': 570, 'mar': 546, 'dec': 182}
+  day_of_week {'thu': 8623, 'mon': 8514, 'wed': 8134, 'tue': 8090, 'fri': 7827}
+
+periodos en orden de filas (reconstruidos): ['2008-may', '2008-jun', '2008-jul', '2008-aug', '2008-oct', '2008-nov', '2008-dec', '2009-mar', '2009-apr', '2009-may', '2009-jun', '2009-jul', '2009-aug', '2009-sep', '2009-oct', '2009-nov', '2009-dec', '2010-mar', '2010-apr', '2010-may', '2010-jun', '2010-jul', '2010-aug', '2010-sep', '2010-oct', '2010-nov']
+retrocesos de mes dentro de un año (¿orden roto?): 2 (esperado: 2 cambios de año)
+  train 70% 28831 filas · periodos 2008-may → 2009-apr · tasa sí: 0.056 · euribor3m medio 4.69
+  valid 15% 6178 filas · periodos 2009-apr → 2009-may · tasa sí: 0.107 · euribor3m medio 1.33
+  test 15% 6179 filas · periodos 2009-may → 2010-nov · tasa sí: 0.385 · euribor3m medio 0.95
+euribor3m min/max: 0.634 5.045 · nr.employed valores distintos: 11
+
+sí por año inferido: {2008: 0.048, 2009: 0.195, 2010: 0.521} · filas: {2008: 27690, 2009: 11440, 2010: 2058}
+
+bank-full: (45211, 17) · columnas: ['age', 'job', 'marital', 'education', 'default', 'balance', 'housing', 'loan', 'contact', 'day', 'month', 'duration', 'campaign', 'pdays', 'previous', 'poutcome', 'y']
+nulos: 0 · unknown: {'job': 288, 'education': 1857, 'contact': 13020, 'poutcome': 36959}
+y tasa sí: 0.1170 · pdays==-1: 36954 · education: {'secondary': 23202, 'tertiary': 13301, 'primary': 6851, 'unknown': 1857}
+month en orden de filas (primeros cambios): ['may', 'jun', 'jul', 'aug', 'oct', 'nov', 'dec', 'jan', 'feb', 'mar', 'apr', 'sep']
