@@ -262,6 +262,9 @@ p{font-size:20px;line-height:1.5;color:var(--text)}
 #bar button{padding:6px 11px;border-radius:8px;color:var(--text)}
 #bar button:hover{background:var(--panel)}
 #bar .sp{flex:1}
+#bar a#bhome{padding:6px 11px;border-radius:8px;color:var(--text);text-decoration:none;white-space:nowrap}
+#bar a#bhome:hover{background:var(--panel)}
+@media(max-width:900px){#bar a#bhome .tx{display:none}}
 #bar .part{color:var(--muted)}#bar .part.on{color:var(--gold);font-weight:700}
 #prog{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:30;transition:width .3s}
 #clockref{color:var(--muted);font-variant-numeric:tabular-nums;margin:0 8px}
@@ -689,7 +692,7 @@ modeling/train.py · predict.py</div><p class="small" style="margin-top:8px">Mis
   <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado"></span>
   <button class="part" data-p="A">Datos</button><button class="part" data-p="B">Variables y ML</button><button class="part" data-p="C">Modelo</button><button class="part" data-p="D">Práctica</button>
   <span class="sp"></span>
-  <button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S1">⌂ <span class="tx">Índice de </span>S1</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
 </nav>
 <noscript>Esta presentación necesita JavaScript. El contenido también está en README.md y guion.md.</noscript>
 

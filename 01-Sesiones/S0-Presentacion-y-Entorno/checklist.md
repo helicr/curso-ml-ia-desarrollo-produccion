@@ -6,7 +6,7 @@ Coincide con la diapositiva 27. Marcar y anotar el resultado obtenido.
 - [ ] 2. VS Code y extensiones: Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers.
 - [ ] 3. Miniconda responde: `conda --version`, `conda env list`.
 - [ ] 4. Repositorio clonado y abierto en VS Code.
-- [ ] 5. Entorno conda del curso creado (cuando se publique `environment.yml`).
+- [ ] 5. Entorno conda del curso creado desde `environment.yml`: `conda activate env-ia-mlops` y la prueba de humo (`python 03-Entorno\conda\prueba_de_humo.py`) termina en `HUMO OK`.
 - [ ] 6. Intérprete y kernel seleccionados: `import sys; print(sys.executable)` coincide en script y notebook.
 - [ ] 7. SQLite comprobable: `SELECT 1 AS entorno_listo;` en el visor.
 - [ ] 8. Docker operativo **en Codespaces**: `docker version`, `docker run --rm hello-world`.

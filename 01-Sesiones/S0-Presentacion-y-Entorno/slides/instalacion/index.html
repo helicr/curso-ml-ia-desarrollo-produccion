@@ -87,6 +87,9 @@ ul.p li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px
 #bar{position:fixed;left:0;right:0;bottom:0;height:46px;display:flex;gap:10px;align-items:center;padding:0 14px;background:#02101f;border-top:1px solid var(--line);font-size:14px}
 #bar button{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
 #bar .sp{flex:1}
+#bar a#bhome{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);text-decoration:none;white-space:nowrap}
+#bar a#bhome:hover{border-color:var(--gold)}
+@media(max-width:900px){#bar a#bhome .tx{display:none}}
 #prog{position:fixed;left:0;bottom:46px;height:3px;background:var(--gold);width:0;transition:width .3s}
 #index{position:fixed;inset:0 0 46px 0;background:rgba(2,16,31,.97);padding:26px 40px;overflow:auto;display:none;z-index:20}
 #index.on{display:block}#index h2{font-size:26px;margin-bottom:14px}
@@ -194,7 +197,7 @@ Informe guardado en verificacion-s1.txt (en la carpeta actual). Enviaselo al ins
 </div></div>
 <div id="prog"></div>
 <div id="index" aria-label="Índice"><h2>Índice</h2><div id="idxgrid"></div></div>
-<nav id="bar" aria-label="Controles"><button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button><span id="count">1</span><span class="sp"></span><button id="bidx">Índice (O)</button><button id="bfull">Pantalla completa (F)</button></nav>
+<nav id="bar" aria-label="Controles"><button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button><span id="count">1</span><span class="sp"></span><a id="bhome" href="../../index.html" title="Volver al índice de la sesión S0">⌂ <span class="tx">Índice de </span>S0</a><button id="bidx">Índice (O)</button><button id="bfull">Pantalla completa (F)</button></nav>
 <noscript>Esta presentación necesita JavaScript. El contenido completo está en practica/guia-rapida-entorno-s0-s1.md.</noscript>
 <script>
 (function(){

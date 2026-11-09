@@ -35,7 +35,7 @@ Cada paso: para qué, qué ejecutar, qué esperar y qué revisar si falla. En la
 | 17 | Herramientas: el kit base de hoy (filtros: equipo / Codespaces / nube) | 3 |
 | 18 | **Una guía de uso por herramienta:** instalar, aprender lo mínimo, comprobar; qué guías hay y cuáles llegan después | 1 |
 | 19 | Clonar y abrir | 5 |
-| 20 | Miniconda (solo comprobar; no crear entorno aún) | 7 |
+| 20 | Miniconda: comprobar y crear el entorno `env-ia-mlops` desde `environment.yml` | 7 |
 | 21 | VS Code y notebooks (mismo intérprete en script y notebook) | 6 |
 | 22 | SQLite: comprobar ejecución | 6 |
 | 23 | Docker en Codespaces | 8 |
@@ -62,8 +62,8 @@ y fuentes) siguen siendo de consulta. El resto de ese archivo está desactualiza
 
 ## Antes de impartir
 - Fusionar `develop` en `main` (hoy `main` está casi vacía). Mientras tanto, la slide 19, la guía interactiva y la guía rápida ya indican `git clone --branch develop`; tras fusionar bastará `git clone` a secas.
-- Publicar `environment.yml` y el Codespace del curso, o ajustar las slides 20, 25 y 27.
+- `environment.yml` ya está publicado (probado en Linux; en Windows, sin probar) y las slides 20 y 27 lo reflejan. Falta publicar el Codespace del curso, o ajustar las slides 23, 25 y 27, que lo marcan como pendiente.
 - Revisar precios y cifras externas (sección de fuentes).
 - Enviar la guía interactiva `03-Entorno/guia-instalacion/index.html` (solo Windows) antes de S0, para que la Parte B sea de comprobación y no de instalación.
-- Material de copiar y pegar para dejar el equipo listo para S1 (instalación en orden, creación del entorno, pruebas y verificador): `slides/instalacion/index.html` y `practica/guia-rapida-entorno-s0-s1.md`. Es el soporte para quien no llegue con el entorno hecho; la presentación principal no cambia.
+- Material de copiar y pegar para dejar el equipo listo para S1 (instalación en orden, creación del entorno, pruebas y verificador): `slides/instalacion/index.html` y `practica/guia-rapida-entorno-s0-s1.md`. Es el soporte para quien no llegue con el entorno hecho; la slide 20 de la presentación principal remite a él.
 - Probar `instalar_entorno.ps1` en un equipo Windows limpio: no se ha probado.
