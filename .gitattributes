@@ -1,2 +1,8 @@
 * text=auto
 *.html linguist-documentation
+
+# Scripts de Windows: saltos de linea CRLF al clonar (CMD es mas fragil con LF)
+*.cmd text eol=crlf
+*.bat text eol=crlf
+# Scripts de shell de las pruebas: LF
+*.sh text eol=lf
