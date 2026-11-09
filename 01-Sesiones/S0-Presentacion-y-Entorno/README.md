@@ -14,7 +14,9 @@ Completar preparación y leer el caso.
 Entorno comprobado antes de S1.
 
 ## Materiales
-- `slides/index.html`: presentación (33 diapositivas, sin dependencias externas).
+- `slides/index.html`: presentación interactiva (26 diapositivas, un solo archivo sin dependencias externas; imágenes en `slides/media/`).
+  Teclas: → avanzar, ← retroceder, O índice, S notas, F pantalla completa. Se imprime a PDF con una diapositiva por página.
+- `slides/anexos/index.html`: material de la edición anterior (anexos A–F de consulta).
 - `guion.md`: guion con tiempos por diapositiva.
 - `checklist.md`: diagnóstico de 12 comprobaciones.
 
