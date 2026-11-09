@@ -17,6 +17,10 @@ Solo Windows 10 (1809 o superior) y Windows 11. Guía interactiva y script: `03-
 Docker Desktop local es **opcional**. GKE no es requisito.
 Ver `docker-y-kubernetes-sin-instalacion-local.md`.
 
+## Entornos de Python
+- `env-ia-mlops`: el entorno del curso (obligatorio). Archivo: `03-Entorno/conda/environment.yml`.
+- `env-ia-opcional`: red neuronal y LLM (opcional). Aún no existe.
+
 ## Opcional (ampliaciones)
 PyTorch para el módulo neuronal; motor y modelo LLM por confirmar. No requieren GPU.
 

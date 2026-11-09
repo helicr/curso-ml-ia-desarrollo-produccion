@@ -26,6 +26,10 @@
   registro desde el workflow en S4, registro de modelos con alias y rollback en S5. Backend SQLite y artefactos en carpeta local.
 - **Instalación solo para Windows:** guía interactiva (`03-Entorno/guia-instalacion/`) con comandos para copiar y dos scripts equivalentes, en CMD y en PowerShell
   (`03-Entorno/scripts/instalar_entorno.cmd` y `.ps1`), que instalan con winget y verifican. Ruta sin instalación (Codespaces y Cloud Shell) para equipos sin permisos.
+- **Caso transversal: Online Retail II** (UCI, CC BY 4.0, verificado). Pregunta: ¿el cliente vuelve a comprar en 90 días? Capas RAW → MASTER → FS → ML construidas y probadas con el dato completo.
+- **Los pipelines son cuadernos; el paquete Python es su traducción.** Proyecto con la estructura de Cookiecutter Data Science (`04-Proyecto-Base/`, paquete `ia_mlops`).
+  Pruebas de equivalencia cuaderno = paquete = `.py` de jupytext (tablas y métricas idénticas).
+- **Nombres de los entornos de conda:** `env-ia-mlops` (núcleo obligatorio) y `env-ia-opcional` (red neuronal y LLM, opcional).
 - **S0:** Parte A 25 min, pausa 15, Parte B 70, cierre 10 (las slides son la referencia).
 
 ## Pendiente
@@ -43,6 +47,12 @@
 11a. Instalación en Windows: la lógica de los dos scripts está probada con un winget falso (`03-Entorno/scripts/pruebas/`: PowerShell 7 en Linux y CMD en Wine); falta probarlos con los comandos de la guía en un equipo Windows limpio (10 y 11); confirmar los identificadores de winget
     (Git.Git, Microsoft.VisualStudioCode, Anaconda.Miniconda3, DBBrowserForSQLite.DBBrowserForSQLite, Google.CloudSDK), los de las extensiones y la ruta de Miniconda;
     revisar el enlace de descarga de Miniconda; validar el comportamiento en equipos corporativos con restricciones.
+11c. Términos de servicio de Anaconda: el Miniconda real bloquea `conda env create` hasta aceptarlos. Decidir entre (a) la configuración solo conda-forge de la guía,
+    (b) aceptar los términos (revisar licencia de la organización) o (c) cambiar a Miniforge.
+11d. MLflow 3 + scikit-learn: `log_model` de un `RandomForest` falla por defecto (skops). Elegir qué enseñar en S1: `skops_trusted_types=['sklearn.tree._tree.Tree']`
+    o `serialization_format='cloudpickle'`; ambas probadas. Ver `03-Entorno/VALIDACION.md`.
+11f. Dataset de la TAREA: Olist sin licencia confirmada (Kaggle devolvió 404 sin cuenta). Comprobarla con una cuenta o elegir una alternativa de licencia limpia (UCI).
+11e. Crear y probar `env-ia-mlops` en Windows (hoy solo resuelve con `--dry-run` y se probó en Linux); crear `environment-opcional.yml`.
 11b. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
 12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
 13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).

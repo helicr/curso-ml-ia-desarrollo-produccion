@@ -11,7 +11,9 @@
 | `guias/preparacion-paso-a-paso.md` | Los mismos pasos en texto. |
 | `guias/docker-y-kubernetes-sin-instalacion-local.md` | Cómo trabajar Docker y Kubernetes sin instalarlos. |
 | `guias/migracion-on-premise-a-gcp.md` | Hilo de migración de local a GCP. |
-| `conda/` | `environment.yml`: pendiente de publicar. |
+| `conda/environment.yml` | Entorno `env-ia-mlops` (ML clásico, MLflow, FastAPI, pruebas, GCP). Borrador con versiones fijadas. |
+| `conda/prueba_de_humo.py` | Comprueba el entorno: debe terminar con `HUMO OK`. |
+| `VALIDACION.md` | Qué se probó, con qué resultado y qué no. |
 
 Solo Windows 10 (1809 o superior) y Windows 11. macOS y Linux no tienen guía en esta edición.
 

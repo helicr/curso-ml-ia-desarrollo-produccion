@@ -39,12 +39,23 @@ cd curso-ml-ia-desarrollo-produccion
 code .
 ```
 Nota: hasta fusionar `develop` en `main`, el contenido está en la rama `develop`.
-6. Cuando se publique `environment.yml`, crea el entorno:
+6. **Términos de servicio de conda.** El Miniconda de Anaconda se niega a crear entornos hasta aceptar los términos de sus canales por defecto
+   (`CondaToSNonInteractiveError`), aunque el entorno use solo conda-forge. Configuración que lo evita (probada en Linux):
 ```text
-conda env create -f environment.yml
-conda activate curso-ml-ia
+conda config --add channels conda-forge
+conda config --remove channels defaults
+conda config --set channel_priority strict
+conda config --add default_channels https://conda.anaconda.org/conda-forge
 ```
-7. Dentro del Codespace del curso (cuando se publique): `docker version`, `docker run --rm hello-world`, `kind version`, `kubectl version --client`.
+   Alternativas: aceptar los términos con `conda tos accept` (revisa si tu organización necesita licencia) o usar Miniforge.
+7. Cuando el instructor lo indique, crea y comprueba el entorno (en «Anaconda Prompt», desde la carpeta del repositorio):
+```text
+conda env create -f 03-Entorno\conda\environment.yml
+conda activate env-ia-mlops
+python 03-Entorno\conda\prueba_de_humo.py
+```
+   La última línea debe ser `HUMO OK`. El entorno opcional (red neuronal y LLM) se llamará `env-ia-opcional`.
+8. Dentro del Codespace del curso (cuando se publique): `docker version`, `docker run --rm hello-world`, `kind version`, `kubectl version --client`.
 
 ## Google Cloud
 ```text

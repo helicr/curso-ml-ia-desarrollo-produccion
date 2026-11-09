@@ -1,0 +1,49 @@
+"""Configuracion del proyecto: rutas, fechas de corte, ventana del objetivo y lista de variables.
+
+Caso transversal: Online Retail II (UCI, CC BY 4.0). Pregunta de negocio:
+    «Dado un cliente y una fecha de corte, ¿volvera a comprar en los 90 dias siguientes?»
+
+Las rutas se pueden cambiar con variables de entorno (util en pruebas y en contenedores):
+    CURSO_DB       base SQLite                 (por defecto data/processed/curso.db)
+    CURSO_MODELOS  carpeta de modelos          (por defecto models/)
+    CURSO_REPORTES carpeta de reportes         (por defecto reports/)
+"""
+import os
+from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parents[1]
+DATA_RAW = RAIZ / 'data' / 'raw'
+DATA_PROCESSED = RAIZ / 'data' / 'processed'
+SQL = RAIZ / 'sql'
+DB = Path(os.environ.get('CURSO_DB', DATA_PROCESSED / 'curso.db'))
+MODELOS = Path(os.environ.get('CURSO_MODELOS', RAIZ / 'models'))
+REPORTES = Path(os.environ.get('CURSO_REPORTES', RAIZ / 'reports'))
+
+# Fuentes de datos para la capa RAW.
+#   muestra:  CSV pequeno incluido en el repositorio (150 clientes). Para pruebas, CI y clase.
+#   completo: Excel original de UCI (1,07 millones de lineas). Se descarga con `python -m ia_mlops.dataset descargar`.
+FUENTES = {
+    'muestra': DATA_RAW / 'muestra_online_retail_ii.csv',
+    'completo': DATA_RAW / 'online_retail_ii' / 'online_retail_II.xlsx',
+}
+URL_UCI = 'https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip'
+SHA256_ZIP_UCI = '572e36277c2390fbfde10664750731e0a86f55e33470d91919085f0408e67bfb'
+
+# Objetivo: el cliente compra al menos una vez en los VENTANA_OBJETIVO_DIAS siguientes al corte.
+VENTANA_OBJETIVO_DIAS = 90
+
+# Particion TEMPORAL. Las ventanas del objetivo no se solapan entre particiones:
+#   el ultimo corte de train + 90 dias = el corte de valid; el de valid + 90 dias <= el primer corte de test.
+CORTES = {
+    'train': ['2010-06-01', '2010-07-01', '2010-08-01', '2010-09-01', '2010-10-01', '2010-11-01', '2010-12-01'],
+    'valid': ['2011-03-01'],
+    'test': ['2011-06-01', '2011-09-01'],
+}
+
+# Variables de la capa FS que usa el modelo (columnas de fs_cliente_corte).
+FEATURES = [
+    'recencia_dias', 'frecuencia', 'monto_total', 'ticket_medio', 'unidades_total', 'productos_distintos',
+    'antiguedad_dias', 'frecuencia_90d', 'monto_90d', 'frecuencia_180d', 'dias_medios_entre_compras',
+    'devoluciones', 'es_reino_unido',
+]
+OBJETIVO = 'y'

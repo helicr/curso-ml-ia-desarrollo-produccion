@@ -729,7 +729,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
     <div class="card f"><h3 class="gold">1 · Completar el diagnóstico</h3><p>Las doce comprobaciones (la de la ruta neural/LLM es opcional), con nota de lo que falló y lo que se obtuvo.</p></div>
     <div class="card f"><h3 class="gold">2 · Comunicar bloqueos</h3><p>No esperar a S1 para decir que Codespaces, gcloud o la cuenta de la nube no arrancan.</p></div>
     <div class="card f"><h3 class="gold">3 · Leer el caso cuando se publique</h3><p>Localizar los archivos raw. No adelantar el entrenamiento ni «limpiar» por intuición.</p></div>
-    <div class="card f"><h3 class="gold">4 · No improvisar el entorno</h3><p>Sin environment.yml publicado, no crear un entorno paralelo con paquetes sueltos.</p></div>
+    <div class="card f"><h3 class="gold">4 · No improvisar el entorno</h3><p>Hasta que el instructor lo confirme, no crear un entorno paralelo con paquetes sueltos. El entorno del curso es env-ia-mlops.</p></div>
   </div>
   <p class="callout f">S1 empieza con datos y entrenamiento. Quien llegue sin entorno perderá la práctica. El caso concreto —conjunto de datos incluido— se revela entonces.</p>
 </section>
@@ -777,18 +777,18 @@ const CMD = {
   out:'Una carpeta nueva y VS Code abriendo esa carpeta.',
   fail:'Revisar HTTPS/SSH, la cuenta de GitHub y que no se haya recortado la URL.',
   notes:'Muestre la URL del repositorio. El clone debe funcionar hoy (compruebe antes que el contenido esté en la rama que se clona). Use el botón Copiar si alguien quiere guardar el comando.'},
- conda:{min:7,title:'Miniconda',kick:'Parte B · Entorno Python',badge:'environment.yml pendiente',
-  why:'Hoy solo se comprueba que Conda responde. El archivo del entorno y su nombre definitivo están pendientes de validación.',
+ conda:{min:7,title:'Miniconda',kick:'Parte B · Entorno Python',badge:'entorno env-ia-mlops · borrador',
+  why:'Hoy solo se comprueba que Conda responde. El entorno del curso se llamará env-ia-mlops; su archivo es un borrador sin probar en Windows.',
   cmds:[{c:'conda --version'},{c:'conda env list'},{c:'conda env create -f environment.yml',pend:true}],
   sim:['conda <versión>','# conda environments:','base   *   /ruta/a/miniconda3'],
   out:'Una versión de conda y la lista de entornos. Debe existir al menos «base».',
   fail:'Conda no está en el PATH, la instalación no terminó o la terminal no recargó el perfil. Cerrar y abrir la terminal, o reiniciar VS Code, suele bastar.',
-  warn:'No ejecutes «conda env create» hasta que se publique environment.yml. Crear un entorno a ciegas genera deriva entre participantes.',
-  notes:'Solo conda --version y conda env list. Prohíba conda env create hasta que exista environment.yml. Si conda no está en el PATH, cerrar la terminal y reabrirla.'},
+  warn:'No ejecutes «conda env create» hasta que el instructor lo indique. Crear entornos a ciegas genera deriva entre participantes.',
+  notes:'Solo conda --version y conda env list. Prohíba conda env create hasta que usted lo indique: el entorno se llama env-ia-mlops. Si conda se niega a crearlo por los términos de servicio de Anaconda, la guía de instalación trae la solución. Si conda no está en el PATH, cerrar la terminal y reabrirla.'},
  kernel:{min:6,title:'VS Code y los notebooks',kick:'Parte B · Intérprete y kernel',
   why:'Hay que seleccionar el mismo entorno en un script y en un notebook. Si no, el cuaderno «funciona» con paquetes distintos a los del resto del curso.',
   cmds:[{c:'import sys'},{c:'print(sys.executable)'}],lang:'py',
-  sim:['/ruta/al/entorno/curso-ml-ia/bin/python'],
+  sim:['C:\\Users\\tu-usuario\\miniconda3\\envs\\env-ia-mlops\\python.exe'],
   out:'Una ruta que apunte al entorno del curso (cuando exista), no al Python del sistema ni a uno improvisado.',
   fail:'Command Palette → «Python: Select Interpreter» y «Select Notebook Kernel». Instalar las extensiones Python, Pylance y Jupyter si el selector no aparece.',
   notes:'Haga que impriman sys.executable en un script y en un notebook. Deben coincidir.'},
@@ -866,7 +866,7 @@ const DIAG=[
  ['VS Code y extensiones del curso','Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers'],
  ['Miniconda responde','conda --version · conda env list'],
  ['Repositorio clonado y abierto','git clone · code .'],
- ['Entorno conda del curso creado','Pendiente: environment.yml aún no se publica'],
+ ['Entorno conda del curso creado','env-ia-mlops · cuando el instructor lo indique'],
  ['Intérprete y kernel seleccionados','import sys; print(sys.executable)'],
  ['SQLite comprobable','SELECT 1 AS entorno_listo; · DB Browser'],
  ['Docker operativo en Codespaces','docker version · docker run --rm hello-world'],

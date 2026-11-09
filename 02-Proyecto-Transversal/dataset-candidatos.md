@@ -2,6 +2,18 @@
 
 Curso: "ML e IA: de desarrollo a producción" (UNTRM). Informe de investigación de datos, 2026-11-08.
 
+## Verificación del 09/11/2026 (actualiza lo que sigue)
+Tras permitir `archive.ics.uci.edu` y `www.kaggle.com` en la red del entorno, se comprobó lo que antes figuraba como «no verificado»:
+- **Online Retail II (caso del instructor) — VERIFICADO.** Licencia **CC BY 4.0** leída en la ficha oficial de UCI (DOI 10.24432/C5CG6D, 1 067 371 instancias).
+  Descarga directa sin cuenta: 45 622 418 bytes, sha256 `572e3627…8e67bfb`, dos hojas (525 461 y 541 910 filas) del 01/12/2009 al 09/12/2011.
+  Perfilado real: 5 942 clientes, 53 628 facturas, 34 335 duplicados exactos, 22,76 % de líneas sin cliente, `Invoice` y `StockCode` con tipos mezclados.
+  Se construyeron RAW, MASTER, FS y ML completos (`04-Proyecto-Base/`), con un modelo base de **AUC 0,796 en test**. **Esta es la decisión final del caso transversal.**
+- **Olist (tarea) — SIN CONFIRMAR.** La página de Kaggle respondió 404 a una petición sin cuenta y no se intentó eludir esa protección.
+  La licencia CC BY-NC-SA 4.0 sigue sin confirmarse en la fuente. Hay que comprobarla en Kaggle con una cuenta; si no se confirma, usar una alternativa de licencia limpia.
+- Candidatos de la tarea con licencia verificable en UCI (por comprobar con la misma vía): *Default of Credit Card Clients*, *Bank Marketing*.
+
+Lo que sigue es el informe original, escrito cuando la red estaba bloqueada.
+
 ## 0. Advertencia de honestidad (leer primero)
 
 En el contenedor de investigación, el proxy bloqueó (HTTP 403 en CONNECT) todos los hosts de datos probados: `archive.ics.uci.edu`, `www.openml.org`, `www.kaggle.com`, `huggingface.co`, `zenodo.org`, `insideairbnb.com`, `d37ci6vzurychx.cloudfront.net` (NYC TLC), `data.cityofnewyork.us`, `data.cityofchicago.org`, `www.datosabiertos.gob.pe`, `catalog.data.gov`. WebFetch también falló para esos hosts. Solo respondieron `pypi.org` y `raw.githubusercontent.com`.

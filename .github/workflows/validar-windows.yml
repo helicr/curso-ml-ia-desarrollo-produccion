@@ -1,0 +1,95 @@
+# Valida en un Windows real (runner de GitHub) lo que en el desarrollo solo se pudo probar en Linux.
+# Ejecutar: pestaña Actions -> "Validar entorno en Windows" -> Run workflow.
+#
+# ESTADO: escrito el 09/11/2026 y NO ejecutado todavia (el repositorio aun no esta subido con este archivo).
+# Revisa el resultado de cada paso y actualiza 03-Entorno/VALIDACION.md y las etiquetas de la guia.
+name: Validar entorno en Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      probar_instalacion:
+        description: "Ejecutar tambien los scripts en modo instalacion (necesita winget; instala software en el runner)"
+        type: boolean
+        default: false
+  push:
+    paths:
+      - "03-Entorno/**"
+      - ".github/workflows/validar-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-latest]
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Informacion del runner
+        shell: cmd
+        run: |
+          ver
+          echo winget:
+          where winget || echo winget NO esta disponible en este runner
+
+      - name: Scripts en modo verificar - CMD
+        shell: cmd
+        run: 03-Entorno\scripts\instalar_entorno.cmd verificar
+
+      - name: Scripts en modo verificar - Windows PowerShell 5.1
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File 03-Entorno\scripts\instalar_entorno.ps1 -Verificar
+
+      - name: Scripts en modo verificar - PowerShell 7
+        shell: pwsh
+        run: pwsh -File 03-Entorno\scripts\instalar_entorno.ps1 -Verificar
+
+      - name: Identificadores de winget (winget show)
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { Write-Host "winget no esta disponible: no se pueden validar los identificadores"; exit 0 }
+          $ids = 'Git.Git','Microsoft.VisualStudioCode','Anaconda.Miniconda3','DBBrowserForSQLite.DBBrowserForSQLite','Google.CloudSDK','Docker.DockerDesktop'
+          $fallos = 0
+          foreach ($id in $ids) {
+            winget show --id $id -e --accept-source-agreements | Out-Null
+            if ($LASTEXITCODE -eq 0) { Write-Host "[OK]    $id" } else { Write-Host "[FALLA] $id"; $fallos++ }
+          }
+          if ($fallos -gt 0) { exit 1 }
+
+      - name: Scripts en modo instalacion (opcional)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.probar_instalacion }}
+        shell: cmd
+        run: 03-Entorno\scripts\instalar_entorno.cmd sinconfirmacion sinextensiones
+
+      - name: Crear el entorno env-ia-mlops con conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: 03-Entorno/conda/environment.yml
+          activate-environment: env-ia-mlops
+          channels: conda-forge
+          channel-priority: strict
+          auto-activate-base: false
+
+      - name: Prueba de humo del entorno
+        shell: bash -el {0}
+        run: python 03-Entorno/conda/prueba_de_humo.py
+
+      - name: Notebook de prueba
+        shell: bash -el {0}
+        run: jupyter nbconvert --to notebook --execute 03-Entorno/conda/prueba_notebook.ipynb --output "$RUNNER_TEMP/prueba_notebook_ejecutado.ipynb"
+
+      - name: Guardar el informe de verificacion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verificacion-entorno-${{ matrix.os }}
+          path: verificacion-entorno.txt
+          if-no-files-found: ignore

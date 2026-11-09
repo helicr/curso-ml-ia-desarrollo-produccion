@@ -1,11 +1,32 @@
+# Secretos
 .env
+
+# Python y Jupyter
 __pycache__/
+*.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+
+# Datos originales descargados (se bajan con: python -m ia_mlops.dataset descargar). La muestra SI se versiona.
+data/raw/online_retail_ii/
+# Bases SQLite y sus archivos auxiliares (se regeneran con el pipeline)
 *.db
 *.db-wal
 *.db-shm
+*.sqlite
 
-# MLflow (almacén local de seguimiento y artefactos)
+# Modelos, MLflow y reportes generados (el pipeline los vuelve a crear)
+models/*.joblib
+models/*.json
+models/mlflow.db
+models/mlartifacts/
 mlflow.db
 mlruns/
 mlartifacts/
+reports/metricas.json
+reports/notebooks_ejecutados/
+reports/figures/*.png
+
+# Traduccion literal de los cuadernos (make traducir)
+scripts_desde_notebooks/

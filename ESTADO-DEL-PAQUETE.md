@@ -25,5 +25,8 @@ La guía de instalación para Windows (`03-Entorno/guia-instalacion/`) se probó
 con las pruebas en `03-Entorno/scripts/pruebas/`. **Nunca se ejecutaron en Windows real** ni con `winget` real; esas pruebas encontraron
 y corrigieron dos errores, pero no sustituyen una prueba en un equipo limpio.
 
+El entorno `env-ia-mlops` (`03-Entorno/conda/environment.yml`) se creó con Miniconda real en Linux y pasó su prueba de humo (`HUMO OK`); para
+Windows solo se comprobó que resuelve. Ver `03-Entorno/VALIDACION.md`.
+
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.
