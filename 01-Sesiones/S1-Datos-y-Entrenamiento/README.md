@@ -1,15 +1,37 @@
-# S1: Datos y entrenamiento
+# S1 · De los datos al modelo (4 horas)
 
-Duración propuesta: 4 horas.
+Caso transversal: **Online Retail II** → *¿volverá este cliente a comprar en los próximos 90 días?*
+Proyecto de trabajo: [`04-Proyecto-Base/`](../../04-Proyecto-Base/README.md).
 
-## Contenido
-Raw → master → fs → ml; particiones, entrenamiento, evaluación y artefactos.
-Seguimiento de experimentos con MLflow en versión ligera (ojo: con MLflow 3, guardar un `RandomForest` exige `skops_trusted_types=['sklearn.tree._tree.Tree']`; ver `03-Entorno/VALIDACION.md`): registrar parámetros, métricas y artefactos, y comparar al menos dos ejecuciones (15–20 min; recortar de la revisión o la teoría).
+## Objetivo
+Al terminar, la persona asistente puede:
+1. Explicar y reconstruir las capas **RAW → MASTER → FS → ML** con un cuaderno por capa.
+2. Justificar por qué una variable no puede usar información posterior al corte y comprobarlo con una prueba.
+3. Entrenar tres modelos con partición temporal, compararlos y registrar las ejecuciones en **MLflow**.
+4. Traducir los cuadernos a Python y comprobar que el resultado es idéntico.
 
-## Tarea
-Ejecutar scripts base y adaptar una transformación o variable.
+## Agenda
+| Min | Bloque | Material |
+|---|---|---|
+| 0–30 | Revisión de entorno | `slides/` diap. 3 · `checklist.md` |
+| 30–90 | Teoría | `slides/` diap. 4–16 · `teoria/README.md` |
+| 90–225 | Práctica (135 min, pausa de 10) | `practica/guia-laboratorio.md` |
+| 225–240 | Entrega y cierre | `tarea/README.md` · `slides/` diap. 18–20 |
 
-## Evidencia
-Avance en S2: datos, modelo, métricas y explicación.
+## Contenido de esta carpeta
+- `slides/index.html`: presentación interactiva (20 diapositivas; flechas, **O** índice, **S** notas, **F** pantalla completa).
+- `guion.md`: guion del docente minuto a minuto.
+- `checklist.md`: comprobaciones del docente y del alumnado.
+- `teoria/README.md`: resumen de teoría y glosario.
+- `practica/guia-laboratorio.md`: laboratorio paso a paso con presupuesto de tiempo.
+- `tarea/README.md` y `tarea/rubrica.md`: tarea y rúbrica (20/40/40).
+- `evidencias/plantilla-decision.md`: plantilla de la evidencia entregable.
 
-Laboratorio y materiales completos: pendientes de implementación y validación.
+## Qué está validado y qué no
+- **Validado (Linux, entorno `env-ia-mlops`):** los cuatro cuadernos y el paquete `ia_mlops` con la muestra y con el dato completo (resultados idénticos), 34 pruebas en verde, y la receta de la tarea (añadir `monto_180d`: pipeline completo y 30 pruebas rápidas en verde).
+- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); la tarea con un dataset distinto (por decidir).
+- **Cifras de las diapositivas:** las del dato completo salen de `04-Proyecto-Base` ejecutado sobre el Excel de UCI; con la **muestra** del curso (23 070 filas) los modelos dan valores menores (regresión logística: valid 0,698 · test 0,747). Es esperado.
+
+## MLflow en S1 (versión ligera)
+Solo seguimiento: parámetros, métricas, firma del modelo y comparación de ejecuciones (`mlflow ui`). El registro de modelos y los alias llegan en S4 y S5.
+Con MLflow 3 el proyecto guarda el modelo con cloudpickle (ver `03-Entorno/VALIDACION.md`).

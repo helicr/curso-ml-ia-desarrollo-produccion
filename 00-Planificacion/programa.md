@@ -24,9 +24,11 @@ Evidencia: Entorno comprobado antes de S1.
 
 Contenido: Raw → master → fs → ml; particiones, entrenamiento, evaluación y artefactos. Seguimiento de experimentos con MLflow (versión ligera, 15–20 min).
 
-Tarea: Ejecutar scripts base y adaptar una transformación o variable.
+Tarea: Añadir una variable nueva a FS, reconstruir ML, reentrenar, comparar dos ejecuciones de MLflow y decidir con evidencia; entregar la traducción a `.py`.
 
-Evidencia: Avance en S2: datos, modelo, métricas y explicación.
+Evidencia: Decisión escrita (`evidencias/plantilla-decision.md`), comparación en MLflow y avance en S2: datos, modelo, métricas y explicación.
+
+Materiales preparados: `01-Sesiones/S1-Datos-y-Entrenamiento/` (slides, guion, checklist, teoría, práctica, tarea y rúbrica).
 
 ## S2 · API y Docker · 4 horas
 

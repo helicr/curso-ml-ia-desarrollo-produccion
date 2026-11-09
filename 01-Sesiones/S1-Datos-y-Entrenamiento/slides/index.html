@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S1 · De los datos al modelo · ML e IA: de desarrollo a producción</title>
+<style>
+:root{
+  --bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;
+  --blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--opt:#b39cff;--r:16px;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--blue)}
+code,.mono{font-family:var(--mono)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---------- Escenario 1280x720 escalado ---------- */
+#viewport{position:fixed;left:0;right:0;top:0;bottom:46px;overflow:hidden;
+  background:radial-gradient(1200px 700px at 20% 0%,#07305a 0%,var(--bg) 70%)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;
+  transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;padding:54px 70px 56px;opacity:0;visibility:hidden;
+  transform:translateX(28px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s;
+  background:linear-gradient(160deg,rgba(6,42,77,.55),rgba(3,26,51,0) 60%);overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
+.slide.past{transform:translateX(-28px)}
+.slide::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.9}
+.foot{position:absolute;left:70px;right:70px;bottom:18px;display:flex;justify-content:space-between;
+  font-size:13px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.foot b{color:var(--gold);font-weight:600}
+
+.kick{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px}
+h1{font-size:44px;line-height:1.12;letter-spacing:-.01em;margin-bottom:22px;font-weight:800}
+h2{font-size:26px;margin-bottom:10px}
+h3{font-size:20px;margin-bottom:6px}
+p{font-size:20px;line-height:1.5;color:var(--text)}
+.lead{font-size:25px;line-height:1.45}
+.muted{color:var(--muted)}
+.small{font-size:15px;line-height:1.45;color:var(--muted)}
+.acc{color:var(--blue)} .gold{color:var(--gold)}
+.card{background:linear-gradient(180deg,var(--panel),#082d54);border:1px solid var(--line);border-radius:var(--r);padding:18px 22px}
+.card.dashed{border-style:dashed;background:rgba(179,156,255,.07);border-color:var(--opt)}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.core{color:#06223f;background:var(--blue);border-color:var(--blue)}
+.tag.opt{color:var(--opt);border-color:var(--opt);border-style:dashed}
+.tag.gold{color:#2b2100;background:var(--gold);border-color:var(--gold)}
+.tag.ok{color:#032b1c;background:var(--ok);border-color:var(--ok)}
+.tag.pend{color:var(--warn);border-color:var(--warn)}
+.row{display:flex;gap:18px}.col{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.btn{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:16px;transition:.2s}
+.btn:hover{background:var(--panel2);border-color:var(--blue)}
+.btn.primary{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.btn.primary:hover{filter:brightness(1.1)}
+.callout{border-left:5px solid var(--gold);background:rgba(252,211,77,.08);padding:14px 18px;border-radius:0 12px 12px 0;font-size:19px}
+.warnbox{border-left:5px solid var(--warn);background:rgba(251,191,36,.09);padding:12px 16px;border-radius:0 12px 12px 0;font-size:17px}
+
+/* ---------- Animaciones ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes flow{to{stroke-dashoffset:-32}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(43,179,255,.55)}50%{box-shadow:0 0 0 12px rgba(43,179,255,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes steam{0%{opacity:0;transform:translateY(8px)}50%{opacity:.8}100%{opacity:0;transform:translateY(-26px)}}
+@keyframes packet{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.slide.active .st{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0)*70ms)}
+.f{opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .45s ease,transform .45s ease}
+.f.on{opacity:1;transform:none;pointer-events:auto}
+.f.mark{display:none}
+
+/* ---------- Portada ---------- */
+.cover{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;height:500px}
+.cover h1{font-size:60px;line-height:1.05;margin:6px 0 16px}
+.cover .sub{font-size:25px;color:var(--muted);margin-bottom:28px}
+.cover-logo{height:58px;margin-bottom:22px}
+.pill{position:absolute;right:70px;top:34px}
+.inst{display:flex;gap:18px;align-items:center;margin:8px 0 22px}
+.inst img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+.inst b{font-size:22px}.inst span{display:block;font-size:17px;color:var(--muted)}
+.inst a{font-size:16px;color:var(--blue);text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.hero svg{width:100%;height:100%}
+.flowpath{fill:none;stroke:var(--blue);stroke-width:3;stroke-dasharray:6 10;animation:flow 1.1s linear infinite;opacity:.8}
+.hnode{fill:var(--panel);stroke:var(--blue);stroke-width:2}
+.htxt{fill:var(--text);font-size:17px;font-weight:700;text-anchor:middle;font-family:var(--sans)}
+
+/* ---------- Encuesta ---------- */
+.poll-q{font-size:30px;font-weight:700;line-height:1.3;margin-bottom:20px;min-height:80px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.popt{position:relative;text-align:left;padding:16px 18px 16px 62px;border-radius:14px;border:1px solid var(--line);background:var(--panel);overflow:hidden;min-height:92px}
+.popt:hover{border-color:var(--blue)}
+.popt .k{position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-weight:800}
+.popt .t{font-size:18px;line-height:1.35;position:relative;z-index:1}
+.popt .bar{position:absolute;left:0;bottom:0;height:6px;background:var(--blue);width:0;transition:width .5s}
+.popt .n{position:absolute;right:14px;top:10px;font-weight:800;font-size:22px;color:var(--gold);z-index:1}
+.popt.right{border-color:var(--ok);box-shadow:0 0 0 2px rgba(52,211,153,.35) inset}
+.poll-nav{display:flex;gap:12px;align-items:center;margin-top:18px}
+.poll-hint{margin-left:auto;font-size:17px;color:var(--gold);max-width:520px}
+
+/* ---------- Núcleo / opcional ---------- */
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+.list{list-style:none;display:flex;flex-direction:column;gap:11px}
+.list li{display:flex;gap:12px;align-items:flex-start;font-size:20px;line-height:1.35}
+.list li::before{content:"";flex:none;width:12px;height:12px;border-radius:4px;margin-top:8px;background:var(--blue)}
+.card.dashed .list li::before{background:transparent;border:2px dashed var(--opt)}
+.list b{color:var(--gold)}
+
+/* ---------- Notebook → servicio ---------- */
+.path{display:flex;flex-direction:column;gap:9px;position:relative}
+.step{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 16px}
+.step .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#04213f;display:grid;place-items:center;font-weight:800}
+.step b{font-size:18px;display:block}.step span.d{font-size:15px;color:var(--muted)}
+.step .tag{margin-left:auto}
+
+/* ---------- Evidencia ---------- */
+.stat{display:flex;align-items:baseline;gap:14px}
+.stat .big{font-size:68px;font-weight:800;color:var(--gold);line-height:1;white-space:nowrap}
+.meter{height:10px;border-radius:99px;background:#0b3a69;overflow:hidden;margin:6px 0 16px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.sysbox{position:relative;border:2px dashed var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sysbox .cell{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 8px;text-align:center;font-size:16px;color:var(--muted)}
+.sysbox .core{grid-column:2;grid-row:2;background:var(--blue);color:#04213f;font-weight:800;font-size:15px;padding:8px 4px;border:0;transform:scale(.62);animation:pulse 2.2s infinite}
+.sysbox .lab{position:absolute;top:-14px;left:18px;background:var(--bg2);padding:0 10px;font-size:13px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+
+/* ---------- Mapa del curso ---------- */
+.tl{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative;margin:8px 0 14px}
+.tl::before{content:"";position:absolute;left:8%;right:8%;top:25px;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.5}
+.node{position:relative;text-align:center;padding:2px 4px}
+.node .dot{width:52px;height:52px;border-radius:50%;margin:0 auto 6px;background:var(--panel);border:3px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:18px;transition:.25s}
+.node small{display:block;font-size:13px;color:var(--muted);line-height:1.25}
+.node.sel .dot{background:var(--blue);color:#04213f;border-color:var(--gold);transform:scale(1.14);animation:pulse 2s infinite}
+.node:hover .dot{border-color:var(--blue)}
+.bands{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 10px;margin-bottom:14px}
+.band{font-size:14px;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.band.m{background:rgba(43,179,255,.22);color:var(--blue);border:1px solid var(--blue)}
+.band.a{background:rgba(252,211,77,.18);color:var(--gold);border:1px solid var(--gold)}
+.band.l{background:rgba(148,163,184,.18);color:#cbd5e1;border:1px solid #94a3b8}
+.band.g{background:rgba(52,211,153,.18);color:var(--ok);border:1px solid var(--ok)}
+.band.o{background:rgba(179,156,255,.1);color:var(--opt);border:1px dashed var(--opt)}
+.panel{min-height:180px}
+.panel h2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.panel ul{list-style:none;columns:2;column-gap:28px}
+.panel li{font-size:18px;line-height:1.35;margin-bottom:6px;break-inside:avoid}
+.panel li::before{content:"› ";color:var(--gold);font-weight:800}
+.panel li.o{color:var(--opt)}
+
+/* ---------- Capas ---------- */
+.layers{display:flex;align-items:stretch;gap:0;position:relative;margin:4px 0 18px}
+.layer{flex:1;text-align:center;padding:14px 6px;border:2px solid var(--line);background:var(--panel);margin-left:-2px;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,14px 50%);cursor:pointer;transition:.25s}
+.layer:first-child{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%)}
+.layer b{display:block;font-size:15px;letter-spacing:.04em}
+.layer span{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+.layer.sel{background:var(--blue);color:#04213f}.layer.sel span{color:#0a3b66}
+.layer:hover:not(.sel){background:var(--panel2)}
+.track{position:relative;height:14px;margin:-8px 0 14px;overflow:hidden}
+.packet{position:absolute;top:2px;width:14px;height:10px;border-radius:5px;background:var(--gold);animation:packet 3.2s linear infinite}
+.packet:nth-child(2){animation-delay:1.05s;background:var(--blue)}.packet:nth-child(3){animation-delay:2.1s}
+.ldetail{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;min-height:210px}
+.ldetail h2{display:flex;align-items:center;gap:12px}
+.tblname{font-family:var(--mono);color:var(--gold)}
+
+/* ---------- Local → GCP ---------- */
+.map{display:flex;flex-direction:column;gap:9px}
+.mrow{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;align-items:center}
+.pillbox{padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:18px}
+.pillbox.g{border-color:var(--ok);background:rgba(52,211,153,.1)}
+.pillbox small{display:block;font-size:14px;color:var(--muted)}
+.arrow{height:22px}.arrow svg{width:100%;height:100%}
+.strat{text-align:center;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px;border-radius:8px}
+.strat.rehost{background:#2563eb;color:#fff}.strat.replatform{background:var(--gold);color:#2b2100}.strat.refactor{background:var(--ok);color:#032b1c}
+.mhead{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:2px}
+
+/* ---------- Método / entregas / evaluación ---------- */
+.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.lstep{padding:20px 18px;border-radius:18px;background:var(--panel);border:1px solid var(--line);position:relative;min-height:190px}
+.lstep .n{font-size:44px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:6px}
+.lstep p{font-size:17px;color:var(--muted)}
+.lstep::after{content:"→";position:absolute;right:-17px;top:50%;font-size:26px;color:var(--blue);z-index:2}
+.lstep:last-child::after{content:none}
+.rhythm{display:flex;height:46px;border-radius:12px;overflow:hidden;margin:6px 0 8px;border:1px solid var(--line)}
+.rhythm div{display:grid;place-items:center;font-size:14px;font-weight:700;color:#04213f;transform-origin:left;transition:transform .8s}
+.chain{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:12px 0 22px}
+.chain::before{content:"";position:absolute;left:5%;right:5%;top:20px;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:4px;opacity:.6}
+.link{position:relative;text-align:center}
+.link .when{width:42px;height:42px;border-radius:50%;margin:0 auto 10px;background:var(--gold);color:#2b2100;display:grid;place-items:center;font-weight:800;position:relative;z-index:1}
+.link .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 10px;min-height:118px;font-size:17px;font-weight:600;line-height:1.3}
+.link .box small{display:block;margin-top:6px;font-weight:400;font-size:14px;color:var(--muted)}
+.eval{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+.eval .pct{font-size:84px;font-weight:800;line-height:1;color:var(--gold)}
+.eval .pct span{font-size:36px;color:var(--blue)}
+.stack{display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.stack i{display:block;height:100%;transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+
+/* ---------- Pausa ---------- */
+.pause{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px;align-items:center;height:80%}
+.clock{font-size:150px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;color:var(--blue)}
+.clock.done{color:var(--ok)}
+.clock.low{color:var(--warn)}
+.cup{display:block;margin:0 auto;width:250px;animation:float 5s ease-in-out infinite}
+.steam{animation:steam 3s ease-in-out infinite}.steam:nth-of-type(2){animation-delay:1s}.steam:nth-of-type(3){animation-delay:2s}
+.t120{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:14px 0 6px;font-size:13px;font-weight:700}
+.t120 div{display:grid;place-items:center;color:#04213f;white-space:nowrap}
+
+/* ---------- Parte B ---------- */
+.budget{display:flex;height:64px;border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:8px 0 8px}
+.budget button{display:grid;place-items:center;font-size:13px;font-weight:700;color:#04213f;border-right:2px solid var(--bg);padding:0 2px;line-height:1.1;text-align:center;transition:.2s}
+.budget button:hover{filter:brightness(1.18);transform:scaleY(1.06)}
+.zones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.zone{padding:16px 14px;border-radius:16px;border:2px solid var(--line);background:var(--panel);cursor:pointer;transition:.25s;min-height:230px}
+.zone .zt{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.zone b{display:block;font-size:22px;margin:4px 0 8px}
+.zone ul{list-style:none}.zone li{font-size:16px;color:var(--muted);margin-bottom:5px}
+.zone.sel{border-color:var(--blue);background:var(--panel2);transform:translateY(-4px)}
+.zone.sel li{color:var(--text)}
+.zone .arr{display:none}
+.filters{display:flex;gap:10px;margin-bottom:16px}
+.fchip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:16px;background:var(--panel)}
+.fchip.on{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tool{padding:16px 18px;border-radius:14px;background:var(--panel);border:1px solid var(--line);transition:.3s}
+.tool.dim{opacity:.22;transform:scale(.97)}
+.tool b{font-size:20px;display:block;margin-bottom:4px}.tool p{font-size:16px;color:var(--muted)}
+.tool .tag{margin-top:10px}
+.cmdgrid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.term{background:#02101f;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:7px;padding:9px 14px;background:#06223f;font-size:13px;color:var(--muted)}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#fb7185}.term .bar i:nth-child(2){background:#fbbf24}.term .bar i:nth-child(3){background:#34d399}
+.term .bar em{margin-left:8px;font-style:normal}
+.term pre{font-family:var(--mono);font-size:18px;line-height:1.6;padding:16px 18px;white-space:pre-wrap;word-break:break-all;min-height:140px}
+.term .ps{color:var(--ok)}.term .out{color:#cfe4ff;display:block;opacity:.92}.term .pend{color:var(--warn)}
+.term .caret{display:inline-block;width:10px;height:19px;background:var(--gold);vertical-align:-3px;animation:pulse 1s steps(2) infinite}
+.cmdbtns{display:flex;gap:10px;margin-top:12px}
+.sim{font-size:13px;color:var(--muted);margin-top:8px}
+.badge{margin-left:12px;vertical-align:middle;font-size:14px}
+
+/* ---------- Diagnóstico ---------- */
+.diag{display:grid;grid-template-columns:1fr 250px;gap:22px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:11px;align-items:center;text-align:left;padding:8px 12px;border-radius:11px;background:var(--panel);border:1px solid var(--line);min-height:56px;transition:.2s}
+.chk .bx{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:17px}
+.chk b{font-size:15px;display:block;line-height:1.2}.chk span{font-size:12.5px;color:var(--muted)}
+.chk[data-s="ok"]{border-color:var(--ok)}.chk[data-s="ok"] .bx{background:var(--ok);border-color:var(--ok);color:#032b1c}
+.chk[data-s="fail"]{border-color:var(--bad)}.chk[data-s="fail"] .bx{background:var(--bad);border-color:var(--bad);color:#3b0a14}
+.chk.opt b::after{content:" · opcional";color:var(--opt);font-weight:600}
+.gauge{text-align:center}
+.gauge svg{width:200px;height:200px}
+.gauge .gnum{font-size:44px;font-weight:800;fill:var(--text)}
+.gauge .gcap{font-size:13px;fill:var(--muted)}
+
+/* ---------- Cierre ---------- */
+.cards4{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cards4 .card p{font-size:18px;color:var(--muted)}
+
+/* ---------- Barra inferior, notas, índice ---------- */
+#bar{position:fixed;left:0;right:0;bottom:0;height:46px;background:#021224;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 12px;font-size:14px;z-index:20}
+#bar button{padding:6px 11px;border-radius:8px;color:var(--text)}
+#bar button:hover{background:var(--panel)}
+#bar .sp{flex:1}
+#bar .part{color:var(--muted)}#bar .part.on{color:var(--gold);font-weight:700}
+#prog{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:30;transition:width .3s}
+#clockref{color:var(--muted);font-variant-numeric:tabular-nums;margin:0 8px}
+#notes{position:fixed;right:0;top:0;bottom:46px;width:min(380px,90vw);background:#021224f2;border-left:1px solid var(--line);padding:22px 20px;transform:translateX(100%);transition:transform .3s;z-index:25;overflow:auto}
+#notes.on{transform:none}
+#notes h3{color:var(--gold);font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+#notes p{font-size:16px;line-height:1.5;color:var(--text);margin-bottom:10px}
+#index{position:fixed;inset:0 0 46px 0;background:#021224f5;z-index:26;padding:28px 38px;overflow:auto;display:none}
+#index.on{display:block}
+#index h2{margin-bottom:16px}
+#index .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+#index button{text-align:left;padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+#index button:hover{border-color:var(--blue)}
+#index small{display:block;color:var(--gold);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+#index button.cur{border-color:var(--gold)}
+noscript{position:fixed;inset:0;display:grid;place-items:center;font-size:22px;padding:40px;text-align:center;background:var(--bg)}
+
+
+/* ---------- Tema: cristal sobre degradados ---------- */
+#viewport{background:
+  radial-gradient(900px 620px at 6% -8%,rgba(43,179,255,.30),transparent 62%),
+  radial-gradient(820px 560px at 104% 112%,rgba(252,211,77,.17),transparent 60%),
+  radial-gradient(720px 520px at 92% -6%,rgba(179,156,255,.16),transparent 60%),var(--bg)}
+.slide{background:none;isolation:isolate;padding-top:58px}
+.slide::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.2px);background-size:30px 30px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);mask-image:linear-gradient(180deg,#000,transparent 75%)}
+.kick{display:inline-flex;align-items:center;gap:10px;padding:7px 16px;border-radius:999px;margin-bottom:18px;
+  border:1px solid rgba(252,211,77,.35);background:rgba(252,211,77,.08);font-size:14px}
+h1{font-size:48px;margin-bottom:26px;background:linear-gradient(95deg,#fff 30%,#a5dcff 75%,#fcd34d 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .tag{-webkit-text-fill-color:initial}
+.cover h1{font-size:56px;margin-bottom:14px}
+p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
+.card,.term,.tool,.zone,.step,.pillbox,.chk,.lstep,.link .box,.popt,.layer,.node .dot{
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  border-color:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 12px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.09)}
+.card{padding:22px 26px}
+.card.dashed{background:rgba(179,156,255,.08);border-color:var(--opt)}
+.pillbox.g{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.55)}
+.zone.sel,.layer.sel,.node.sel .dot{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#bfe9ff;color:#031a33}
+.zone.sel{color:var(--text);background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.zone.sel b,.zone.sel li{color:var(--text)}
+.chk[data-s="ok"]{background:rgba(52,211,153,.13)}.chk[data-s="fail"]{background:rgba(251,113,133,.13)}
+.btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);padding:12px 20px}
+.btn.primary{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#7dd3fc;color:#031a33;box-shadow:0 8px 22px rgba(43,179,255,.35)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.callout{background:linear-gradient(90deg,rgba(252,211,77,.14),rgba(252,211,77,.03));font-size:21px;padding:16px 22px}
+.step{padding:11px 18px}.step b{font-size:20px}.step span.d{font-size:16px}
+.list li{font-size:22px}.panel li{font-size:20px}
+.term{background:#020d1a}.term pre{font-size:21px;min-height:190px;padding:20px 22px}
+.term .bar{font-size:14px}
+.cmdgrid{gap:30px}
+.cmdgrid .card p{font-size:20px!important}
+.lstep{min-height:250px;padding:24px 22px}.lstep p{font-size:19px}.lstep .n{font-size:52px}
+.rhythm{height:58px}.rhythm div{font-size:16px}
+.link .box{min-height:150px;font-size:19px;padding:16px 12px}.link .box small{font-size:15px}
+.eval .pct{font-size:100px}.eval .card p{font-size:19px}
+.budget{height:96px}.budget button{font-size:15px}
+.zone{min-height:290px;padding:20px 18px}.zone b{font-size:25px}.zone li{font-size:18px;margin-bottom:8px}
+.tool{padding:22px 22px}.tool b{font-size:22px}.tool p{font-size:18px}
+.chk{min-height:58px;padding:6px 12px}.chk b{font-size:16.5px}.chk span{font-size:13.5px}
+.cards4 .card p{font-size:21px}.cards4{gap:20px}
+.mrow{gap:14px}.pillbox{font-size:19px;padding:12px 16px}
+.node .dot{width:58px;height:58px;font-size:20px}
+.popt{min-height:112px}.popt .t{font-size:20px}
+.stat p{font-size:24px}
+.layer{padding:18px 6px}.layer b{font-size:16px}
+.ldetail{min-height:230px}
+.slide.active .st{animation-duration:.7s}
+
+/* ---------- Niveles de madurez ---------- */
+.lvls{display:flex;flex-direction:column;gap:8px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;padding:10px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));transition:.25s;position:relative}
+.lvl:nth-child(2){margin-left:22px}.lvl:nth-child(3){margin-left:44px}
+.lvl .lv{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:19px;background:var(--panel2)}
+.lvl b{display:block;font-size:19px}.lvl small{display:block;color:var(--muted);font-size:14px}
+.lvl:hover{border-color:var(--blue)}
+.lvl.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.lvl.sel .lv{background:var(--blue);color:#031a33}
+#lvdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#lvdet p{font-size:17px;color:var(--text)}
+#lvdet .risk{color:var(--warn);font-size:16px;margin-top:6px}
+
+/* ---------- Ajustes de espacio ---------- */
+.cover .sub{font-size:24px;margin-bottom:18px}
+.inst{margin:0 0 16px}
+.path{gap:7px}.step{padding:8px 16px}.step b{font-size:19px}.step span.d{font-size:15px}.step .num{width:30px;height:30px}
+.tl{margin:2px 0 8px}.bands{margin-bottom:10px}.panel{min-height:0;padding:16px 24px}
+.panel li{font-size:18px;margin-bottom:4px}.panel h2{font-size:24px;margin-bottom:6px}
+.map{gap:6px}.pillbox{padding:8px 14px;font-size:18px}.pillbox small{font-size:13px}
+.mhead{margin-bottom:0}
+#s8 .callout,.slide .callout.f{font-size:19px;padding:12px 18px}
+.term pre{font-size:19px;min-height:150px;overflow-wrap:anywhere;word-break:normal}
+.cmdgrid .card p{font-size:18px!important}
+.cmdgrid .card{padding:16px 22px}
+.sim{margin-top:6px}
+
+/* ---------- Herramientas: más compactas ---------- */
+#toolgrid{gap:10px}
+#toolgrid .tool{padding:12px 18px}
+#toolgrid .tool b{font-size:20px;margin-bottom:2px}
+#toolgrid .tool p{font-size:16px;line-height:1.4}
+#toolgrid .tool .tag{margin-top:6px}
+.filters{margin-bottom:10px}
+
+@media (max-width:760px){
+  #clockref,#bfull,#bar .part{display:none}
+  #bar{gap:2px;padding:0 6px}#count{white-space:nowrap}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;height:auto;background:#031a33;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #viewport{position:static;overflow:visible;background:none}
+  #stage{position:static;transform:none;width:1280px;height:auto}
+  .slide{position:relative;height:720px;opacity:1;visibility:visible;transform:none;page-break-after:always;break-after:page}
+  .f,.f.mark{opacity:1!important;transform:none!important}.f.mark{display:none}
+  #bar,#prog,#notes,#index{display:none!important}
+  .st{animation:none!important;opacity:1!important}
+}
+/* ---------- S1 ---------- */
+.big2{font-size:54px;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.tbl{width:100%;border-collapse:collapse;font-size:16px}
+.tbl th{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(26,95,163,.45);font-family:var(--mono);font-size:15px}
+.tbl td.t{font-family:var(--sans)} .tbl tr.hl td{background:rgba(252,211,77,.12)}
+.num-r{text-align:right}
+.dirt{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.dirt .card{padding:14px 12px;text-align:center}
+.dirt .v{font-size:36px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.05}
+.dirt .l{font-size:15px;color:var(--muted);margin-top:6px;line-height:1.3}
+.tline{position:relative;height:90px;margin:14px 0 6px;border-top:3px solid var(--line)}
+.tline .ev{position:absolute;top:-8px;width:3px;height:22px;background:var(--blue);transition:background .3s}
+.tline .ev.fut{background:var(--bad);opacity:.55}
+.tline .ev.used{background:var(--ok)}
+.tline .cut{position:absolute;top:-24px;bottom:-6px;width:3px;background:var(--gold)}
+.tline .cut::after{content:"corte";position:absolute;top:-4px;left:6px;font-size:13px;color:var(--gold);font-weight:700}
+.tline .win{position:absolute;top:-8px;height:22px;background:rgba(251,113,133,.18);border:1px dashed var(--bad)}
+.tline .lab{position:absolute;top:30px;font-size:12px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bar2{height:30px;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--gold));display:flex;align-items:center;padding:0 10px;color:#04213f;font-weight:800;font-size:16px;transition:width .9s cubic-bezier(.2,.7,.2,1);width:0}
+.win-split{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.win-split .card{padding:12px 14px;text-align:center}
+.pre{background:#021326;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-family:var(--mono);font-size:15px;line-height:1.5;white-space:pre;overflow:hidden;color:#d6e9ff}
+.pre b{color:var(--gold)}
+
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="0" data-title="Portada"
+ data-notes="Bienvenida a S1. Hoy: de los datos al modelo, con el caso Online Retail II. Cuatro horas: 30 de revisión de entorno, 60 de teoría, 135 de práctica y 15 de entrega.">
+<span class="tag gold pill st" style="--d:1">S1 · 4 horas</span>
+<div style="display:grid;grid-template-columns:1.25fr .75fr;gap:30px;height:520px;align-items:center">
+ <div>
+  <p class="kick st" style="--d:1">UNTRM · INCID · FIZBAC · 2026-II</p>
+  <h1 class="st" style="--d:2;font-size:56px">De los datos al modelo</h1>
+  <p class="lead muted st" style="--d:3">RAW → MASTER → FS → ML, con un cuaderno por capa y un modelo que se puede explicar.</p>
+  <div class="chips st" style="--d:4;margin-top:26px"><span class="tag core">Caso: Online Retail II</span><span class="tag">Pregunta: ¿volverá en 90 días?</span><span class="tag">MLflow · tracking</span></div>
+ </div>
+ <div class="card st" style="--d:3"><p class="small">Lo que construimos hoy</p>
+  <p style="font-size:44px;font-weight:800;color:var(--gold);line-height:1.1">1 067 371 filas<br>→ 38 404 ejemplos</p>
+  <p class="small" style="margin-top:8px">de un Excel con suciedad real a una tabla lista para entrenar, sin usar información del futuro.</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="0" data-title="Agenda de 4 horas"
+ data-notes="Reparta el tiempo con honestidad: la práctica es lo más largo. Si la revisión de entorno se alarga, se recorta teoría, no práctica.">
+<p class="kick st">Agenda</p><h1 class="st">Cuatro horas, cuatro bloques</h1>
+<div class="rhythm st" style="height:64px"><div style="width:12.5%;background:#94a3b8">30</div><div style="width:25%;background:var(--blue)">60 · teoría</div><div style="width:56.25%;background:var(--gold)">135 · práctica guiada</div><div style="width:6.25%;background:var(--ok)">15</div></div>
+<div class="grid2" style="margin-top:20px">
+ <div class="card f"><h3>0:00 · Revisión (30 min)</h3><p class="small">Cada quien comprueba <span class="mono">env-ia-mlops</span> con la prueba de humo. Quien falla, trabaja con Codespaces o en pareja.</p></div>
+ <div class="card f"><h3>0:30 · Teoría (60 min)</h3><p class="small">Capas, linaje, calidad, regla de oro de FS, partición temporal, entrenamiento y MLflow.</p></div>
+ <div class="card f"><h3>1:30 · Práctica (135 min)</h3><p class="small">Los cuatro cuadernos, con pausa de 10 min. Termina con la traducción a <span class="mono">.py</span> y las pruebas.</p></div>
+ <div class="card f"><h3>3:45 · Entrega (15 min)</h3><p class="small">Se explica la tarea y la rúbrica, se resuelven dudas y se avanza a S2.</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="30" data-title="Revisión de entorno" data-enter="rev"
+ data-notes="Treinta minutos. Pida que cada persona ejecute la prueba de humo y pegue la última línea en el chat. Anote quién no pasa y qué error da. No avance con teoría hasta que la mayoría tenga el entorno; el resto trabaja con Codespaces o en pareja.">
+<p class="kick st">Revisión · 30 min</p><h1 class="st">¿Funciona tu entorno?</h1>
+<div class="split">
+ <div class="col">
+  <div class="pre st" id="r-cmds"><b>conda</b> activate env-ia-mlops
+cd 04-Proyecto-Base
+<b>python</b> ../03-Entorno/conda/prueba_de_humo.py
+<b>python</b> -m pytest -q</div>
+  <div class="row st"><button class="btn primary" id="r-copy">Copiar comandos</button><span class="small" id="r-msg" style="align-self:center"></span></div>
+  <div class="callout f">Esperado: la prueba de humo termina sin errores y <b>pytest</b> informa <span class="mono">34 passed</span>.</div>
+ </div>
+ <div class="card f"><h3>Si algo falla</h3>
+  <ul class="list"><li><span><b>conda pide aceptar términos</b>: usar la receta de 4 comandos de la guía.</span></li>
+  <li><span><b>kernel equivocado</b>: seleccionar <span class="mono">env-ia-mlops</span> en VS Code.</span></li>
+  <li><span><b>no instala</b>: Codespaces o en pareja; no bloquea la sesión.</span></li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="El caso y la pregunta"
+ data-notes="Una tienda online británica, dos años de facturas. La pregunta es de negocio, no de estadística: ¿este cliente volverá a comprar en 90 días? Insista en que el objetivo mira al futuro y las variables al pasado.">
+<p class="kick st">El caso · Online Retail II (UCI, CC BY 4.0)</p><h1 class="st">¿Volverá este cliente en los próximos 90 días?</h1>
+<div class="grid2">
+ <div class="card f"><h3>Los datos</h3><ul class="list"><li><span>Facturas de una tienda online, <b>01/12/2009 – 09/12/2011</b></span></li><li><span><b>1 067 371</b> filas en dos hojas de Excel</span></li><li><span><b>5 942</b> clientes · <b>53 628</b> facturas válidas</span></li></ul></div>
+ <div class="card f"><h3>La decisión que apoya</h3><ul class="list"><li><span>¿A quién enviar una campaña de retención?</span></li><li><span>Un ejemplo = <b>un cliente en una fecha de corte</b></span></li><li><span>Etiqueta <span class="mono">y = 1</span> si compra en <span class="mono">[corte, corte+90 d)</span></span></li></ul></div>
+</div>
+<div class="callout f" style="margin-top:18px">Dos reglas que repetiremos todo el día: <b>RAW no se toca</b> y <b>las variables solo miran hacia atrás</b>.</div>
+</section>
+
+<section class="slide" data-part="A" data-min="6" data-title="Cuatro capas" data-enter="capas"
+ data-notes="Haga clic en cada capa. Cada una se puede borrar y regenerar desde la anterior; nada se edita a mano. FS va antes que ML: ML toma las variables de FS y les agrega objetivo y partición.">
+<p class="kick st">Arquitectura de datos</p><h1 class="st">RAW → MASTER → FS → ML</h1>
+<div class="layers st" id="layers"></div><div class="track"><i class="packet"></i><i class="packet"></i><i class="packet"></i></div>
+<div class="ldetail card" id="ldet"></div>
+<p class="small" style="margin-top:8px">Todo vive en una base SQLite con prefijos <span class="mono">raw_ master_ fs_ ml_</span>. Hacer clic en una capa.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="RAW: lo que trae el dato" data-enter="dirt"
+ data-notes="No limpiamos nada en RAW. Solo cargamos con linaje para poder volver a la fila de origen. Estos son los problemas medidos sobre el archivo completo; cada uno justifica una regla en MASTER.">
+<p class="kick st">RAW · sin tocar</p><h1 class="st">El dato real viene sucio</h1>
+<div class="dirt">
+ <div class="card f"><div class="v" data-count="19494">0</div><div class="l">líneas de facturas canceladas (<span class="mono">C…</span>)</div></div>
+ <div class="card f"><div class="v" data-count="243007">0</div><div class="l">líneas sin cliente</div></div>
+ <div class="card f"><div class="v" data-count="22950">0</div><div class="l">cantidad ≤ 0</div></div>
+ <div class="card f"><div class="v" data-count="6207">0</div><div class="l">precio ≤ 0</div></div>
+ <div class="card f"><div class="v" data-count="34335">0</div><div class="l">duplicados exactos</div></div>
+</div>
+<div class="grid2" style="margin-top:20px"><div class="card f"><h3>Tipos mezclados</h3><p class="small"><span class="mono">Invoice</span> mezcla números y texto («C489449»); <span class="mono">StockCode</span> también; <span class="mono">Customer ID</span> viene como decimal.</p></div>
+<div class="card f"><h3>No son productos</h3><p class="small"><span class="mono">POST</span>, <span class="mono">BANK CHARGES</span>, <span class="mono">M</span>… ensucian cualquier conteo de ventas.</p></div></div>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Linaje: de RAW a MASTER"
+ data-notes="Una misma línea en las dos capas. El linaje (_id, _hoja, _fila) permite volver al Excel original. Pregunta para la audiencia: ¿qué pasaría si limpiáramos directamente sobre RAW?">
+<p class="kick st">Linaje</p><h1 class="st">Una fila, dos capas</h1>
+<div class="grid2">
+ <div class="card f"><h3>raw_online_retail_ii</h3><div class="pre" style="font-size:14px"><b>_id</b>        1
+<b>_hoja</b>      Year 2009-2010
+<b>_fila</b>      2
+Invoice    489434
+StockCode  85048
+Quantity   12
+Price      6.95
+Customer   13085.0</div></div>
+ <div class="card f"><h3>master_lineas + master_facturas</h3><div class="pre" style="font-size:14px"><b>linea_id</b>        1
+factura_id      489434
+codigo_producto 85048
+cantidad        12
+precio_unitario 6.95
+monto_linea     <b>83.4</b>
+es_venta_valida 1
+cliente_id      <b>13085</b>  (entero)</div></div>
+</div>
+<div class="callout f" style="margin-top:16px">El <span class="mono">Customer ID</span> 13085.0 pasó a entero y el monto de la línea se calculó (12 × 6.95 = 83.40). El <span class="mono">_id</span> sigue siendo el <span class="mono">linea_id</span>.</div>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="MASTER: modelo relacional"
+ data-notes="MASTER es el dato depurado y relacional. Lo descartado no desaparece: queda en master_descartes con su motivo. La conciliación raw = master + descartes es una regla dura: si no cuadra, el pipeline se detiene.">
+<p class="kick st">MASTER</p><h1 class="st">Depurar sin perder nada</h1>
+<div class="split">
+ <div class="col">
+  <div class="pre st" style="font-size:14px">master_clientes  ──┐
+                      ├─< master_facturas ─< master_lineas >─ master_productos
+master_descartes  (motivo)        master_calidad  (reglas)</div>
+  <div class="card f"><h3>Reglas de limpieza</h3><p class="small">Recortar espacios y mayúsculas · descartar duplicados exactos y nulos obligatorios · separar entidades · <span class="mono">es_cancelacion</span>, <span class="mono">es_producto</span>, <span class="mono">es_venta_valida</span>.</p></div>
+ </div>
+ <div class="card f"><h3>Conciliación (dato completo)</h3>
+  <table class="tbl"><tr><td class="t">RAW</td><td class="num-r">1 067 371</td></tr><tr><td class="t">MASTER líneas</td><td class="num-r">1 033 036</td></tr><tr><td class="t">Descartes</td><td class="num-r">34 335</td></tr><tr class="hl"><td class="t">MASTER + descartes</td><td class="num-r">1 067 371</td></tr></table>
+  <p class="small" style="margin-top:8px">1 033 036 + 34 335 = 1 067 371 ✓</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="Reglas de calidad"
+ data-notes="Tres niveles: duras (si fallan, se detiene), alertas (se registran y se revisan) e informativas (se miden para vigilar). Hoy hay una alerta real: una cancelación con cantidad positiva.">
+<p class="kick st">Calidad</p><h1 class="st">Reglas que se ejecutan, no que se recuerdan</h1>
+<div class="split">
+ <div class="card f"><table class="tbl"><tr><th>Regla</th><th>Valor</th><th>Estado</th></tr><tr><td>R01_conciliacion</td><td class="num-r">0</td><td class="t">OK</td></tr><tr><td>R02_facturas_sin_lineas</td><td class="num-r">0</td><td class="t">OK</td></tr><tr><td>R03_integridad_referencial</td><td class="num-r">0</td><td class="t">OK</td></tr><tr><td>R04_monto_coherente</td><td class="num-r">0</td><td class="t">OK</td></tr><tr><td>R05_fechas_en_rango</td><td class="num-r">0</td><td class="t">OK</td></tr><tr><td>R06_facturas_con_varios_clientes</td><td class="num-r">0</td><td class="t">OK</td></tr><tr class=hl><td>R07_cancelaciones_con_cantidad_positiva</td><td class="num-r">1</td><td class="t">ALERTA</td></tr></table></div>
+ <div class="col">
+  <div class="card f"><h3>Duras</h3><p class="small">R01–R05: conciliación, facturas sin líneas, integridad, monto, fechas. Si fallan, el pipeline se detiene.</p></div>
+  <div class="card f"><h3>Alertas e informativas</h3><p class="small">R06–R07 alertan. R08–R13 miden: % sin cliente (22,76 %), % ventas válidas (97,11 %), duplicados…</p></div>
+  <div class="callout f">Una alerta no es un error: es una decisión pendiente de alguien.</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="8" data-title="FS: regla de oro" data-enter="fs"
+ data-notes="Mueva el deslizador. Solo las facturas anteriores al corte (verdes) alimentan las variables; las posteriores (rojas) pertenecen al objetivo y jamás deben tocarlas. Es la regla que más errores evita en proyectos reales.">
+<p class="kick st">FS · variables por cliente y corte</p><h1 class="st">Solo se mira hacia atrás</h1>
+<div class="card st"><div class="row" style="align-items:center;justify-content:space-between"><h3>Cliente 12714 · 12 facturas</h3><span class="tag gold" id="cutlabel">corte</span></div>
+ <div class="tline" id="tline"></div>
+ <input type="range" id="cutr" min="0" max="100" value="55" aria-label="Fecha de corte">
+ <div class="grid2" style="margin-top:12px"><div class="card" style="background:rgba(52,211,153,.08);border-color:var(--ok)"><div class="small">Facturas usadas por FS (antes del corte)</div><div class="big2" id="fs-n">0</div><div class="small" id="fs-m"></div></div>
+ <div class="card" style="background:rgba(251,113,133,.08);border-color:var(--bad)"><div class="small">Ventana de 90 días → objetivo <span class="mono">y</span></div><div class="big2" id="fs-y">–</div><div class="small" id="fs-yt"></div></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Catálogo de variables"
+ data-notes="Trece variables en cinco familias. fs_catalogo documenta fórmula y unidad de cada una; es lo que hace que una variable sea reutilizable y no solo una columna.">
+<p class="kick st">FS · fs_catalogo</p><h1 class="st">13 variables, 5 familias</h1>
+<div class="grid2">
+ <div class="card f"><h3>Recencia y antigüedad</h3><p class="small"><span class="mono">recencia_dias</span> · <span class="mono">antiguedad_dias</span></p></div>
+ <div class="card f"><h3>Frecuencia y ritmo</h3><p class="small"><span class="mono">frecuencia</span> · <span class="mono">dias_medios_entre_compras</span> · <span class="mono">frecuencia_90d</span> · <span class="mono">frecuencia_180d</span></p></div>
+ <div class="card f"><h3>Monto</h3><p class="small"><span class="mono">monto_total</span> · <span class="mono">ticket_medio</span> · <span class="mono">monto_90d</span></p></div>
+ <div class="card f"><h3>Variedad y contexto</h3><p class="small"><span class="mono">unidades_total</span> · <span class="mono">productos_distintos</span> · <span class="mono">devoluciones</span> · <span class="mono">es_reino_unido</span></p></div>
+</div>
+<div class="callout f" style="margin-top:18px">La prueba <span class="mono">test_fs_no_usa_informacion_del_futuro</span> borra todo lo posterior al corte y comprueba que las variables no cambian.</div>
+</section>
+
+<section class="slide" data-part="B" data-min="6" data-title="ML: objetivo y partición"
+ data-notes="ML = variables de FS + objetivo + partición. La partición es temporal y las ventanas de objetivo no se solapan entre train, valid y test. Note la tasa de recompra: 48 % en train, 35 % en valid, 38 % en test; el mundo cambia y por eso la validación temporal importa.">
+<p class="kick st">ML</p><h1 class="st">Objetivo y partición temporal</h1>
+<div class="win-split">
+ <div class="card f"><span class="tag core">train</span><p class="small" style="margin-top:8px">cortes 2010-06 a 2010-12 (mensual)</p><div class="big2">23 760</div><p class="small">filas · recompra 48.1 %</p></div>
+ <div class="card f"><span class="tag gold">valid</span><p class="small" style="margin-top:8px">corte 2011-03-01</p><div class="big2">4 512</div><p class="small">filas · recompra 35.1 %</p></div>
+ <div class="card f"><span class="tag ok">test</span><p class="small" style="margin-top:8px">cortes 2011-06-01 y 2011-09-01</p><div class="big2">10 132</div><p class="small">filas · recompra 38.0 %</p></div>
+</div>
+<div class="callout f" style="margin-top:18px">Total: <b>38 404</b> ejemplos. Antes de construir se comprueba que la ventana de cada corte cabe en los datos (último día: 2011-12-09).</div>
+<p class="small f" style="margin-top:10px">Cada ejemplo = cliente + corte. Un cliente aparece varias veces, una por corte.</p>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Temporal frente a aleatoria" data-enter="cmp"
+ data-notes="Resultado honesto: en este caso la partición aleatoria dio un AUC más bajo, no más alto. No es una trampa que infle la métrica aquí. La razón para preferir la temporal es otra: reproduce el uso real (entrenar con el pasado, predecir el futuro) y evita que el mismo cliente con cortes vecinos esté a ambos lados. Que no se inflara hoy no garantiza que no pase en otro caso.">
+<p class="kick st">Medir como se va a usar</p><h1 class="st">¿Por qué partir por tiempo?</h1>
+<div class="cmp">
+ <div class="card f"><h3>Partición temporal (test)</h3><div class="bar2" data-w="79.6">AUC 0.796</div>
+  <p class="small" style="margin-top:10px">Entrena con cortes pasados, evalúa en cortes posteriores.</p></div>
+ <div class="card f"><h3>Partición aleatoria (5 semillas)</h3><div class="bar2" data-w="76.6">AUC 0.766</div>
+  <p class="small" style="margin-top:10px">Rango 0.761–0.770. Mezcla clientes de todas las fechas.</p></div>
+</div>
+<div class="warnbox f" style="margin-top:18px"><b>Lectura honesta:</b> aquí la aleatoria dio un valor <b>más bajo</b>, no más alto. No es una fuga que infle la métrica en este caso.</div>
+<div class="callout f" style="margin-top:12px">Se elige la temporal porque <b>se parece al uso real</b>: predecir el futuro con lo aprendido del pasado. Además, la tasa de recompra cambia (48 → 35 → 38 %), algo que una mezcla aleatoria esconde.</div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Entrenar y comparar"
+ data-notes="Siempre una referencia sin aprender (AUC 0,5) para saber cuánto aporta aprender. El gradient boosting gana en train (0,842) pero pierde en test frente a la regresión logística: sobreajuste. Se elige con valid y se informa en test, una sola vez. Con la muestra del curso los números serán menores y distintos (regresión logística: valid 0,698 · test 0,747); es esperado.">
+<p class="kick st">Entrenamiento</p><h1 class="st">Tres modelos, una decisión</h1>
+<div class="card st"><table class="tbl"><tr><th>Modelo</th><th class="num-r">AUC train</th><th class="num-r">AUC valid</th><th class="num-r">AUC test</th><th class="num-r">Prec. media test</th></tr>
+<tr><td class="t">Referencia (sin aprender)</td><td class="num-r">0.500</td><td class="num-r">0.500</td><td class="num-r">0.500</td><td class="num-r">0.380</td></tr><tr><td class="t">Regresión logística</td><td class="num-r">0.740</td><td class="num-r">0.786</td><td class="num-r">0.796</td><td class="num-r">0.735</td></tr><tr><td class="t">Gradient boosting</td><td class="num-r">0.842</td><td class="num-r">0.761</td><td class="num-r">0.781</td><td class="num-r">0.718</td></tr></table></div>
+<div class="grid2" style="margin-top:16px">
+ <div class="callout f">El gradient boosting «sabe» mucho más del pasado (0,842) pero generaliza peor: <b>sobreajuste</b>. Gana la regresión logística, más simple.</div>
+ <div class="warnbox f"><b>Con la muestra del curso</b> (23 070 filas) los valores serán distintos: regresión logística valid 0.698 · test 0.747. Eso es esperado, no un error.</div>
+</div>
+<p class="small f" style="margin-top:10px">Dato completo: 1 067 371 filas. Regla: se elige con valid, se informa test una sola vez.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="MLflow: seguimiento"
+ data-notes="MLflow registra parámetros, métricas y artefactos de cada ejecución. La huella del dato permite saber con qué datos se entrenó. Hoy solo tracking; el registro y los alias llegan en S4 y S5.">
+<p class="kick st">MLflow · tracking</p><h1 class="st">Cada ejecución deja huella</h1>
+<div class="split">
+ <div class="card st"><table class="tbl"><tr><th>Ejecución</th><th class="num-r">valid</th><th class="num-r">test</th><th>huella datos</th></tr><tr><td>referencia_sin_aprender</td><td class="num-r">0.500</td><td class="num-r">0.500</td><td>3521a0421905ba28</td></tr><tr><td>regresion_logistica</td><td class="num-r">0.786</td><td class="num-r">0.796</td><td>3521a0421905ba28</td></tr><tr><td>gradient_boosting</td><td class="num-r">0.761</td><td class="num-r">0.781</td><td>3521a0421905ba28</td></tr><tr><td>MEJOR-regresion_logistica</td><td class="num-r">0.786</td><td class="num-r">0.796</td><td>3521a0421905ba28</td></tr></table></div>
+ <div class="col">
+  <div class="card f"><h3>Qué se guarda</h3><ul class="list"><li><span>parámetros y métricas</span></li><li><span>modelo con <b>firma</b> y ejemplo de entrada</span></li><li><span>huella (sha256) del dato</span></li></ul></div>
+  <div class="callout f"><span class="mono">mlflow ui</span> abre la tabla anterior en el navegador. Backend: SQLite.</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Del cuaderno al Python"
+ data-notes="Los pipelines son cuadernos; el paquete ia_mlops es su traducción. La prueba de equivalencia exige tablas y métricas idénticas entre cuaderno, paquete y script jupytext. Así la traducción no es un acto de fe.">
+<p class="kick st">Cookiecutter Data Science</p><h1 class="st">El cuaderno es la fuente; el paquete, su traducción</h1>
+<div class="grid2">
+ <div class="card f"><h3>notebooks/</h3><div class="pre" style="font-size:14px">01_pipeline_raw_a_master
+02_pipeline_master_a_fs
+03_pipeline_fs_a_ml
+04_entrenamiento_y_seguimiento</div><p class="small" style="margin-top:8px">Parametrizados con papermill.</p></div>
+ <div class="card f"><h3>ia_mlops/</h3><div class="pre" style="font-size:14px">dataset.py   features.py
+calidad.py   pipeline.py
+modeling/ml_dataset.py
+modeling/train.py · predict.py</div><p class="small" style="margin-top:8px">Mismo resultado, ejecutable por <span class="mono">python -m ia_mlops.pipeline</span>.</p></div>
+</div>
+<div class="callout f" style="margin-top:16px">Prueba de equivalencia: <b>cuaderno = paquete = script de jupytext</b> (mismas tablas, mismas métricas). La tarea también se entrega traducida.</div>
+</section>
+
+<section class="slide" data-part="D" data-min="135" data-title="Práctica: 135 minutos" data-enter="prac"
+ data-notes="Pulse cada bloque para ver qué se hace. Pausa de 10 minutos a mitad. Quien termine antes pasa a la tarea. Mantenga el reloj visible: los bloques son guía, no obligación.">
+<p class="kick st">Práctica guiada · 135 min</p><h1 class="st">Los cuatro cuadernos, en orden</h1>
+<div class="budget st" id="pbudget"></div>
+<div class="card" id="pdet" style="min-height:200px"></div>
+<p class="small" style="margin-top:8px">Guía completa: <span class="mono">01-Sesiones/S1-Datos-y-Entrenamiento/practica/</span></p>
+</section>
+
+<section class="slide" data-part="D" data-min="10" data-title="La tarea y la rúbrica"
+ data-notes="La tarea adapta una variable al caso: añadirla a FS, reconstruir ML, reentrenar, comparar dos ejecuciones de MLflow y decidir. Se entrega también la traducción a .py. Rúbrica: 20 % reproducibilidad, 40 % técnica, 40 % análisis y decisión.">
+<p class="kick st">Entrega</p><h1 class="st">Adapta una variable y decide</h1>
+<div class="split">
+ <div class="card f"><h3>Pasos</h3><ol class="list" style="list-style:none"><li><span>Diseña <b>una variable nueva</b> en FS (solo con datos anteriores al corte).</span></li><li><span>Documéntala en <span class="mono">fs_catalogo</span> y reconstruye ML.</span></li><li><span>Reentrena y <b>compara dos ejecuciones</b> en MLflow.</span></li><li><span>Escribe una <b>decisión</b>: ¿se queda o no? ¿por qué?</span></li><li><span>Entrega también la traducción a <span class="mono">.py</span>.</span></li></ol></div>
+ <div class="card f"><h3>Rúbrica</h3>
+  <div class="stack"><i style="flex:20;background:var(--blue)"></i><i style="flex:40;background:var(--gold)"></i><i style="flex:40;background:var(--ok)"></i></div>
+  <ul class="list"><li><span><b>20 %</b> Reproducibilidad</span></li><li><span><b>40 %</b> Técnica (sin fuga, pruebas)</span></li><li><span><b>40 %</b> Análisis y decisión</span></li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="0" data-title="Errores frecuentes"
+ data-notes="Anticipe lo que suele salir mal. Todos son recuperables.">
+<p class="kick st">Antes de empezar</p><h1 class="st">Errores que ya vimos</h1>
+<div class="grid2">
+ <div class="card f"><h3>Kernel equivocado</h3><p class="small">El cuaderno corre con otro Python. Seleccionar <span class="mono">env-ia-mlops</span>.</p></div>
+ <div class="card f"><h3>Orden de los cuadernos</h3><p class="small">El 02 necesita el 01. Si falla, ejecutar desde el 01 o usar <span class="mono">make</span>.</p></div>
+ <div class="card f"><h3>Variable con información del futuro</h3><p class="small">Si usa datos ≥ corte, la prueba de FS falla. Eso es bueno.</p></div>
+ <div class="card f"><h3>Comparar métricas de datos distintos</h3><p class="small">Mirar siempre la <b>huella del dato</b> en MLflow antes de comparar.</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Cierre y siguiente sesión"
+ data-notes="Cierre. S2: de los cuadernos al servicio, con pruebas, empaquetado y carga del modelo desde MLflow. Recuerde fechas de entrega y canal de dudas.">
+<p class="kick st">Cierre</p><h1 class="st">Qué te llevas y qué viene</h1>
+<div class="grid2">
+ <div class="card f"><h3>Hoy</h3><ul class="list"><li><span>Cuatro capas con linaje y calidad</span></li><li><span>FS sin fuga y partición temporal</span></li><li><span>Modelo comparado y registrado en MLflow</span></li></ul></div>
+ <div class="card f"><h3>S2</h3><ul class="list"><li><span>De cuaderno a paquete y pruebas</span></li><li><span>Cargar el modelo desde MLflow (firma)</span></li><li><span>Primer pipeline con GitHub Actions</span></li></ul></div>
+</div>
+<div class="callout f" style="margin-top:18px">Pendiente para ti: <b>la tarea</b> y registrar tus incidencias del entorno.</div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado"></span>
+  <button class="part" data-p="A">Datos</button><button class="part" data-p="B">Variables y ML</button><button class="part" data-p="C">Modelo</button><button class="part" data-p="D">Práctica</button>
+  <span class="sp"></span>
+  <button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El contenido también está en README.md y guion.md.</noscript>
+
+<script>
+(function(){
+'use strict';
+
+/* ======================= Utilidades ======================= */
+const $=(s,r)=> (r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k))}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ======================= Núcleo del visor ======================= */
+const slides=$$('.slide'); const N=slides.length;
+const state=slides.map(()=>({r:0,frags:[]}));
+let cur=0;
+slides.forEach((s,i)=>{
+  s.dataset.i=i;
+  state[i].frags=$$('.f',s);
+  const f=document.createElement('div'); f.className='foot';
+  f.innerHTML=`<span>UNTRM · INCID · FIZBAC · ML e IA · S1</span><span><b>${esc(partName(s.dataset.part))}</b> · ${i+1} / ${N}</span>`;
+  s.appendChild(f);
+});
+function partName(p){return p==='A'?'Datos':p==='B'?'Variables y ML':p==='C'?'Modelo':'Práctica y cierre'}
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+
+function applyFrags(i){
+  const st=state[i]; st.frags.forEach((el,k)=>{ el.classList.toggle('on',k<st.r) });
+}
+function stagger(s){$$('.st',s).forEach((e,k)=>{ if(!e.style.getPropertyValue('--d')) e.style.setProperty('--d',k) })}
+slides.forEach(stagger);
+
+function go(i,full){
+  i=Math.max(0,Math.min(N-1,i));
+  const prev=cur;
+  if(prev!==i && hooks.leave[slides[prev].dataset.enter]) hooks.leave[slides[prev].dataset.enter](slides[prev]);
+  cur=i;
+  slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i)});
+  if(full!==undefined){state[i].r=full?state[i].frags.length:0}
+  applyFrags(i);
+  chrome();
+  const e=slides[i].dataset.enter; if(e&&hooks.enter[e]) hooks.enter[e](slides[i]);
+  try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+}
+function next(){
+  const st=state[cur];
+  if(st.r<st.frags.length){const el=st.frags[st.r]; st.r++; applyFrags(cur); const on=el.dataset.on; if(on) fire(on); return}
+  if(cur<N-1) go(cur+1,false);
+}
+function prev(){
+  const st=state[cur];
+  if(st.r>0){st.r--;applyFrags(cur);return}
+  if(cur>0) go(cur-1,true);
+}
+function fire(){/* reservado */}
+
+function chrome(){
+  const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N;
+  $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL;
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto: '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min';
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));
+}
+function fit(){
+  const v=$('#viewport'); const sc=Math.min(v.clientWidth/1280,v.clientHeight/720);
+  $('#stage').style.setProperty('--s',sc.toFixed(4));
+}
+addEventListener('resize',fit);
+
+/* Índice */
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(partName(s.dataset.part))} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i,false)});
+function toggle(sel,force){const el=$(sel);el.classList.toggle('on',force);}
+
+/* Controles */
+$('#bprev').onclick=prev; $('#bnext').onclick=next;
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen() };
+$$('#bar .part').forEach(b=>b.onclick=()=>{const k=slides.findIndex(s=>s.dataset.part===b.dataset.p);go(k,false)});
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();next()}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev()}
+  else if(k==='Home'){e.preventDefault();go(0,false)}
+  else if(k==='End'){e.preventDefault();go(N-1,true)}
+  else if(k==='o'||k==='O'){toggle('#index')}
+  else if(k==='s'||k==='S'){toggle('#notes')}
+  else if(k==='f'||k==='F'){$('#bfull').click()}
+  else if(k==='Escape'){toggle('#index',false);toggle('#notes',false)}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?next():prev()}},{passive:true});
+
+
+const hooks={enter:{},leave:{}};
+let timers=[];
+function later(fn,ms){const id=setTimeout(fn,ms);timers.push(id);return id}
+const fmt=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+/* Revisión */
+hooks.enter.rev=()=>{
+  const b=$('#r-copy'); if(b._ok) return; b._ok=1;
+  b.onclick=async()=>{ $('#r-msg').textContent=(await copyText($('#r-cmds').textContent))?'Copiado ✓':'No se pudo copiar' };
+};
+
+/* Capas */
+const CAPAS=[
+ {k:'RAW',s:'tal cual llegó',t:'raw_online_retail_ii · raw_carga',d:'El dato original sin corregir, más el linaje (_id, _hoja, _fila) y la huella sha256 del archivo.',r:['1 067 371 filas','No se edita jamás','Se puede volver a cargar']},
+ {k:'MASTER',s:'depurado y relacional',t:'master_clientes · productos · facturas · lineas · descartes · calidad',d:'Tipos correctos, entidades separadas y todo lo descartado con su motivo. Las reglas de calidad se ejecutan aquí.',r:['1 033 036 líneas','34 335 descartes con motivo','13 reglas de calidad']},
+ {k:'FS',s:'variables reutilizables',t:'fs_cliente_corte · fs_catalogo',d:'Una fila por cliente y fecha de corte. Cada variable usa solo datos anteriores al corte y está documentada en el catálogo.',r:['13 variables','Regla de oro: sin futuro','Probada con test']},
+ {k:'ML',s:'listo para entrenar',t:'ml_dataset · ml_particiones',d:'Variables de FS + objetivo (compra en 90 días) + partición temporal con ventanas que no se solapan.',r:['38 404 ejemplos','train / valid / test','Objetivo hacia el futuro']}
+];
+(function(){
+  const box=$('#layers'), det=$('#ldet');
+  box.innerHTML=CAPAS.map((c,i)=>`<button class="layer${i===0?' sel':''}" data-i="${i}"><b>${c.k}</b><span>${c.s}</span></button>`).join('');
+  function show(i){
+    const c=CAPAS[i]; $$('.layer',box).forEach((b,k)=>b.classList.toggle('sel',k===i));
+    det.innerHTML=`<div><h2>${esc(c.k)} <span class="tblname" style="font-size:16px">${esc(c.t)}</span></h2><p>${esc(c.d)}</p></div><div class="col">${c.r.map(x=>`<div class="pillbox g">${esc(x)}</div>`).join('')}</div>`;
+  }
+  box.addEventListener('click',e=>{const b=e.target.closest('.layer');if(b)show(+b.dataset.i)});
+  show(0);
+})();
+
+/* Contadores de suciedad */
+hooks.enter.dirt=sec=>{
+  $$('[data-count]',sec).forEach(el=>{
+    const to=+el.dataset.count; if(reduce){el.textContent=fmt(to);return}
+    const t0=performance.now(), dur=1100;
+    (function tick(t){const p=Math.min(1,(t-t0)/dur); el.textContent=fmt(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(tick); else el.textContent=fmt(to)})(t0);
+  });
+};
+
+/* Deslizador de fecha de corte */
+const CLI=[{"factura": "490152", "fecha": "2009-12-04", "monto": 556.65}, {"factura": "493964", "fecha": "2010-01-08", "monto": 1790.19}, {"factura": "501284", "fecha": "2010-03-15", "monto": 1074.35}, {"factura": "506254", "fecha": "2010-04-28", "monto": 1134.63}, {"factura": "514165", "fecha": "2010-06-30", "monto": 734.06}, {"factura": "521822", "fecha": "2010-09-09", "monto": 1840.74}, {"factura": "533336", "fecha": "2010-11-16", "monto": 1390.23}, {"factura": "544355", "fecha": "2011-02-18", "monto": 878.3}, {"factura": "553411", "fecha": "2011-05-17", "monto": 739.62}, {"factura": "556529", "fecha": "2011-06-13", "monto": 441.26}, {"factura": "564372", "fecha": "2011-08-25", "monto": 1006.52}, {"factura": "579792", "fecha": "2011-11-30", "monto": 1229.16}];
+(function(){
+  const tl=$('#tline'), r=$('#cutr');
+  const d0=Date.parse('2009-12-01'), d1=Date.parse('2011-12-09'), span=d1-d0;
+  const pos=t=>(t-d0)/span*100;
+  CLI.forEach(f=>{const e=document.createElement('i');e.className='ev';e.style.left=pos(Date.parse(f.fecha))+'%';e.title=f.fecha;tl.appendChild(e)});
+  [['2010-01-01'],['2011-01-01']].forEach(([d])=>{const l=document.createElement('span');l.className='lab';l.style.left=pos(Date.parse(d))+'%';l.textContent=d.slice(0,4);tl.appendChild(l)});
+  const cut=document.createElement('i');cut.className='cut';tl.appendChild(cut);
+  const win=document.createElement('i');win.className='win';tl.appendChild(win);
+  function upd(){
+    const t=d0+span*(+r.value/100), corte=new Date(t).toISOString().slice(0,10);
+    const w1=t+90*86400000;
+    cut.style.left=pos(t)+'%'; win.style.left=pos(t)+'%'; win.style.width=Math.max(0,Math.min(pos(w1),100)-pos(t))+'%';
+    let n=0,m=0,y=0,yt=0;
+    $$('.ev',tl).forEach((e,k)=>{const f=Date.parse(CLI[k].fecha); const past=f<t; e.classList.toggle('used',past); e.classList.toggle('fut',!past);
+      if(past){n++;m+=CLI[k].monto} else if(f<w1){y=1}});
+    $('#cutlabel').textContent='corte '+corte; $('#fs-n').textContent=n; $('#fs-m').textContent=n?('monto acumulado '+m.toFixed(2)+' · última '+CLI.filter(f=>Date.parse(f.fecha)<t).slice(-1)[0].fecha):'sin historia: no hay variables';
+    const fin=t+90*86400000>d1;
+    $('#fs-y').textContent=fin?'sin dato':(y?'1':'0'); $('#fs-yt').textContent=fin?'la ventana excede los datos: no se construye ese ejemplo':(y?'compra dentro de los 90 días siguientes':'no compra en los 90 días siguientes');
+  }
+  r.addEventListener('input',upd); upd();
+})();
+
+/* Comparación temporal vs aleatoria */
+hooks.enter.cmp=sec=>{ $$('.bar2',sec).forEach(b=>{b.style.width='0'; later(()=>{b.style.width=(+b.dataset.w)+'%'},80)}) };
+hooks.leave.cmp=sec=>{ timers.forEach(clearTimeout); timers=[] };
+
+/* Práctica */
+const PRAC=[
+ {m:10,c:'#94a3b8',t:'Preparar',d:'Abrir 04-Proyecto-Base, elegir kernel env-ia-mlops, ejecutar make test.'},
+ {m:30,c:'var(--blue)',t:'01 RAW → MASTER',d:'Cargar la muestra, inspeccionar descartes, comprobar la conciliación y las reglas de calidad.'},
+ {m:25,c:'var(--blue)',t:'02 MASTER → FS',d:'Construir las 13 variables, mover el corte, ejecutar la prueba de no-fuga.'},
+ {m:10,c:'#cbd5e1',t:'Pausa',d:'Diez minutos.'},
+ {m:25,c:'var(--gold)',t:'03 FS → ML',d:'Objetivo a 90 días, partición temporal, tasa por partición.'},
+ {m:25,c:'var(--gold)',t:'04 Entrenar',d:'Tres modelos, MLflow UI, comparar ejecuciones y leer la huella del dato.'},
+ {m:10,c:'var(--ok)',t:'.py y pruebas',d:'Traducir con jupytext, ejecutar python -m ia_mlops.pipeline y la prueba de equivalencia.'}
+];
+(function(){
+  const b=$('#pbudget'), det=$('#pdet'); const tot=PRAC.reduce((a,x)=>a+x.m,0);
+  b.innerHTML=PRAC.map((x,i)=>`<button style="flex:${x.m};background:${x.c}" data-i="${i}">${x.m}'<br>${esc(x.t)}</button>`).join('');
+  function show(i){const x=PRAC[i];const ini=PRAC.slice(0,i).reduce((a,y)=>a+y.m,0);
+    det.innerHTML=`<h2>${esc(x.t)} <span class="tag">${x.m} min · desde el min ${ini}</span></h2><p>${esc(x.d)}</p><p class="small" style="margin-top:8px">Total de la práctica: ${tot} min.</p>`}
+  b.addEventListener('click',e=>{const bt=e.target.closest('button');if(bt)show(+bt.dataset.i)});
+  show(1);
+})();
+
+/* ======================= Arranque ======================= */
+fit();
+const h=parseInt((location.hash||'').slice(1),10);
+go(isNaN(h)?0:h-1,false);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1,false)});
+})();
+</script>
+</body>
+</html>
