@@ -61,8 +61,9 @@ y fuentes) siguen siendo de consulta. El resto de ese archivo está desactualiza
 → / espacio: avanzar (revela pasos) · ←: retroceder · O: índice · S: notas del ponente · F: pantalla completa · Inicio / Fin.
 
 ## Antes de impartir
-- Fusionar `develop` en `main` (hoy `main` está vacía) o indicar la rama a clonar.
+- Fusionar `develop` en `main` (hoy `main` está casi vacía). Mientras tanto, la slide 19, la guía interactiva y la guía rápida ya indican `git clone --branch develop`; tras fusionar bastará `git clone` a secas.
 - Publicar `environment.yml` y el Codespace del curso, o ajustar las slides 20, 25 y 27.
 - Revisar precios y cifras externas (sección de fuentes).
 - Enviar la guía interactiva `03-Entorno/guia-instalacion/index.html` (solo Windows) antes de S0, para que la Parte B sea de comprobación y no de instalación.
+- Material de copiar y pegar para dejar el equipo listo para S1 (instalación en orden, creación del entorno, pruebas y verificador): `slides/instalacion/index.html` y `practica/guia-rapida-entorno-s0-s1.md`. Es el soporte para quien no llegue con el entorno hecho; la presentación principal no cambia.
 - Probar `instalar_entorno.ps1` en un equipo Windows limpio: no se ha probado.

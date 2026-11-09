@@ -875,10 +875,10 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 const CMD = {
  repo:{min:5,title:'Clonar y abrir',kick:'Parte B · Repositorio',
   why:'Deja el material, los notebooks y los scripts en tu máquina, listos para abrirlos con el entorno del curso.',
-  cmds:[{c:'git clone https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git'},{c:'cd curso-ml-ia-desarrollo-produccion'},{c:'code .'}],
+  cmds:[{c:'git clone --branch develop https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git'},{c:'cd curso-ml-ia-desarrollo-produccion'},{c:'code .'}],
   sim:['Cloning into \'curso-ml-ia-desarrollo-produccion\'...','Receiving objects: 100%, done.'],
   out:'Una carpeta nueva y VS Code abriendo esa carpeta.',
-  fail:'Revisar HTTPS/SSH, la cuenta de GitHub y que no se haya recortado la URL.',
+  fail:'Revisar HTTPS/SSH, la cuenta de GitHub y que no se haya recortado la URL. Si faltan carpetas, se clonó main: git fetch origin y git switch develop.',
   notes:'Muestre la URL del repositorio. El clone debe funcionar hoy (compruebe antes que el contenido esté en la rama que se clona). Use el botón Copiar si alguien quiere guardar el comando.'},
  conda:{min:7,title:'Miniconda',kick:'Parte B · Entorno Python',badge:'entorno env-ia-mlops · borrador',
   why:'Hoy solo se comprueba que Conda responde. El entorno del curso se llamará env-ia-mlops; su archivo es un borrador sin probar en Windows.',

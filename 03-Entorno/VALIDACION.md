@@ -51,6 +51,30 @@ python 3.11.18
 HUMO OK
 ```
 
+## Verificación para S1 (09/11/2026, Linux)
+Entorno creado **desde cero** con `environment.yml` (conda 26.9.4, solo conda-forge; de 49 a 82 s en cuatro creaciones), sin instalar nada más.
+Todo lo de esta tabla se ejecutó de verdad; las salidas que muestran las diapositivas son las capturadas en esa ejecución (`01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/salidas-reales.json`).
+
+| Qué | Resultado | Cómo repetirla |
+|---|---|---|
+| Versiones instaladas frente a las fijadas | 23 de 23 | `python 03-Entorno/conda/verificar_s1.py` |
+| Prueba de humo | `HUMO OK` | `python 03-Entorno/conda/prueba_de_humo.py` |
+| Pruebas del proyecto base, sin `pip install` | 30 passed, 4 deselected (rápidas) · 34 passed (completas, unos 50 s) | desde `04-Proyecto-Base`: `python -m pytest -q -m "not lento"` · `python -m pytest -q` |
+| Verificador completo | `LISTO PARA S1` (14 OK, 0 AVISO, 0 FALLA), unos 17 s con pruebas | `python 03-Entorno/conda/verificar_s1.py --con-pruebas --informe` |
+| Pruebas del verificador | 27 correctas | `python -m pytest 03-Entorno/conda/pruebas -q` |
+| Contenido de las diapositivas «Tu equipo listo para S1» | 26 pruebas correctas (comandos, rutas, cifras frente a las salidas reales, sin el nombre interno prohibido) | `python -m pytest 01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/pruebas -q` |
+| Diseño de las diapositivas | 27 diapositivas sin desbordes en 3 tamaños (1280×766, 1024×640, 800×600); copiar, copiar todo, «hecho», lista y teclado | `python 01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/comprobar_diseno.py` (necesita Playwright y Chrome) |
+| `git clone --branch develop` contra GitHub | trae `develop` con las carpetas del curso (clon superficial) | `git clone --branch develop --depth 1 URL` |
+| Cuaderno de prueba | `NOTEBOOK OK` con `jupyter nbconvert` | ver la guía interactiva, paso «Abre el cuaderno de prueba» |
+
+**Qué encontraron estas pruebas (y qué se hizo):**
+1. `git clone` a secas deja en `main`, que está casi vacía → los comandos llevan `--branch develop` (diapositiva 19 de S0, guía interactiva, guía paso a paso, diapositivas y guía rápida).
+2. `pytest` no mostraba la línea «30 passed» porque `pyproject.toml` ya llevaba `-q` y el comando del alumno añadía otro → se quitó `addopts = "-q"` de `04-Proyecto-Base/pyproject.toml`.
+3. `conda env update --prune` **repone un paquete que falta** (se quitó `jupytext` y lo repuso) pero **no devuelve a su versión** uno cambiado con `pip` (`requests` 2.31.0 siguió igual). Lo que sí lo arregla es `conda install --force-reinstall requests=2.34.2` (probado con `-c conda-forge`). El verificador ya propone esa línea.
+4. El verificador daba un falso «puerto 5000 ocupado» justo después de cerrar `mlflow ui` (probaba con `bind`, y el puerto queda en `TIME_WAIT`) → ahora comprueba si algo escucha. Prueba de regresión incluida.
+5. **Sin resolver:** `pip check` en el entorno recién creado avisa de que `databricks-sdk 0.73.0` (dependencia de `mlflow`) pide `protobuf<7` y hay `protobuf 7.35.1`. No afecta a las pruebas ni a MLflow en S1; si se quiere evitar el aviso, habría que fijar `protobuf` en `environment.yml` y repetir esta validación.
+6. **Aviso para S3 y S4:** `duckdb` y `sqlglot` no están en `environment.yml`; el caso de referencia los pide en su propio `requirements-dev.txt` (simulación de BigQuery en las pruebas).
+
 ## Lo que NO se validó
 - **Windows real**, Windows PowerShell 5.1 y el `winget` real: los identificadores de paquete (`Git.Git`, `Anaconda.Miniconda3`, `DBBrowserForSQLite.DBBrowserForSQLite`,
   `Google.CloudSDK`, `Microsoft.VisualStudioCode`) y los de las extensiones de VS Code son de memoria.
@@ -58,4 +82,5 @@ HUMO OK
 - macOS: no resuelve con estas versiones (no es objetivo del curso).
 - Limitaciones de Wine: su `where.exe` no funciona, su `&&` falla y su `set /p` lee toda la entrada de una vez; se usaron sustitutos para probar la lógica.
 - Codespace del curso, `kind` y `kubectl`: pendientes.
+- De las diapositivas «Tu equipo listo para S1»: `winget`, «Anaconda Prompt», `code`, `Get-FileHash` y los clics en VS Code y en el navegador (Windows real); los tiempos son de Linux con buena conexión.
 - Google Cloud (autenticación, BigQuery, Cloud Run): no se probó contra la nube real.

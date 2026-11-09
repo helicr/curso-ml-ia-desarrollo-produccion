@@ -34,11 +34,11 @@ powershell -ExecutionPolicy Bypass -File .\instalar_entorno.ps1 -Verificar
 4. Cierra y abre la terminal antes de verificar, para que el sistema reconozca lo recién instalado.
 5. Clona el repositorio y ábrelo:
 ```text
-git clone https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git
+git clone --branch develop https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git
 cd curso-ml-ia-desarrollo-produccion
 code .
 ```
-Nota: hasta fusionar `develop` en `main`, el contenido está en la rama `develop`.
+Nota: hasta fusionar `develop` en `main`, el contenido está en la rama `develop`; por eso el comando lleva `--branch develop` (un `git clone` a secas te deja en `main`, casi vacía). Si ya clonaste, usa `git fetch origin` y `git switch develop`.
 6. **Términos de servicio de conda.** El Miniconda de Anaconda se niega a crear entornos hasta aceptar los términos de sus canales por defecto
    (`CondaToSNonInteractiveError`), aunque el entorno use solo conda-forge. Configuración que lo evita (probada en Linux):
 ```text

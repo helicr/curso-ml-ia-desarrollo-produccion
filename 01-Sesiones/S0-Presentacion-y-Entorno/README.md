@@ -20,5 +20,6 @@ Entorno comprobado antes de S1.
 - `guion.md`: guion con tiempos por diapositiva.
 - `checklist.md`: diagnóstico de 12 comprobaciones.
 - Instalación previa (solo Windows): `03-Entorno/guia-instalacion/index.html` y `03-Entorno/scripts/instalar_entorno.ps1`.
+- Equipo listo para S1, para copiar y pegar: `slides/instalacion/index.html` (27 diapositivas: instalación en orden, entorno desde `environment.yml`, pruebas y verificador, con las salidas reales) y su versión en texto `practica/guia-rapida-entorno-s0-s1.md`. Se generan desde `slides/instalacion/contenido.py` con `generar.py`; `capturar.py` renueva las salidas reales y `comprobar_diseno.py` revisa el diseño.
 
 Laboratorio y materiales completos de las demás sesiones: pendientes de implementación y validación.

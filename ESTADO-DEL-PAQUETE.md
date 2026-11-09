@@ -34,5 +34,7 @@ y corrigieron dos errores, pero no sustituyen una prueba en un equipo limpio.
 El entorno `env-ia-mlops` (`03-Entorno/conda/environment.yml`) se creó con Miniconda real en Linux y pasó su prueba de humo (`HUMO OK`); para
 Windows solo se comprobó que resuelve. Ver `03-Entorno/VALIDACION.md`.
 
+Para dejar el equipo listo para S1 hay unas diapositivas de copiar y pegar (`01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/`), una guía rápida en texto (`practica/guia-rapida-entorno-s0-s1.md`) y un verificador (`03-Entorno/conda/verificar_s1.py`). Los comandos de Python, conda, pytest, SQLite y MLflow se ejecutaron en Linux en un entorno creado desde cero y las diapositivas muestran esas salidas reales; **nada de eso se ejecutó en Windows real**. El detalle, los hallazgos (clonado de `develop`, resumen de `pytest`, `conda env update` frente a `pip`, aviso de `protobuf` sin resolver) y cómo repetirlo están en `03-Entorno/VALIDACION.md`.
+
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.

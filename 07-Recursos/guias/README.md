@@ -16,6 +16,7 @@ Los comandos se escriben para CMD y PowerShell (los dos valen salvo que se diga)
 | [Git y ramas](git-y-ramas.md) | S0 y todas las entregas | Comandos ejecutados con Git 2.43 en Linux contra un remoto local. Sin probar en Windows ni con autenticación de GitHub |
 | [Visual Studio Code](vscode.md) | S0 y todas | **Sin probar con VS Code real**: revisar menús y atajos antes de entregarla |
 | [SQLite](sqlite.md) | S0, S1 (y S3) | Consultas y comandos ejecutados contra la base real del caso. DB Browser for SQLite sin probar |
+| [Guía rápida del entorno (S0 → S1)](../../01-Sesiones/S0-Presentacion-y-Entorno/practica/guia-rapida-entorno-s0-s1.md) | S0 y S1 | Instalación en orden, entorno desde `environment.yml`, pruebas y verificador. Comandos de Python, conda, pytest, SQLite y MLflow ejecutados en Linux en un entorno creado desde cero, con sus salidas reales. Windows (winget, Anaconda Prompt, VS Code) sin probar. Versión en diapositivas: `01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/index.html` |
 
 ## Pendientes, por orden de necesidad
 Prioridad **A**: la sesión no se puede dar bien sin ella. **B**: ayuda mucho. **C**: opcional.
