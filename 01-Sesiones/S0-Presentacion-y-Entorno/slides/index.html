@@ -334,6 +334,20 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 .ldetail{min-height:230px}
 .slide.active .st{animation-duration:.7s}
 
+/* ---------- Niveles de madurez ---------- */
+.lvls{display:flex;flex-direction:column;gap:8px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;padding:10px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));transition:.25s;position:relative}
+.lvl:nth-child(2){margin-left:22px}.lvl:nth-child(3){margin-left:44px}
+.lvl .lv{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:19px;background:var(--panel2)}
+.lvl b{display:block;font-size:19px}.lvl small{display:block;color:var(--muted);font-size:14px}
+.lvl:hover{border-color:var(--blue)}
+.lvl.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.lvl.sel .lv{background:var(--blue);color:#031a33}
+#lvdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#lvdet p{font-size:17px;color:var(--text)}
+#lvdet .risk{color:var(--warn);font-size:16px;margin-top:6px}
+
 /* ---------- Ajustes de espacio ---------- */
 .cover .sub{font-size:24px;margin-bottom:18px}
 .inst{margin:0 0 16px}
@@ -470,27 +484,28 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   </div>
 </section>
 
-<!-- 5 · EVIDENCIA -->
-<section class="slide" data-part="A" data-min="2" data-title="Usar IA no es escalarla" data-enter="counters"
- data-notes="McKinsey (25/08/2026): 44 % declara escalado de IA a nivel empresa y 37 % algún impacto positivo en EBIT; 1 719 participantes en 97 países, trabajo de campo 4/05–8/06/2026, ponderado por PIB. Son indicadores de adopción y valor, no una tasa de modelos que llegan a producción. Sculley (2015): el código del modelo es una fracción pequeña del sistema.">
-  <p class="kick st">Parte A · Evidencia reciente · 2026</p>
-  <h1 class="st" style="--d:1">Usar IA no es escalarla ni capturar valor</h1>
-  <div class="grid2">
-    <div class="st" style="--d:2">
-      <div class="stat"><span class="big"><span class="cnt" data-to="44">0</span> %</span><p>declara que su organización está <b>escalando IA</b> en toda la empresa.</p></div>
-      <div class="meter"><i data-w="44"></i></div>
-      <div class="stat"><span class="big"><span class="cnt" data-to="37">0</span> %</span><p>atribuye a la IA <b>algún impacto positivo</b> en el EBIT.</p></div>
-      <div class="meter"><i data-w="37"></i></div>
-      <p class="small">McKinsey (2026), <i>The state of AI</i>. 1 719 participantes, 97 países. Son indicadores distintos y no suman 100 %: miden adopción y valor, no una tasa de éxito de modelos de ML.</p>
-    </div>
-    <div class="st" style="--d:3">
+<!-- 5 · EL MODELO ES LA PARTE PEQUEÑA -->
+<section class="slide" data-part="A" data-min="2" data-title="El modelo es la parte pequeña" data-enter="evidence"
+ data-notes="Idea central: entrenar el modelo es una fracción del trabajo. Sculley et al. (2015): el código del modelo es una parte pequeña de un sistema de ML real, rodeado de datos, configuración, verificación, supervisión y servicio. Anaconda (2020, 2 360 personas, más de 100 países): el 45 % del tiempo se va en cargar y limpiar datos; es un dato de 2020, preséntelo como contexto histórico. Google Cloud define tres niveles de madurez de MLOps: 0 manual, 1 automatización del pipeline, 2 CI/CD; las fuentes difieren en algunos detalles del nivel 1, así que no entre en ellos. Haga clic en cada nivel y señale en qué sesión lo practicamos.">
+  <p class="kick st">Parte A · Por qué MLOps</p>
+  <h1 class="st" style="--d:1">El modelo es la parte pequeña del sistema</h1>
+  <div class="grid2" style="grid-template-columns:1fr 1.05fr">
+    <div class="col st" style="--d:2">
       <div class="sysbox">
         <span class="lab">Sistema de ML real</span>
         <div class="cell">Datos</div><div class="cell">Configuración</div><div class="cell">Verificación</div>
         <div class="cell">Infraestructura</div><div class="cell core">Código del modelo</div><div class="cell">Supervisión</div>
         <div class="cell" style="grid-column:2">Servicio</div>
       </div>
-      <p class="callout" style="margin-top:16px;font-size:18px">El modelo es una fracción del sistema (Sculley et al., 2015). Hay que integrarlo, probarlo, observarlo y mantenerlo: ese es el puente que practicaremos.</p>
+      <div class="stat" style="margin-top:6px"><span class="big" style="font-size:60px"><span class="cnt" data-to="45">0</span> %</span><p style="font-size:20px">del tiempo se va en <b>cargar y limpiar datos</b>, antes de entrenar.</p></div>
+      <div class="meter" style="margin:0"><i data-w="45"></i></div>
+      <p class="small">Sculley et al. (2015), <i>Hidden Technical Debt in ML Systems</i>. Anaconda (2020), 2 360 personas de más de 100 países: dato histórico de ciencia de datos.</p>
+    </div>
+    <div class="st" style="--d:3">
+      <p class="small" style="margin-bottom:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold)">Madurez de MLOps · Google Cloud</p>
+      <div class="lvls" id="lvls"></div>
+      <div class="card" id="lvdet" style="margin-top:10px;min-height:0;padding:16px 22px"></div>
+      <p class="small" style="margin-top:8px">Fuente: Google Cloud, <i>MLOps: continuous delivery and automation pipelines in machine learning</i>. Haz clic en cada nivel.</p>
     </div>
   </div>
 </section>
@@ -986,6 +1001,23 @@ hooks.enter.counters=hooks.enter.eval=hooks.enter.rhythm=function(s){
   $$('.meter i',s).forEach(i=>{i.style.width='0';later(()=>{i.style.width=i.dataset.w+'%'},250)});
   $$('#evstack i',s).forEach((i,k)=>{i.style.transform='scaleX(0)';later(()=>{i.style.transform='scaleX(1)'},300+k*250)});
 };
+
+/* niveles de madurez de MLOps */
+(function(){
+  const L=[
+   {t:'Nivel 0 · Proceso manual',s:'S1–S2',d:'El modelo se entrena y se entrega a mano, casi siempre desde un notebook. Scripts y pasos sueltos, sin pruebas ni registro.',r:'Riesgo: el modelo se degrada sin que nadie lo note y es difícil reproducirlo.'},
+   {t:'Nivel 1 · Automatizar el pipeline',s:'S4',d:'El entrenamiento se automatiza como un pipeline que se puede reejecutar con datos nuevos, separado de la experimentación.',r:'Riesgo: el pipeline cambia sin pruebas ni revisión.'},
+   {t:'Nivel 2 · CI/CD',s:'S4–S5',d:'Pruebas, construcción y despliegue del pipeline y del modelo son automáticos, con monitoreo, versiones y rollback.',r:'Es el objetivo del curso: operar el modelo, no solo entrenarlo.'}
+  ];
+  const box=$('#lvls'),det=$('#lvdet'); let sel=0;
+  box.innerHTML=L.map((l,i)=>`<button class="lvl" data-i="${i}"><span class="lv">${i}</span><span><b>${esc(l.t)}</b><small>En el curso: ${esc(l.s)}</small></span></button>`).join('');
+  function render(){
+    $$('.lvl',box).forEach((b,i)=>b.classList.toggle('sel',i===sel));
+    const l=L[sel]; det.innerHTML=`<h3 class="gold">${esc(l.t)} <span class="tag core">${esc(l.s)}</span></h3><p>${esc(l.d)}</p><p class="risk">${esc(l.r)}</p>`;
+  }
+  box.addEventListener('click',e=>{const b=e.target.closest('.lvl');if(!b)return;sel=+b.dataset.i;render()});
+  hooks.enter.evidence=function(s){hooks.enter.counters(s);sel=0;render()}; render();
+})();
 
 /* encuesta */
 (function(){

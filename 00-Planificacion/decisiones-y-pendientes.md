@@ -37,7 +37,8 @@
 8. Validar cloud, accesos, costes y limpieza.
 9. **Fusionar `develop` en `main` antes de S0** y subir los commits a GitHub (requiere instalar el Claude GitHub App o hacerlo desde tu PC).
 10. Probar la presentación de S0 en Google Meet, otros navegadores y proyector (ya probada en Chromium).
-11. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
+11. Cifras de MLOps para la slide 5: no se pudieron verificar fuentes primarias (arxiv.org y datatalks.club fuera de la red de la sesión). Candidatas a comprobar: Naming the Pain in ML-Enabled Systems Engineering (arXiv 2406.04359, menos de 40 % de los modelos en producción se monitorean), encuesta DataTalks.Club 2025–2026 (30 % no monitorea; 7 % con MLOps avanzado; muestra autoseleccionada) y Gartner (54 % de modelos pasan de piloto a producción). Hasta verificarlas no están en las slides.
+11b. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
 12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
 13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
 14. Módulos opcionales: `05-Modulo-Redes-Neuronales` y `06-Modulo-LLMs` en la raíz son su ubicación definitiva (resuelto); falta el contenido de ambos.

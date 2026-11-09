@@ -10,7 +10,7 @@ Cada diapositiva muestra su tiempo previsto en el índice (tecla O) y la barra i
 | 2 | Pregunta de arranque (3 preguntas; clave B en la 2.ª) | 3 | Contador de respuestas por opción |
 | 3 | Objetivo: núcleo obligatorio frente a opcional | 2 | Aparece paso a paso (→) |
 | 4 | Del notebook al servicio (7 pasos) | 3 | Se revela con → |
-| 5 | Usar IA no es escalarla (McKinsey 2026, Sculley 2015) | 2 | Contadores y barras |
+| 5 | El modelo es la parte pequeña: sistema de ML, 45 % del tiempo en datos y niveles de madurez de MLOps | 2 | Contador; clic en cada nivel |
 | 6 | Programa S0–S5 y tres hilos (MLflow, Actions, local → GCP) | 2 | Clic en cada sesión |
 | 7 | Capas raw → master → fs → ml → … | 3 | Clic o ▶ Recorrer capas |
 | 8 | De local a GCP: equivalencias y estrategia | 2 | Filas con → |
