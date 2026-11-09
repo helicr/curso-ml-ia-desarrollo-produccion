@@ -19,5 +19,6 @@ Entorno comprobado antes de S1.
 - `slides/anexos/index.html`: material de la edición anterior (anexos A–F de consulta).
 - `guion.md`: guion con tiempos por diapositiva.
 - `checklist.md`: diagnóstico de 12 comprobaciones.
+- Instalación previa (solo Windows): `03-Entorno/guia-instalacion/index.html` y `03-Entorno/scripts/instalar_entorno.ps1`.
 
 Laboratorio y materiales completos de las demás sesiones: pendientes de implementación y validación.

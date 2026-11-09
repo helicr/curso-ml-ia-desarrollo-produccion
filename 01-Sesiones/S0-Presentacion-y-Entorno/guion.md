@@ -57,4 +57,5 @@ y fuentes) siguen siendo de consulta. El resto de ese archivo está desactualiza
 - Fusionar `develop` en `main` (hoy `main` está vacía) o indicar la rama a clonar.
 - Publicar `environment.yml` y el Codespace del curso, o ajustar las slides 17, 22 y 24.
 - Revisar precios y cifras externas (sección de fuentes).
-- Enviar la guía `03-Entorno/guias/preparacion-paso-a-paso.md` antes de S0, para que la Parte B sea de comprobación y no de instalación.
+- Enviar la guía interactiva `03-Entorno/guia-instalacion/index.html` (solo Windows) antes de S0, para que la Parte B sea de comprobación y no de instalación.
+- Probar `instalar_entorno.ps1` en un equipo Windows limpio: no se ha probado.

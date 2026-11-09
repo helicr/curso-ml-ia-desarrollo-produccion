@@ -1,5 +1,7 @@
 # Entorno del curso
 
+Solo Windows 10 (1809 o superior) y Windows 11. Guía interactiva y script: `03-Entorno/guia-instalacion/` y `03-Entorno/scripts/instalar_entorno.ps1` (sin probar).
+
 ## En tu equipo (obligatorio)
 - Git y cuenta GitHub.
 - VS Code: Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers.

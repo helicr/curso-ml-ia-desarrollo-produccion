@@ -362,6 +362,14 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 .cmdgrid .card{padding:16px 22px}
 .sim{margin-top:6px}
 
+/* ---------- Herramientas: más compactas ---------- */
+#toolgrid{gap:10px}
+#toolgrid .tool{padding:12px 18px}
+#toolgrid .tool b{font-size:20px;margin-bottom:2px}
+#toolgrid .tool p{font-size:16px;line-height:1.4}
+#toolgrid .tool .tag{margin-top:6px}
+.filters{margin-bottom:10px}
+
 @media (max-width:760px){
   #clockref,#bfull,#bar .part{display:none}
   #bar{gap:2px;padding:0 6px}#count{white-space:nowrap}
@@ -662,7 +670,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 
 <!-- 15 · HERRAMIENTAS -->
 <section class="slide" data-part="B" data-min="7" data-title="Herramientas" data-enter="tools"
- data-notes="Pida que marquen en el chat lo que ya tienen. En el equipo: Git, VS Code con sus seis extensiones, Miniconda, visor SQLite y gcloud (o Cloud Shell). Docker no hace falta en local: se usa en Codespaces. Cuenta de GitHub y proyecto de Google Cloud, además del software.">
+ data-notes="Pida que marquen en el chat lo que ya tienen. En el equipo: Git, VS Code con sus seis extensiones, Miniconda, visor SQLite y gcloud (o Cloud Shell). Docker no hace falta en local: se usa en Codespaces. Cuenta de GitHub y proyecto de Google Cloud, además del software. La guía de instalación para Windows y el script están en 03-Entorno: pídales que los ejecuten antes de S0 para que la Parte B sea de comprobación.">
   <p class="kick st">Parte B · Kit base</p>
   <h1 class="st" style="--d:1">Herramientas que hay que tener listas</h1>
   <div class="filters st" style="--d:2" id="filters"><button class="fchip on" data-f="all">Todo</button><button class="fchip" data-f="local">En tu equipo</button><button class="fchip" data-f="cs">En Codespaces</button><button class="fchip" data-f="cloud">En la nube</button></div>
@@ -674,6 +682,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
     <div class="tool" data-w="cs"><b>Docker (en Codespaces)</b><p>Construye y ejecuta la imagen dentro del Codespace. Docker Desktop local es opcional.</p><span class="tag core">Sin instalar</span></div>
     <div class="tool" data-w="local cloud"><b>Google Cloud CLI</b><p>Autenticación y proyecto. En S0 solo se comprueba el acceso. Alternativa: Cloud Shell.</p><span class="tag core">Obligatorio</span></div>
   </div>
+  <p class="callout st" style="--d:4;margin-top:12px;font-size:17px;padding:10px 16px">Instálalo <b>antes de S0</b> con la <b>guía de instalación para Windows</b> (<code>03-Entorno/guia-instalacion</code>). En clase solo verificamos: <code>instalar_entorno.cmd verificar</code> o <code>instalar_entorno.ps1 -Verificar</code>.</p>
 </section>
 
 <!-- Pasos con comandos (generados) -->

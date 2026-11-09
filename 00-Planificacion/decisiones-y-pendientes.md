@@ -24,6 +24,8 @@
   S3 migra a GCP (Cloud Storage, BigQuery, Secret Manager, Artifact Registry, Cloud Run). El laboratorio de Kubernetes pasa a «si hay tiempo».
 - **MLflow en el núcleo, versión ligera:** seguimiento en S1, carga del modelo y firma como contrato en S2,
   registro desde el workflow en S4, registro de modelos con alias y rollback en S5. Backend SQLite y artefactos en carpeta local.
+- **Instalación solo para Windows:** guía interactiva (`03-Entorno/guia-instalacion/`) con comandos para copiar y dos scripts equivalentes, en CMD y en PowerShell
+  (`03-Entorno/scripts/instalar_entorno.cmd` y `.ps1`), que instalan con winget y verifican. Ruta sin instalación (Codespaces y Cloud Shell) para equipos sin permisos.
 - **S0:** Parte A 25 min, pausa 15, Parte B 70, cierre 10 (las slides son la referencia).
 
 ## Pendiente
@@ -38,6 +40,9 @@
 9. **Fusionar `develop` en `main` antes de S0** y subir los commits a GitHub (requiere instalar el Claude GitHub App o hacerlo desde tu PC).
 10. Probar la presentación de S0 en Google Meet, otros navegadores y proyector (ya probada en Chromium).
 11. Cifras de MLOps para la slide 5: no se pudieron verificar fuentes primarias (arxiv.org y datatalks.club fuera de la red de la sesión). Candidatas a comprobar: Naming the Pain in ML-Enabled Systems Engineering (arXiv 2406.04359, menos de 40 % de los modelos en producción se monitorean), encuesta DataTalks.Club 2025–2026 (30 % no monitorea; 7 % con MLOps avanzado; muestra autoseleccionada) y Gartner (54 % de modelos pasan de piloto a producción). Hasta verificarlas no están en las slides.
+11a. Instalación en Windows: la lógica de los dos scripts está probada con un winget falso (`03-Entorno/scripts/pruebas/`: PowerShell 7 en Linux y CMD en Wine); falta probarlos con los comandos de la guía en un equipo Windows limpio (10 y 11); confirmar los identificadores de winget
+    (Git.Git, Microsoft.VisualStudioCode, Anaconda.Miniconda3, DBBrowserForSQLite.DBBrowserForSQLite, Google.CloudSDK), los de las extensiones y la ruta de Miniconda;
+    revisar el enlace de descarga de Miniconda; validar el comportamiento en equipos corporativos con restricciones.
 11b. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
 12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
 13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
