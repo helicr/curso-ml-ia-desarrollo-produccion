@@ -6,3 +6,7 @@
 *.bat text eol=crlf
 # Scripts de shell de las pruebas: LF
 *.sh text eol=lf
+
+# Datos originales de terceros: Git no debe tocar ni un byte (los sha256 de SHA256SUMS deben coincidir tras clonar, también en Windows)
+02-Proyecto-Transversal/datos/** -text
+*.xls binary
