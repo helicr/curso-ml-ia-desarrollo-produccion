@@ -31,9 +31,11 @@
   Pruebas de equivalencia cuaderno = paquete = `.py` de jupytext (tablas y métricas idénticas).
 - **Nombres de los entornos de conda:** `env-ia-mlops` (núcleo obligatorio) y `env-ia-opcional` (red neuronal y LLM, opcional).
 - **S0:** Parte A 25 min, pausa 15, Parte B 70, cierre 10 (las slides son la referencia).
+- **Caso de la tarea (09/11/2026):** los alumnos repiten la receta (RAW → MASTER → FS → ML → entrenamiento, con cuadernos y su traducción a `.py`) sobre **Default of Credit Card Clients** o **Bank Marketing**
+  (UCI, CC BY 4.0). Es el «caso propio» que acompaña a los alumnos de S1 a S5. Olist queda descartado. Detalle en `02-Proyecto-Transversal/enunciado/README.md`.
 
 ## Pendiente
-1. Seleccionar y licenciar dataset y caso definitivo.
+1. ~~Seleccionar y licenciar dataset y caso definitivo.~~ Resuelto el 09/11/2026: caso del instructor = Online Retail II; tarea = Default of Credit Card Clients o Bank Marketing (UCI, CC BY 4.0). Quedan los puntos 11f y 15.
 2. Fijar calendario y fechas; resolver incoherencias del sílabo original.
 3. Elegir versiones y probar instalaciones por sistema operativo (local: Git, VS Code, Miniconda, SQLite, gcloud).
 4. Implementar scripts, entornos, notebooks, API, workflows y pruebas.
@@ -51,12 +53,19 @@
     (b) aceptar los términos (revisar licencia de la organización) o (c) cambiar a Miniforge.
 11d. MLflow 3 + scikit-learn: `log_model` de un `RandomForest` falla por defecto (skops). Elegir qué enseñar en S1: `skops_trusted_types=['sklearn.tree._tree.Tree']`
     o `serialization_format='cloudpickle'`; ambas probadas. Ver `03-Entorno/VALIDACION.md`.
-11f. Dataset de la TAREA: Olist sin licencia confirmada (Kaggle devolvió 404 sin cuenta). Comprobarla con una cuenta o elegir una alternativa de licencia limpia (UCI).
+11f. ~~Dataset de la TAREA: Olist sin licencia confirmada.~~ Resuelto el 09/11/2026: se descarta Olist y la tarea usa Default of Credit Card Clients o Bank Marketing (UCI, CC BY 4.0, leído en las fichas oficiales; ver `02-Proyecto-Transversal/dataset-candidatos.md`).
 11e. Crear y probar `env-ia-mlops` en Windows (hoy solo resuelve con `--dry-run` y se probó en Linux); crear `environment-opcional.yml`.
 11b. MLflow: fijar la versión (las etapas del registro están en desuso a favor de alias; comprobarlo), decidir si reemplaza o convive con `joblib`+JSON, y validarlo en Codespaces y en un workflow.
 12. Migración a GCP: definir el proyecto por alumno o compartido y el control de costes; probar SQLite → Cloud Storage → BigQuery; escribir scripts de exportación, carga y validación (ver `03-Entorno/guias/migracion-on-premise-a-gcp.md`).
 13. Rúbrica y formato de la evaluación final (`08-Evaluacion-Final` está vacío).
 14. Módulos opcionales: `05-Modulo-Redes-Neuronales` y `06-Modulo-LLMs` en la raíz son su ubicación definitiva (resuelto); falta el contenido de ambos.
+15. **Datos de la tarea (bloqueado en el contenedor):** el proxy bloquea `archive.ics.uci.edu`. Falta descargar `default of credit card clients.xls` y `bank-additional.zip`
+    (y, si se quiere, `bank.zip`), anotar tamaño y sha256, perfilar y escribir el script de descarga. Decidir si se incluye una copia en el repositorio (CC BY 4.0 lo permite, con atribución; pesan menos de 6 MB)
+    o si cada alumno la descarga de UCI.
+16. **Base de referencia de la tarea:** no existe. Para cada dataset (o al menos uno) hay que construir y probar RAW → MASTER → FS → ML, un modelo base y las pruebas, como se hizo con Online Retail II,
+    para poder dar un «resultado de referencia» y detectar errores antes que los alumnos.
+17. **Reglas de la tarea:** decidir si el alumno elige uno de los dos datasets o se asigna; fechar los avances; y definir si Bank Marketing se parte por orden de filas (no tiene columna de fecha)
+    y cómo se trata `duration` (no se conoce antes de llamar; ver el enunciado).
 
 ## Evaluación propuesta
 Conservar 20 % conocimiento, 40 % desempeño y 40 % producto por unidad,

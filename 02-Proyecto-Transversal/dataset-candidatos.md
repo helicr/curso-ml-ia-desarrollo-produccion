@@ -8,9 +8,19 @@ Tras permitir `archive.ics.uci.edu` y `www.kaggle.com` en la red del entorno, se
   Descarga directa sin cuenta: 45 622 418 bytes, sha256 `572e3627…8e67bfb`, dos hojas (525 461 y 541 910 filas) del 01/12/2009 al 09/12/2011.
   Perfilado real: 5 942 clientes, 53 628 facturas, 34 335 duplicados exactos, 22,76 % de líneas sin cliente, `Invoice` y `StockCode` con tipos mezclados.
   Se construyeron RAW, MASTER, FS y ML completos (`04-Proyecto-Base/`), con un modelo base de **AUC 0,796 en test**. **Esta es la decisión final del caso transversal.**
-- **Olist (tarea) — SIN CONFIRMAR.** La página de Kaggle respondió 404 a una petición sin cuenta y no se intentó eludir esa protección.
-  La licencia CC BY-NC-SA 4.0 sigue sin confirmarse en la fuente. Hay que comprobarla en Kaggle con una cuenta; si no se confirma, usar una alternativa de licencia limpia.
-- Candidatos de la tarea con licencia verificable en UCI (por comprobar con la misma vía): *Default of Credit Card Clients*, *Bank Marketing*.
+- **Olist (tarea) — DESCARTADO el 09/11/2026.** La página de Kaggle respondió 404 a una petición sin cuenta y no se intentó eludir esa protección.
+  Su licencia (CC BY-NC-SA 4.0 según una fuente secundaria) nunca se confirmó en la fuente, así que no se usa.
+- **Tarea de los alumnos: Default of Credit Card Clients y Bank Marketing (UCI) — LICENCIA VERIFICADA el 09/11/2026.** Decisión de la tarde del 09/11/2026.
+  Ambas fichas oficiales de UCI indican **CC BY 4.0** (se pueden compartir y adaptar con atribución). Se leyeron las fichas (no los archivos: la descarga no se pudo hacer, ver «No verificado»).
+  - *Default of Credit Card Clients* (I-Cheng Yeh; DOI 10.24432/C55S3H; donado el 25/01/2016): 30 000 instancias, 23 variables, sin valores ausentes según la ficha;
+    abril–septiembre de 2005 (Taiwán); objetivo binario de impago del mes siguiente; un archivo, `default of credit card clients.xls` (5,3 MB).
+  - *Bank Marketing* (S. Moro, P. Rita, P. Cortez; DOI 10.24432/C5K306; donado el 13/02/2012): `bank-additional.zip` (434,2 KB) con `bank-additional-full.csv`
+    (41 188 filas, 20 variables de entrada, mayo de 2008 a noviembre de 2010, **ordenado por fecha**) y `bank.zip` (565,5 KB) con `bank-full.csv` (45 211 filas, 17 variables, versión antigua);
+    objetivo `y`: ¿contrata un depósito a plazo? La ficha tiene incoherencias (dice «sin valores ausentes» pero marca `contact`; las categorías de `education` difieren entre la tabla y el texto), así que hay que perfilar.
+  - **Atribución obligatoria** (CC BY 4.0): Yeh, I. (2009). *Default of Credit Card Clients* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C55S3H;
+    Moro, S., Rita, P., & Cortez, P. (2014). *Bank Marketing* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5K306.
+  - **Espejos con licencia distinta:** una copia en Hugging Face del dataset de tarjetas declara CC0; vale la ficha de UCI, como ya pasó con OpenML y Online Retail II.
+  - **No verificado:** descarga, tamaño exacto, sha256, filas reales, valores ausentes, categorías no documentadas ni ningún modelo base. El proxy del entorno bloqueó `archive.ics.uci.edu` (403 en CONNECT) y no se buscó otra vía.
 
 Lo que sigue es el informe original, escrito cuando la red estaba bloqueada.
 
