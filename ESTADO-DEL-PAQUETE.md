@@ -8,7 +8,7 @@ No incluye el PDF original ni las versiones anteriores alternativas.
 Los scripts de instalación, datasets, notebooks, workflows, Codespace y laboratorios no están
 implementados. Los comandos y guías incluidos no se presentan como un instalador.
 
-La presentación principal (`slides/index.html`) se rehízo el 08/11/2026: 26 diapositivas interactivas en un solo archivo
+La presentación principal (`slides/index.html`) se rehízo el 08/11/2026 (26 diapositivas; el 09/11/2026 pasó a 29, ver más abajo): diapositivas interactivas en un solo archivo
 (HTML, CSS y JavaScript propios, sin librerías ni recursos externos) con animaciones, pasos progresivos, encuesta, mapa del curso,
 capas animadas, temporizador de pausa y diagnóstico con informe de incidencias. Las imágenes están en `slides/media/`.
 Funciona sin conexión.
@@ -16,6 +16,12 @@ Funciona sin conexión.
 Comprobado en Chromium (sin conexión): sin errores de consola, 22 interacciones probadas de forma automática, impresión a PDF
 (26 páginas) y las 26 diapositivas revisadas con sus pasos revelados. Falta probarla en la plataforma de la clase (Google Meet),
 en otros navegadores y en el proyector.
+
+El 09/11/2026 se añadieron tres diapositivas a la Parte B para explicar, antes de los pasos de instalación, qué software se necesita en cada sesión y para qué:
+la 15 (matriz herramienta × sesión, con «para qué sirve» y la guía de uso de cada una), la 16 (qué estrena cada sesión y qué debe estar listo antes) y la 18
+(una guía de uso por herramienta). La Parte B sigue sumando 70 min. Comprobado en Chrome sin conexión: 29 diapositivas recorridas con →, sin errores de
+consola ni peticiones externas, barra de tiempo con salto correcto e impresión a PDF de 29 páginas. Las comprobaciones de arriba (PDF de 26 páginas, 22 interacciones)
+corresponden a la versión de 26 diapositivas. Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
 
 `slides/anexos/index.html` conserva la edición anterior (con React y ECharts, licencias en `slides/anexos/licencias/`) solo como
 material de consulta: sus anexos A–F siguen vigentes; el resto está desactualizado.

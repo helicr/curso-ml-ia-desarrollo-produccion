@@ -29,22 +29,29 @@ Cada paso: para qué, qué ejecutar, qué esperar y qué revisar si falla. En la
 | Slide | Tema | Min |
 |---|---|---|
 | 13 | Preparación del entorno: barra de presupuesto de tiempo (clic para saltar) | 2 |
-| 14 | Dónde corre cada pieza: equipo, Codespaces, Actions, GCP | 4 |
-| 15 | Herramientas (filtros: equipo / Codespaces / nube) | 7 |
-| 16 | Clonar y abrir | 5 |
-| 17 | Miniconda (solo comprobar; no crear entorno aún) | 7 |
-| 18 | VS Code y notebooks (mismo intérprete en script y notebook) | 6 |
-| 19 | SQLite: comprobar ejecución | 6 |
-| 20 | Docker en Codespaces | 8 |
-| 21 | Google Cloud: autenticar, no gastar | 7 |
-| 22 | Codespaces: docker, kind, kubectl | 6 |
-| 23 | Ruta opcional red neuronal / LLM | 2 |
-| 24 | Diagnóstico interactivo (12 comprobaciones; informe de incidencias) | 10 |
+| 14 | Dónde corre cada pieza: equipo, Codespaces, Actions, GCP | 3 |
+| 15 | **Software por sesión: qué y para qué.** Matriz herramienta × sesión; clic en una fila: para qué sirve, qué se hace con ella en cada sesión y si ya hay guía de uso | 3 |
+| 16 | **Qué se estrena en cada sesión y qué debe estar listo antes.** Clic en S0–S5 | 2 |
+| 17 | Herramientas: el kit base de hoy (filtros: equipo / Codespaces / nube) | 3 |
+| 18 | **Una guía de uso por herramienta:** instalar, aprender lo mínimo, comprobar; qué guías hay y cuáles llegan después | 1 |
+| 19 | Clonar y abrir | 5 |
+| 20 | Miniconda (solo comprobar; no crear entorno aún) | 7 |
+| 21 | VS Code y notebooks (mismo intérprete en script y notebook) | 6 |
+| 22 | SQLite: comprobar ejecución | 6 |
+| 23 | Docker en Codespaces | 8 |
+| 24 | Google Cloud: autenticar, no gastar | 7 |
+| 25 | Codespaces: docker, kind, kubectl | 6 |
+| 26 | Ruta opcional red neuronal / LLM | 1 |
+| 27 | Diagnóstico interactivo (12 comprobaciones; informe de incidencias) | 10 |
 
-La slide 23 es opcional: dedicarle 1–2 min. El diagnóstico se guarda en el navegador de cada participante.
+Las slides 15, 16 y 18 se añadieron el 09/11/2026 para explicar **qué software se necesita en cada sesión y para qué** antes de pasar a los
+pasos de instalación y comprobación. Para hacer sitio se recortó la Parte B sin cambiar su total (70 min): Dónde corre cada pieza 4 → 3,
+Herramientas 7 → 3 y Ruta opcional 2 → 1. Los pasos con comandos (19–25) conservan sus tiempos.
+La slide 26 es opcional: dedicarle 1 min (hasta 2 si sobra tiempo). El diagnóstico se guarda en el navegador de cada participante.
+Los datos de las slides 15 y 16 están en el propio `index.html` (constantes `SOFT` y `SW_SES`); las marcas siguen `00-Planificacion/programa.md` y son orientativas.
 
 ## Cierre · 10 min
-Slides 25–26: completar diagnóstico, comunicar bloqueos, leer el caso cuando se publique, no improvisar el entorno.
+Slides 28–29: completar diagnóstico, comunicar bloqueos, leer el caso cuando se publique, no improvisar el entorno.
 
 ## Consulta (fuera del cómputo)
 `slides/anexos/index.html`: material de la edición anterior; los anexos A–F (estadísticas, costes, calculadora de Cloud Run
@@ -55,7 +62,7 @@ y fuentes) siguen siendo de consulta. El resto de ese archivo está desactualiza
 
 ## Antes de impartir
 - Fusionar `develop` en `main` (hoy `main` está vacía) o indicar la rama a clonar.
-- Publicar `environment.yml` y el Codespace del curso, o ajustar las slides 17, 22 y 24.
+- Publicar `environment.yml` y el Codespace del curso, o ajustar las slides 20, 25 y 27.
 - Revisar precios y cifras externas (sección de fuentes).
 - Enviar la guía interactiva `03-Entorno/guia-instalacion/index.html` (solo Windows) antes de S0, para que la Parte B sea de comprobación y no de instalación.
 - Probar `instalar_entorno.ps1` en un equipo Windows limpio: no se ha probado.

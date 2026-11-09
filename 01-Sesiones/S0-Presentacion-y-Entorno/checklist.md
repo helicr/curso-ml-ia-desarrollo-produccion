@@ -1,6 +1,6 @@
 # Checklist S0 (12 comprobaciones)
 
-Coincide con la diapositiva 24. Marcar y anotar el resultado obtenido.
+Coincide con la diapositiva 27. Marcar y anotar el resultado obtenido.
 
 - [ ] 1. Git instalado y cuenta en GitHub: `git --version`, autenticación lista.
 - [ ] 2. VS Code y extensiones: Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers.

@@ -370,6 +370,59 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 #toolgrid .tool .tag{margin-top:6px}
 .filters{margin-bottom:10px}
 
+/* ---------- Software por sesión ---------- */
+.budget button.nar{writing-mode:vertical-rl;transform:rotate(180deg);padding:2px 0}
+.budget button.nar:hover{transform:rotate(180deg)}
+.swwrap{display:grid;grid-template-columns:604px 1fr;gap:24px;align-items:start}
+.swm{display:flex;flex-direction:column;gap:2px}
+.swh,.swr{display:grid;grid-template-columns:212px repeat(7,1fr);align-items:center}
+.swh{font-size:14px;font-weight:800;letter-spacing:.08em;color:var(--gold);text-align:center;padding-bottom:3px}
+.swh span:first-child{text-align:left;padding-left:10px;color:var(--muted);letter-spacing:.14em;font-weight:700}
+.swr{height:34px;border-radius:10px;border:1px solid transparent;text-align:left;font-size:17px;font-weight:600;transition:.2s;width:100%}
+.swr:nth-child(even){background:rgba(255,255,255,.035)}
+.swr:hover{background:rgba(255,255,255,.09)}
+.swr.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.swr .nm{padding-left:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.swr .c{display:grid;place-items:center}
+.mk{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;font-weight:800;line-height:1}
+.mk.i{background:var(--gold);color:#2b2100}
+.mk.c{border:2px solid var(--gold);color:var(--gold)}
+.mk.u{background:var(--blue)}
+.mk.s{border:2px solid var(--blue);background:linear-gradient(90deg,var(--blue) 50%,transparent 50%)}
+.mk.o{border:2px dashed var(--opt)}
+.swlegend{display:flex;flex-wrap:wrap;gap:3px 16px;margin-top:8px;padding-left:10px;font-size:14px;color:var(--muted)}
+.swlegend>span{display:inline-flex;align-items:center;gap:6px}
+#swdet{padding:16px 22px;min-height:432px}
+#swdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:24px;margin-bottom:6px}
+#swdet p.para{font-size:18px;line-height:1.4}
+#swdet .where{font-size:15px;color:var(--muted);margin:6px 0 2px}
+.uso{list-style:none;margin-top:8px}
+.uso li{display:grid;grid-template-columns:68px 1fr;gap:8px;font-size:16.5px;line-height:1.35;margin-bottom:5px}
+.uso li b{color:var(--gold)}
+.gline{margin-top:8px;font-size:15.5px;color:var(--muted);border-top:1px solid rgba(255,255,255,.14);padding-top:8px}
+.sx3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:22px}
+.sx3 h3{font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.sx3 ul{list-style:none}
+.sx3 li{font-size:20px;line-height:1.3;margin-bottom:9px}
+.sx3 li small{display:block;font-size:16px;color:var(--muted)}
+.sx3 p{font-size:20px;line-height:1.4}
+.sx3 .nota{margin-top:12px;font-size:17px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip2{padding:6px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);font-size:17px;background:rgba(255,255,255,.06)}
+.gflow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:14px}
+.gflow .card{padding:14px 18px}
+.gflow .card b{display:block;font-size:20px;margin-bottom:3px}
+.gflow .card b span{color:var(--gold);margin-right:8px}
+.gflow .card p{font-size:16.5px;line-height:1.35;color:var(--muted)}
+.gguides{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.gg{padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035))}
+.gg b{display:block;font-size:19px;margin-bottom:3px}
+.gg p{font-size:15.5px;line-height:1.35;color:var(--muted);margin-bottom:8px}
+.gpend{padding:12px 20px}
+.gpend ul{list-style:none;columns:2;column-gap:26px}
+.gpend li{font-size:16px;line-height:1.35;margin-bottom:5px;break-inside:avoid}
+.gpend li b{color:var(--opt)}
+
 @media (max-width:760px){
   #clockref,#bfull,#bar .part{display:none}
   #bar{gap:2px;padding:0 6px}#count{white-space:nowrap}
@@ -655,7 +708,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 </section>
 
 <!-- 14 · DÓNDE CORRE CADA PIEZA -->
-<section class="slide" data-part="B" data-min="4" data-title="Dónde corre cada pieza" data-enter="zones"
+<section class="slide" data-part="B" data-min="3" data-title="Dónde corre cada pieza" data-enter="zones"
  data-notes="Local para datos y pruebas; Codespaces para Docker y Kubernetes (no se instalan en el portátil); GitHub Actions para orquestar pipelines; GCP para el despliegue. Haga clic en cada zona. Respaldo compartido para el LLM opcional. Sin GPU propia.">
   <p class="kick st">Parte B · Dónde corre cada pieza</p>
   <h1 class="st" style="--d:1">Tu equipo · Codespaces · Actions · GCP</h1>
@@ -668,8 +721,31 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   <div class="card st" style="--d:3" id="zdet"></div>
 </section>
 
-<!-- 15 · HERRAMIENTAS -->
-<section class="slide" data-part="B" data-min="7" data-title="Herramientas" data-enter="tools"
+<!-- 15 · SOFTWARE POR SESIÓN (matriz) -->
+<section class="slide" data-part="B" data-min="3" data-title="Software por sesión: qué y para qué" data-enter="swm"
+ data-notes="Esta diapositiva responde a «¿para qué instalo todo esto?». Lea la leyenda y haga clic en cada fila: a la derecha aparece para qué sirve la herramienta y qué se hace con ella en cada sesión. Tres ideas: (1) casi todo lo que se instala en el equipo se instala hoy; (2) Docker, kind y kubectl no se instalan en el portátil, se usan en Codespaces; (3) MLflow y FastAPI no se instalan aparte, vienen en el entorno env-ia-mlops. Las marcas siguen el programa y son orientativas. Lo opcional (PyTorch y LLM) no se instala hoy.">
+  <p class="kick st">Parte B · Qué vamos a necesitar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:12px">Qué software, en qué sesión y para qué</h1>
+  <div class="swwrap st" style="--d:2">
+    <div>
+      <div class="swm" id="swm"></div>
+      <div class="swlegend" id="swlegend"></div>
+    </div>
+    <div class="card" id="swdet"></div>
+  </div>
+</section>
+
+<!-- 16 · QUÉ SE ESTRENA EN CADA SESIÓN -->
+<section class="slide" data-part="B" data-min="2" data-title="Qué se estrena en cada sesión" data-enter="sws"
+ data-notes="Haga clic en cada sesión. Idea clave: después de hoy casi nada se instala; lo que cambia es dónde se trabaja (portátil, Codespaces, nube). Cada sesión indica qué debe funcionar antes de empezar: es la base del diagnóstico final y de lo que se les pedirá en cada «Antes de S...». S4 y S5 no estrenan herramientas: profundizan en lo ya instalado.">
+  <p class="kick st">Parte B · Qué vamos a necesitar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:10px">Qué estrena cada sesión y qué debe estar listo antes</h1>
+  <div class="tl st" style="--d:2" id="tl2"></div>
+  <div class="card st" style="--d:3" id="sx"></div>
+</section>
+
+<!-- 17 · HERRAMIENTAS -->
+<section class="slide" data-part="B" data-min="3" data-title="Herramientas" data-enter="tools"
  data-notes="Pida que marquen en el chat lo que ya tienen. En el equipo: Git, VS Code con sus seis extensiones, Miniconda, visor SQLite y gcloud (o Cloud Shell). Docker no hace falta en local: se usa en Codespaces. Cuenta de GitHub y proyecto de Google Cloud, además del software. La guía de instalación para Windows y el script están en 03-Entorno: pídales que los ejecuten antes de S0 para que la Parte B sea de comprobación.">
   <p class="kick st">Parte B · Kit base</p>
   <h1 class="st" style="--d:1">Herramientas que hay que tener listas</h1>
@@ -685,6 +761,33 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   <p class="callout st" style="--d:4;margin-top:12px;font-size:17px;padding:10px 16px">Instálalo <b>antes de S0</b> con la <b>guía de instalación para Windows</b> (<code>03-Entorno/guia-instalacion</code>). En clase solo verificamos: <code>instalar_entorno.cmd verificar</code> o <code>instalar_entorno.ps1 -Verificar</code>.</p>
 </section>
 
+<!-- 18 · UNA GUÍA POR HERRAMIENTA -->
+<section class="slide" data-part="B" data-min="1" data-title="Una guía de uso por herramienta"
+ data-notes="Cada herramienta tiene tres momentos: instalar, aprender lo mínimo y comprobar. La guía de instalación es la que se ejecuta antes de S0; las guías de uso son chuletas cortas con los comandos que sí se necesitan, y no sustituyen a la de instalación. Hoy hay cuatro; las demás se irán publicando antes de la sesión que las necesita. Indique dónde están en el repositorio: 07-Recursos/guias.">
+  <p class="kick st">Parte B · Después de instalar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:12px">Instalar, aprender lo mínimo, comprobar</h1>
+  <div class="gflow st" style="--d:2">
+    <div class="card"><b><span>1</span>Instalar</b><p>Con la <b style="display:inline;font-size:inherit">guía de instalación para Windows</b>: <code>03-Entorno/guia-instalacion</code>.</p></div>
+    <div class="card"><b><span>2</span>Aprender lo mínimo</b><p>Con la <b style="display:inline;font-size:inherit">guía de uso</b> de cada herramienta: qué es, para qué sirve y la chuleta de comandos. En <code>07-Recursos/guias</code>.</p></div>
+    <div class="card"><b><span>3</span>Comprobar</b><p>Con el diagnóstico de esta Parte B: lo esperado frente a lo obtenido, y lo que falle, por escrito.</p></div>
+  </div>
+  <div class="gguides st" style="--d:3">
+    <div class="gg"><b>Miniconda y entornos</b><p>Crear, activar y reparar el entorno del curso.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>Git y ramas</b><p>Clonar, crear ramas, guardar y entregar cada tarea.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>Visual Studio Code</b><p>Extensiones, intérprete, kernel de notebooks y terminal.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>SQLite</b><p>Crear bases y tablas, lanzar SQL y verlas en una interfaz.</p><span class="tag ok">Disponible</span></div>
+  </div>
+  <div class="card dashed gpend st" style="--d:4">
+    <h3 style="font-size:17px;margin-bottom:6px">Se publican antes de la sesión que las necesita</h3>
+    <ul>
+      <li><b>Antes de S1</b> · gcloud y Cloud Shell, Codespaces, MLflow, cuadernos y pruebas, terminal de Windows</li>
+      <li><b>Antes de S2</b> · Docker, FastAPI y GitHub Actions</li>
+      <li><b>Antes de S3</b> · Cloud Storage y BigQuery, Artifact Registry y Cloud Run, secretos e IAM, costes, kubectl y kind</li>
+      <li><b>S4 y S5</b> · Actions ampliada, autenticación sin claves, monitoreo, versionado y vuelta atrás</li>
+    </ul>
+  </div>
+</section>
+
 <!-- Pasos con comandos (generados) -->
 <section class="slide" data-part="B" data-cmd="repo"></section>
 <section class="slide" data-part="B" data-cmd="conda"></section>
@@ -694,8 +797,8 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
 <section class="slide" data-part="B" data-cmd="gcloud"></section>
 <section class="slide" data-part="B" data-cmd="codespaces"></section>
 
-<!-- 23 · OPCIONAL -->
-<section class="slide" data-part="B" data-min="2" data-title="Ruta opcional: red neuronal y LLM"
+<!-- 26 · OPCIONAL -->
+<section class="slide" data-part="B" data-min="1" data-title="Ruta opcional: red neuronal y LLM"
  data-notes="Bloque opcional: no se instala nada hoy. Dedíquele 1–2 minutos y reasigne el resto a Codespaces o al diagnóstico. Sin GPU propia; modelo ligero o entorno compartido; motor y modelos definitivos pendientes. RAG es una ampliación posterior; MCP y agentes quedan fuera.">
   <p class="kick st">Parte B · Ampliaciones opcionales</p>
   <h1 class="st" style="--d:1">Red neuronal y LLM: ruta opcional <span class="tag opt badge">Opcional</span></h1>
@@ -707,7 +810,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   <p class="callout st" style="--d:5;margin-top:26px">Este bloque es opcional: <b>no instales nada de esto hoy</b>. RAG es una ampliación posterior; MCP y agentes quedan fuera del curso. No adelantes descargas pesadas «por si acaso».</p>
 </section>
 
-<!-- 24 · DIAGNÓSTICO -->
+<!-- 27 · DIAGNÓSTICO -->
 <section class="slide" data-part="B" data-min="10" data-title="Diagnóstico" data-enter="diag"
  data-notes="Pida que marquen la lista: un clic marca correcto, dos clics marca fallo, tres lo deja pendiente. Se guarda en este navegador. Quienes tengan huecos deben comunicarlos antes de S1, por escrito, con comando y salida. El botón copia un informe de incidencias con las comprobaciones que fallaron.">
   <p class="kick st">Parte B · Diagnóstico</p>
@@ -720,7 +823,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   </div>
 </section>
 
-<!-- 25 · ANTES DE S1 -->
+<!-- 28 · ANTES DE S1 -->
 <section class="slide" data-part="C" data-min="8" data-title="Antes de S1"
  data-notes="Cuatro encargos: diagnóstico, bloqueos, leer el caso cuando se publique, no improvisar el entorno. No adelantar el entrenamiento. S1 empieza con datos y entrenamiento; quien llegue sin entorno perderá la práctica.">
   <p class="kick st">Cierre · 10 minutos</p>
@@ -734,7 +837,7 @@ p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
   <p class="callout f">S1 empieza con datos y entrenamiento. Quien llegue sin entorno perderá la práctica. El caso concreto —conjunto de datos incluido— se revela entonces.</p>
 </section>
 
-<!-- 26 · FIN -->
+<!-- 29 · FIN -->
 <section class="slide" data-part="C" data-min="2" data-title="Nos vemos en S1"
  data-notes="Esta diapositiva cierra la sesión principal. Recapitule la tarea previa a S1, los bloqueos y el próximo paso: datos → modelo. El material posterior es opcional y de consulta: anexos con estadísticas, costes y fuentes. No continúe como si fuera contenido obligatorio de S0.">
   <p class="kick st">Cierre · Fin de la sesión principal</p>
@@ -859,6 +962,65 @@ const ZONES=[
  {t:'Codespaces',d:'Docker y Kubernetes no se instalan en cada portátil. Se trabajan en el Codespace preconfigurado del instructor, cuando se publique.',x:'docker · kind · kubectl'},
  {t:'GitHub Actions',d:'Orquesta el pipeline: pruebas, entrenamiento, construcción de la imagen y despliegue, con aprobaciones. Los runners ya traen Docker.',x:'.github/workflows · S2 (imagen) · S4 (pipeline completo)'},
  {t:'Google Cloud',d:'Datos y servicio. En S0 solo se comprueba la autenticación; no se crean recursos de pago hoy.',x:'Cloud Storage · BigQuery · Artifact Registry · Cloud Run · Secret Manager · IAM'}
+];
+
+/* Software por sesión. m = marca por sesión S0..S5 y «Extra»:
+   i instalar y comprobar · c solo comprobar · u se usa · s apoya · o opcional o si hay tiempo */
+const SW_COLS=['S0','S1','S2','S3','S4','S5','Extra'];
+const SW_MK={i:['','Se instala y se comprueba'],c:['✓','Solo se comprueba'],u:['','Se usa'],s:['','Apoya o se reutiliza'],o:['','Opcional o si hay tiempo']};
+const SOFT=[
+ {n:'Git y GitHub',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo y GitHub',k:'historial, ramas y entregas',
+  d:'Guarda la historia de tu trabajo y te deja probar cambios en ramas sin romper lo que funciona. GitHub aloja tu repositorio y es donde corren los pipelines.',
+  u:[['S0','Cuenta de GitHub y clonar el repositorio'],['S1–S5','Cada entrega es una rama de tu repositorio (tarea-s1…)'],['S2 y S4','Un cambio subido puede lanzar los workflows de Actions']],
+  g:['Git y ramas',1]},
+ {n:'VS Code',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'editor, cuadernos y terminal',
+  d:'El editor del curso: abres el repositorio, ejecutas scripts y cuadernos con el mismo intérprete y te conectas a Codespaces.',
+  u:[['S0','Instalarlo con sus extensiones y elegir el intérprete del curso'],['S1–S5','Escribir y ejecutar código, cuadernos y pruebas'],['S2 y S3','Abrir el Codespace del curso, con Docker y Kubernetes']],
+  g:['Visual Studio Code',1]},
+ {n:'Miniconda y entorno',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'entornos aislados y reproducibles',
+  d:'Crea entornos aislados para que todos ejecutemos el mismo Python con las mismas versiones. Evita el «en mi máquina funciona».',
+  u:[['S0','Comprobar que conda responde; el entorno se crea cuando lo indique el instructor'],['S1–S5','Activar env-ia-mlops antes de ejecutar nada'],['S1','Cuadernos, pandas, scikit-learn y pruebas viven en ese entorno']],
+  g:['Miniconda y entornos',1]},
+ {n:'SQLite y DB Browser',m:['i','u','','s','','',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'consultar las capas del caso',
+  d:'Las capas raw, master, fs y ml del caso viven en una base SQLite. DB Browser te deja explorar las tablas y lanzar SQL sin escribir a ciegas.',
+  u:[['S0','Abrir una base y ejecutar un SELECT sencillo'],['S1','Explorar y consultar las capas del caso'],['S3','Es el origen de las tablas que se migran a BigQuery']],
+  g:['SQLite',1]},
+ {n:'MLflow',m:['','u','u','','u','u',''],tag:['info','Viene en el entorno'],w:'En el entorno, no se instala aparte',k:'comparar y registrar modelos',
+  d:'Registra cada ejecución de entrenamiento (parámetros, métricas y modelo) para compararlas y decidir con evidencia.',
+  u:[['S1','Seguimiento de experimentos y comparación de dos ejecuciones'],['S2','Cargar el modelo para servirlo desde la API'],['S4','Registrar el modelo desde el pipeline'],['S5','Alias de versión para actualizar y volver atrás']],
+  g:['MLflow',0,'antes de S1']},
+ {n:'FastAPI y uvicorn',m:['','','u','s','s','',''],tag:['info','Viene en el entorno'],w:'En el entorno, no se instala aparte',k:'servir el modelo como API',
+  d:'Convierte el modelo en una API: recibe datos, valida las entradas y devuelve la predicción. Uvicorn es el servidor que la ejecuta.',
+  u:[['S2','Construir y probar la API en local'],['S3','La misma API, ya empaquetada, se publica en Cloud Run'],['S4','Sus pruebas se ejecutan en el pipeline']],
+  g:['FastAPI y probar APIs',0,'antes de S2']},
+ {n:'Docker',m:['c','','u','s','s','',''],tag:['info','En Codespaces'],w:'Codespaces: no se instala en el portátil',k:'empaquetar la API en una imagen',
+  d:'Empaqueta la API y sus dependencias en una imagen que se ejecuta igual en cualquier sitio. No se instala en el portátil: se usa en Codespaces.',
+  u:[['S0','Comprobar docker version en el Codespace (cuando se publique)'],['S2','Escribir el Dockerfile, construir la imagen y ejecutar el contenedor'],['S3','Esa imagen se publica en Artifact Registry y corre en Cloud Run'],['S4','El pipeline la construye en un runner de Actions']],
+  g:['Docker',0,'antes de S2']},
+ {n:'kind y kubectl',m:['c','','','o','','',''],tag:['opt','Si hay tiempo'],w:'Codespaces: no se instala en el portátil',k:'practicar Kubernetes sin clúster de pago',
+  d:'kind levanta un clúster de Kubernetes de juguete dentro de Docker y kubectl es la herramienta para hablar con él. Sirve para entender Kubernetes sin pagar un clúster.',
+  u:[['S0','Comprobar que están en el Codespace del curso'],['S3','Laboratorio de Kubernetes, si hay tiempo']],
+  g:['kubectl y kind',0,'antes de S3']},
+ {n:'GitHub Actions',m:['','','u','','u','s',''],tag:['info','Corre en GitHub'],w:'GitHub: no se instala',k:'automatizar pruebas, imagen y despliegue',
+  d:'Automatiza el camino del código al servicio: ante un cambio, ejecuta pruebas, entrena, construye la imagen y despliega, y deja un historial de ejecuciones.',
+  u:[['S2','Primer workflow: construir la imagen'],['S4','Pipeline completo raw → modelo → imagen → Cloud Run, con aprobación'],['S5','Operación: actualizar y recuperar versiones']],
+  g:['GitHub Actions',0,'antes de S2']},
+ {n:'Google Cloud',m:['c','','','u','u','u',''],tag:['core','Obligatorio'],w:'gcloud en tu equipo (o Cloud Shell) y la nube',k:'datos y servicio en la nube',
+  d:'Ahí se guardan los datos y se despliega el servicio: Cloud Storage, BigQuery, Artifact Registry, Cloud Run, Secret Manager e IAM. gcloud (o Cloud Shell) es la herramienta para manejarlo desde la terminal.',
+  u:[['S0','Solo comprobar el acceso y el proyecto: no se crea nada de pago'],['S3','Migrar datos, publicar la imagen y desplegar el servicio'],['S4','El pipeline despliega con aprobación, sin claves'],['S5','Registros, alertas y control de costes']],
+  g:['gcloud y Cloud Shell',0,'antes de S1']},
+ {n:'PyTorch · LLM',m:['','','','o','','','o'],tag:['opt','Opcional'],w:'Entorno aparte (env-ia-opcional)',k:'red neuronal y LLM, sin GPU propia',
+  d:'Ampliaciones fuera del núcleo: una red neuronal ligera con PyTorch y un módulo de LLM abiertos. Se piensan para CPU o para un entorno compartido.',
+  u:[['S3','Práctica neuronal guiada, si hay tiempo'],['Extra','LLM abiertos en sesión extra; motor y modelo, por decidir'],['Hoy','No se instala nada de esto']],
+  g:['PyTorch y LLM',0,'solo si se imparte']}
+];
+const SW_SES=[
+ {t:'Presentación y entorno',pre:'Nada previo: S0 es la sesión de preparación. Lo ideal es llegar con la guía de instalación ya ejecutada y venir a comprobar.',nota:'Hoy se instalan Git, VS Code, Miniconda y SQLite en tu equipo. Docker, kind, kubectl y gcloud solo se comprueban.'},
+ {t:'De los datos al modelo',pre:'Diagnóstico de S0 completo: Git, VS Code, Miniconda y el entorno env-ia-mlops funcionando.',nota:'Todo corre en tu equipo, con el entorno del curso.'},
+ {t:'Del modelo a una API y un contenedor',pre:'Poder abrir el Codespace del curso (cuando el instructor lo publique) y tener Actions disponible en tu repositorio de GitHub.',nota:'Primera salida del portátil: Docker en Codespaces y un workflow en GitHub.'},
+ {t:'De local a GCP',pre:'Un proyecto de Google Cloud con facturación habilitada (o la alternativa que indique el instructor) y gcloud autenticado, o Cloud Shell.',nota:'Primera sesión en la nube: se vigilan costes y permisos desde el principio.'},
+ {t:'Orquestación y CI/CD',pre:'El servicio de S3 desplegado y tu repositorio con Actions habilitado.',nota:'Sin herramientas nuevas: se profundiza en Actions (pipeline completo) y en la autenticación con GCP sin claves.'},
+ {t:'MLOps, monitoreo y mantenimiento',pre:'El pipeline de S4 funcionando y su historial de ejecuciones.',nota:'Sin herramientas nuevas: se opera lo ya construido (versiones, registros, alertas y vuelta atrás).'}
 ];
 
 const DIAG=[
@@ -1094,13 +1256,60 @@ hooks.enter.counters=hooks.enter.eval=hooks.enter.rhythm=function(s){
 
 /* presupuesto de tiempo de la Parte B */
 (function(){
-  const cols=['#fcd34d','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#b39cff','#34d399','#34d399','#fcd34d'];
+  const cols=['#fcd34d','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#34d399','#b39cff','#fcd34d'];
   hooks.enter.budget=function(){};
   const box=$('#budget'); const bs=slides.map((s,i)=>({s,i})).filter(o=>o.s.dataset.part==='B');
   const tot=bs.reduce((a,o)=>a+(+o.s.dataset.min),0);
-  const short=t=>t.replace(/^Docker en Codespaces.*/,'Docker').replace(/^Google Cloud.*/,'Google Cloud').replace(/^SQLite.*/,'SQLite').replace(/^VS Code.*/,'Kernel').replace(/^Clonar.*/,'Repo').replace(/^Preparación.*/,'Intro').replace(/^Dónde corre.*/,'Mapa').replace(/^Codespaces.*/,'Codespaces').replace(/^Ruta opcional.*/,'Opc.').replace(/^Diagnóstico.*/,'Diagnóstico').replace(/^Herramientas.*/,'Herramientas');
-  box.innerHTML=bs.map((o,k)=>`<button data-i="${o.i}" style="width:${(+o.s.dataset.min)/tot*100}%;background:${cols[k%cols.length]}" title="${esc(o.s.dataset.title)} · ${o.s.dataset.min} min">${esc(short(o.s.dataset.title))}<br>${o.s.dataset.min}′</button>`).join('');
+  const short=t=>t.replace(/^Docker en Codespaces.*/,'Docker').replace(/^Google Cloud.*/,'Google Cloud').replace(/^SQLite.*/,'SQLite').replace(/^VS Code.*/,'Kernel').replace(/^Clonar.*/,'Repo').replace(/^Preparación.*/,'Intro').replace(/^Dónde corre.*/,'Mapa').replace(/^Codespaces.*/,'Codespaces').replace(/^Ruta opcional.*/,'Opc.').replace(/^Diagnóstico.*/,'Diagnóstico').replace(/^Herramientas.*/,'Kit').replace(/^Software por sesión.*/,'Matriz').replace(/^Qué se estrena.*/,'Por sesión').replace(/^Una guía.*/,'Guías');
+  box.innerHTML=bs.map((o,k)=>`<button data-i="${o.i}"${+o.s.dataset.min<=2?' class="nar"':''} style="width:${(+o.s.dataset.min)/tot*100}%;background:${cols[k%cols.length]}" title="${esc(o.s.dataset.title)} · ${o.s.dataset.min} min">${esc(short(o.s.dataset.title))}<br>${o.s.dataset.min}′</button>`).join('');
   box.addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i,false)});
+})();
+
+/* software por sesión: matriz */
+(function(){
+  const box=$('#swm'),det=$('#swdet'); let sel=0;
+  const mk=(c,col)=>c?`<span class="c" title="${esc(col+': '+SW_MK[c][1])}"><span class="mk ${c}">${esc(SW_MK[c][0])}</span></span>`:'<span class="c"></span>';
+  box.innerHTML='<div class="swh"><span>Herramienta</span>'+SW_COLS.map(c=>`<span>${esc(c)}</span>`).join('')+'</div>'+
+    SOFT.map((t,i)=>`<button class="swr" data-i="${i}"><span class="nm">${esc(t.n)}</span>${t.m.map((c,k)=>mk(c,SW_COLS[k])).join('')}</button>`).join('');
+  $('#swlegend').innerHTML=Object.keys(SW_MK).map(c=>`<span><span class="mk ${c}">${esc(SW_MK[c][0])}</span>${esc(SW_MK[c][1])}</span>`).join('');
+  function render(i){
+    sel=i; $$('.swr',box).forEach((r,k)=>r.classList.toggle('sel',k===i));
+    const t=SOFT[i], g=t.g;
+    const gl=g[1]?`<span class="tag ok">Disponible</span> Guía de uso: <b>${esc(g[0])}</b>`:`<span class="tag pend">En preparación</span> Guía de uso: <b>${esc(g[0])}</b> · ${esc(g[2])}`;
+    det.innerHTML=`<h3>${esc(t.n)} <span class="tag ${t.tag[0]==='core'?'core':t.tag[0]==='opt'?'opt':''}">${esc(t.tag[1])}</span></h3>`+
+      `<p class="para">${esc(t.d)}</p><p class="where"><b class="gold">Dónde:</b> ${esc(t.w)}</p>`+
+      `<ul class="uso">`+t.u.map(u=>`<li><b>${esc(u[0])}</b><span>${esc(u[1])}</span></li>`).join('')+`</ul>`+
+      `<p class="gline">${gl}</p>`;
+  }
+  box.addEventListener('click',e=>{const r=e.target.closest('.swr');if(r)render(+r.dataset.i)});
+  hooks.enter.swm=()=>render(0); render(0);
+})();
+
+/* software por sesión: qué se estrena */
+(function(){
+  const tl=$('#tl2'),panel=$('#sx'); let sel=1;
+  const lab=['Instalar','Datos y modelo','API y contenedor','Nube','Pipeline','Operación'];
+  tl.innerHTML=SW_SES.map((s,i)=>`<button class="node" data-i="${i}"><div class="dot">S${i}</div><small>${esc(lab[i])}</small></button>`).join('');
+  const first=t=>t.m.findIndex(c=>c==='u'||c==='s'||c==='o');
+  const li=t=>`<li>${esc(t.n)}${t.tag[0]==='opt'?` <span class="tag opt" style="font-size:11px;padding:2px 8px;vertical-align:2px">${esc(t.tag[1])}</span>`:''}<small>${esc(t.k)}</small></li>`;
+  function render(){
+    $$('.node',tl).forEach((n,i)=>n.classList.toggle('sel',i===sel));
+    const S=SW_SES[sel]; let a,b,ha,hb;
+    if(sel===0){
+      a=SOFT.filter(t=>t.m[0]==='i'); b=SOFT.filter(t=>t.m[0]==='c'); ha='Se instala hoy'; hb='Solo se comprueba hoy';
+      var col2=`<ul>${b.map(li).join('')}</ul>`;
+    } else {
+      a=SOFT.filter(t=>t.m[0]!=='i'&&first(t)===sel); ha='Se estrena';
+      const prev=SOFT.filter(t=>t.m[sel]&&!a.includes(t)); hb='Sigue en uso';
+      var col2=`<div class="chips">${prev.map(t=>`<span class="chip2">${esc(t.n)}</span>`).join('')||'<span class="small">—</span>'}</div>`;
+    }
+    const col1=a.length?`<ul>${a.map(li).join('')}</ul>`:'<p class="small">Ninguna herramienta nueva.</p>';
+    panel.innerHTML=`<h2 style="margin-bottom:12px;font-size:28px"><span class="gold">S${sel}</span> ${esc(S.t)}</h2><div class="sx3">`+
+      `<div><h3>${esc(ha)}</h3>${col1}</div><div><h3>${esc(sel===0?hb:hb)}</h3>${col2}</div>`+
+      `<div><h3>Listo antes de empezar</h3><p>${esc(S.pre)}</p><p class="nota">${esc(S.nota)}</p></div></div>`;
+  }
+  tl.addEventListener('click',e=>{const n=e.target.closest('.node');if(!n)return;sel=+n.dataset.i;render()});
+  hooks.enter.sws=()=>{sel=1;render()}; render();
 })();
 
 /* zonas */
