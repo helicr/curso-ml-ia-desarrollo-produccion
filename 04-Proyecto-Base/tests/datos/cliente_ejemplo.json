@@ -1,0 +1,15 @@
+{
+  "recencia_dias": 35,
+  "frecuencia": 6,
+  "monto_total": 1250.40,
+  "ticket_medio": 208.4,
+  "unidades_total": 410,
+  "productos_distintos": 38,
+  "antiguedad_dias": 310,
+  "frecuencia_90d": 2,
+  "monto_90d": 380.5,
+  "frecuencia_180d": 4,
+  "dias_medios_entre_compras": 55.0,
+  "devoluciones": 1,
+  "es_reino_unido": 1
+}

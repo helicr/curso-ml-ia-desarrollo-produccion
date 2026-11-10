@@ -5,6 +5,7 @@ Es la traduccion a Python de  notebooks/04_entrenamiento_y_seguimiento.ipynb.
 Lee ml_dataset, entrena tres modelos (referencia sin aprendizaje, regresion logistica y gradient boosting), elige el mejor
 segun la VALIDACION (AUC), lo evalua en test y guarda:
   models/modelo.joblib       el modelo completo (preprocesamiento + clasificador)
+  models/modelo_mlflow/      el mismo modelo en formato MLflow, con su FIRMA (el contrato de entrada que usa la API de S2)
   models/metadatos.json      variables, particiones, huella de los datos, versiones de librerias
   models/mlflow.db           seguimiento de MLflow (y models/mlartifacts/ con los modelos registrados)
   reports/metricas.json      metricas de todos los modelos
@@ -14,6 +15,7 @@ Uso:  python -m ia_mlops.modeling.train
 import hashlib
 import json
 import platform
+import shutil
 import sys
 from datetime import datetime
 
@@ -63,6 +65,25 @@ def evaluar(modelo, X, y):
         'tasa_base': float(np.mean(y)),
         'aciertos_en_el_10_mejor': float(np.mean(np.asarray(y)[top])),
     }
+
+
+def exportar_modelo_mlflow(modelo, muestra, destino):
+    """Guarda el modelo en formato MLflow: una carpeta autocontenida con MLmodel, firma y ejemplo de entrada.
+
+    Es lo que carga la API y lo que se copia a la imagen Docker. La FIRMA (nombre y tipo de cada variable) viaja dentro del modelo.
+    """
+    import mlflow.models
+    import mlflow.sklearn
+    if destino.exists():
+        shutil.rmtree(destino)
+    firma = mlflow.models.infer_signature(muestra, modelo.predict_proba(muestra)[:, 1])
+    # cloudpickle evita la verificacion de tipos de skops que MLflow 3 aplica a los arboles de scikit-learn.
+    mlflow.sklearn.save_model(modelo, str(destino), signature=firma, serialization_format='cloudpickle', input_example=muestra.head(3))
+
+
+def rangos_de_entrenamiento(X):
+    """Minimo y maximo de cada variable en train. La API avisa (no rechaza) cuando llega algo fuera de ese rango."""
+    return {c: [float(X[c].min()), float(X[c].max())] for c in X.columns}
 
 
 def entrenar(con=None, usar_mlflow=True, verbose=True):
@@ -122,6 +143,7 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
     config.MODELOS.mkdir(parents=True, exist_ok=True)
     config.REPORTES.mkdir(parents=True, exist_ok=True)
     joblib.dump(modelo, config.MODELOS / 'modelo.joblib')
+    exportar_modelo_mlflow(modelo, X['train'].head(200), config.MODELOS / config.CARPETA_MODELO_MLFLOW)
     metadatos = {
         'modelo': mejor,
         'objetivo': 'el cliente compra al menos una vez en los siguientes %d dias' % config.VENTANA_OBJETIVO_DIAS,
@@ -129,6 +151,8 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
         'cortes': config.CORTES,
         'filas': {k: int(len(v)) for k, v in partes.items()},
         'huella_datos': huella_datos(df),
+        'metricas_valid': resultados[mejor]['valid'],
+        'rangos_entrenamiento': rangos_de_entrenamiento(X['train']),
         'entrenado_en': datetime.now().isoformat(timespec='seconds'),
         'versiones': {'python': sys.version.split()[0], 'scikit-learn': sklearn.__version__, 'pandas': pd.__version__,
                       'numpy': np.__version__, 'plataforma': platform.system()},

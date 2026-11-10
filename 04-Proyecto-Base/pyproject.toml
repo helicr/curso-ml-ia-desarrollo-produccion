@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "jupyterlab", "ipykernel", "matplotlib", "papermill", "jupytext", "nbclient"]
+dev = ["pytest", "httpx", "jupyterlab", "ipykernel", "matplotlib", "papermill", "jupytext", "nbclient"]  # httpx: lo usa TestClient en las pruebas de la API
 api = ["fastapi", "uvicorn", "pydantic"]
 
 [tool.setuptools.packages.find]

@@ -404,7 +404,7 @@ def texto_leeme():
     lineas = [
         '# PDF del curso',
         '',
-        f'PDF de las sesiones S0 y S1 de «{C.CURSO}». Los exige la institución. Se generan desde las fuentes '
+        f'PDF de las sesiones S0, S1 y S2 de «{C.CURSO}». Los exige la institución. Se generan desde las fuentes '
         '(presentaciones HTML y documentos Markdown): **no los edites a mano**, cambia la fuente y vuelve a generar.',
         '',
         '## Cómo se regeneran',

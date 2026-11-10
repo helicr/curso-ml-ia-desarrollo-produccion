@@ -1,6 +1,6 @@
 # PDF del curso
 
-PDF de las sesiones S0 y S1 de «ML e IA: de desarrollo a producción». Los exige la institución. Se generan desde las fuentes (presentaciones HTML y documentos Markdown): **no los edites a mano**, cambia la fuente y vuelve a generar.
+PDF de las sesiones S0, S1 y S2 de «ML e IA: de desarrollo a producción». Los exige la institución. Se generan desde las fuentes (presentaciones HTML y documentos Markdown): **no los edites a mano**, cambia la fuente y vuelve a generar.
 
 ## Cómo se regeneran
 
@@ -73,3 +73,31 @@ Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub
 |---|---|---|---|
 | [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 156 KB |
 | [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 135 KB |
+
+
+## S2 · API y Docker (4 h)
+
+### Presentaciones
+
+| PDF | Contenido | Páginas | Tamaño |
+|---|---|---|---|
+| [`01-presentacion-s2.pdf`](S2-API-y-Docker/01-presentaciones/01-presentacion-s2.pdf) | Presentación de S2 | 21 | 4.0 MB |
+
+### Material del alumno
+
+| PDF | Contenido | Páginas | Tamaño |
+|---|---|---|---|
+| [`01-teoria-y-glosario.pdf`](S2-API-y-Docker/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S2 | 3 | 196 KB |
+| [`02-guia-de-laboratorio.pdf`](S2-API-y-Docker/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S2 | 6 | 296 KB |
+| [`03-tarea.pdf`](S2-API-y-Docker/02-alumno/03-tarea.pdf) | Tarea de S2 | 2 | 155 KB |
+| [`04-rubrica.pdf`](S2-API-y-Docker/02-alumno/04-rubrica.pdf) | Rúbrica de S2 | 2 | 106 KB |
+| [`05-plantilla-de-la-evidencia.pdf`](S2-API-y-Docker/02-alumno/05-plantilla-de-la-evidencia.pdf) | Plantilla de la evidencia (API y contenedor) | 2 | 117 KB |
+| [`06-checklist.pdf`](S2-API-y-Docker/02-alumno/06-checklist.pdf) | Checklist de S2 | 1 | 123 KB |
+| [`07-la-api-y-el-contenedor.pdf`](S2-API-y-Docker/02-alumno/07-la-api-y-el-contenedor.pdf) | La API y el contenedor (proyecto base) | 6 | 271 KB |
+
+### Material del instructor
+
+| PDF | Contenido | Páginas | Tamaño |
+|---|---|---|---|
+| [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 2 | 169 KB |
+| [`02-guion-s2.pdf`](S2-API-y-Docker/03-instructor/02-guion-s2.pdf) | Guion de S2 | 3 | 160 KB |

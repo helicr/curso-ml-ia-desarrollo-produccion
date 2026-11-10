@@ -19,6 +19,7 @@ data/raw/online_retail_ii/
 # Modelos, MLflow y reportes generados (el pipeline los vuelve a crear)
 models/*.joblib
 models/*.json
+models/modelo_mlflow/
 models/mlflow.db
 models/mlartifacts/
 mlflow.db

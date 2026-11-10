@@ -40,7 +40,7 @@
 3. Elegir versiones y probar instalaciones por sistema operativo (local: Git, VS Code, Miniconda, SQLite, gcloud).
 4. Implementar scripts, entornos, notebooks, API, workflows y pruebas.
 5. Decidir si se imparte la sesión extra opcional de LLMs abiertos y en qué fecha; elegir motor y modelo.
-6. Crear y validar el Codespace del curso (docker, kind, kubectl); revisar cuota gratuita vigente.
+6. Validar el Codespace del curso (docker, kind, kubectl); revisar cuota gratuita vigente. El 10/11/2026 se escribió `.devcontainer/devcontainer.json` (Python 3.11 y Docker en Codespaces; también una copia para el proyecto en `04-Proyecto-Base/.devcontainer/`) **sin abrir ningún Codespace**: hay que probarlo, y añadir `kind` y `kubectl` para S3.
 7. Definir autenticación de GitHub Actions con GCP (Workload Identity Federation, sin claves en el repo).
 8. Validar cloud, accesos, costes y limpieza.
 9. **Fusionar `develop` en `main` antes de S0** y subir los commits a GitHub (requiere instalar el Claude GitHub App o hacerlo desde tu PC).
@@ -66,6 +66,9 @@
 17. **Reglas de la tarea:** decidir si el alumno elige uno de los dos datasets o se asigna, y fechar los avances. Medido: Bank Marketing partido por orden de filas tiene una deriva extrema (AUC de prueba 0,51–0,58 sin `duration`);
     decidir si se parte aleatoriamente (optimista), por orden de filas (ejercicio de deriva para S5) o si queda como opción avanzada. `duration` hay que excluirla (ver el enunciado).
 18. **`xlrd` en el entorno:** el `.xls` de Default no se lee con `env-ia-mlops` (trae `openpyxl`, no `xlrd`). Decidir entre añadir `xlrd` a `03-Entorno/conda/environment.yml` (y volver a validar el entorno) o entregar el archivo convertido a CSV.
+
+19. **S2, lo que falta por probar:** el Codespace (punto 6), `docker build` en un equipo propio, los comandos de la sesión en Windows, y la tarea con Default of Credit Card Clients o Bank Marketing (ruta B; ver 16). Pendiente menor: `starlette` avisa de que `TestClient` pasará a usar `httpx2`; las pruebas lo silencian con `filterwarnings` y hay que revisarlo al actualizar versiones.
+20. **S2, decisiones de diseño a revisar con el grupo:** `cloudpickle` en el modelo MLflow (riesgo de ejecución de código al cargar; se documenta y en S5 se enlaza con la cadena de confianza), imagen de 826 MB (mlflow-skinny, scikit-learn, pandas y scipy), y que el contrato de la API se escribe en `esquemas.py` y se vigila contra la firma al arrancar en vez de generarse automáticamente.
 
 ## Evaluación propuesta
 Conservar 20 % conocimiento, 40 % desempeño y 40 % producto por unidad,

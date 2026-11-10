@@ -42,8 +42,8 @@ def texto_pagina(ruta, n):
 # Manifiesto
 # ---------------------------------------------------------------------------
 class TestManifiesto:
-    def test_hay_s0_y_s1(self):
-        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1']
+    def test_hay_s0_s1_y_s2(self):
+        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1', 'S2']
 
     @pytest.mark.parametrize('sesion,e', todos(), ids=[f"{s['id']}-{e['archivo']}" for s, e in todos()])
     def test_cada_origen_existe(self, sesion, e):
@@ -258,6 +258,20 @@ class TestPdfGenerados:
         ruta = pdf('S1', '01-presentacion-s1.pdf')
         todo = ' '.join(p.extract_text() or '' for p in PdfReader(str(ruta)).pages)
         assert 'Hacer clic' not in todo and 'Haz clic' not in todo
+
+    def test_s2_presentacion_sin_ordenes_de_hacer_clic_ni_botones_de_control(self):
+        from pypdf import PdfReader
+        ruta = pdf('S2', '01-presentacion-s2.pdf')
+        paginas = PdfReader(str(ruta)).pages
+        assert len(paginas) == 21
+        todo = ' '.join(p.extract_text() or '' for p in paginas)
+        assert 'Hacer clic' not in todo and 'Haz clic' not in todo
+        assert 'Pantalla completa (F)' not in todo
+
+    def test_s2_conserva_las_cifras_reales_de_la_practica(self):
+        from pypdf import PdfReader
+        todo = ' '.join(p.extract_text() or '' for p in PdfReader(str(pdf('S2', '01-presentacion-s2.pdf'))).pages)
+        assert '0.8278889191932133' in todo.replace(' ', '') and '108 passed' in todo
 
     def test_documentos_con_pie_de_pagina_en_todas_las_paginas(self):
         from pypdf import PdfReader

@@ -102,11 +102,22 @@ SESIONES = [
         ],
     ),
     dict(
-        id='S2', titulo='API y Docker', horas='4 h', carpeta=S2, estado=SOLO_README, esperados=TODOS,
-        resumen='Carga del modelo desde MLflow, FastAPI, validación, Dockerfile e imagen (en Codespaces) y primer workflow de GitHub Actions.',
+        id='S2', titulo='API y Docker', horas='4 h', carpeta=S2, estado=PREPARADO, esperados=TODOS,
+        resumen='Del modelo guardado a un servicio: API con FastAPI cuyo contrato sale de la firma del modelo, errores 422/503/500, registros JSON, imagen Docker mínima, '
+                'comparación de predicciones por todos los caminos y primer workflow de GitHub Actions. Tarea: llevar el modelo propio al mismo punto.',
+        nota='Probado en Linux y en GitHub Actions. Sin probar: el Codespace del curso (.devcontainer), Docker en un equipo propio y Windows.',
         enlaces=[
-            alumno('Docker y Kubernetes sin instalación local', f'{ENTORNO}/guias/docker-y-kubernetes-sin-instalacion-local.md', 'Ya escrita: cómo trabajar con Docker en Codespaces.'),
-            instructor('README de S2', f'{S2}/README.md'),
+            deck('Presentación de S2', f'{S2}/slides/index.html', 'Revisión del entorno, teoría, laboratorio de códigos, práctica, entrega y cierre.', volver=True),
+            alumno('Teoría y glosario', f'{S2}/teoria/README.md'),
+            alumno('Guía de laboratorio', f'{S2}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo y salidas esperadas.'),
+            alumno('Tarea', f'{S2}/tarea/README.md'),
+            alumno('Rúbrica', f'{S2}/tarea/rubrica.md', '20 % reproducibilidad · 40 % técnica · 40 % análisis y decisión.'),
+            alumno('Plantilla de la evidencia', f'{S2}/evidencias/plantilla-api-y-contenedor.md', 'La evidencia que se entrega.'),
+            alumno('Checklist', f'{S2}/checklist.md'),
+            alumno('La API y el contenedor', '04-Proyecto-Base/docs/api-y-contenedor.md', 'Contrato, errores, registros, imagen, workflow y qué se probó.'),
+            alumno('Docker y Kubernetes sin instalación local', f'{ENTORNO}/guias/docker-y-kubernetes-sin-instalacion-local.md', 'Cómo trabajar con Docker en Codespaces.'),
+            instructor('README de S2', f'{S2}/README.md', 'Agenda por minutos y qué está validado.'),
+            instructor('Guion', f'{S2}/guion.md'),
         ],
     ),
     dict(

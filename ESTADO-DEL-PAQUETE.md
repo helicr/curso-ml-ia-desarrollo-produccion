@@ -5,8 +5,8 @@ núcleo = ML clásico a producción; IA generativa y relacionado = opcional; Doc
 orquestación con GitHub Actions. No es una copia visual exacta de los HTML exploratorios anteriores.
 
 No incluye el PDF original ni las versiones anteriores alternativas.
-S0 y S1 están completas (presentaciones, documentos, laboratorio, tarea, rúbrica, proyecto base y entorno) y validadas en Linux; nada se ha probado en Windows real.
-S2–S5 solo tienen README; el Codespace del curso y los workflows de GitHub Actions no están implementados.
+S0, S1 y S2 están completas (presentaciones, documentos, laboratorio, tarea, rúbrica, proyecto base y entorno) y validadas en Linux; nada se ha probado en Windows real.
+S3–S5 solo tienen README. El Codespace del curso (`.devcontainer/`) está escrito pero **sin probar**; de los workflows de GitHub Actions solo hay la plantilla de CI de S2 (verificada) y la validación de Windows (sin ejecutar); los de publicación y despliegue no están implementados.
 Los scripts `instalar_entorno.*` instalan programas con winget y nunca se ejecutaron en Windows real.
 
 La presentación principal (`slides/index.html`) se rehízo el 08/11/2026 (26 diapositivas; el 09/11/2026 pasó a 29, ver más abajo): diapositivas interactivas en un solo archivo
@@ -39,19 +39,23 @@ Para dejar el equipo listo para S1 hay unas diapositivas de copiar y pegar (`01-
 
 Cada sesión (`01-Sesiones/S0-...` a `S5-...`) tiene un `index.html` con sus presentaciones, sus documentos y lo que falta (presentación, guion, teoría, práctica, tarea…).
 Se genera con `00-Planificacion/indices-de-sesion/generar_indices.py`: un archivo nuevo en la carpeta de una sesión aparece al volver a ejecutarlo, y las presentaciones de S0 y S1 llevan un enlace «⌂ Índice» de vuelta.
-Comprobado en Chrome (6 índices en 4 tamaños, enlaces entre sesiones y regreso desde las tres presentaciones de clase) y con 68 pruebas automáticas en `00-Planificacion/indices-de-sesion/pruebas/`.
+Comprobado en Chrome (6 índices en 4 tamaños, enlaces entre sesiones y regreso desde las tres presentaciones de clase) y con 68 pruebas automáticas en `00-Planificacion/indices-de-sesion/pruebas/` (S2 incluida desde el 10/11/2026).
 No se probó el modo «Esta carpeta» para abrir los `.md` (el navegador puede descargarlos en lugar de mostrarlos) ni en Windows real.
 
-La institución exige PDF: `pdfs/` tiene los de S0 y S1 (19 archivos: 3 presentaciones, 15 documentos y el plan docente), organizados por sesión y por quién los usa
+La institución exige PDF: `pdfs/` tiene los de S0, S1 y S2 (29 archivos: 4 presentaciones, 24 documentos y el plan docente), organizados por sesión y por quién los usa
 (presentaciones · alumno · instructor); `pdfs/LEEME.md` los lista. Se generan con `00-Planificacion/pdfs/generar_pdfs.py` (Chrome + pandoc) y los índices de
 sesión los enlazan con un botón «PDF». Una página por diapositiva (1280 × 720) con marcadores, todos los pasos revelados, contadores en su valor final y las demos
 de terminal con su salida de ejemplo; los documentos salen en A4 con pie «Página n de N». **Se pierden** las animaciones, los botones, los contadores en vivo y las
 notas del orador; las piezas interactivas (encuesta, simuladores, cronómetro) quedan como imagen fija. Solo en el PDF se reescribieron las frases que mandan pulsar
 botones que en papel no existen (lista en `RETOQUES_TEXTO`); las fuentes no cambian. La tipografía va incrustada como Type 3 (el texto se puede buscar y copiar,
-pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comprobado: 19 PDF abiertos y revisados a mano en hojas de contacto, `--comprobar` limpio
-(tamaño, número de páginas = diapositivas, sin `file:///`, sin palabras internas) y 75 pruebas automáticas en `00-Planificacion/pdfs/pruebas/`. No se abrieron en
+pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comprobado: 19 PDF de S0 y S1 abiertos y revisados a mano en hojas de contacto; de S2 se revisaron a mano la presentación (21 páginas) y la guía de laboratorio, y los otros ocho se comprobaron solo con `--comprobar`; `--comprobar` limpio
+(tamaño, número de páginas = diapositivas, sin `file:///`, sin palabras internas) y 97 pruebas automáticas en `00-Planificacion/pdfs/pruebas/` (se ejecutan con un Python que tenga `pypdf`, no con `env-ia-mlops`). No se abrieron en
 otros visores que Chrome y poppler (no en Acrobat ni en el visor de Windows) y no se ha comprobado la impresión en papel. Excluidos a propósito: la guía interactiva
 de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos antiguos y `verificar_s1.py`.
 
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.
+
+**S2 · API y Docker (10/11/2026).** `01-Sesiones/S2-API-y-Docker/` tiene presentación (21 diapositivas, con un laboratorio «¿200, 422 o 503?» cuyas respuestas son las reales de la API), guion, checklist, teoría, guía de laboratorio, tarea con rúbrica y plantilla de evidencia. En `04-Proyecto-Base/` se añadió la API (`ia_mlops/api/`: contrato por esquema Pydantic comprobado contra la firma del modelo MLflow, `/salud`, `/listo`, `/modelo`, `/predecir`, `/predecir/lote`, errores 422/503/500, registro JSON con `X-Request-ID`), la herramienta `comparar`, el `Dockerfile` (usuario no root, dependencias con versiones exactas), `.dockerignore`, la plantilla `deploy/github-actions/ci.yml` y `docs/api-y-contenedor.md`.
+Comprobado: 112 pruebas en verde en Linux (108 rápidas y 4 lentas); 24 modificaciones deliberadas del código (esquema, API, Dockerfile, `.dockerignore`, entrenamiento), todas detectadas por alguna prueba; los diez casos de la práctica; la receta de la tarea (añadir `monto_180d`: la API responde 503 con el campo que falta y 18 pruebas fallan hasta actualizar el contrato); y, **en GitHub Actions** (Ubuntu con Docker), el `Dockerfile` y el workflow con el proyecto en la raíz del repositorio y en la subcarpeta `04-Proyecto-Base/`: imagen construida (826 MB en disco), contenedor listo, 422 ante un campo fuera del contrato, proceso con uid 10001 y la misma probabilidad que en local. La presentación se revisó en Chrome (21 diapositivas, interacciones y sin errores de consola).
+**Sin probar:** el Codespace del curso, `docker build` en un equipo propio, los comandos de la sesión en Windows (PowerShell y CMD), la tarea con Default of Credit Card Clients o Bank Marketing, y la presentación en Meet y proyector. Las pruebas y el CI usan la muestra del curso (23 070 filas).
