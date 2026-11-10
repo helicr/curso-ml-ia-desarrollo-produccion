@@ -42,8 +42,8 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s0.pdf`](S0-Presentacion-y-Entorno/03-instructor/01-readme-s0.pdf) | README de S0 | 1 | 100 KB |
-| [`02-guion-s0.pdf`](S0-Presentacion-y-Entorno/03-instructor/02-guion-s0.pdf) | Guion con tiempos de S0 | 3 | 133 KB |
+| [`01-readme-s0.pdf`](S0-Presentacion-y-Entorno/03-instructor/01-readme-s0.pdf) | README de S0 | 1 | 101 KB |
+| [`02-guion-s0.pdf`](S0-Presentacion-y-Entorno/03-instructor/02-guion-s0.pdf) | Guion con tiempos de S0 | 3 | 134 KB |
 | [`03-plan-docente.pdf`](S0-Presentacion-y-Entorno/03-instructor/03-plan-docente.pdf) | Plan docente (una página) | 1 | 59 KB |
 
 

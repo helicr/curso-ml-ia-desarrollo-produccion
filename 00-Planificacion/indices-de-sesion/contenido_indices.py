@@ -71,7 +71,7 @@ SESIONES = [
         enlaces=[
             deck('Presentación principal', f'{S0}/slides/index.html', 'Parte A, pausa, Parte B y cierre. Teclas: ← → avanzar, O índice, S notas, F pantalla completa.', volver=True),
             deck('Tu equipo listo para S1', f'{S0}/slides/instalacion/index.html', 'Para copiar y pegar: instalación en orden, entorno desde environment.yml, pruebas y verificador.', volver=True),
-            deck('Anexos de consulta', f'{S0}/slides/anexos/index.html', 'Edición anterior (con React y ECharts). Los anexos A–F siguen vigentes; el resto está desactualizado.'),
+            deck('Anexos de consulta', f'{S0}/slides/anexos/index.html', 'Anexos A–F: estadísticas, herramientas, calculadora de coste de Cloud Run y fuentes. Consulta; no suman a las dos horas de S0.'),
             deck('Plan docente', f'{S0}/slides/fuentes/plan-docente.html', 'Una página: programa, ritmo, reparto de S0 y cautelas.'),
             alumno('Guía rápida del entorno (S0 → S1)', f'{S0}/practica/guia-rapida-entorno-s0-s1.md', 'Lo mismo que «Tu equipo listo para S1», en texto.'),
             deck('Guía de instalación para Windows', f'{ENTORNO}/guia-instalacion/index.html', 'Interactiva: elige ruta y terminal, copia los comandos y marca tu progreso.'),
