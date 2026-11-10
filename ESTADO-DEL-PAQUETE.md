@@ -53,5 +53,7 @@ pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comproba
 otros visores que Chrome y poppler (no en Acrobat ni en el visor de Windows) y no se ha comprobado la impresión en papel. Excluidos a propósito: la guía interactiva
 de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos antiguos y `verificar_s1.py`.
 
+Los datos de la tarea están en `02-Proyecto-Transversal/datos/` (Bank Marketing, caso de los alumnos; Default of Credit Card Clients, referencia), con `SHA256SUMS` y atribución CC BY 4.0. Falta el script de descarga y la base de referencia (RAW → MASTER → FS → ML) de la tarea.
+
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.

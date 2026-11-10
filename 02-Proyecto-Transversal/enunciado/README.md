@@ -69,6 +69,6 @@ En Bank Marketing, `duration` infla el AUC en unos 0,15, y la partición por ord
 
 ### Estado (leer antes de impartir)
 - **Hecho:** licencias leídas en las fichas oficiales; archivos recibidos, perfilados y con sha256; modelo base rápido (`../verificacion-datos-tarea/`).
-- **No hecho:** base de referencia (RAW → MASTER → FS → ML con cuadernos y pruebas), script de descarga y la decisión de incluir o no una copia de los datos en el repositorio.
-- **Hallazgo:** el `.xls` de Default **no se puede leer con `env-ia-mlops`**, que no trae `xlrd`. Hay que añadirlo al entorno o entregar el archivo ya convertido.
-- **Por decidir:** si el alumno elige uno o se le asigna. Ver `00-Planificacion/decisiones-y-pendientes.md` (puntos 15 a 18).
+- **No hecho:** base de referencia (RAW → MASTER → FS → ML con cuadernos y pruebas), script de descarga. La copia de los datos ya está en `../datos/` (ver su `LEEME.md`).
+- **Hallazgo:** el `.xls` de Default **no se puede leer con `env-ia-mlops`**, que no trae `xlrd`. Se entrega ya convertido a CSV (`../datos/default-credit-card/`); queda decidir si se añade `xlrd` al entorno.
+- **Decidido el 09/11/2026:** el caso de los alumnos es Bank Marketing y Default queda como referencia (`../datos/LEEME.md`); la comparación de arriba se conserva como contexto. **Por decidir:** las fechas de los avances. Ver `00-Planificacion/decisiones-y-pendientes.md` (puntos 15 a 18).
