@@ -1,0 +1,88 @@
+{
+ "meta": {
+  "fecha": "2026-11-09",
+  "sistema": "Linux 6.18.44-fc-v310",
+  "nota": "Salidas reales; rutas y usuario sustituidos. Unica normalizacion: en crear_entorno, «conda activate <ruta>» se muestra como «conda activate env-ia-mlops» porque el entorno se creo con -p.",
+  "python": "Python 3.11.18"
+ },
+ "salidas": {
+  "crear_entorno": {
+   "cmd": "conda env create -f 03-Entorno/conda/environment.yml",
+   "codigo": 0,
+   "segundos": 66,
+   "salida": "Preparing transaction: ...working... done\nVerifying transaction: ...working... done\nExecuting transaction: ...working... done\n#\n# To activate this environment, use\n#\n#     $ conda activate env-ia-mlops\n#\n# To deactivate an active environment, use\n#\n#     $ conda deactivate\n\nWARNING conda.conda_pypi.main:notify_conda_pypi_tip(158):\n  Did you know? You can install many PyPI packages with conda\n  using conda-pypi. Get started:\n    https://bit.ly/4xXYt0B"
+  },
+  "git_version": {
+   "cmd": "git --version",
+   "codigo": 0,
+   "segundos": 0.0,
+   "salida": "git version 2.43.0"
+  },
+  "conda_version": {
+   "cmd": "conda --version",
+   "codigo": 0,
+   "segundos": 0.1,
+   "salida": "conda 26.9.4"
+  },
+  "py_version": {
+   "cmd": "python --version",
+   "codigo": 0,
+   "segundos": 0.0,
+   "salida": "Python 3.11.18"
+  },
+  "py_exe": {
+   "cmd": "python -c \"import sys; print(sys.executable)\"",
+   "codigo": 0,
+   "segundos": 0.0,
+   "salida": "<conda>/envs/env-ia-mlops/bin/python"
+  },
+  "humo": {
+   "cmd": "python 03-Entorno/conda/prueba_de_humo.py",
+   "codigo": 0,
+   "segundos": 10.9,
+   "salida": "python 3.11.18\n  ok    pandas                   2.3.3\n  ok    pyarrow                  26.0.1\n…\n  ok    papermill                2.7.0\n  ok    jupytext                 1.19.6\n  ok    nbclient                 0.11.0\n  sqlite: tablas ['fs_cliente', 'master_ventas', 'ml_dataset', 'raw_ventas']\n  mlflow: ejecucion 485900f4 | auc 0.701\n  api: respuesta {'clase': 0}\n  api: entrada invalida rechazada (422)\nHUMO OK"
+  },
+  "kernel_inst": {
+   "cmd": "python -m ipykernel install --user --name env-ia-mlops --display-name env-ia-mlops",
+   "codigo": 0,
+   "segundos": 0.2,
+   "salida": "Installed kernelspec env-ia-mlops in ~/.local/share/jupyter/kernels/env-ia-mlops"
+  },
+  "pytest_rapido": {
+   "cmd": "python -m pytest -q -m \"not lento\"",
+   "codigo": 0,
+   "segundos": 13.5,
+   "salida": "..............................                                           [100%]\n30 passed, 4 deselected in 10.73s"
+  },
+  "pytest_total": {
+   "cmd": "python -m pytest -q",
+   "codigo": 0,
+   "segundos": 50.5,
+   "salida": "..................................                                       [100%]\n34 passed in 47.60s"
+  },
+  "sqlite": {
+   "cmd": "python -c \"import sqlite3; print(sqlite3.sqlite_version, sqlite3.connect(':memory:').execute('SELECT 1 AS entorno_listo').fetchone())\"",
+   "codigo": 0,
+   "segundos": 0.0,
+   "salida": "3.54.1 (1,)"
+  },
+  "mlflow_ui": {
+   "cmd": "mlflow ui --backend-store-uri sqlite:///mlflow.db",
+   "codigo": 0,
+   "segundos": 11.5,
+   "salida": "INFO:     Uvicorn running on http://127.0.0.1:5000 (Press CTRL+C to quit)"
+  },
+  "csv": {
+   "cmd": "python -c \"import pandas as pd; d = pd.read_csv('02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv', sep=';'); print(d.shape); print(d['y'].value_counts().to_dict())\"",
+   "codigo": 0,
+   "segundos": 0.4,
+   "salida": "(41188, 21)\n{'no': 36548, 'yes': 4640}"
+  },
+  "verificar": {
+   "cmd": "python 03-Entorno/conda/verificar_s1.py --con-pruebas --informe",
+   "codigo": 0,
+   "segundos": 17.2,
+   "salida": "Verificacion para S1 - 2026-11-09 20:52 - Linux 6.18.44-fc-v310 - Python 3.11.18\nEntorno: env-ia-mlops   Repositorio: curso-ml-ia-desarrollo-produccion\n\n  [OK   ] python                     3.11.18\n  [OK   ] entorno                    env-ia-mlops\n  [OK   ] paquetes                   23 paquetes con la version fijada en environment.yml\n  [OK   ] importaciones              12 librerias clave se importan (2.8 s)\n  [OK   ] sqlite                     version 3.54.1; consultas con funciones de ventana correctas\n  [OK   ] mlflow                     version 3.18.0; guarda y lee una ejecucion en SQLite\n  [OK   ] kernel                     kernel «env-ia-mlops» registrado\n  [OK   ] git                        git version 2.43.0\n  [OK   ] git: identidad             nombre y correo configurados (no se muestran)\n  [OK   ] repositorio                material del curso completo en la carpeta clonada\n  [OK   ] dato Bank Marketing        huella correcta; 41188 filas de datos (+ encabezado)\n  [OK   ] disco                      24 GB libres\n  [OK   ] puerto 5000                libre para «mlflow ui»\n  [OK   ] pruebas del proyecto base  30 passed, 4 deselected in 8.62s (11 s)\n\nResultado: LISTO PARA S1  (14 OK, 0 AVISO, 0 FALLA)\n\nInforme guardado en verificacion-s1.txt (en la carpeta actual). Enviaselo al instructor si algo no se resuelve."
+  }
+ }
+}

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de instalación Windows</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#031a33;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;--blue:#2bb3ff;--gold:#fcd34d;
+  --text:#eef6ff;--muted:#a9c8ea;--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--opt:#b39cff;
+  --mono:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:radial-gradient(900px 600px at 5% -10%,rgba(43,179,255,.25),transparent 60%),radial-gradient(800px 560px at 100% 0%,rgba(179,156,255,.14),transparent 60%),var(--bg);
+  color:var(--text);font-family:var(--sans);line-height:1.55;font-size:17px;min-height:100vh}
+a{color:var(--blue)}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+code{font-family:var(--mono);font-size:.92em}
+.wrap{max-width:900px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+.top{position:sticky;top:0;z-index:10;background:rgba(3,26,51,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px}
+.top b{font-size:17px}
+.prog{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0}
+.meter{width:min(220px,40vw);height:10px;border-radius:99px;background:#0b3a69;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .5s}
+#ptxt{font-size:14px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+main{padding-block:28px 80px;display:flex;flex-direction:column;gap:22px}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.12;margin-bottom:8px}
+h2{font-size:24px;margin-bottom:6px}
+h3{font-size:19px}
+.kick{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+.muted{color:var(--muted)}.small{font-size:15px;color:var(--muted)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:18px 20px}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.pend{color:var(--warn);border-color:var(--warn)}.tag.opt{color:var(--opt);border-color:var(--opt);border-style:dashed}
+.tag.ok{color:#032b1c;background:var(--ok);border-color:var(--ok)}
+.warn{border-left:5px solid var(--warn);background:rgba(251,191,36,.09);padding:12px 16px;border-radius:0 12px 12px 0;font-size:16px}
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tab{text-align:left;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);transition:.2s;min-width:0}
+.tab b{display:block;font-size:18px}.tab span{font-size:15px;color:var(--muted)}
+.tab[aria-pressed="true"]{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.tab:hover{border-color:var(--blue)}
+.steps{display:flex;flex-direction:column;gap:16px}
+.step{display:grid;grid-template-columns:auto 1fr;gap:6px 16px}
+.step .n{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--panel2);align-self:start}
+.step.done .n{background:var(--ok);color:#032b1c}
+.step.done{border-color:rgba(52,211,153,.55)}
+.step .body{min-width:0;display:flex;flex-direction:column;gap:10px}
+.step h3{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.code{position:relative;background:#020d1a;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.code pre{font-family:var(--mono);font-size:15px;line-height:1.55;padding:12px 96px 12px 14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.code .label{display:block;padding:6px 14px;background:#06223f;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.copy{position:absolute;right:8px;top:8px;padding:6px 12px;border-radius:8px;background:var(--blue);color:#04213f;font-weight:700;font-size:14px}
+.code .label + pre + .copy{top:38px}
+.copy:hover{filter:brightness(1.1)}
+.expect{border-left:4px solid var(--ok);padding:8px 14px;background:rgba(52,211,153,.08);border-radius:0 10px 10px 0;font-size:15.5px}
+.expect b{color:var(--ok)}
+details{border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:10px 14px;background:rgba(255,255,255,.04)}
+summary{cursor:pointer;font-weight:600;font-size:16px}
+details p{margin-top:8px;font-size:15.5px}
+.chk{display:flex;gap:10px;align-items:center;font-size:16px;cursor:pointer;user-select:none;width:fit-content}
+.chk input{width:20px;height:20px;accent-color:#34d399}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12)}
+th{color:var(--gold);font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+td:first-child{white-space:nowrap;font-weight:600;padding-right:18px}
+@media (max-width:560px){td:first-child{white-space:normal}}
+ul.plain,ol.plain{padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.hide{display:none!important}
+footer{color:var(--muted);font-size:14px}
+@media (max-width:560px){.step{grid-template-columns:1fr}.step .n{width:34px;height:34px}.code pre{padding-right:14px;padding-bottom:50px}.copy{top:auto!important;bottom:8px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><b>Guía de instalación · Windows</b>
+  <div class="prog"><div class="meter"><i id="pbar"></i></div><span id="ptxt">0 de 0</span></div></div></header>
+<main class="wrap">
+  <section>
+    <p class="kick">Curso ML e IA · de desarrollo a producción</p>
+    <h1>Prepara tu equipo Windows antes de S0</h1>
+    <p class="muted">Instalas cinco programas y comprobamos que todo responde. Así, en clase solo verificamos. Docker y Kubernetes <b>no se instalan</b>: se usan en Codespaces.</p>
+  </section>
+
+  <div class="warn"><span class="tag pend">Por validar</span> Los comandos de winget y los identificadores de paquete se escribieron sin probarlos en un equipo Windows limpio y pueden haber cambiado. Los dos scripts sí se probaron con un <code>winget</code> falso (PowerShell 7 en Linux y CMD en Wine) y el entorno <code>env-ia-mlops</code> se creó y pasó su prueba en Linux, pero <b>nada se probó en Windows real</b>. Las cajas «Salida real» vienen de esas pruebas en Linux. Cada paso indica si se probó: <span class="tag ok">Probado en Linux</span> <span class="tag">Lógica probada con programas simulados</span> <span class="tag pend">Sin probar</span>. Si algo falla, usa el enlace de descarga del mismo paso y avisa al instructor.</div>
+
+  <section class="card" id="req">
+    <h2>0 · Antes de empezar</h2>
+    <p class="small" style="margin-bottom:10px">Cifras medidas en una instalación de prueba en Linux el 09/11/2026; en Windows pueden variar un poco. Donde es una estimación, lo dice.</p>
+    <div style="overflow-x:auto"><table>
+      <tr><th>Requisito</th><th>Detalle</th></tr>
+      <tr><td>Sistema</td><td>Windows 10 (1809 o posterior) o Windows 11, 64 bits. Se necesita <code>winget</code> solo para el modo script y los comandos de instalación.</td></tr>
+      <tr><td>Permisos</td><td>Usuario normal; winget puede pedir confirmación de administrador. Sin permisos, usa la <b>ruta sin instalación</b>.</td></tr>
+      <tr><td>Disco libre</td><td>Recomendado <b>15 GB</b> (estimación). Medido: Miniconda 0,7 GB, entorno <code>env-ia-mlops</code> 2,4 GB, caché de descargas de conda hasta 3,8 GB (se puede borrar), más VS Code, Git, gcloud y DB Browser.</td></tr>
+      <tr><td>Descargas</td><td>Instalador de Miniconda: 211 MB. Crear el entorno tardó 1 min 16 s en la prueba (red rápida); con una conexión normal, calcula varios minutos.</td></tr>
+      <tr><td>Memoria</td><td>Recomendado 8 GB o más (estimación; la prueba corrió con 15 GB).</td></tr>
+      <tr><td>Navegador</td><td>Chrome o Edge actualizado, para Codespaces, Cloud Shell y las guías.</td></tr>
+      <tr><td>Cuentas</td><td>GitHub y una cuenta de Google con un proyecto de Google Cloud (ver abajo).</td></tr>
+      <tr><td>Carpeta de trabajo</td><td>Fuera de OneDrive, con ruta corta y sin espacios ni acentos, por ejemplo <code>C:\cursos</code>.</td></tr>
+    </table></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+      <details><summary>Cuentas que necesitas</summary>
+        <p><b>GitHub:</b> crea tu cuenta en <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a> y activa la verificación en dos pasos. La primera vez que clones, Git abrirá el navegador para iniciar sesión.</p>
+        <p><b>Google Cloud:</b> entra con tu cuenta de Google en <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>, crea un proyecto (menú de proyectos → «Proyecto nuevo») y apunta su <b>ID</b>, que no es el nombre. En S0 solo te autenticas: no crees recursos de pago. Revisa si tu cuenta es elegible para la prueba gratuita y activa presupuestos y alertas antes de S3.</p>
+      </details>
+      <details><summary>Dominios que debe permitir tu red (si usas una red corporativa)</summary>
+        <p><b>Comprobados desde Linux:</b> <code>conda.anaconda.org</code>, <code>repo.anaconda.com</code> (instalador de Miniconda), <code>pypi.org</code> y <code>files.pythonhosted.org</code>. Docker Hub y <code>mcr.microsoft.com</code> también respondieron.</p>
+        <p><b>Por validar en Windows:</b> <code>github.com</code>, <code>cdn.winget.microsoft.com</code>, <code>update.code.visualstudio.com</code>, <code>marketplace.visualstudio.com</code>, <code>dl.google.com</code> y <code>console.cloud.google.com</code>.</p>
+        <p>Si tu red bloquea alguno, avisa al instructor: usa la ruta sin instalación.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>1 · Elige tu ruta</h2>
+    <div class="tabs" role="group" aria-label="Ruta">
+      <button class="tab" id="routeA" aria-pressed="true"><b>Puedo instalar programas</b><span>Equipo personal o con permisos de administrador.</span></button>
+      <button class="tab" id="routeB" aria-pressed="false"><b>No puedo instalar nada</b><span>Equipo corporativo o sin permisos. Todo en el navegador.</span></button>
+    </div>
+  </section>
+
+  <section id="boxB" class="card hide">
+    <h2>Ruta sin instalación: Codespaces</h2>
+    <p class="small" style="margin-bottom:10px">Trabajas desde el navegador con un entorno en la nube que ya trae Python, Git y Docker.</p>
+    <ol class="plain">
+      <li>Crea o abre tu cuenta de GitHub: <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</li>
+      <li>Abre el Codespace del curso desde el repositorio: <a href="https://github.com/helicr/curso-ml-ia-desarrollo-produccion" target="_blank" rel="noopener">helicr/curso-ml-ia-desarrollo-produccion</a> → botón <b>Code</b> → pestaña <b>Codespaces</b>.</li>
+      <li>Para Google Cloud usa <b>Cloud Shell</b> desde <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> (botón de terminal arriba a la derecha): no necesitas instalar gcloud.</li>
+    </ol>
+    <div class="warn" style="margin-top:12px"><span class="tag pend">Pendiente</span> El Codespace preconfigurado del curso aún no está publicado. Con esta ruta no se instala nada en tu equipo, pero Miniconda y el visor de SQLite se sustituyen por lo que traiga el Codespace. Quedan sujetos a la cuota gratuita de GitHub, que conviene revisar.</div>
+  </section>
+
+  <section id="boxA" class="card">
+    <h2>2 · Elige cómo instalar</h2>
+    <div class="tabs" role="group" aria-label="Modo">
+      <button class="tab" id="modeS" aria-pressed="true"><b>Todo en uno (script)</b><span>Un script instala y verifica. Más rápido.</span></button>
+      <button class="tab" id="modeM" aria-pressed="false"><b>Paso a paso (manual)</b><span>Copias un comando por programa. Sirve en CMD y en PowerShell.</span></button>
+    </div>
+    <div id="shellBox" style="margin-top:14px">
+      <h3 style="margin-bottom:8px">¿Qué terminal prefieres?</h3>
+      <div class="tabs" role="group" aria-label="Terminal">
+        <button class="tab" id="shCmd" aria-pressed="true"><b>CMD</b><span>Símbolo del sistema. Recomendado si no sabes cuál usar.</span></button>
+        <button class="tab" id="shPs" aria-pressed="false"><b>PowerShell</b><span>Terminal de Windows con PowerShell.</span></button>
+      </div>
+    </div>
+    <p class="small" style="margin-top:10px">Ambos caminos terminan igual: el script de verificación genera un informe que puedes pegar en el diagnóstico de S0.</p>
+  </section>
+
+  <section id="stepsWrap" class="steps" aria-live="polite"></section>
+
+  <section class="card" id="faq">
+    <h2>Si algo falla</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+      <details><summary>«winget no se reconoce como comando»</summary><p>Instala o actualiza «Instalador de aplicación» desde Microsoft Store y abre una terminal nueva. Si no puedes, usa el enlace de descarga de cada paso manual.</p></details>
+      <details><summary>PowerShell: «No se puede cargar el archivo porque la ejecución de scripts está deshabilitada»</summary><p>Ejecuta el script con <code>powershell -ExecutionPolicy Bypass -File ...</code> como indica la guía. Esa opción vale solo para esa ejecución y no cambia la configuración de tu equipo. Si prefieres no usarla, usa la versión CMD del script.</p></details>
+      <details><summary>CMD: «'instalar_entorno.cmd' no se reconoce como un comando»</summary><p>Ejecútalo con la ruta completa, tal como aparece en el paso (<code>%USERPROFILE%\instalar_entorno.cmd</code>), o muévete primero a la carpeta donde lo guardaste con <code>cd</code>.</p></details>
+      <details><summary>Windows muestra «Windows protegió su PC» al ejecutar el script</summary><p>Puede aparecer con archivos descargados. Léelo antes (está completo en esta página); si confías en él, elige «Más información» y «Ejecutar de todas formas». Si lo copiaste y pegaste en el Bloc de notas, normalmente no aparece.</p></details>
+      <details><summary>Instalé algo y la terminal no lo encuentra (git, code, gcloud…)</summary><p>Cierra la terminal y abre una nueva: el PATH se actualiza al abrir una ventana. Si sigue igual, reinicia el equipo.</p></details>
+      <details><summary>«conda no se reconoce»</summary><p>Abre «Anaconda Prompt (Miniconda3)» desde el menú Inicio y ejecuta ahí <code>conda --version</code>. Para usar conda en PowerShell, ejecuta una vez <code>conda init powershell</code> y abre una terminal nueva.</p></details>
+      <details><summary>Pide permisos de administrador o el antivirus bloquea la instalación</summary><p>Si tu equipo es corporativo, probablemente no puedas instalar. Usa la <b>ruta sin instalación (Codespaces)</b> y avisa al instructor antes de S0.</p></details>
+      <details><summary>conda: «CondaToSNonInteractiveError: Terms of Service have not been accepted»</summary><p>Es el bloqueo de los términos de servicio de Anaconda. Haz el paso «Términos de servicio de conda» (cuatro comandos) y vuelve a crear el entorno.</p></details>
+      <details><summary>MLflow: «UntrustedTypesFoundException … sklearn.tree._tree.Tree»</summary><p>Aparecerá en S1 al guardar un <code>RandomForest</code> con MLflow 3. Se resuelve con <code>skops_trusted_types=['sklearn.tree._tree.Tree']</code> en <code>log_model</code>. Lo veremos en clase.</p></details>
+      <details><summary>Qué enviar al instructor</summary><p>El contenido de <code>verificacion-entorno.txt</code> (lo genera el script) y el mensaje de error completo. No envíes contraseñas ni tokens.</p></details>
+    </div>
+  </section>
+
+  <section class="card hide" id="scriptBox">
+    <h2>Script completo</h2>
+    <p class="small" style="margin:6px 0 10px">Léelo antes de ejecutarlo. Solo usa winget para instalar Git, VS Code, Miniconda, DB Browser for SQLite y Google Cloud CLI, más las extensiones de VS Code. Con la opción de verificar no instala nada.</p>
+    <details id="detCmd"><summary>Ver el script de CMD (instalar_entorno.cmd)</summary>
+      <div class="code" style="margin-top:10px"><pre id="scriptTextCmd">@@SCRIPT_CMD@@</pre><button class="copy" data-copy-id="scriptTextCmd" data-crlf="1">Copiar</button></div>
+    </details>
+    <details id="detPs"><summary>Ver el script de PowerShell (instalar_entorno.ps1)</summary>
+      <div class="code" style="margin-top:10px"><pre id="scriptTextPs">@@SCRIPT_PS@@</pre><button class="copy" data-copy-id="scriptTextPs">Copiar</button></div>
+    </details>
+  </section>
+
+  <footer>Versión de la guía: borrador del 09/11/2026 · solo Windows · comandos de winget por validar.</footer>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e2){return false}}}
+
+const W='--accept-source-agreements --accept-package-agreements';
+const EXT=['ms-python.python','ms-python.vscode-pylance','ms-toolsai.jupyter','ms-azuretools.vscode-containers','ms-kubernetes-tools.vscode-kubernetes-tools','ms-vscode-remote.remote-containers','GitHub.codespaces'];
+
+/* mode: s = script, m = manual · shell: cmd | ps (solo en modo script) */
+const STEPS=[
+ {id:'c1',mode:'s',shell:'cmd',t:'Abre el Símbolo del sistema',why:'No necesitas abrirlo como administrador. winget pedirá permiso cuando haga falta.',
+  note:'Pulsa Windows + R, escribe «cmd» y pulsa Enter. También sirve buscar «Símbolo del sistema» en el menú Inicio.',
+  expect:'Una ventana negra con un prompt que empieza por <code>C:\\Users\\…&gt;</code>'},
+ {id:'c2',mode:'s',shell:'cmd',t:'Guarda el script',why:'Lo copiamos al Bloc de notas y lo guardamos con el nombre correcto.',
+  cmds:[{l:'1. Abre el Bloc de notas con un archivo nuevo',c:'notepad %USERPROFILE%\\instalar_entorno.cmd'}],
+  note:'Si pregunta si quieres crear el archivo, di que sí. Pega el script completo (botón de abajo), guarda con Ctrl+S y cierra el Bloc de notas.',
+  copyScript:'scriptTextCmd',
+  expect:'El archivo <code>instalar_entorno.cmd</code> en tu carpeta de usuario, sin <code>.txt</code> al final.'},
+ {id:'c3',mode:'s',shell:'cmd',t:'Ejecuta la instalación',why:'Instala lo que falte y salta lo que ya tengas. Pregunta antes de cada programa.',
+  cmds:[{l:'Instalar',c:'%USERPROFILE%\\instalar_entorno.cmd'}],
+  expect:'Líneas como <b>[ya instalado]</b> o <b>[instalando]</b> y al final un informe con <b>[OK]</b> por herramienta.',
+  fail:'Si un programa falla, el script lo indica con <b>[fallo]</b>. Instálalo con el paso a paso (modo manual) y sigue.'},
+ {id:'c4',mode:'s',shell:'cmd',t:'Cierra la terminal, ábrela y verifica',why:'Al abrir una terminal nueva el sistema ya reconoce los programas recién instalados.',
+  cmds:[{l:'Verificar (no instala nada)',c:'%USERPROFILE%\\instalar_entorno.cmd verificar'}],
+  expect:'Todas las líneas con <b>[OK]</b> y «Resultado: todo lo obligatorio esta instalado». Se crea <code>verificacion-entorno.txt</code> en la carpeta actual.',
+  fail:'Si ves <b>[FALTA]</b>, repite ese programa con el modo manual. Envía el contenido de <code>verificacion-entorno.txt</code> si no se resuelve.'},
+
+ {id:'p1',mode:'s',shell:'ps',t:'Abre PowerShell',why:'No necesitas abrirlo como administrador. winget pedirá permiso cuando haga falta.',
+  note:'Pulsa Windows + X y elige «Terminal» o «Windows PowerShell». También sirve buscar «PowerShell» en el menú Inicio.',
+  expect:'Una ventana con un prompt que empieza por <code>PS C:\\Users\\…&gt;</code>'},
+ {id:'p2',mode:'s',shell:'ps',t:'Guarda el script',why:'Lo copiamos al Bloc de notas y lo guardamos con el nombre correcto.',
+  cmds:[{l:'1. Abre el Bloc de notas con un archivo nuevo',c:'notepad $HOME\\instalar_entorno.ps1'}],
+  note:'Si pregunta si quieres crear el archivo, di que sí. Pega el script completo (botón de abajo), guarda con Ctrl+S y cierra el Bloc de notas.',
+  copyScript:'scriptTextPs',
+  expect:'El archivo <code>instalar_entorno.ps1</code> en tu carpeta de usuario, sin <code>.txt</code> al final.'},
+ {id:'p3',mode:'s',shell:'ps',t:'Ejecuta la instalación',why:'Instala lo que falte y salta lo que ya tengas. Pregunta antes de cada programa.',
+  cmds:[{l:'Instalar',c:'powershell -ExecutionPolicy Bypass -File $HOME\\instalar_entorno.ps1'}],
+  expect:'Líneas como <b>[ya instalado]</b> o <b>[instalando]</b> y al final un informe con <b>[OK]</b> por herramienta.',
+  fail:'Si un programa falla, el script lo indica con <b>[fallo]</b>. Instálalo con el paso a paso (modo manual) y sigue.'},
+ {id:'p4',mode:'s',shell:'ps',t:'Cierra la terminal, ábrela y verifica',why:'Al abrir una terminal nueva el sistema ya reconoce los programas recién instalados.',
+  cmds:[{l:'Verificar (no instala nada)',c:'powershell -ExecutionPolicy Bypass -File $HOME\\instalar_entorno.ps1 -Verificar'}],
+  expect:'Todas las líneas con <b>[OK]</b> y «Resultado: todo lo obligatorio esta instalado». Se crea <code>verificacion-entorno.txt</code> en la carpeta actual.',
+  fail:'Si ves <b>[FALTA]</b>, repite ese programa con el modo manual. Envía el contenido de <code>verificacion-entorno.txt</code> si no se resuelve.'},
+
+ {id:'m0',mode:'m',t:'Comprueba winget',why:'winget es el instalador de Windows que usan los comandos de esta guía. Estos comandos valen en CMD y en PowerShell.',
+  cmds:[{c:'winget --version'}],expect:'Un número de versión, por ejemplo <b>v1.x</b>.',
+  fail:'Si no se reconoce, instala «Instalador de aplicación» desde Microsoft Store, o usa los enlaces de descarga de cada paso.'},
+ {id:'m1',mode:'m',t:'Git',why:'Control de versiones. Descargarás el curso con Git.',
+  cmds:[{c:'winget install --id Git.Git -e '+W}],link:['Descarga manual','https://git-scm.com/download/win'],
+  check:[{l:'Comprobar (en una terminal nueva)',c:'git --version'}],expect:'<b>git version 2.x</b>.',
+  extra:[{l:'Configura tu nombre y correo (cambia los datos)',c:'git config --global user.name "Tu Nombre"\ngit config --global user.email "tu@correo.com"'}]},
+ {id:'m1b',mode:'m',t:'Carpeta de trabajo y ajustes de Git',why:'Una ruta corta, fuera de OneDrive y sin espacios evita errores de rutas largas en Windows.',
+  cmds:[{l:'Crear la carpeta, entrar y activar rutas largas en Git',c:'mkdir C:\\cursos\ncd C:\\cursos\ngit config --global core.longpaths true'}],
+  expect:'Sin salida. Todo lo que clones queda en <code>C:\\cursos</code>.'},
+ {id:'m2',mode:'m',t:'Visual Studio Code',why:'El editor del curso.',
+  cmds:[{c:'winget install --id Microsoft.VisualStudioCode -e '+W}],link:['Descarga manual','https://code.visualstudio.com/download'],
+  check:[{l:'Comprobar (en una terminal nueva)',c:'code --version'}],expect:'Un número de versión y un hash.',
+  fail:'Si «code» no se reconoce, reinstala marcando «Agregar a PATH» o abre VS Code desde el menú Inicio.'},
+ {id:'m3',mode:'m',t:'Extensiones de VS Code',why:'Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers y Codespaces.',
+  cmds:[{l:'Instalar las 7 extensiones',c:EXT.map(e=>'code --install-extension '+e).join('\n')}],
+  check:[{l:'Comprobar',c:'code --list-extensions'}],expect:'Las siete extensiones en la lista.',
+  fail:'Un identificador puede haber cambiado. Busca la extensión por nombre en el panel Extensiones de VS Code (Ctrl+Shift+X).'},
+ {id:'m4',mode:'m',t:'Miniconda',why:'Entornos de Python aislados y reproducibles.',
+  cmds:[{c:'winget install --id Anaconda.Miniconda3 -e '+W}],link:['Descarga manual (enlace por validar)','https://www.anaconda.com/docs/getting-started/miniconda/main'],
+  check:[{l:'Abre «Anaconda Prompt (Miniconda3)» desde el menú Inicio y ejecuta',c:'conda --version\nconda env list'}],expect:'Una versión de conda y una lista con al menos <b>base</b>.',
+  fail:'Hoy solo se comprueba que conda responde. No crees ningún entorno hasta que el instructor lo indique. Antes de crearlo, haz el paso siguiente (términos de servicio).'},
+ {id:'m4b',mode:'m',t:'Términos de servicio de conda',why:'El Miniconda de Anaconda no deja crear entornos hasta aceptar los términos de sus canales por defecto, aunque uses conda-forge. Esta configuración usa solo conda-forge y evita el bloqueo.',
+  note:'Hazlo en «Anaconda Prompt (Miniconda3)». Si tu organización necesita licencia de Anaconda, consúltalo antes: otra opción es aceptar los términos con «conda tos accept», o usar Miniforge.',
+  cmds:[{l:'Usar solo conda-forge',c:'conda config --add channels conda-forge\nconda config --remove channels defaults\nconda config --set channel_priority strict\nconda config --add default_channels https://conda.anaconda.org/conda-forge'}],
+  check:[{l:'Comprobar',c:'conda config --show channels default_channels'}],
+  expect:'Solo <b>conda-forge</b> en las dos listas. Los comandos no imprimen nada si salen bien.',
+  real:'CondaToSNonInteractiveError: Terms of Service have not been accepted for the following channels. Please accept or remove them before proceeding:\n    - https://repo.anaconda.com/pkgs/main\n    - https://repo.anaconda.com/pkgs/r',realLabel:'Error real que evita (sin esta configuración): conda se niega a crear el entorno',
+  fail:'Si en «channels» sigue apareciendo <b>defaults</b>, es normal: lo importante es que «default_channels» solo tenga conda-forge.'},
+ {id:'m5',mode:'m',t:'DB Browser for SQLite',why:'Visor para abrir las bases SQLite del curso.',
+  cmds:[{c:'winget install --id DBBrowserForSQLite.DBBrowserForSQLite -e '+W}],link:['Descarga manual','https://sqlitebrowser.org/dl/'],
+  check:[{l:'Ábrelo desde el menú Inicio, crea una base nueva y, en «Ejecutar SQL», ejecuta',c:'SELECT 1 AS entorno_listo;'}],expect:'Una fila con el valor <b>1</b> en la columna <b>entorno_listo</b>.'},
+  {id:'m6',mode:'m',t:'Google Cloud CLI',why:'Para autenticarte en Google Cloud. En S0 no se crean recursos de pago.',
+  cmds:[{c:'winget install --id Google.CloudSDK -e '+W}],link:['Descarga manual','https://cloud.google.com/sdk/docs/install'],
+  check:[{l:'Comprobar (en una terminal nueva)',c:'gcloud --version'}],expect:'<b>Google Cloud SDK</b> y su versión.',
+  fail:'Si no puedes instalarlo, usa Cloud Shell desde el navegador.'},
+ {id:'m6b',mode:'m',t:'Autentica gcloud',why:'Solo te autenticas y eliges tu proyecto. En S0 no se crean recursos de pago.',
+  cmds:[{c:'gcloud auth login\ngcloud config set project TU_ID_DE_PROYECTO\ngcloud auth list'}],
+  note:'Sustituye TU_ID_DE_PROYECTO por el ID de tu proyecto (no el nombre). Se abrirá el navegador para iniciar sesión.',
+  expect:'Tu cuenta aparece con un asterisco (activa) en la lista de «gcloud auth list».',
+  fail:'Si «set project» da error, revisa que copiaste el ID y no el nombre. Si no puedes instalar gcloud, usa Cloud Shell: no necesita autenticación local.'},
+ {id:'m7',mode:'m',opt:true,t:'Docker Desktop (opcional)',why:'No es necesario: en el curso Docker se usa dentro de Codespaces.',
+  cmds:[{c:'winget install --id Docker.DockerDesktop -e '+W}],
+  expect:'Solo si quieres Docker en local. Requiere virtualización y puede pedir reiniciar.'},
+ {id:'m8',mode:'m',t:'Clona el repositorio del curso',why:'Deja el material, notebooks y scripts en tu equipo.',
+  cmds:[{c:'git clone --branch develop https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git\ncd curso-ml-ia-desarrollo-produccion\ncode .'}],
+  expect:'Una carpeta nueva y VS Code abriéndola. <code>git branch --show-current</code> dice <b>develop</b>.',fail:'Revisa tu conexión, tu cuenta de GitHub y que la URL no se haya recortado. Si ves pocas carpetas, estás en <code>main</code>: ejecuta <code>git fetch origin</code> y <code>git switch develop</code>.'},
+ {id:'m9',mode:'m',t:'Verifica todo',why:'Genera el informe que pegarás en el diagnóstico de S0. Elige el comando de tu terminal.',
+  cmds:[{l:'CMD, desde la carpeta del repositorio',c:'03-Entorno\\scripts\\instalar_entorno.cmd verificar'},{l:'PowerShell, desde la carpeta del repositorio',c:'powershell -ExecutionPolicy Bypass -File .\\03-Entorno\\scripts\\instalar_entorno.ps1 -Verificar'}],
+  expect:'Todas las líneas con <b>[OK]</b>.',fail:'Repite el paso de lo que figure como <b>[FALTA]</b>.',
+  real:'[OK]    Git  git version 2.x\n[OK]    Visual Studio Code  instalado, pero fuera del PATH. Abre una terminal nueva.\n[FALTA] Miniconda  id winget: Anaconda.Miniconda3\n[FALTA] DB Browser for SQLite  id winget: DBBrowserForSQLite.DBBrowserForSQLite\n[OK]    Google Cloud CLI  Google Cloud SDK x.y.z\n\nResultado: faltan 2 herramientas obligatorias. …',realLabel:'Ejemplo de informe (de una prueba con programas simulados; el tuyo mostrará tus versiones)'},
+ {id:'m10',mode:'m',t:'Crea el entorno env-ia-mlops',why:'El entorno de Python del curso. Hazlo solo cuando el instructor lo indique, en «Anaconda Prompt (Miniconda3)» y desde la carpeta del repositorio.',
+  cmds:[{c:'conda env create -f 03-Entorno\\conda\\environment.yml\nconda activate env-ia-mlops'}],
+  expect:'Tarda uno o dos minutos. Al final aparece el mensaje de activación y el prompt cambia a <b>(env-ia-mlops)</b>.',
+  real:'# To activate this environment, use\n#\n#     $ conda activate env-ia-mlops\n#\n# To deactivate an active environment, use\n#\n#     $ conda deactivate',
+  fail:'Si conda se niega por los términos de servicio, haz antes el paso «Términos de servicio de conda». Para usar «conda activate» en PowerShell, ejecuta antes <code>conda init powershell</code> y abre una terminal nueva.'},
+ {id:'m11',mode:'m',t:'Comprueba el entorno',why:'Importa las librerías y recorre un mini ciclo: capas en SQLite, MLflow, modelo y API. No necesita Internet.',
+  cmds:[{c:'python 03-Entorno\\conda\\prueba_de_humo.py'}],
+  expect:'La última línea debe ser <b>HUMO OK</b>.',
+  real:'python 3.11.18\n  ok    pandas 2.3.3\n  ok    scikit-learn 1.9.1\n  ok    mlflow 3.18.0\n  ok    fastapi 0.162.2\n  … (19 librerías importadas)\n  sqlite: tablas [\'fs_cliente\', \'master_ventas\', \'ml_dataset\', \'raw_ventas\']\n  mlflow: ejecucion f98ff997 | auc 0.701\n  api: respuesta {\'clase\': 0}\n  api: entrada invalida rechazada (422)\nHUMO OK',
+  fail:'Copia el mensaje completo y envíalo al instructor. Si sale <b>FALLA</b> junto a una librería, el entorno quedó incompleto: vuelve a crearlo.'},
+ {id:'m12',mode:'m',t:'Abre el cuaderno de prueba en VS Code',why:'Comprueba que VS Code usa el entorno correcto: el error más común es dejar el kernel equivocado.',
+  cmds:[{l:'Desde la carpeta del repositorio',c:'code .'}],
+  note:'En VS Code abre 03-Entorno/conda/prueba_notebook.ipynb. Arriba a la derecha pulsa «Seleccionar kernel», elige «Python Environments» y luego «env-ia-mlops». Pulsa «Ejecutar todo».',
+  expect:'Cada celda se ejecuta sin errores y la última imprime <b>NOTEBOOK OK</b>. La primera celda muestra una ruta que contiene <code>env-ia-mlops</code>.',
+  real:'NOTEBOOK OK',realLabel:'Salida real de la última celda al ejecutar este mismo cuaderno con jupyter nbconvert en Linux',
+  fail:'Si la primera celda falla con «El kernel NO es env-ia-mlops», elige el kernel correcto. Si no aparece, ejecuta en el prompt de conda: <code>python -m ipykernel install --user --name env-ia-mlops</code> y reinicia VS Code.'},
+ {id:'m13',mode:'m',opt:true,t:'Rehacer el entorno desde cero',why:'Si el entorno quedó roto, bórralo y créalo otra vez.',
+  cmds:[{c:'conda deactivate\nconda env remove -n env-ia-mlops -y\nconda env create -f 03-Entorno\\conda\\environment.yml'}],
+  expect:'El entorno desaparece de «conda env list» y se vuelve a crear con el mismo contenido.',
+  real:'Verifying transaction: ...working... done\nExecuting transaction: ...working... done',realLabel:'Salida real de «conda env remove» en Linux'},
+ {id:'m14',mode:'m',opt:true,t:'Alternativa con pip (Codespaces)',why:'En Codespaces o en un entorno sin conda puedes instalar lo mismo con pip. Es lo que usará la imagen Docker de S2.',
+  cmds:[{l:'Solo para ejecutar el servicio (ligero)',c:'pip install -r 03-Entorno/conda/requirements.txt'},{l:'Todo lo del curso',c:'pip install -r 03-Entorno/conda/requirements-dev.txt'}],
+  expect:'Sin errores. El conjunto ligero tardó 36 s y ocupó unos 400 MB; el completo tardó unos 9 min y ocupó 1,1 GB (medido en Linux).',
+  fail:'Usa un entorno virtual limpio (<code>python -m venv .venv</code>) para no mezclar versiones.'}
+];
+
+
+/* Estado de validacion de cada paso y salidas reales capturadas en las pruebas (Linux, 09/11/2026) */
+const VAL={c1:'sin',c2:'sim',c3:'sim',c4:'sim',p1:'sin',p2:'sim',p3:'sim',p4:'sim',
+  m0:'sin',m1:'linux',m2:'sin',m3:'sin',m4:'linux',m4b:'linux',m5:'linux',m6:'linux',m7:'sin',m8:'sin',m9:'sim',m10:'linux',m11:'linux',m1b:'sin',m6b:'sin',m12:'linux',m13:'linux',m14:'linux'};
+const VALTXT={linux:['Probado en Linux','ok'],sim:['Lógica probada con programas simulados',''],sin:['Sin probar','pend']};
+const REAL={
+  m1:'git version 2.43.0',
+  m4:'conda 26.9.4\n# conda environments:\n#\n# * -> active\n# + -> frozen\nbase                     /opt/miniconda\nenv-ia-mlops             /opt/miniconda/envs/env-ia-mlops',
+  m5:'entorno_listo\n1',
+  m6:'Google Cloud SDK 570.0.0\nbq 2.1.32',
+  m7:'Hello from Docker!\nThis message shows that your installation appears to be working correctly.'
+};
+const REALLABEL={
+  m1:'Salida real en Linux (en Windows dirá algo como 2.x.windows.1)',
+  m4:'Salida real en Linux (en Windows verás tus rutas)',
+  m5:'Salida real: la misma consulta ejecutada con SQLite en Linux (el visor la mostrará como una tabla)',
+  m6:'Salida real en Linux (tu versión será otra)',
+  m7:'Salida real de «docker run hello-world» en Linux'
+};
+function valTag(id){const v=VALTXT[VAL[id]];return v?`<span class="tag ${v[1]}" title="Estado de validación de este paso">${v[0]}</span>`:''}
+
+let route=store('gi-route')||'A', mode=store('gi-mode')||'s', shell=store('gi-shell')||'cmd', done=store('gi-done')||{};
+
+function codeBlock(c){
+  const id='cb'+Math.random().toString(36).slice(2,8);
+  return `<div class="code">${c.l?`<span class="label">${esc(c.l)}</span>`:''}<pre id="${id}">${esc(c.c)}</pre><button class="copy" data-copy-id="${id}">Copiar</button></div>`;
+}
+function visible(){return STEPS.filter(s=>s.mode===mode&&(!s.shell||s.shell===shell))}
+function render(){
+  const A=route==='A', S=mode==='s';
+  $('#routeA').setAttribute('aria-pressed',route==='A'); $('#routeB').setAttribute('aria-pressed',route==='B');
+  $('#modeS').setAttribute('aria-pressed',S); $('#modeM').setAttribute('aria-pressed',!S);
+  $('#shCmd').setAttribute('aria-pressed',shell==='cmd'); $('#shPs').setAttribute('aria-pressed',shell==='ps');
+  $('#boxB').classList.toggle('hide',route!=='B');
+  $('#boxA').classList.toggle('hide',!A);
+  $('#shellBox').classList.toggle('hide',!S);
+  $('#stepsWrap').classList.toggle('hide',!A);
+  $('#scriptBox').classList.toggle('hide',!(A&&S));
+  $('#detCmd').classList.toggle('hide',shell!=='cmd'); $('#detPs').classList.toggle('hide',shell!=='ps');
+  const list=visible();
+  $('#stepsWrap').innerHTML=list.map((s,i)=>`
+   <article class="card step${done[s.id]?' done':''}" id="${s.id}">
+     <div class="n">${done[s.id]?'✓':i+1}</div>
+     <div class="body">
+       <h3>${esc(s.t)} ${s.opt?'<span class="tag opt">Opcional</span>':''} ${valTag(s.id)}</h3>
+       <p class="small">${esc(s.why)}</p>
+       ${s.note?`<p>${esc(s.note)}</p>`:''}
+       ${(s.cmds||[]).map(codeBlock).join('')}
+       ${s.copyScript?`<button class="tab" style="padding:10px 14px;width:fit-content" data-copy-id="${s.copyScript}"${s.copyScript==='scriptTextCmd'?' data-crlf="1"':''}><b>Copiar el script completo</b></button>`:''}
+       ${s.link?`<p class="small">${esc(s.link[0])}: <a href="${s.link[1]}" target="_blank" rel="noopener">${esc(s.link[1])}</a></p>`:''}
+       ${(s.check||[]).map(codeBlock).join('')}
+       ${(s.extra||[]).map(codeBlock).join('')}
+       ${s.expect?`<div class="expect"><b>Debes ver:</b> ${s.expect}</div>`:''}
+       ${(s.real||REAL[s.id])?codeBlock({l:s.realLabel||REALLABEL[s.id]||'Salida real de una prueba en Linux (la tuya puede variar)',c:s.real||REAL[s.id]}):''}
+       ${s.fail?`<details><summary>Si falla</summary><p>${s.fail}</p></details>`:''}
+       <label class="chk"><input type="checkbox" data-step="${s.id}"${done[s.id]?' checked':''}> Hecho</label>
+     </div></article>`).join('');
+  const total=list.length, n=list.filter(s=>done[s.id]).length;
+  $('#pbar').style.width=(A&&total?n/total*100:0)+'%';
+  $('#ptxt').textContent=A?(n+' de '+total+' pasos'):'Sin instalación';
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-copy-id]');
+  if(b){const el=document.getElementById(b.dataset.copyId);let t=el?el.textContent:'';if(b.dataset.crlf)t=t.replace(/\r?\n/g,'\r\n');const lab=b.innerHTML;const ok=await copyText(t);b.textContent=ok?'Copiado ✓':'Selecciona y copia';setTimeout(()=>b.innerHTML=lab,1600);return}
+  const t=e.target.closest('.tab'); if(!t)return;
+  const set={routeA:()=>{route='A';store('gi-route',route)},routeB:()=>{route='B';store('gi-route',route)},
+    modeS:()=>{mode='s';store('gi-mode',mode)},modeM:()=>{mode='m';store('gi-mode',mode)},
+    shCmd:()=>{shell='cmd';store('gi-shell',shell)},shPs:()=>{shell='ps';store('gi-shell',shell)}}[t.id];
+  if(set){set();render()}
+});
+document.addEventListener('change',e=>{
+  const c=e.target.closest('input[data-step]'); if(!c)return;
+  done[c.dataset.step]=c.checked; store('gi-done',done); render();
+  const el=document.getElementById(c.dataset.step); if(el){const k=el.querySelector('input'); k&&k.focus()}
+});
+render();
+})();
+</script>
+</body>
+</html>

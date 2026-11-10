@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ia-mlops"
+version = "0.1.0"
+description = "Proyecto base del curso ML e IA: de desarrollo a produccion. Caso transversal: Online Retail II."
+readme = "README.md"
+requires-python = ">=3.11"
+# Dependencias para EJECUTAR el pipeline. El entorno completo del curso esta en 03-Entorno/conda/environment.yml
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "joblib",
+    "openpyxl",   # leer el Excel original
+    "mlflow",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx", "jupyterlab", "ipykernel", "matplotlib", "papermill", "jupytext", "nbclient"]  # httpx: lo usa TestClient en las pruebas de la API
+api = ["fastapi", "uvicorn", "pydantic"]
+
+[tool.setuptools.packages.find]
+include = ["ia_mlops*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["lento: pruebas que ejecutan los cuadernos de punta a punta"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]

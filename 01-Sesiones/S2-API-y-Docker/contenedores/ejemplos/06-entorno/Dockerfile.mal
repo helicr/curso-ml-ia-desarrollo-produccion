@@ -1,0 +1,7 @@
+# MAL: el valor queda grabado en la imagen. Cualquiera que reciba la imagen puede leerlo.
+# (El valor es inventado: nunca pongas uno real.)
+FROM python:3.11-slim
+WORKDIR /app
+COPY app.py .
+ENV TOKEN_API="no-es-un-secreto-real-123"
+CMD ["python", "app.py"]

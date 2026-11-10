@@ -1,0 +1,84 @@
+# S2 · Primer workflow de GitHub Actions: reproduce el pipeline, pasa las pruebas, construye la imagen y comprueba que el contenedor responde.
+#
+# Como usarlo: copia este archivo a  .github/workflows/ci.yml  de TU repositorio. No publica nada ni usa secretos: los workflows de
+# publicacion y despliegue llegan en S4.
+#   - Si la raiz de tu repositorio es la carpeta del proyecto (la que tiene Makefile, pyproject.toml y deploy/): no cambies nada.
+#   - Si tu repositorio es el clon del curso (el proyecto esta en una subcarpeta): cambia  PROYECTO: "."  por  PROYECTO: "04-Proyecto-Base".
+name: ci
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read          # lo minimo: solo leer el repositorio
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruebas-e-imagen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CURSO_SIN_PANTALLA: "1"      # matplotlib sin ventana
+      PROYECTO: "."                # carpeta del proyecto dentro del repositorio (ver arriba)
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: ${{ env.PROYECTO }}/requirements-dev.txt
+
+      - name: Instalar dependencias
+        working-directory: ${{ env.PROYECTO }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install -e . --no-deps
+
+      - name: Pipeline completo (raw, master, fs, ml, entrenar)
+        working-directory: ${{ env.PROYECTO }}
+        run: python -m ia_mlops.pipeline
+
+      - name: Pruebas
+        working-directory: ${{ env.PROYECTO }}
+        run: python -m pytest tests
+
+      - name: Construir la imagen
+        working-directory: ${{ env.PROYECTO }}
+        run: |
+          docker build -f deploy/docker/Dockerfile -t retencion-api:ci .
+          docker image ls retencion-api:ci
+
+      - name: Probar el contenedor
+        working-directory: ${{ env.PROYECTO }}
+        run: |
+          docker run -d --name api -p 8080:8080 retencion-api:ci
+          for _ in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8080/listo && break
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8080/listo
+          curl -fsS http://127.0.0.1:8080/modelo
+          curl -fsS -X POST http://127.0.0.1:8080/predecir -H 'content-type: application/json' -d @tests/datos/cliente_ejemplo.json
+          # La API debe rechazar lo que no es del contrato (aqui, el objetivo «y»):
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8080/predecir -H 'content-type: application/json' \
+            -d "$(python -c "import json; d=json.load(open('tests/datos/cliente_ejemplo.json')); d['y']=1; print(json.dumps(d))")")
+          test "$codigo" = "422"
+          # El proceso del contenedor no corre como root:
+          test "$(docker exec api id -u)" = "10001"
+
+      - name: Registro del contenedor (si algo falla)
+        if: failure()
+        run: docker logs api || true
+
+      - name: Limpiar
+        if: always()
+        run: docker rm -f api || true

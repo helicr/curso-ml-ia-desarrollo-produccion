@@ -1,0 +1,10 @@
+# Dependencias minimas para EJECUTAR el servicio de inferencia (API + modelo). Se usan con pip, por ejemplo
+# en la imagen Docker de S2. Mismas versiones que environment.yml (env-ia-mlops).
+# Instalar:  pip install -r requirements.txt
+fastapi==0.162.2
+uvicorn==0.54.0
+pydantic==2.14.3
+numpy==2.4.6
+pandas==2.3.3
+scikit-learn==1.9.1
+joblib==1.6.0

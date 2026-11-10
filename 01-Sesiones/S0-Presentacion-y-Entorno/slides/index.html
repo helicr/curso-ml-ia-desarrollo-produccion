@@ -1,0 +1,1394 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S0 · Presentación y entorno · ML e IA: de desarrollo a producción</title>
+<style>
+:root{
+  --bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;
+  --blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--opt:#b39cff;--r:16px;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--blue)}
+code,.mono{font-family:var(--mono)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---------- Escenario 1280x720 escalado ---------- */
+#viewport{position:fixed;left:0;right:0;top:0;bottom:46px;overflow:hidden;
+  background:radial-gradient(1200px 700px at 20% 0%,#07305a 0%,var(--bg) 70%)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;
+  transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;padding:54px 70px 56px;opacity:0;visibility:hidden;
+  transform:translateX(28px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s;
+  background:linear-gradient(160deg,rgba(6,42,77,.55),rgba(3,26,51,0) 60%);overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
+.slide.past{transform:translateX(-28px)}
+.slide::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.9}
+.foot{position:absolute;left:70px;right:70px;bottom:18px;display:flex;justify-content:space-between;
+  font-size:13px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.foot b{color:var(--gold);font-weight:600}
+
+.kick{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px}
+h1{font-size:44px;line-height:1.12;letter-spacing:-.01em;margin-bottom:22px;font-weight:800}
+h2{font-size:26px;margin-bottom:10px}
+h3{font-size:20px;margin-bottom:6px}
+p{font-size:20px;line-height:1.5;color:var(--text)}
+.lead{font-size:25px;line-height:1.45}
+.muted{color:var(--muted)}
+.small{font-size:15px;line-height:1.45;color:var(--muted)}
+.acc{color:var(--blue)} .gold{color:var(--gold)}
+.card{background:linear-gradient(180deg,var(--panel),#082d54);border:1px solid var(--line);border-radius:var(--r);padding:18px 22px}
+.card.dashed{border-style:dashed;background:rgba(179,156,255,.07);border-color:var(--opt)}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.core{color:#06223f;background:var(--blue);border-color:var(--blue)}
+.tag.opt{color:var(--opt);border-color:var(--opt);border-style:dashed}
+.tag.gold{color:#2b2100;background:var(--gold);border-color:var(--gold)}
+.tag.ok{color:#032b1c;background:var(--ok);border-color:var(--ok)}
+.tag.pend{color:var(--warn);border-color:var(--warn)}
+.row{display:flex;gap:18px}.col{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.btn{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:16px;transition:.2s}
+.btn:hover{background:var(--panel2);border-color:var(--blue)}
+.btn.primary{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.btn.primary:hover{filter:brightness(1.1)}
+.callout{border-left:5px solid var(--gold);background:rgba(252,211,77,.08);padding:14px 18px;border-radius:0 12px 12px 0;font-size:19px}
+.warnbox{border-left:5px solid var(--warn);background:rgba(251,191,36,.09);padding:12px 16px;border-radius:0 12px 12px 0;font-size:17px}
+
+/* ---------- Animaciones ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes flow{to{stroke-dashoffset:-32}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(43,179,255,.55)}50%{box-shadow:0 0 0 12px rgba(43,179,255,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes steam{0%{opacity:0;transform:translateY(8px)}50%{opacity:.8}100%{opacity:0;transform:translateY(-26px)}}
+@keyframes packet{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.slide.active .st{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0)*70ms)}
+.f{opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .45s ease,transform .45s ease}
+.f.on{opacity:1;transform:none;pointer-events:auto}
+.f.mark{display:none}
+
+/* ---------- Portada ---------- */
+.cover{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;height:500px}
+.cover h1{font-size:60px;line-height:1.05;margin:6px 0 16px}
+.cover .sub{font-size:25px;color:var(--muted);margin-bottom:28px}
+.cover-logo{height:58px;margin-bottom:22px}
+.pill{position:absolute;right:70px;top:34px}
+.inst{display:flex;gap:18px;align-items:center;margin:8px 0 22px}
+.inst img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+.inst b{font-size:22px}.inst span{display:block;font-size:17px;color:var(--muted)}
+.inst a{font-size:16px;color:var(--blue);text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.hero svg{width:100%;height:100%}
+.flowpath{fill:none;stroke:var(--blue);stroke-width:3;stroke-dasharray:6 10;animation:flow 1.1s linear infinite;opacity:.8}
+.hnode{fill:var(--panel);stroke:var(--blue);stroke-width:2}
+.htxt{fill:var(--text);font-size:17px;font-weight:700;text-anchor:middle;font-family:var(--sans)}
+
+/* ---------- Encuesta ---------- */
+.poll-q{font-size:30px;font-weight:700;line-height:1.3;margin-bottom:20px;min-height:80px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.popt{position:relative;text-align:left;padding:16px 18px 16px 62px;border-radius:14px;border:1px solid var(--line);background:var(--panel);overflow:hidden;min-height:92px}
+.popt:hover{border-color:var(--blue)}
+.popt .k{position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-weight:800}
+.popt .t{font-size:18px;line-height:1.35;position:relative;z-index:1}
+.popt .bar{position:absolute;left:0;bottom:0;height:6px;background:var(--blue);width:0;transition:width .5s}
+.popt .n{position:absolute;right:14px;top:10px;font-weight:800;font-size:22px;color:var(--gold);z-index:1}
+.popt.right{border-color:var(--ok);box-shadow:0 0 0 2px rgba(52,211,153,.35) inset}
+.poll-nav{display:flex;gap:12px;align-items:center;margin-top:18px}
+.poll-hint{margin-left:auto;font-size:17px;color:var(--gold);max-width:520px}
+
+/* ---------- Núcleo / opcional ---------- */
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+.list{list-style:none;display:flex;flex-direction:column;gap:11px}
+.list li{display:flex;gap:12px;align-items:flex-start;font-size:20px;line-height:1.35}
+.list li::before{content:"";flex:none;width:12px;height:12px;border-radius:4px;margin-top:8px;background:var(--blue)}
+.card.dashed .list li::before{background:transparent;border:2px dashed var(--opt)}
+.list b{color:var(--gold)}
+
+/* ---------- Notebook → servicio ---------- */
+.path{display:flex;flex-direction:column;gap:9px;position:relative}
+.step{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 16px}
+.step .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#04213f;display:grid;place-items:center;font-weight:800}
+.step b{font-size:18px;display:block}.step span.d{font-size:15px;color:var(--muted)}
+.step .tag{margin-left:auto}
+
+/* ---------- Evidencia ---------- */
+.stat{display:flex;align-items:baseline;gap:14px}
+.stat .big{font-size:68px;font-weight:800;color:var(--gold);line-height:1;white-space:nowrap}
+.meter{height:10px;border-radius:99px;background:#0b3a69;overflow:hidden;margin:6px 0 16px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.sysbox{position:relative;border:2px dashed var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sysbox .cell{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 8px;text-align:center;font-size:16px;color:var(--muted)}
+.sysbox .core{grid-column:2;grid-row:2;background:var(--blue);color:#04213f;font-weight:800;font-size:15px;padding:8px 4px;border:0;transform:scale(.62);animation:pulse 2.2s infinite}
+.sysbox .lab{position:absolute;top:-14px;left:18px;background:var(--bg2);padding:0 10px;font-size:13px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+
+/* ---------- Mapa del curso ---------- */
+.tl{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative;margin:8px 0 14px}
+.tl::before{content:"";position:absolute;left:8%;right:8%;top:25px;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.5}
+.node{position:relative;text-align:center;padding:2px 4px}
+.node .dot{width:52px;height:52px;border-radius:50%;margin:0 auto 6px;background:var(--panel);border:3px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:18px;transition:.25s}
+.node small{display:block;font-size:13px;color:var(--muted);line-height:1.25}
+.node.sel .dot{background:var(--blue);color:#04213f;border-color:var(--gold);transform:scale(1.14);animation:pulse 2s infinite}
+.node:hover .dot{border-color:var(--blue)}
+.bands{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 10px;margin-bottom:14px}
+.band{font-size:14px;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.band.m{background:rgba(43,179,255,.22);color:var(--blue);border:1px solid var(--blue)}
+.band.a{background:rgba(252,211,77,.18);color:var(--gold);border:1px solid var(--gold)}
+.band.l{background:rgba(148,163,184,.18);color:#cbd5e1;border:1px solid #94a3b8}
+.band.g{background:rgba(52,211,153,.18);color:var(--ok);border:1px solid var(--ok)}
+.band.o{background:rgba(179,156,255,.1);color:var(--opt);border:1px dashed var(--opt)}
+.panel{min-height:180px}
+.panel h2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.panel ul{list-style:none;columns:2;column-gap:28px}
+.panel li{font-size:18px;line-height:1.35;margin-bottom:6px;break-inside:avoid}
+.panel li::before{content:"› ";color:var(--gold);font-weight:800}
+.panel li.o{color:var(--opt)}
+
+/* ---------- Capas ---------- */
+.layers{display:flex;align-items:stretch;gap:0;position:relative;margin:4px 0 18px}
+.layer{flex:1;text-align:center;padding:14px 6px;border:2px solid var(--line);background:var(--panel);margin-left:-2px;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,14px 50%);cursor:pointer;transition:.25s}
+.layer:first-child{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%)}
+.layer b{display:block;font-size:15px;letter-spacing:.04em}
+.layer span{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+.layer.sel{background:var(--blue);color:#04213f}.layer.sel span{color:#0a3b66}
+.layer:hover:not(.sel){background:var(--panel2)}
+.track{position:relative;height:14px;margin:-8px 0 14px;overflow:hidden}
+.packet{position:absolute;top:2px;width:14px;height:10px;border-radius:5px;background:var(--gold);animation:packet 3.2s linear infinite}
+.packet:nth-child(2){animation-delay:1.05s;background:var(--blue)}.packet:nth-child(3){animation-delay:2.1s}
+.ldetail{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;min-height:210px}
+.ldetail h2{display:flex;align-items:center;gap:12px}
+.tblname{font-family:var(--mono);color:var(--gold)}
+
+/* ---------- Local → GCP ---------- */
+.map{display:flex;flex-direction:column;gap:9px}
+.mrow{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;align-items:center}
+.pillbox{padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:18px}
+.pillbox.g{border-color:var(--ok);background:rgba(52,211,153,.1)}
+.pillbox small{display:block;font-size:14px;color:var(--muted)}
+.arrow{height:22px}.arrow svg{width:100%;height:100%}
+.strat{text-align:center;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px;border-radius:8px}
+.strat.rehost{background:#2563eb;color:#fff}.strat.replatform{background:var(--gold);color:#2b2100}.strat.refactor{background:var(--ok);color:#032b1c}
+.mhead{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:2px}
+
+/* ---------- Método / entregas / evaluación ---------- */
+.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.lstep{padding:20px 18px;border-radius:18px;background:var(--panel);border:1px solid var(--line);position:relative;min-height:190px}
+.lstep .n{font-size:44px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:6px}
+.lstep p{font-size:17px;color:var(--muted)}
+.lstep::after{content:"→";position:absolute;right:-17px;top:50%;font-size:26px;color:var(--blue);z-index:2}
+.lstep:last-child::after{content:none}
+.rhythm{display:flex;height:46px;border-radius:12px;overflow:hidden;margin:6px 0 8px;border:1px solid var(--line)}
+.rhythm div{display:grid;place-items:center;font-size:14px;font-weight:700;color:#04213f;transform-origin:left;transition:transform .8s}
+.chain{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:12px 0 22px}
+.chain::before{content:"";position:absolute;left:5%;right:5%;top:20px;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:4px;opacity:.6}
+.link{position:relative;text-align:center}
+.link .when{width:42px;height:42px;border-radius:50%;margin:0 auto 10px;background:var(--gold);color:#2b2100;display:grid;place-items:center;font-weight:800;position:relative;z-index:1}
+.link .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 10px;min-height:118px;font-size:17px;font-weight:600;line-height:1.3}
+.link .box small{display:block;margin-top:6px;font-weight:400;font-size:14px;color:var(--muted)}
+.eval{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+.eval .pct{font-size:84px;font-weight:800;line-height:1;color:var(--gold)}
+.eval .pct span{font-size:36px;color:var(--blue)}
+.stack{display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.stack i{display:block;height:100%;transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+
+/* ---------- Pausa ---------- */
+.pause{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px;align-items:center;height:80%}
+.clock{font-size:150px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;color:var(--blue)}
+.clock.done{color:var(--ok)}
+.clock.low{color:var(--warn)}
+.cup{display:block;margin:0 auto;width:250px;animation:float 5s ease-in-out infinite}
+.steam{animation:steam 3s ease-in-out infinite}.steam:nth-of-type(2){animation-delay:1s}.steam:nth-of-type(3){animation-delay:2s}
+.t120{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:14px 0 6px;font-size:13px;font-weight:700}
+.t120 div{display:grid;place-items:center;color:#04213f;white-space:nowrap}
+
+/* ---------- Parte B ---------- */
+.budget{display:flex;height:64px;border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:8px 0 8px}
+.budget button{display:grid;place-items:center;font-size:13px;font-weight:700;color:#04213f;border-right:2px solid var(--bg);padding:0 2px;line-height:1.1;text-align:center;transition:.2s}
+.budget button:hover{filter:brightness(1.18);transform:scaleY(1.06)}
+.zones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.zone{padding:16px 14px;border-radius:16px;border:2px solid var(--line);background:var(--panel);cursor:pointer;transition:.25s;min-height:230px}
+.zone .zt{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.zone b{display:block;font-size:22px;margin:4px 0 8px}
+.zone ul{list-style:none}.zone li{font-size:16px;color:var(--muted);margin-bottom:5px}
+.zone.sel{border-color:var(--blue);background:var(--panel2);transform:translateY(-4px)}
+.zone.sel li{color:var(--text)}
+.zone .arr{display:none}
+.filters{display:flex;gap:10px;margin-bottom:16px}
+.fchip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:16px;background:var(--panel)}
+.fchip.on{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tool{padding:16px 18px;border-radius:14px;background:var(--panel);border:1px solid var(--line);transition:.3s}
+.tool.dim{opacity:.22;transform:scale(.97)}
+.tool b{font-size:20px;display:block;margin-bottom:4px}.tool p{font-size:16px;color:var(--muted)}
+.tool .tag{margin-top:10px}
+.cmdgrid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.term{background:#02101f;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:7px;padding:9px 14px;background:#06223f;font-size:13px;color:var(--muted)}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#fb7185}.term .bar i:nth-child(2){background:#fbbf24}.term .bar i:nth-child(3){background:#34d399}
+.term .bar em{margin-left:8px;font-style:normal}
+.term pre{font-family:var(--mono);font-size:18px;line-height:1.6;padding:16px 18px;white-space:pre-wrap;word-break:break-all;min-height:140px}
+.term .ps{color:var(--ok)}.term .out{color:#cfe4ff;display:block;opacity:.92}.term .pend{color:var(--warn)}
+.term .caret{display:inline-block;width:10px;height:19px;background:var(--gold);vertical-align:-3px;animation:pulse 1s steps(2) infinite}
+.cmdbtns{display:flex;gap:10px;margin-top:12px}
+.sim{font-size:13px;color:var(--muted);margin-top:8px}
+.badge{margin-left:12px;vertical-align:middle;font-size:14px}
+
+/* ---------- Diagnóstico ---------- */
+.diag{display:grid;grid-template-columns:1fr 250px;gap:22px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:11px;align-items:center;text-align:left;padding:8px 12px;border-radius:11px;background:var(--panel);border:1px solid var(--line);min-height:56px;transition:.2s}
+.chk .bx{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:17px}
+.chk b{font-size:15px;display:block;line-height:1.2}.chk span{font-size:12.5px;color:var(--muted)}
+.chk[data-s="ok"]{border-color:var(--ok)}.chk[data-s="ok"] .bx{background:var(--ok);border-color:var(--ok);color:#032b1c}
+.chk[data-s="fail"]{border-color:var(--bad)}.chk[data-s="fail"] .bx{background:var(--bad);border-color:var(--bad);color:#3b0a14}
+.chk.opt b::after{content:" · opcional";color:var(--opt);font-weight:600}
+.gauge{text-align:center}
+.gauge svg{width:200px;height:200px}
+.gauge .gnum{font-size:44px;font-weight:800;fill:var(--text)}
+.gauge .gcap{font-size:13px;fill:var(--muted)}
+
+/* ---------- Cierre ---------- */
+.cards4{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cards4 .card p{font-size:18px;color:var(--muted)}
+
+/* ---------- Barra inferior, notas, índice ---------- */
+#bar{position:fixed;left:0;right:0;bottom:0;height:46px;background:#021224;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 12px;font-size:14px;z-index:20}
+#bar button{padding:6px 11px;border-radius:8px;color:var(--text)}
+#bar button:hover{background:var(--panel)}
+#bar .sp{flex:1}
+#bar a#bhome{padding:6px 11px;border-radius:8px;color:var(--text);text-decoration:none;white-space:nowrap}
+#bar a#bhome:hover{background:var(--panel)}
+@media(max-width:900px){#bar a#bhome .tx{display:none}}
+#bar .part{color:var(--muted)}#bar .part.on{color:var(--gold);font-weight:700}
+#prog{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:30;transition:width .3s}
+#clockref{color:var(--muted);font-variant-numeric:tabular-nums;margin:0 8px}
+#notes{position:fixed;right:0;top:0;bottom:46px;width:min(380px,90vw);background:#021224f2;border-left:1px solid var(--line);padding:22px 20px;transform:translateX(100%);transition:transform .3s;z-index:25;overflow:auto}
+#notes.on{transform:none}
+#notes h3{color:var(--gold);font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+#notes p{font-size:16px;line-height:1.5;color:var(--text);margin-bottom:10px}
+#index{position:fixed;inset:0 0 46px 0;background:#021224f5;z-index:26;padding:28px 38px;overflow:auto;display:none}
+#index.on{display:block}
+#index h2{margin-bottom:16px}
+#index .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+#index button{text-align:left;padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+#index button:hover{border-color:var(--blue)}
+#index small{display:block;color:var(--gold);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+#index button.cur{border-color:var(--gold)}
+noscript{position:fixed;inset:0;display:grid;place-items:center;font-size:22px;padding:40px;text-align:center;background:var(--bg)}
+
+
+/* ---------- Tema: cristal sobre degradados ---------- */
+#viewport{background:
+  radial-gradient(900px 620px at 6% -8%,rgba(43,179,255,.30),transparent 62%),
+  radial-gradient(820px 560px at 104% 112%,rgba(252,211,77,.17),transparent 60%),
+  radial-gradient(720px 520px at 92% -6%,rgba(179,156,255,.16),transparent 60%),var(--bg)}
+.slide{background:none;isolation:isolate;padding-top:58px}
+.slide::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.2px);background-size:30px 30px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);mask-image:linear-gradient(180deg,#000,transparent 75%)}
+.kick{display:inline-flex;align-items:center;gap:10px;padding:7px 16px;border-radius:999px;margin-bottom:18px;
+  border:1px solid rgba(252,211,77,.35);background:rgba(252,211,77,.08);font-size:14px}
+h1{font-size:48px;margin-bottom:26px;background:linear-gradient(95deg,#fff 30%,#a5dcff 75%,#fcd34d 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .tag{-webkit-text-fill-color:initial}
+.cover h1{font-size:56px;margin-bottom:14px}
+p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
+.card,.term,.tool,.zone,.step,.pillbox,.chk,.lstep,.link .box,.popt,.layer,.node .dot{
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  border-color:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 12px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.09)}
+.card{padding:22px 26px}
+.card.dashed{background:rgba(179,156,255,.08);border-color:var(--opt)}
+.pillbox.g{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.55)}
+.zone.sel,.layer.sel,.node.sel .dot{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#bfe9ff;color:#031a33}
+.zone.sel{color:var(--text);background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.zone.sel b,.zone.sel li{color:var(--text)}
+.chk[data-s="ok"]{background:rgba(52,211,153,.13)}.chk[data-s="fail"]{background:rgba(251,113,133,.13)}
+.btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);padding:12px 20px}
+.btn.primary{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#7dd3fc;color:#031a33;box-shadow:0 8px 22px rgba(43,179,255,.35)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.callout{background:linear-gradient(90deg,rgba(252,211,77,.14),rgba(252,211,77,.03));font-size:21px;padding:16px 22px}
+.step{padding:11px 18px}.step b{font-size:20px}.step span.d{font-size:16px}
+.list li{font-size:22px}.panel li{font-size:20px}
+.term{background:#020d1a}.term pre{font-size:21px;min-height:190px;padding:20px 22px}
+.term .bar{font-size:14px}
+.cmdgrid{gap:30px}
+.cmdgrid .card p{font-size:20px!important}
+.lstep{min-height:250px;padding:24px 22px}.lstep p{font-size:19px}.lstep .n{font-size:52px}
+.rhythm{height:58px}.rhythm div{font-size:16px}
+.link .box{min-height:150px;font-size:19px;padding:16px 12px}.link .box small{font-size:15px}
+.eval .pct{font-size:100px}.eval .card p{font-size:19px}
+.budget{height:96px}.budget button{font-size:15px}
+.zone{min-height:290px;padding:20px 18px}.zone b{font-size:25px}.zone li{font-size:18px;margin-bottom:8px}
+.tool{padding:22px 22px}.tool b{font-size:22px}.tool p{font-size:18px}
+.chk{min-height:58px;padding:6px 12px}.chk b{font-size:16.5px}.chk span{font-size:13.5px}
+.cards4 .card p{font-size:21px}.cards4{gap:20px}
+.mrow{gap:14px}.pillbox{font-size:19px;padding:12px 16px}
+.node .dot{width:58px;height:58px;font-size:20px}
+.popt{min-height:112px}.popt .t{font-size:20px}
+.stat p{font-size:24px}
+.layer{padding:18px 6px}.layer b{font-size:16px}
+.ldetail{min-height:230px}
+.slide.active .st{animation-duration:.7s}
+
+/* ---------- Niveles de madurez ---------- */
+.lvls{display:flex;flex-direction:column;gap:8px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;padding:10px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));transition:.25s;position:relative}
+.lvl:nth-child(2){margin-left:22px}.lvl:nth-child(3){margin-left:44px}
+.lvl .lv{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:19px;background:var(--panel2)}
+.lvl b{display:block;font-size:19px}.lvl small{display:block;color:var(--muted);font-size:14px}
+.lvl:hover{border-color:var(--blue)}
+.lvl.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.lvl.sel .lv{background:var(--blue);color:#031a33}
+#lvdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#lvdet p{font-size:17px;color:var(--text)}
+#lvdet .risk{color:var(--warn);font-size:16px;margin-top:6px}
+
+/* ---------- Ajustes de espacio ---------- */
+.cover .sub{font-size:24px;margin-bottom:18px}
+.inst{margin:0 0 16px}
+.path{gap:7px}.step{padding:8px 16px}.step b{font-size:19px}.step span.d{font-size:15px}.step .num{width:30px;height:30px}
+.tl{margin:2px 0 8px}.bands{margin-bottom:10px}.panel{min-height:0;padding:16px 24px}
+.panel li{font-size:18px;margin-bottom:4px}.panel h2{font-size:24px;margin-bottom:6px}
+.map{gap:6px}.pillbox{padding:8px 14px;font-size:18px}.pillbox small{font-size:13px}
+.mhead{margin-bottom:0}
+#s8 .callout,.slide .callout.f{font-size:19px;padding:12px 18px}
+.term pre{font-size:19px;line-height:1.45;min-height:150px;overflow-wrap:anywhere;word-break:normal}
+.cmdgrid .card p{font-size:18px!important}
+.cmdgrid .card{padding:16px 22px}
+.sim{margin-top:6px}
+.cmdgrid>div:first-child>p:first-child{font-size:21px;line-height:1.4;margin-bottom:10px!important}
+.cmdbtns{margin-top:8px}
+/* La etiqueta del título (borrador, pendiente…) va arriba a la derecha, a la altura de la cinta: así no ocupa una línea más cuando el título es largo. */
+h1{position:relative}h1 .badge{position:absolute;right:0;top:-47px;margin:0}
+
+/* ---------- Herramientas: más compactas ---------- */
+#toolgrid{gap:10px}
+#toolgrid .tool{padding:12px 18px}
+#toolgrid .tool b{font-size:20px;margin-bottom:2px}
+#toolgrid .tool p{font-size:16px;line-height:1.4}
+#toolgrid .tool .tag{margin-top:6px}
+.filters{margin-bottom:10px}
+
+/* ---------- Software por sesión ---------- */
+.budget button.nar{writing-mode:vertical-rl;transform:rotate(180deg);padding:2px 0}
+.budget button.nar:hover{transform:rotate(180deg)}
+.swwrap{display:grid;grid-template-columns:604px 1fr;gap:24px;align-items:start}
+.swm{display:flex;flex-direction:column;gap:2px}
+.swh,.swr{display:grid;grid-template-columns:212px repeat(7,1fr);align-items:center}
+.swh{font-size:14px;font-weight:800;letter-spacing:.08em;color:var(--gold);text-align:center;padding-bottom:3px}
+.swh span:first-child{text-align:left;padding-left:10px;color:var(--muted);letter-spacing:.14em;font-weight:700}
+.swr{height:34px;border-radius:10px;border:1px solid transparent;text-align:left;font-size:17px;font-weight:600;transition:.2s;width:100%}
+.swr:nth-child(even){background:rgba(255,255,255,.035)}
+.swr:hover{background:rgba(255,255,255,.09)}
+.swr.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.swr .nm{padding-left:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.swr .c{display:grid;place-items:center}
+.mk{width:20px;height:20px;border-radius:50%;display:inline-grid;place-items:center;font-size:12px;font-weight:800;line-height:1}
+.mk.i{background:var(--gold);color:#2b2100}
+.mk.c{border:2px solid var(--gold);color:var(--gold)}
+.mk.u{background:var(--blue)}
+.mk.s{border:2px solid var(--blue);background:linear-gradient(90deg,var(--blue) 50%,transparent 50%)}
+.mk.o{border:2px dashed var(--opt)}
+.swlegend{display:flex;flex-wrap:wrap;gap:3px 16px;margin-top:8px;padding-left:10px;font-size:14px;color:var(--muted)}
+.swlegend>span{display:inline-flex;align-items:center;gap:6px}
+#swdet{padding:16px 22px;min-height:432px}
+#swdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:24px;margin-bottom:6px}
+#swdet p.para{font-size:18px;line-height:1.4}
+#swdet .where{font-size:15px;color:var(--muted);margin:6px 0 2px}
+.uso{list-style:none;margin-top:8px}
+.uso li{display:grid;grid-template-columns:68px 1fr;gap:8px;font-size:16.5px;line-height:1.35;margin-bottom:5px}
+.uso li b{color:var(--gold)}
+.gline{margin-top:8px;font-size:15.5px;color:var(--muted);border-top:1px solid rgba(255,255,255,.14);padding-top:8px}
+.sx3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:22px}
+.sx3 h3{font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.sx3 ul{list-style:none}
+.sx3 li{font-size:20px;line-height:1.3;margin-bottom:9px}
+.sx3 li small{display:block;font-size:16px;color:var(--muted)}
+.sx3 p{font-size:20px;line-height:1.4}
+.sx3 .nota{margin-top:12px;font-size:17px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip2{padding:6px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);font-size:17px;background:rgba(255,255,255,.06)}
+.gflow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:14px}
+.gflow .card{padding:14px 18px}
+.gflow .card b{display:block;font-size:20px;margin-bottom:3px}
+.gflow .card b span{color:var(--gold);margin-right:8px}
+.gflow .card p{font-size:16.5px;line-height:1.35;color:var(--muted)}
+.gguides{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.gg{padding:12px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035))}
+.gg b{display:block;font-size:19px;margin-bottom:3px}
+.gg p{font-size:15.5px;line-height:1.35;color:var(--muted);margin-bottom:8px}
+.gpend{padding:12px 20px}
+.gpend ul{list-style:none;columns:2;column-gap:26px}
+.gpend li{font-size:16px;line-height:1.35;margin-bottom:5px;break-inside:avoid}
+.gpend li b{color:var(--opt)}
+
+@media (max-width:760px){
+  #clockref,#bfull,#bar .part{display:none}
+  #bar{gap:2px;padding:0 6px}#count{white-space:nowrap}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;height:auto;background:#031a33;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #viewport{position:static;overflow:visible;background:none}
+  #stage{position:static;transform:none;width:1280px;height:auto}
+  .slide{position:relative;height:720px;opacity:1;visibility:visible;transform:none;page-break-after:always;break-after:page}
+  .f,.f.mark{opacity:1!important;transform:none!important}.f.mark{display:none}
+  #bar,#prog,#notes,#index{display:none!important}
+  .st{animation:none!important;opacity:1!important}
+}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<!-- 1 · PORTADA -->
+<section class="slide" data-part="A" data-min="1" data-title="Portada"
+ data-notes="Bienvenida. Preséntese en una frase. Confirme en el chat que se ve y se oye. Diga que S0 dura 2 horas: 25 min de presentación, 15 de pausa, 70 de entorno obligatorio y 10 de cierre. Teclas: flechas o espacio, O índice, S notas, F pantalla completa.">
+  <img class="cover-logo st" src="media/logo-untrm.svg" alt="UNTRM · Universidad Nacional Toribio Rodríguez de Mendoza de Amazonas" style="--d:0">
+  <span class="tag gold pill st" style="--d:1">S0 · 2 horas</span>
+  <div class="cover">
+    <div>
+      <p class="kick st" style="--d:1">UNTRM · INCID · FIZBAC · 2026-II</p>
+      <h1 class="st" style="--d:2">ML e IA: de desarrollo a producción</h1>
+      <p class="sub st" style="--d:3">Presentación y entorno · del dato al modelo, del modelo al servicio.</p>
+      <div class="inst st" style="--d:4">
+        <img src="media/portrait.webp" alt="Helí Campos R.">
+        <div><b>Helí Campos R.</b><span>BigData, Analytics &amp; AI Architect</span>
+        <a href="https://www.linkedin.com/in/helicr/" target="_blank" rel="noopener">linkedin.com/in/helicr</a> · <a href="mailto:helicr@gmail.com">helicr@gmail.com</a></div>
+      </div>
+      <div class="chips st" style="--d:5">
+        <span class="tag core">Núcleo: ML clásico de extremo a extremo</span>
+        <span class="tag">En línea · Google Meet</span>
+        <span class="tag">22 horas síncronas</span>
+      </div>
+    </div>
+    <div class="hero st" style="--d:3" aria-hidden="true">
+      <svg viewBox="0 0 440 470">
+        <path class="flowpath" d="M70 55 C 220 55, 220 160, 370 160 S 220 265, 70 265 S 220 370, 370 370 S 220 430, 220 430"/>
+        <g><circle class="hnode" cx="70" cy="55" r="44"/><text class="htxt" x="70" y="61">Dato</text></g>
+        <g><circle class="hnode" cx="370" cy="160" r="44"/><text class="htxt" x="370" y="166">Modelo</text></g>
+        <g><circle class="hnode" cx="70" cy="265" r="44"/><text class="htxt" x="70" y="271">API</text></g>
+        <g><circle class="hnode" cx="370" cy="370" r="44"/><text class="htxt" x="370" y="376">Nube</text></g>
+        <g><circle class="hnode" cx="220" cy="432" r="32" style="stroke:var(--gold)"/><text class="htxt" x="220" y="438" style="font-size:14px">Ops</text></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · ENCUESTA -->
+<section class="slide" data-part="A" data-min="3" data-title="¿Desde dónde partimos?" data-enter="poll"
+ data-notes="Tres preguntas para calibrar. Pida respuestas en voz alta o en el chat y pulse la opción para contarlas. La segunda tiene clave (B): una métrica alta o una captura no bastan. Anote si casi nadie ha servido un modelo: irá más despacio en S2 y S3.">
+  <p class="kick st">Apertura · 3 min</p>
+  <h1 class="st" style="--d:1">¿Desde dónde partimos?</h1>
+  <div id="poll" class="st" style="--d:2"></div>
+</section>
+
+<!-- 3 · OBJETIVO -->
+<section class="slide" data-part="A" data-min="2" data-title="Qué nos proponemos"
+ data-notes="Objetivo: llevar un modelo de ML clásico del dato a producción. Núcleo obligatorio a la izquierda; lo opcional (red neuronal, LLM, RAG, LLMOps/AgentOps) a la derecha y queda fuera de la evaluación obligatoria. MCP y agentes no se tratan. Nada exige GPU.">
+  <p class="kick st">Parte A · Objetivos</p>
+  <h1 class="st" style="--d:1">Del dato al servicio, y que otra persona lo pueda operar</h1>
+  <div class="split">
+    <div class="card st" style="--d:2">
+      <div class="row" style="align-items:center;margin-bottom:12px"><span class="tag core">Núcleo obligatorio</span><span class="small">ML clásico de extremo a extremo</span></div>
+      <ul class="list">
+        <li class="f"><span><b>Datos reproducibles</b> por capas: raw → master → fs → ml</span></li>
+        <li class="f"><span><b>Entrenamiento y seguimiento</b> con MLflow</span></li>
+        <li class="f"><span><b>API y contenedor</b> con FastAPI y Docker (en Codespaces)</span></li>
+        <li class="f"><span><b>De local a GCP:</b> migración y despliegue en Cloud Run</span></li>
+        <li class="f"><span><b>Pipelines con GitHub Actions</b> y CI/CD</span></li>
+        <li class="f"><span><b>MLOps:</b> versiones, monitoreo y rollback</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="card dashed f">
+        <div class="row" style="align-items:center;margin-bottom:12px"><span class="tag opt">Opcional</span></div>
+        <ul class="list">
+          <li><span>Red neuronal guiada (PyTorch)</span></li>
+          <li><span>LLM abierto, como sesión extra</span></li>
+          <li><span>RAG y la visión de LLMOps / AgentOps</span></li>
+        </ul>
+      </div>
+      <div class="card f"><h3>Fuera del curso</h3><p class="small">MCP y agentes. Nada del curso exige una GPU propia.</p></div>
+      <p class="small f">A quién se dirige: investigadores, docentes y estudiantes que ya pueden entrenar un modelo y, con alta probabilidad, no lo han llevado a producción.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · NOTEBOOK -> SERVICIO -->
+<section class="slide" data-part="A" data-min="3" data-title="Del notebook al servicio"
+ data-notes="Cuente la historia y avance siete veces con la flecha: capas reproducibles; entrenamiento y artefactos; API y contrato; contenedor; migración y despliegue S3; orquestación y MLOps; extensión opcional a LLMs y agentes. El hilo práctico es ML clásico. Cite Sculley y Google Cloud para la disciplina de sistemas ML, no para la terminología de LLMOps.">
+  <p class="kick st">Parte A · Del experimento al sistema operable</p>
+  <h1 class="st" style="--d:1">Del notebook al servicio</h1>
+  <div class="grid2" style="grid-template-columns:.8fr 1.2fr">
+    <div class="col st" style="--d:2">
+      <div class="card"><h3 class="gold">Historia hipotética</h3>
+      <p>La predicción es correcta. El cuaderno vive en una ruta personal y las dependencias no están documentadas. Un colega quiere consumir el modelo; después cambian los datos o una versión.</p>
+      <p style="margin-top:12px;font-weight:700">¿Quién puede reproducirlo, usarlo y recuperarlo?</p></div>
+      <p class="small">Avanza con <b>→</b> para revelar el camino. Los pasos 1–6 son el núcleo; el último es opcional.</p>
+    </div>
+    <div class="path">
+      <div class="step f"><span class="num">1</span><div><b>Datos y capas reproducibles</b><span class="d">raw → master → fs → ml: originales, validación y trazabilidad</span></div><span class="tag core">S1</span></div>
+      <div class="step f"><span class="num">2</span><div><b>Entrenamiento y artefactos</b><span class="d">Modelo, preproceso, métricas y metadatos; seguimiento con MLflow</span></div><span class="tag core">S1</span></div>
+      <div class="step f"><span class="num">3</span><div><b>API y contrato de inferencia</b><span class="d">El mismo preproceso; entradas validadas; errores explícitos</span></div><span class="tag core">S2</span></div>
+      <div class="step f"><span class="num">4</span><div><b>Contenedor y ejecución repetible</b><span class="d">Dependencias, configuración y pruebas fuera del notebook</span></div><span class="tag core">S2</span></div>
+      <div class="step f"><span class="num">5</span><div><b>Migración y despliegue en GCP</b><span class="d">Datos en Cloud Storage y BigQuery; servicio en Cloud Run</span></div><span class="tag core">S3</span></div>
+      <div class="step f"><span class="num">6</span><div><b>Orquestación, monitoreo, versiones y rollback</b><span class="d">GitHub Actions, registros, alertas, actualización y recuperación</span></div><span class="tag core">S4–S5</span></div>
+      <div class="step f" style="border-style:dashed;border-color:var(--opt)"><span class="num" style="background:var(--opt)">+</span><div><b>La disciplina se extiende a LLMs y agentes</b><span class="d">Visión de LLMOps y AgentOps, fuera del núcleo</span></div><span class="tag opt">Opcional</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · EL MODELO ES LA PARTE PEQUEÑA -->
+<section class="slide" data-part="A" data-min="2" data-title="El modelo es la parte pequeña" data-enter="evidence"
+ data-notes="Idea central: entrenar el modelo es una fracción del trabajo. Sculley et al. (2015): el código del modelo es una parte pequeña de un sistema de ML real, rodeado de datos, configuración, verificación, supervisión y servicio. Anaconda (2020, 2 360 personas, más de 100 países): el 45 % del tiempo se va en cargar y limpiar datos; es un dato de 2020, preséntelo como contexto histórico. Google Cloud define tres niveles de madurez de MLOps: 0 manual, 1 automatización del pipeline, 2 CI/CD; las fuentes difieren en algunos detalles del nivel 1, así que no entre en ellos. Haga clic en cada nivel y señale en qué sesión lo practicamos.">
+  <p class="kick st">Parte A · Por qué MLOps</p>
+  <h1 class="st" style="--d:1">El modelo es la parte pequeña del sistema</h1>
+  <div class="grid2" style="grid-template-columns:1fr 1.05fr">
+    <div class="col st" style="--d:2">
+      <div class="sysbox">
+        <span class="lab">Sistema de ML real</span>
+        <div class="cell">Datos</div><div class="cell">Configuración</div><div class="cell">Verificación</div>
+        <div class="cell">Infraestructura</div><div class="cell core">Código del modelo</div><div class="cell">Supervisión</div>
+        <div class="cell" style="grid-column:2">Servicio</div>
+      </div>
+      <div class="stat" style="margin-top:6px"><span class="big" style="font-size:60px"><span class="cnt" data-to="45">0</span> %</span><p style="font-size:20px">del tiempo se va en <b>cargar y limpiar datos</b>, antes de entrenar.</p></div>
+      <div class="meter" style="margin:0"><i data-w="45"></i></div>
+      <p class="small">Sculley et al. (2015), <i>Hidden Technical Debt in ML Systems</i>. Anaconda (2020), 2 360 personas de más de 100 países: dato histórico de ciencia de datos.</p>
+    </div>
+    <div class="st" style="--d:3">
+      <p class="small" style="margin-bottom:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold)">Madurez de MLOps · Google Cloud</p>
+      <div class="lvls" id="lvls"></div>
+      <div class="card" id="lvdet" style="margin-top:10px;min-height:0;padding:16px 22px"></div>
+      <p class="small" style="margin-top:8px">Fuente: Google Cloud, <i>MLOps: continuous delivery and automation pipelines in machine learning</i>. Haz clic en cada nivel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · MAPA DEL CURSO -->
+<section class="slide" data-part="A" data-min="2" data-title="Programa S0–S5" data-enter="course"
+ data-notes="Programa de 22 horas síncronas: S0 2 h y S1–S5 4 h. Haga clic en cada sesión para ver su contenido. Señale los tres hilos: MLflow desde S1, GitHub Actions desde S2 y el paso de local a GCP en S3. La red neuronal de S3 y el LLM son opcionales. Trabajo autónomo orientativo: 2–3 h entre sesiones.">
+  <p class="kick st">Parte A · Programa</p>
+  <h1 class="st" style="--d:1">Seis sesiones, tres hilos</h1>
+  <div class="tl st" style="--d:2" id="tl"></div>
+  <div class="bands st" style="--d:3">
+    <span class="band l" style="grid-column:1/3">Entorno comprobado</span>    <span class="band m" style="grid-column:2/7">Hilo MLflow · seguimiento → carga → registro → alias</span>
+    <span class="band a" style="grid-column:3/7">Hilo GitHub Actions · imagen → pipeline → operación</span>
+    <span class="band l" style="grid-column:2/4">En local (on-premise simulado)</span><span class="band g" style="grid-column:4/7">Migración y operación en GCP</span>
+    <span class="band o" style="grid-column:4/5">Red neuronal</span><span class="band o" style="grid-column:6/7;grid-row:auto">+ LLM (sesión extra)</span>
+  </div>
+  <div class="card panel st" style="--d:4" id="panel"></div>
+</section>
+
+<!-- 7 · CAPAS -->
+<section class="slide" data-part="A" data-min="3" data-title="Estructura del caso práctico" data-enter="layers"
+ data-notes="Recorra las siete capas con el botón de reproducir o haciendo clic. Señale los prefijos master_, fs_ y ml_ en SQLite. FS es una capa didáctica, no una plataforma completa de feature store. El caso y el dataset concretos se revelan en S1: no los anticipe hoy.">
+  <p class="kick st">Parte A · Caso práctico transversal</p>
+  <h1 class="st" style="--d:1">Del archivo original al servicio en producción</h1>
+  <div class="layers st" style="--d:2" id="layers"></div>
+  <div class="track st" style="--d:2"><i class="packet"></i><i class="packet"></i><i class="packet"></i></div>
+  <div class="ldetail st" style="--d:3"><div class="card" id="ldet"></div>
+    <div class="col"><div class="card"><h3 class="gold">Cómo se recorre</h3><p class="small">Cada capa se construye a partir de la anterior y nunca modifica la original. Haz clic en una capa o pulsa ▶ para el recorrido completo.</p></div>
+    <div class="row"><button class="btn primary" id="lplay">▶ Recorrer capas</button><button class="btn" id="lstop">Detener</button></div>
+    <p class="small">El caso y el conjunto de datos se revelan en S1.</p></div>
+  </div>
+</section>
+
+<!-- 8 · LOCAL -> GCP -->
+<section class="slide" data-part="A" data-min="2" data-title="De local a GCP"
+ data-notes="En S1 y S2 todo corre en local: archivos, SQLite, MLflow y Docker. Eso es el on-premise simulado. En S3 se migra a GCP. Tres estrategias: rehost (mover tal cual), replatform (cambiar de plataforma con ajustes mínimos) y refactor (rediseñar para la nube). Verifique los nombres de servicios y límites gratuitos antes de impartir.">
+  <p class="kick st">Parte A · Hilo de migración</p>
+  <h1 class="st" style="--d:1">Lo que hoy corre en local, mañana en GCP</h1>
+  <div class="mhead st" style="--d:2"><span>S1–S2 · En local</span><span></span><span>S3–S5 · En GCP</span><span>Estrategia</span></div>
+  <div class="map">
+    <div class="mrow f"><div class="pillbox">Archivos originales<small>data/raw</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">Cloud Storage<small>bucket con versionado de objetos</small></div><div class="strat replatform">Replatform</div></div>
+    <div class="mrow f"><div class="pillbox">SQLite · master_ fs_ ml_<small>capas transformadas</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">BigQuery<small>o Cloud SQL si es transaccional</small></div><div class="strat replatform">Replatform</div></div>
+    <div class="mrow f"><div class="pillbox">Imagen Docker + uvicorn<small>servicio de la API</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">Artifact Registry + Cloud Run<small>sin administrar servidores</small></div><div class="strat rehost">Rehost</div></div>
+    <div class="mrow f"><div class="pillbox">Archivo .env<small>credenciales locales</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">Secret Manager + IAM<small>cuentas de servicio con permisos mínimos</small></div><div class="strat replatform">Replatform</div></div>
+    <div class="mrow f"><div class="pillbox">Scripts manuales o cron<small>pipeline de datos y entrenamiento</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">GitHub Actions<small>workflows orquestados, sin claves en el repo</small></div><div class="strat refactor">Refactor</div></div>
+    <div class="mrow f"><div class="pillbox">MLflow local<small>SQLite + carpeta de artefactos</small></div><div class="arrow"><svg viewBox="0 0 70 22"><path class="flowpath" d="M0 11 H62"/><path d="M56 4 L66 11 L56 18" fill="none" stroke="#2bb3ff" stroke-width="3"/></svg></div><div class="pillbox g">MLflow sobre GCP<small>o Vertex AI como alternativa</small></div><div class="strat replatform">Replatform</div></div>
+  </div>
+  <p class="callout f" style="margin-top:14px;font-size:18px">Antes de migrar se evalúa; después de migrar se <b>valida</b> (conteos, esquemas y agregados) y se planifica el <b>rollback</b>.</p>
+</section>
+
+<!-- 9 · MÉTODO -->
+<section class="slide" data-part="A" data-min="2" data-title="Ver · ejecutar · adaptar · explicar" data-enter="rhythm"
+ data-notes="El instructor resuelve un caso; cada estudiante reproduce y adapta uno semejante. El avance se presenta al inicio de la siguiente sesión. Ritmo de S1 a S5: 30 min de revisión, 60 de teoría, 135 de práctica y 15 de siguiente entrega.">
+  <p class="kick st">Parte A · Método</p>
+  <h1 class="st" style="--d:1">Ver → ejecutar → adaptar → explicar</h1>
+  <div class="loop st" style="--d:2">
+    <div class="lstep f"><div class="n">01</div><h3>Ver</h3><p>El instructor resuelve un caso en vivo, con decisiones en voz alta.</p></div>
+    <div class="lstep f"><div class="n">02</div><h3>Ejecutar</h3><p>Cada participante reproduce el procedimiento en su entorno, no solo observa.</p></div>
+    <div class="lstep f"><div class="n">03</div><h3>Adaptar</h3><p>Se aplica el mismo esquema a un caso semejante, acumulativo, como tarea.</p></div>
+    <div class="lstep f"><div class="n">04</div><h3>Explicar</h3><p>Al inicio de la siguiente sesión se presenta el avance: qué se hizo y por qué.</p></div>
+  </div>
+  <h3 class="muted st" style="--d:3;margin-top:26px">Ritmo de cada sesión S1–S5 (4 horas)</h3>
+  <div class="rhythm f" id="rhythm">
+    <div style="width:12.5%;background:var(--gold)">30 min · revisión</div><div style="width:25%;background:var(--blue)">60 min · teoría</div>
+    <div style="width:56.25%;background:var(--ok)">135 min · práctica</div><div style="width:6.25%;background:#cbd5e1">15</div></div>
+  <p class="small f">Trabajo autónomo orientativo: 2–3 horas entre sesiones. Quien se atrasa corta el hilo: cada entrega construye la próxima.</p>
+</section>
+
+<!-- 10 · ENTREGAS -->
+<section class="slide" data-part="A" data-min="3" data-title="Un avance construye el siguiente"
+ data-notes="Lea la cadena hasta el informe final. Recalque la lista de evidencias: una captura, sola, no demuestra entorno ni comando.">
+  <p class="kick st">Parte A · Cadena de entregas</p>
+  <h1 class="st" style="--d:1">Un avance construye el siguiente</h1>
+  <div class="chain">
+    <div class="link f"><div class="when">S2</div><div class="box">Pipeline de datos + modelo + métricas<small>Se revisa en S2</small></div></div>
+    <div class="link f"><div class="when">S3</div><div class="box">API + contenedor<small>Se revisa en S3</small></div></div>
+    <div class="link f"><div class="when">S4</div><div class="box">Migración a GCP y despliegue<small>Opcional: módulo neuronal</small></div></div>
+    <div class="link f"><div class="when">S5</div><div class="box">Pipeline orquestado con GitHub Actions<small>Se revisa en S5</small></div></div>
+    <div class="link f"><div class="when">+</div><div class="box">Repositorio final + informe<small>Tras S5</small></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card f"><h3 class="gold">Una captura no basta</h3><p>La evidencia es el rastro que permite a otra persona repetir el resultado y entender las decisiones.</p></div>
+    <div class="card f"><div class="chips"><span class="tag core">Código</span><span class="tag core">Entorno</span><span class="tag core">Comandos</span><span class="tag core">Pruebas</span><span class="tag core">README</span><span class="tag core">Decisiones justificadas</span></div>
+    <p class="small" style="margin-top:12px">Una captura de pantalla, por sí sola, no demuestra que el entorno exista ni que el comando funcione.</p></div>
+  </div>
+</section>
+
+<!-- 11 · EVALUACIÓN -->
+<section class="slide" data-part="A" data-min="2" data-title="Conocer, hacer y dejar un producto" data-enter="eval"
+ data-notes="20 / 40 / 40 por unidad. El 80 % es demostrar y documentar. Cierre la Parte A y avise: la preparación obligatoria del entorno dura 70 minutos. Lleve a los participantes a la pausa de 15 minutos. Evaluación sujeta a validación institucional.">
+  <p class="kick st">Parte A · Evaluación por unidad</p>
+  <h1 class="st" style="--d:1">Conocer, hacer y dejar un producto</h1>
+  <div class="stack st" style="--d:2" id="evstack"><i style="width:20%;background:var(--gold);transform:scaleX(0)"></i><i style="width:40%;background:var(--blue);transform:scaleX(0)"></i><i style="width:40%;background:var(--ok);transform:scaleX(0)"></i></div>
+  <div class="eval">
+    <div class="card f"><div class="pct"><span class="cnt" data-to="20">0</span><span>%</span></div><h3>Conocimiento</h3><p class="small">Comprender arquitecturas, decisiones y límites. No se aprueba solo memorizando comandos.</p></div>
+    <div class="card f"><div class="pct"><span class="cnt" data-to="40">0</span><span>%</span></div><h3>Desempeño</h3><p class="small">Resolver el caso: ejecutar, adaptar y explicar. El proceso cuenta tanto como el resultado.</p></div>
+    <div class="card f"><div class="pct"><span class="cnt" data-to="40">0</span><span>%</span></div><h3>Producto</h3><p class="small">Un entregable reproducible: repositorio, pruebas, README e informe con decisiones justificadas.</p></div>
+  </div>
+  <p class="callout f">El 80 % de la nota es <b>demostrar y documentar</b> lo que se hizo. El criterio de evidencia aplica a cada unidad. <span class="small">(Sujeto a validación institucional.)</span></p>
+</section>
+
+<!-- 12 · PAUSA -->
+<section class="slide" data-part="A" data-min="15" data-title="Pausa para el café" data-enter="pause"
+ data-notes="Pausa de 15 minutos. Pulse Iniciar pausa; el contador no arranca solo. Al terminar, pulse Ir a la Parte B. S0: 25 min Parte A + 15 de pausa + 70 de entorno obligatorio + 10 de cierre = 120 min.">
+  <p class="kick st">S0 · Pausa programada</p>
+  <h1 class="st" style="--d:1">Pausa para el café</h1>
+  <div class="pause">
+    <div class="st" style="--d:2">
+      <svg class="cup" viewBox="0 0 260 220" aria-hidden="true">
+        <g fill="none" stroke="#2bb3ff" stroke-width="5" stroke-linecap="round"><path class="steam" d="M95 60 C80 40 110 30 95 10"/><path class="steam" d="M130 60 C115 40 145 30 130 10"/><path class="steam" d="M165 60 C150 40 180 30 165 10"/></g>
+        <path d="M50 80 H210 V130 C210 168 180 190 130 190 C80 190 50 168 50 130Z" fill="#eef6ff"/>
+        <path d="M210 95 C250 95 250 150 205 150" fill="none" stroke="#eef6ff" stroke-width="12"/>
+        <rect x="75" y="108" width="110" height="34" rx="8" fill="#062a4d"/><text x="130" y="131" text-anchor="middle" fill="#fcd34d" font-size="19" font-weight="800" font-family="system-ui">MLOps</text>
+        <ellipse cx="130" cy="204" rx="90" ry="9" fill="#0a3560"/>
+      </svg>
+    </div>
+    <div class="st" style="--d:3">
+      <p class="small" style="text-transform:uppercase;letter-spacing:.14em">Tiempo restante</p>
+      <div class="clock" id="clock">15:00</div>
+      <div class="row" style="margin:16px 0"><button class="btn primary" id="pstart">Iniciar pausa</button><button class="btn" id="preset">Reiniciar</button><button class="btn" id="pgo">Ir a la Parte B →</button></div>
+      <div class="t120"><div style="width:20.8%;background:var(--gold)">A · 25</div><div style="width:12.5%;background:#cbd5e1">Pausa · 15</div><div style="width:58.3%;background:var(--blue)">B · entorno · 70</div><div style="width:8.3%;background:var(--ok)">10</div></div>
+      <p class="small">S0 · 120 min. El contador solo arranca al pulsar «Iniciar pausa».</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · PARTE B INTRO -->
+<section class="slide" data-part="B" data-min="2" data-title="Preparación del entorno" data-enter="budget"
+ data-notes="Bloque obligatorio de 70 minutos. Hoy no se adelanta el entrenamiento: se deja una máquina con la que el resto del curso pueda ejecutarse. La barra muestra el presupuesto de tiempo de cada bloque; haga clic en un tramo para saltar. Si algo falla, se anota el comando, la salida y se comunica. Eso también es evidencia. Recomiende enviar la guía de preparación antes de S0.">
+  <p class="kick st">Parte B · 70 minutos · bloque obligatorio</p>
+  <h1 class="st" style="--d:1">Hoy dejamos una máquina lista para el resto del curso</h1>
+  <p class="lead muted st" style="--d:2">No adelantamos el entrenamiento. Comprobamos, paso a paso, que todo responde.</p>
+  <div class="budget st" style="--d:3" id="budget"></div>
+  <p class="small st" style="--d:3">Haz clic en un tramo para saltar a ese bloque. El ancho es proporcional a los minutos previstos.</p>
+  <div class="grid2" style="margin-top:20px">
+    <div class="card f"><h3 class="gold">Cada paso responde cuatro preguntas</h3><p class="small">¿Para qué sirve? · ¿Qué ejecuto? · ¿Qué debo ver? · ¿Qué reviso si falla?</p></div>
+    <div class="callout f">Si algo falla, <b>no se improvisa en silencio</b>: se anota el comando, la salida y se comunica. Eso también es evidencia.</div>
+  </div>
+</section>
+
+<!-- 14 · DÓNDE CORRE CADA PIEZA -->
+<section class="slide" data-part="B" data-min="3" data-title="Dónde corre cada pieza" data-enter="zones"
+ data-notes="Local para datos y pruebas; Codespaces para Docker y Kubernetes (no se instalan en el portátil); GitHub Actions para orquestar pipelines; GCP para el despliegue. Haga clic en cada zona. Respaldo compartido para el LLM opcional. Sin GPU propia.">
+  <p class="kick st">Parte B · Dónde corre cada pieza</p>
+  <h1 class="st" style="--d:1">Tu equipo · Codespaces · Actions · GCP</h1>
+  <div class="zones st" style="--d:2" id="zones">
+    <div class="zone sel" data-z="0"><span class="zt">Tu equipo</span><b>Datos y pruebas</b><ul><li>Git y VS Code</li><li>Miniconda y Python</li><li>SQLite (visor)</li><li>gcloud, o Cloud Shell</li></ul></div>
+    <div class="zone" data-z="1"><span class="zt">Codespaces</span><b>Docker y Kubernetes</b><ul><li>docker, kind, kubectl</li><li>Imágenes y contenedores</li><li>Laboratorio de K8s</li><li>No se instala en el portátil</li></ul></div>
+    <div class="zone" data-z="2"><span class="zt">GitHub Actions</span><b>Pipelines</b><ul><li>Pruebas y calidad</li><li>Pipeline raw → modelo</li><li>Construcción de la imagen</li><li>Despliegue con aprobación</li></ul></div>
+    <div class="zone" data-z="3"><span class="zt">Google Cloud</span><b>Datos y servicio</b><ul><li>Cloud Storage y BigQuery</li><li>Artifact Registry</li><li>Cloud Run</li><li>Secret Manager e IAM</li></ul></div>
+  </div>
+  <div class="card st" style="--d:3" id="zdet"></div>
+</section>
+
+<!-- 15 · SOFTWARE POR SESIÓN (matriz) -->
+<section class="slide" data-part="B" data-min="3" data-title="Software por sesión: qué y para qué" data-enter="swm"
+ data-notes="Esta diapositiva responde a «¿para qué instalo todo esto?». Lea la leyenda y haga clic en cada fila: a la derecha aparece para qué sirve la herramienta y qué se hace con ella en cada sesión. Tres ideas: (1) casi todo lo que se instala en el equipo se instala hoy; (2) Docker, kind y kubectl no se instalan en el portátil, se usan en Codespaces; (3) MLflow y FastAPI no se instalan aparte, vienen en el entorno env-ia-mlops. Las marcas siguen el programa y son orientativas. Lo opcional (PyTorch y LLM) no se instala hoy.">
+  <p class="kick st">Parte B · Qué vamos a necesitar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:12px">Qué software, en qué sesión y para qué</h1>
+  <div class="swwrap st" style="--d:2">
+    <div>
+      <div class="swm" id="swm"></div>
+      <div class="swlegend" id="swlegend"></div>
+    </div>
+    <div class="card" id="swdet"></div>
+  </div>
+</section>
+
+<!-- 16 · QUÉ SE ESTRENA EN CADA SESIÓN -->
+<section class="slide" data-part="B" data-min="2" data-title="Qué se estrena en cada sesión" data-enter="sws"
+ data-notes="Haga clic en cada sesión. Idea clave: después de hoy casi nada se instala; lo que cambia es dónde se trabaja (portátil, Codespaces, nube). Cada sesión indica qué debe funcionar antes de empezar: es la base del diagnóstico final y de lo que se les pedirá en cada «Antes de S...». S4 y S5 no estrenan herramientas: profundizan en lo ya instalado.">
+  <p class="kick st">Parte B · Qué vamos a necesitar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:10px">Qué estrena cada sesión y qué debe estar listo antes</h1>
+  <div class="tl st" style="--d:2" id="tl2"></div>
+  <div class="card st" style="--d:3" id="sx"></div>
+</section>
+
+<!-- 17 · HERRAMIENTAS -->
+<section class="slide" data-part="B" data-min="3" data-title="Herramientas" data-enter="tools"
+ data-notes="Pida que marquen en el chat lo que ya tienen. En el equipo: Git, VS Code con sus seis extensiones, Miniconda, visor SQLite y gcloud (o Cloud Shell). Docker no hace falta en local: se usa en Codespaces. Cuenta de GitHub y proyecto de Google Cloud, además del software. La guía de instalación para Windows y el script están en 03-Entorno: pídales que los ejecuten antes de S0 para que la Parte B sea de comprobación.">
+  <p class="kick st">Parte B · Kit base</p>
+  <h1 class="st" style="--d:1">Herramientas que hay que tener listas</h1>
+  <div class="filters st" style="--d:2" id="filters"><button class="fchip on" data-f="all">Todo</button><button class="fchip" data-f="local">En tu equipo</button><button class="fchip" data-f="cs">En Codespaces</button><button class="fchip" data-f="cloud">En la nube</button></div>
+  <div class="tools st" style="--d:3" id="toolgrid">
+    <div class="tool" data-w="local"><b>VS Code</b><p>Editor del curso, con Python, Pylance, Jupyter, Container Tools, Kubernetes y Dev Containers.</p><span class="tag core">Obligatorio</span></div>
+    <div class="tool" data-w="local"><b>Miniconda</b><p>Entornos aislados y reproducibles. No instalar paquetes sueltos en el base.</p><span class="tag core">Obligatorio</span></div>
+    <div class="tool" data-w="local cloud"><b>Git y GitHub</b><p>Historial, ramas y evidencias. GitHub Actions orquesta los pipelines.</p><span class="tag core">Obligatorio</span></div>
+    <div class="tool" data-w="local"><b>DB Browser for SQLite</b><p>Inspeccionar raw, master, fs y ml sin escribir SQL a ciegas.</p><span class="tag core">Obligatorio</span></div>
+    <div class="tool" data-w="cs"><b>Docker (en Codespaces)</b><p>Construye y ejecuta la imagen dentro del Codespace. Docker Desktop local es opcional.</p><span class="tag core">Sin instalar</span></div>
+    <div class="tool" data-w="local cloud"><b>Google Cloud CLI</b><p>Autenticación y proyecto. En S0 solo se comprueba el acceso. Alternativa: Cloud Shell.</p><span class="tag core">Obligatorio</span></div>
+  </div>
+  <p class="callout st" style="--d:4;margin-top:12px;font-size:17px;padding:10px 16px">Instálalo <b>antes de S0</b> con la <b>guía de instalación para Windows</b> (<code>03-Entorno/guia-instalacion</code>). En clase solo verificamos: <code>instalar_entorno.cmd verificar</code> o <code>instalar_entorno.ps1 -Verificar</code>.</p>
+</section>
+
+<!-- 18 · UNA GUÍA POR HERRAMIENTA -->
+<section class="slide" data-part="B" data-min="1" data-title="Una guía de uso por herramienta"
+ data-notes="Cada herramienta tiene tres momentos: instalar, aprender lo mínimo y comprobar. La guía de instalación es la que se ejecuta antes de S0; las guías de uso son chuletas cortas con los comandos que sí se necesitan, y no sustituyen a la de instalación. Hoy hay cuatro; las demás se irán publicando antes de la sesión que las necesita. Indique dónde están en el repositorio: 07-Recursos/guias.">
+  <p class="kick st">Parte B · Después de instalar</p>
+  <h1 class="st" style="--d:1;font-size:40px;margin-bottom:12px">Instalar, aprender lo mínimo, comprobar</h1>
+  <div class="gflow st" style="--d:2">
+    <div class="card"><b><span>1</span>Instalar</b><p>Con la <b style="display:inline;font-size:inherit">guía de instalación para Windows</b>: <code>03-Entorno/guia-instalacion</code>.</p></div>
+    <div class="card"><b><span>2</span>Aprender lo mínimo</b><p>Con la <b style="display:inline;font-size:inherit">guía de uso</b> de cada herramienta: qué es, para qué sirve y la chuleta de comandos. En <code>07-Recursos/guias</code>.</p></div>
+    <div class="card"><b><span>3</span>Comprobar</b><p>Con el diagnóstico de esta Parte B: lo esperado frente a lo obtenido, y lo que falle, por escrito.</p></div>
+  </div>
+  <div class="gguides st" style="--d:3">
+    <div class="gg"><b>Miniconda y entornos</b><p>Crear, activar y reparar el entorno del curso.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>Git y ramas</b><p>Clonar, crear ramas, guardar y entregar cada tarea.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>Visual Studio Code</b><p>Extensiones, intérprete, kernel de notebooks y terminal.</p><span class="tag ok">Disponible</span></div>
+    <div class="gg"><b>SQLite</b><p>Crear bases y tablas, lanzar SQL y verlas en una interfaz.</p><span class="tag ok">Disponible</span></div>
+  </div>
+  <div class="card dashed gpend st" style="--d:4">
+    <h3 style="font-size:17px;margin-bottom:6px">Se publican antes de la sesión que las necesita</h3>
+    <ul>
+      <li><b>Antes de S1</b> · gcloud y Cloud Shell, Codespaces, MLflow, cuadernos y pruebas, terminal de Windows</li>
+      <li><b>Antes de S2</b> · Docker, FastAPI y GitHub Actions</li>
+      <li><b>Antes de S3</b> · Cloud Storage y BigQuery, Artifact Registry y Cloud Run, secretos e IAM, costes, kubectl y kind</li>
+      <li><b>S4 y S5</b> · Actions ampliada, autenticación sin claves, monitoreo, versionado y vuelta atrás</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Pasos con comandos (generados) -->
+<section class="slide" data-part="B" data-cmd="repo"></section>
+<section class="slide" data-part="B" data-cmd="conda"></section>
+<section class="slide" data-part="B" data-cmd="kernel"></section>
+<section class="slide" data-part="B" data-cmd="sqlite"></section>
+<section class="slide" data-part="B" data-cmd="docker"></section>
+<section class="slide" data-part="B" data-cmd="gcloud"></section>
+<section class="slide" data-part="B" data-cmd="codespaces"></section>
+
+<!-- 26 · OPCIONAL -->
+<section class="slide" data-part="B" data-min="1" data-title="Ruta opcional: red neuronal y LLM"
+ data-notes="Bloque opcional: no se instala nada hoy. Dedíquele 1–2 minutos y reasigne el resto a Codespaces o al diagnóstico. Sin GPU propia; modelo ligero o entorno compartido; motor y modelos definitivos pendientes. RAG es una ampliación posterior; MCP y agentes quedan fuera.">
+  <p class="kick st">Parte B · Ampliaciones opcionales</p>
+  <h1 class="st" style="--d:1">Red neuronal y LLM: ruta opcional <span class="tag opt badge">Opcional</span></h1>
+  <div class="grid2" style="grid-template-columns:repeat(3,1fr)">
+    <div class="card dashed st" style="--d:2"><h3>Sin GPU propia</h3><p class="small" style="font-size:17px">Los módulos opcionales de redes (parte de S3) y de LLMs abiertos (sesión extra) se piensan para CPU o para un entorno compartido.</p></div>
+    <div class="card dashed st" style="--d:3"><h3>Modelo ligero o entorno compartido</h3><p class="small" style="font-size:17px">Se usará un modelo que quepa en el equipo medio del grupo, o una ruta de respaldo publicada por el instructor.</p></div>
+    <div class="card dashed st" style="--d:4"><h3>Aún hay piezas por cerrar</h3><p class="small" style="font-size:17px">Motor de inferencia y modelos definitivos están pendientes. Hoy basta con entender la ruta.</p></div>
+  </div>
+  <p class="callout st" style="--d:5;margin-top:26px">Este bloque es opcional: <b>no instales nada de esto hoy</b>. RAG es una ampliación posterior; MCP y agentes quedan fuera del curso. No adelantes descargas pesadas «por si acaso».</p>
+</section>
+
+<!-- 27 · DIAGNÓSTICO -->
+<section class="slide" data-part="B" data-min="10" data-title="Diagnóstico" data-enter="diag"
+ data-notes="Pida que marquen la lista: un clic marca correcto, dos clics marca fallo, tres lo deja pendiente. Se guarda en este navegador. Quienes tengan huecos deben comunicarlos antes de S1, por escrito, con comando y salida. El botón copia un informe de incidencias con las comprobaciones que fallaron.">
+  <p class="kick st">Parte B · Diagnóstico</p>
+  <h1 class="st" style="--d:1">Resultado esperado y resultado obtenido</h1>
+  <div class="diag st" style="--d:2">
+    <div><div class="checks" id="checks"></div>
+      <div class="row" style="margin-top:14px;align-items:center"><button class="btn primary" id="dcopy">Copiar informe de incidencias</button><button class="btn" id="dreset">Reiniciar</button><span class="small" id="dmsg"></span></div></div>
+    <div class="gauge card"><svg viewBox="0 0 200 200" aria-label="Progreso del diagnóstico"><circle cx="100" cy="100" r="80" fill="none" stroke="#0b3a69" stroke-width="16"/><circle id="gring" cx="100" cy="100" r="80" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" stroke-dasharray="502.65" stroke-dashoffset="502.65" transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .6s"/><defs><linearGradient id="gg"><stop offset="0" stop-color="#2bb3ff"/><stop offset="1" stop-color="#fcd34d"/></linearGradient></defs><text class="gnum" x="100" y="108" text-anchor="middle" id="gnum">0 %</text><text class="gcap" x="100" y="132" text-anchor="middle" id="gcap">0 de 12</text></svg>
+      <p class="small" style="margin-top:6px">Clic: ✓ · 2 clics: ✗ · 3: pendiente</p><p class="small">Se guarda en este navegador.</p></div>
+  </div>
+</section>
+
+<!-- 28 · ANTES DE S1 -->
+<section class="slide" data-part="C" data-min="8" data-title="Antes de S1"
+ data-notes="Cuatro encargos: diagnóstico, bloqueos, leer el caso cuando se publique, no improvisar el entorno. No adelantar el entrenamiento. S1 empieza con datos y entrenamiento; quien llegue sin entorno perderá la práctica.">
+  <p class="kick st">Cierre · 10 minutos</p>
+  <h1 class="st" style="--d:1">Antes de S1</h1>
+  <div class="cards4">
+    <div class="card f"><h3 class="gold">1 · Completar el diagnóstico</h3><p>Las doce comprobaciones (la de la ruta neural/LLM es opcional), con nota de lo que falló y lo que se obtuvo.</p></div>
+    <div class="card f"><h3 class="gold">2 · Comunicar bloqueos</h3><p>No esperar a S1 para decir que Codespaces, gcloud o la cuenta de la nube no arrancan.</p></div>
+    <div class="card f"><h3 class="gold">3 · Leer el caso cuando se publique</h3><p>Localizar los archivos raw. No adelantar el entrenamiento ni «limpiar» por intuición.</p></div>
+    <div class="card f"><h3 class="gold">4 · No improvisar el entorno</h3><p>Crea el entorno solo desde environment.yml; no armes uno paralelo con paquetes sueltos. El entorno del curso es env-ia-mlops.</p></div>
+  </div>
+  <p class="callout f">S1 empieza con datos y entrenamiento. Quien llegue sin entorno perderá la práctica. El caso concreto —conjunto de datos incluido— se revela entonces.</p>
+</section>
+
+<!-- 29 · FIN -->
+<section class="slide" data-part="C" data-min="2" data-title="Nos vemos en S1"
+ data-notes="Esta diapositiva cierra la sesión principal. Recapitule la tarea previa a S1, los bloqueos y el próximo paso: datos → modelo. El material posterior es opcional y de consulta: anexos con estadísticas, costes y fuentes. No continúe como si fuera contenido obligatorio de S0.">
+  <p class="kick st">Cierre · Fin de la sesión principal</p>
+  <h1 class="st" style="--d:1">Nos vemos en S1, con el entorno listo</h1>
+  <div class="grid2">
+    <div class="card st" style="--d:2"><h3 class="gold">Tu tarea antes de S1</h3><p>Completa la preparación, comprueba el entorno y lee el enunciado del caso cuando se publique. Comunica los bloqueos con el comando y la salida obtenida.</p></div>
+    <div class="card st" style="--d:3"><h3 class="gold">Próximo paso: datos → modelo</h3><p>En S1 construiremos las capas de datos, haremos el seguimiento con MLflow, entrenaremos y evaluaremos.</p></div>
+  </div>
+  <div class="row st" style="--d:4;margin-top:26px;flex-wrap:wrap">
+    <a class="btn primary" href="anexos/index.html" style="text-decoration:none">Anexos y material de consulta →</a>
+    <a class="btn" href="fuentes/plan-docente.html" style="text-decoration:none">Plan docente</a>
+    <a class="btn" href="https://github.com/helicr/curso-ml-ia-desarrollo-produccion" target="_blank" rel="noopener" style="text-decoration:none">Repositorio del curso</a>
+  </div>
+  <p class="small st" style="--d:5;margin-top:22px">Los anexos (estadísticas, costes, calculadora de Cloud Run y fuentes) son de consulta opcional y no forman parte de la sesión principal.</p>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado"></span>
+  <button class="part" data-p="A">A · Curso</button><button class="part" data-p="B">B · Entorno</button><button class="part" data-p="C">Cierre</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S0">⌂ <span class="tx">Índice de </span>S0</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El contenido también está en README.md y guion.md.</noscript>
+
+<script>
+(function(){
+'use strict';
+
+/* ======================= Datos ======================= */
+const CMD = {
+ repo:{min:5,title:'Clonar y abrir',kick:'Parte B · Repositorio',
+  why:'Deja el material, los notebooks y los scripts en tu máquina, listos para abrirlos con el entorno del curso.',
+  cmds:[{c:'git clone --branch develop https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git'},{c:'cd curso-ml-ia-desarrollo-produccion'},{c:'code .'}],
+  sim:['Cloning into \'curso-ml-ia-desarrollo-produccion\'...','Receiving objects: 100%, done.'],
+  out:'Una carpeta nueva y VS Code abriendo esa carpeta.',
+  fail:'Revisar HTTPS/SSH, la cuenta de GitHub y que no se haya recortado la URL. Si faltan carpetas, se clonó main: git fetch origin y git switch develop.',
+  notes:'Muestre la URL del repositorio. El clone debe funcionar hoy (compruebe antes que el contenido esté en la rama que se clona). Use el botón Copiar si alguien quiere guardar el comando.'},
+ conda:{min:7,title:'Miniconda',kick:'Parte B · Entorno Python',badge:'env-ia-mlops · probado en Linux',
+  why:'Se comprueba que Conda responde y se crea env-ia-mlops desde environment.yml (23 paquetes con versión fijada). Probado en Linux; en Windows, sin probar.',
+  cmds:[{c:'conda --version'},{c:'conda env list'},{c:'conda env create -f 03-Entorno\\conda\\environment.yml'}],
+  sim:['conda <versión>','# conda environments:','base   *   /ruta/a/miniconda3','Executing transaction: done'],
+  out:'Una versión de conda, la lista de entornos (al menos «base») y, al terminar la creación, «done». Después, env-ia-mlops aparece en conda env list.',
+  fail:'Conda no está en el PATH, la instalación no terminó o la terminal no recargó el perfil. Cerrar y abrir la terminal, o reiniciar VS Code, suele bastar.',
+  warn:'Crea el entorno solo desde ese archivo y solo con conda-forge; no armes uno aparte con paquetes sueltos. Paso a paso, con las salidas reales: «Tu equipo listo para S1» (pasos 5 a 7).',
+  notes:'conda --version y conda env list; después, desde la carpeta del repositorio, conda env create con el environment.yml (en Linux tardó 66 s con buena conexión; en la sala puede tardar bastante más: que lo lancen y sigan, sin esperar a que termine). El entorno se llama env-ia-mlops. Si conda se niega a crearlo por los términos de servicio de Anaconda, el bloque B de «Tu equipo listo para S1» trae la solución (solo conda-forge). Si conda no está en el PATH, cerrar la terminal y reabrirla. Quien no llegue con el entorno hecho, lo termina con «Tu equipo listo para S1» antes de S1.'},
+ kernel:{min:6,title:'VS Code y los notebooks',kick:'Parte B · Intérprete y kernel',
+  why:'Hay que seleccionar el mismo entorno en un script y en un notebook. Si no, el cuaderno «funciona» con paquetes distintos a los del resto del curso.',
+  cmds:[{c:'import sys'},{c:'print(sys.executable)'}],lang:'py',
+  sim:['C:\\Users\\tu-usuario\\miniconda3\\envs\\env-ia-mlops\\python.exe'],
+  out:'Una ruta que apunte al entorno del curso (cuando exista), no al Python del sistema ni a uno improvisado.',
+  fail:'Command Palette → «Python: Select Interpreter» y «Select Notebook Kernel». Instalar las extensiones Python, Pylance y Jupyter si el selector no aparece.',
+  notes:'Haga que impriman sys.executable en un script y en un notebook. Deben coincidir.'},
+ sqlite:{min:6,title:'SQLite: comprobar ejecución, no calidad',kick:'Parte B · Datos',badge:'script de la base de prueba pendiente',
+  why:'Las capas transformadas vivirán en SQLite. Hoy solo se verifica que se puede abrir una base y ejecutar SQL.',
+  cmds:[{c:'SELECT 1 AS entorno_listo;'}],lang:'sql',
+  sim:['entorno_listo','1'],
+  out:'Una fila con el valor 1 en la columna entorno_listo.',
+  fail:'El visor no está instalado, se abrió un archivo que no es una base, o el motor no está disponible en la terminal. Esta prueba no dice nada sobre la calidad de los datos del caso.',
+  notes:'SELECT 1 AS entorno_listo; demuestra el motor, no la calidad de ningún dato. El script de la base de prueba está pendiente. Se puede pegar en DB Browser for SQLite o en cualquier cliente SQL.'},
+ docker:{min:8,title:'Docker en Codespaces: una ejecución real',kick:'Parte B · Contenedores',badge:'dentro del Codespace',
+  why:'Docker no se instala en el portátil: se usa dentro del Codespace del curso. Hay que ver el motor en marcha y que pueda descargar y ejecutar una imagen. Docker Desktop local es opcional.',
+  cmds:[{c:'docker version'},{c:'docker run --rm hello-world'}],
+  sim:['Client:  Version <x>','Server:  Engine <x>','Hello from Docker!','This message shows that your installation appears to be working correctly.'],
+  out:'Versiones de cliente y servidor, y el mensaje clásico de hello-world. La primera vez descarga la imagen.',
+  fail:'El Codespace aún no está publicado, la cuota de GitHub se agotó o se abrió un entorno genérico. Si usas Docker en local (opcional): Docker Desktop apagado, virtualización o WSL2 sin habilitar. Anota el error completo; no sustituyas la prueba por una captura del icono.',
+  notes:'docker version y hello-world, dentro del Codespace. La primera vez descarga la imagen. Docker Desktop local es opcional; si alguien lo usa, anotar errores de virtualización o WSL2.'},
+ gcloud:{min:7,title:'Google Cloud: autenticar, no gastar',kick:'Parte B · Nube',
+  why:'Sustituye el marcador por el identificador real de tu proyecto. El objetivo de hoy es dejar la CLI reconocida, no crear servicios.',
+  cmds:[{c:'gcloud auth login'},{c:'gcloud config set project TU_ID_DE_PROYECTO'},{c:'gcloud auth list'}],
+  sim:['Credentialed Accounts','ACTIVE  ACCOUNT','*       tu-cuenta@ejemplo.com'],
+  out:'Un flujo de autenticación en el navegador y, al final, tu cuenta marcada como activa en «gcloud auth list».',
+  fail:'CLI no instalada, cuenta distinta a la del proyecto, o identificador mal copiado. Alternativa: usar Cloud Shell desde el navegador.',
+  warn:'No crear recursos de pago en esta comprobación. Cloud Storage, BigQuery, Artifact Registry y Cloud Run llegan en S3, con presupuesto y alertas.',
+  notes:'auth login, set project con el marcador sustituido, auth list. Prohíba crear recursos de pago. Cloud Storage, BigQuery, Artifact Registry y Cloud Run llegan en S3.'},
+ codespaces:{min:6,title:'Codespaces: Docker, kind y kubectl',kick:'Parte B · Docker y Kubernetes',badge:'configuración pendiente',
+  why:'Docker y Kubernetes no se instalan como requisito local. El instructor publicará un Codespace preconfigurado con Docker, kind y kubectl: allí se hacen las prácticas de contenedores.',
+  cmds:[{c:'docker version'},{c:'kind version'},{c:'kubectl version --client'}],
+  sim:['Client:  Version <x>','kind v<x>','Client Version: v<x>'],
+  out:'Tres versiones coherentes dentro del Codespace, no en el portátil personal. «kubectl version --client» no necesita un clúster encendido.',
+  fail:'El Codespace aún no está publicado, las cuotas de GitHub lo bloquean o se abrió un entorno genérico en lugar del del curso. Comunicarlo: hay plan de respaldo.',
+  notes:'La configuración completa está pendiente. Cuando exista: docker, kind y kubectl --client dentro del Codespace, no en el portátil.'}
+};
+
+const POLL=[
+ {q:'¿Has llevado un modelo más allá del notebook, para que otra persona lo use?',o:['Todavía no: el trabajo termina en el cuaderno o en un script local.','Lo intenté: hubo API, archivo o demo, pero no quedó reproducible.','Sí: lo empaqué o lo serví, al menos en mi máquina.','Sí: llegó a un entorno compartido o a la nube.'],h:'No hay respuesta incorrecta. Sirve para calibrar el ritmo de S1 a S5.'},
+ {q:'Si la predicción en tu portátil es correcta, ¿basta para entregarla?',o:['Sí: una métrica alta es evidencia suficiente.','No: faltan entorno, preproceso alineado, pruebas, registro y una forma de servirlo.','Sí, si adjunto una captura del notebook.','Solo si el algoritmo es una red neuronal.'],ok:1,h:'Una captura no es evidencia. El curso evalúa código, comandos, pruebas, README y decisiones.'},
+ {q:'¿Qué parte del camino te preocupa más hoy?',o:['Datos, validación y entrenamiento reproducible.','API, errores y el contenedor.','Desplegar y observar el servicio en la nube.','Operar: versiones, alertas y poder volver atrás.'],h:'Eso es exactamente la cadena S1 → S5. El caso concreto se revela más adelante.'}
+];
+
+const SESS=[
+ {id:'S0',h:'2 h',t:'Presentación y entorno',o:'Comprender el recorrido del curso y preparar el entorno para comenzar S1.',
+  b:['Parte A: objetivos, caso y entregas','Parte B: Git, VS Code, Miniconda, SQLite','Docker y Kubernetes en Codespaces','Google Cloud y diagnóstico'],ev:'Entorno comprobado antes de S1.'},
+ {id:'S1',h:'4 h',t:'De los datos al modelo',o:'Comprender y ejecutar la preparación de datos y el entrenamiento.',
+  b:['Capas raw, master, fs y ml','Limpieza, variables y variable objetivo','Particiones, entrenamiento y evaluación','Seguimiento de experimentos con MLflow (versión ligera)'],ev:'Avance en S2: capas, modelo, métricas y explicación.'},
+ {id:'S2',h:'4 h',t:'Del modelo a una API y un contenedor',o:'Convertir el modelo en un servicio de inferencia reproducible.',
+  b:['Carga del modelo desde MLflow; firma como contrato','API con FastAPI: validación y errores','Docker: imagen y contenedor, en Codespaces','Primer workflow de GitHub Actions'],ev:'Avance en S3: API, Dockerfile, contenedor y pruebas.'},
+ {id:'S3',h:'4 h',t:'De local a GCP: migración y despliegue',o:'Migrar lo que corre en local a GCP y publicar el servicio con control de costes y permisos.',
+  b:['Evaluar, planificar, ejecutar y optimizar','Rehost, replatform y refactor','Cloud Storage y BigQuery, con validación','Secret Manager, IAM, Artifact Registry y Cloud Run','Laboratorio de Kubernetes, si hay tiempo','~Opcional: red neuronal con PyTorch'],ev:'Avance en S4: datos migrados y validados, servicio desplegado y registros.'},
+ {id:'S4',h:'4 h',t:'Orquestación y CI/CD con GitHub Actions',o:'Automatizar el camino del código al servicio desplegado, con trazabilidad.',
+  b:['Workflows, jobs, runners y disparadores','Secretos y autenticación con GCP sin claves','Pipeline raw → modelo → métricas','Registrar el modelo en MLflow','Imagen, Artifact Registry y Cloud Run con aprobación'],ev:'Avance en S5: workflow funcionando e historial de ejecuciones.'},
+ {id:'S5',h:'4 h',t:'MLOps, monitoreo y mantenimiento',o:'Observar, actualizar y recuperar el proyecto con trazabilidad.',
+  b:['Versionado de datos, modelos, código e imágenes','Deriva, registros y alertas','Registro de modelos con alias','Actualización y rollback','Costes y seguridad'],ev:'Entrega posterior a S5: repositorio, informe, evidencias y guía de operación.'}
+];
+
+const LAYERS=[
+ {n:'RAW',s:'S1',d:'Archivos originales conservados, sin tocar.',t:'data/raw',x:['Se verifica su integridad con un checksum','Nunca se edita: todo lo demás se regenera desde aquí']},
+ {n:'MASTER',s:'S1',d:'Datos depurados y transformados.',t:'master_*',x:['Tablas SQLite con prefijo master_','Limpieza, tipos, duplicados y reglas de calidad']},
+ {n:'FS',s:'S1',d:'Variables reutilizables.',t:'fs_*',x:['Tablas SQLite con prefijo fs_','Capa didáctica, no una plataforma completa de feature store']},
+ {n:'ML',s:'S1',d:'Datasets del modelo, objetivo y particiones.',t:'ml_*',x:['Tablas SQLite con prefijo ml_','Variable objetivo y partición train / valid / test']},
+ {n:'ARTEFACTOS',s:'S1–S2',d:'Modelo, preprocesamiento, métricas, configuración y metadatos.',t:'MLflow + artifacts/',x:['Seguimiento de ejecuciones con MLflow','Lo que necesita la API para predecir']},
+ {n:'SERVICIO',s:'S2',d:'API de inferencia, pruebas y contenedor.',t:'src/api · Docker',x:['FastAPI con validación de entradas','El mismo preproceso que en el entrenamiento']},
+ {n:'OPERACIÓN',s:'S3–S5',d:'Despliegue, monitoreo, automatización, actualización y recuperación.',t:'GCP · GitHub Actions',x:['Cloud Run, registros y alertas','Versiones, rollback y control de costes']}
+];
+
+const ZONES=[
+ {t:'Tu equipo',d:'Es el lugar por defecto de S1 y de las pruebas unitarias: explorar, validar, entrenar el modelo clásico y comprobar la API antes de empaquetar.',x:'Git · VS Code · Miniconda · SQLite · gcloud (o Cloud Shell)'},
+ {t:'Codespaces',d:'Docker y Kubernetes no se instalan en cada portátil. Se trabajan en el Codespace preconfigurado del instructor, cuando se publique.',x:'docker · kind · kubectl'},
+ {t:'GitHub Actions',d:'Orquesta el pipeline: pruebas, entrenamiento, construcción de la imagen y despliegue, con aprobaciones. Los runners ya traen Docker.',x:'.github/workflows · S2 (imagen) · S4 (pipeline completo)'},
+ {t:'Google Cloud',d:'Datos y servicio. En S0 solo se comprueba la autenticación; no se crean recursos de pago hoy.',x:'Cloud Storage · BigQuery · Artifact Registry · Cloud Run · Secret Manager · IAM'}
+];
+
+/* Software por sesión. m = marca por sesión S0..S5 y «Extra»:
+   i instalar y comprobar · c solo comprobar · u se usa · s apoya · o opcional o si hay tiempo */
+const SW_COLS=['S0','S1','S2','S3','S4','S5','Extra'];
+const SW_MK={i:['','Se instala y se comprueba'],c:['✓','Solo se comprueba'],u:['','Se usa'],s:['','Apoya o se reutiliza'],o:['','Opcional o si hay tiempo']};
+const SOFT=[
+ {n:'Git y GitHub',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo y GitHub',k:'historial, ramas y entregas',
+  d:'Guarda la historia de tu trabajo y te deja probar cambios en ramas sin romper lo que funciona. GitHub aloja tu repositorio y es donde corren los pipelines.',
+  u:[['S0','Cuenta de GitHub y clonar el repositorio'],['S1–S5','Cada entrega es una rama de tu repositorio (tarea-s1…)'],['S2 y S4','Un cambio subido puede lanzar los workflows de Actions']],
+  g:['Git y ramas',1]},
+ {n:'VS Code',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'editor, cuadernos y terminal',
+  d:'El editor del curso: abres el repositorio, ejecutas scripts y cuadernos con el mismo intérprete y te conectas a Codespaces.',
+  u:[['S0','Instalarlo con sus extensiones y elegir el intérprete del curso'],['S1–S5','Escribir y ejecutar código, cuadernos y pruebas'],['S2 y S3','Abrir el Codespace del curso, con Docker y Kubernetes']],
+  g:['Visual Studio Code',1]},
+ {n:'Miniconda y entorno',m:['i','u','u','u','u','u',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'entornos aislados y reproducibles',
+  d:'Crea entornos aislados para que todos ejecutemos el mismo Python con las mismas versiones. Evita el «en mi máquina funciona».',
+  u:[['S0','Comprobar que conda responde y crear el entorno desde environment.yml'],['S1–S5','Activar env-ia-mlops antes de ejecutar nada'],['S1','Cuadernos, pandas, scikit-learn y pruebas viven en ese entorno']],
+  g:['Miniconda y entornos',1]},
+ {n:'SQLite y DB Browser',m:['i','u','','s','','',''],tag:['core','Obligatorio'],w:'Tu equipo',k:'consultar las capas del caso',
+  d:'Las capas raw, master, fs y ml del caso viven en una base SQLite. DB Browser te deja explorar las tablas y lanzar SQL sin escribir a ciegas.',
+  u:[['S0','Abrir una base y ejecutar un SELECT sencillo'],['S1','Explorar y consultar las capas del caso'],['S3','Es el origen de las tablas que se migran a BigQuery']],
+  g:['SQLite',1]},
+ {n:'MLflow',m:['','u','u','','u','u',''],tag:['info','Viene en el entorno'],w:'En el entorno, no se instala aparte',k:'comparar y registrar modelos',
+  d:'Registra cada ejecución de entrenamiento (parámetros, métricas y modelo) para compararlas y decidir con evidencia.',
+  u:[['S1','Seguimiento de experimentos y comparación de dos ejecuciones'],['S2','Cargar el modelo para servirlo desde la API'],['S4','Registrar el modelo desde el pipeline'],['S5','Alias de versión para actualizar y volver atrás']],
+  g:['MLflow',0,'antes de S1']},
+ {n:'FastAPI y uvicorn',m:['','','u','s','s','',''],tag:['info','Viene en el entorno'],w:'En el entorno, no se instala aparte',k:'servir el modelo como API',
+  d:'Convierte el modelo en una API: recibe datos, valida las entradas y devuelve la predicción. Uvicorn es el servidor que la ejecuta.',
+  u:[['S2','Construir y probar la API en local'],['S3','La misma API, ya empaquetada, se publica en Cloud Run'],['S4','Sus pruebas se ejecutan en el pipeline']],
+  g:['FastAPI y probar APIs',0,'antes de S2']},
+ {n:'Docker',m:['c','','u','s','s','',''],tag:['info','En Codespaces'],w:'Codespaces: no se instala en el portátil',k:'empaquetar la API en una imagen',
+  d:'Empaqueta la API y sus dependencias en una imagen que se ejecuta igual en cualquier sitio. No se instala en el portátil: se usa en Codespaces.',
+  u:[['S0','Comprobar docker version en el Codespace (cuando se publique)'],['S2','Escribir el Dockerfile, construir la imagen y ejecutar el contenedor'],['S3','Esa imagen se publica en Artifact Registry y corre en Cloud Run'],['S4','El pipeline la construye en un runner de Actions']],
+  g:['Docker',0,'antes de S2']},
+ {n:'kind y kubectl',m:['c','','','o','','',''],tag:['opt','Si hay tiempo'],w:'Codespaces: no se instala en el portátil',k:'practicar Kubernetes sin clúster de pago',
+  d:'kind levanta un clúster de Kubernetes de juguete dentro de Docker y kubectl es la herramienta para hablar con él. Sirve para entender Kubernetes sin pagar un clúster.',
+  u:[['S0','Comprobar que están en el Codespace del curso'],['S3','Laboratorio de Kubernetes, si hay tiempo']],
+  g:['kubectl y kind',0,'antes de S3']},
+ {n:'GitHub Actions',m:['','','u','','u','s',''],tag:['info','Corre en GitHub'],w:'GitHub: no se instala',k:'automatizar pruebas, imagen y despliegue',
+  d:'Automatiza el camino del código al servicio: ante un cambio, ejecuta pruebas, entrena, construye la imagen y despliega, y deja un historial de ejecuciones.',
+  u:[['S2','Primer workflow: construir la imagen'],['S4','Pipeline completo raw → modelo → imagen → Cloud Run, con aprobación'],['S5','Operación: actualizar y recuperar versiones']],
+  g:['GitHub Actions',0,'antes de S2']},
+ {n:'Google Cloud',m:['c','','','u','u','u',''],tag:['core','Obligatorio'],w:'gcloud en tu equipo (o Cloud Shell) y la nube',k:'datos y servicio en la nube',
+  d:'Ahí se guardan los datos y se despliega el servicio: Cloud Storage, BigQuery, Artifact Registry, Cloud Run, Secret Manager e IAM. gcloud (o Cloud Shell) es la herramienta para manejarlo desde la terminal.',
+  u:[['S0','Solo comprobar el acceso y el proyecto: no se crea nada de pago'],['S3','Migrar datos, publicar la imagen y desplegar el servicio'],['S4','El pipeline despliega con aprobación, sin claves'],['S5','Registros, alertas y control de costes']],
+  g:['gcloud y Cloud Shell',0,'antes de S1']},
+ {n:'PyTorch · LLM',m:['','','','o','','','o'],tag:['opt','Opcional'],w:'Entorno aparte (env-ia-opcional)',k:'red neuronal y LLM, sin GPU propia',
+  d:'Ampliaciones fuera del núcleo: una red neuronal ligera con PyTorch y un módulo de LLM abiertos. Se piensan para CPU o para un entorno compartido.',
+  u:[['S3','Práctica neuronal guiada, si hay tiempo'],['Extra','LLM abiertos en sesión extra; motor y modelo, por decidir'],['Hoy','No se instala nada de esto']],
+  g:['PyTorch y LLM',0,'solo si se imparte']}
+];
+const SW_SES=[
+ {t:'Presentación y entorno',pre:'Nada previo: S0 es la sesión de preparación. Lo ideal es llegar con la guía de instalación ya ejecutada y venir a comprobar.',nota:'Hoy se instalan Git, VS Code, Miniconda y SQLite en tu equipo. Docker, kind, kubectl y gcloud solo se comprueban.'},
+ {t:'De los datos al modelo',pre:'Diagnóstico de S0 completo: Git, VS Code, Miniconda y el entorno env-ia-mlops funcionando.',nota:'Todo corre en tu equipo, con el entorno del curso.'},
+ {t:'Del modelo a una API y un contenedor',pre:'Poder abrir el Codespace del curso (cuando el instructor lo publique) y tener Actions disponible en tu repositorio de GitHub.',nota:'Primera salida del portátil: Docker en Codespaces y un workflow en GitHub.'},
+ {t:'De local a GCP',pre:'Un proyecto de Google Cloud con facturación habilitada (o la alternativa que indique el instructor) y gcloud autenticado, o Cloud Shell.',nota:'Primera sesión en la nube: se vigilan costes y permisos desde el principio.'},
+ {t:'Orquestación y CI/CD',pre:'El servicio de S3 desplegado y tu repositorio con Actions habilitado.',nota:'Sin herramientas nuevas: se profundiza en Actions (pipeline completo) y en la autenticación con GCP sin claves.'},
+ {t:'MLOps, monitoreo y mantenimiento',pre:'El pipeline de S4 funcionando y su historial de ejecuciones.',nota:'Sin herramientas nuevas: se opera lo ya construido (versiones, registros, alertas y vuelta atrás).'}
+];
+
+const DIAG=[
+ ['Git instalado y cuenta en GitHub','git --version · autenticación lista'],
+ ['VS Code y extensiones del curso','Python, Pylance, Jupyter, Container Tools, Kubernetes, Dev Containers'],
+ ['Miniconda responde','conda --version · conda env list'],
+ ['Repositorio clonado y abierto','git clone · code .'],
+ ['Entorno conda del curso creado','env-ia-mlops activo · prueba de humo: HUMO OK'],
+ ['Intérprete y kernel seleccionados','import sys; print(sys.executable)'],
+ ['SQLite comprobable','SELECT 1 AS entorno_listo; · DB Browser'],
+ ['Docker operativo en Codespaces','docker version · docker run --rm hello-world'],
+ ['gcloud autenticado y proyecto fijado','Sin crear recursos de pago'],
+ ['Codespaces del curso abierto','docker, kind, kubectl · pendiente de publicar'],
+ ['Ruta neural / LLM comprendida','Sin GPU · no bloquea S1',true],
+ ['Incidencias registradas y comunicadas','Esperado vs. obtenido']
+];
+
+/* ======================= Utilidades ======================= */
+const $=(s,r)=> (r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k))}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ======================= Diapositivas con comandos ======================= */
+$$('[data-cmd]').forEach(sec=>{
+  const c=CMD[sec.dataset.cmd];
+  sec.dataset.min=c.min; sec.dataset.title=c.title; sec.dataset.notes=c.notes; sec.dataset.enter='term';
+  const badge=c.badge?` <span class="tag pend badge">${esc(c.badge)}</span>`:'';
+  const cmds=c.cmds.map(x=>x.pend?`<div class="pend"># PENDIENTE · no ejecutar hasta la publicación</div><div class="pend">${esc(x.c)}</div>`:`<div><span class="ps">${c.lang==='py'?'&gt;&gt;&gt;':c.lang==='sql'?'sqlite&gt;':'$'}</span> ${esc(x.c)}</div>`).join('');
+  sec.innerHTML=`<p class="kick st">${esc(c.kick)}</p><h1 class="st" style="--d:1">${esc(c.title)}${badge}</h1>
+  <div class="cmdgrid">
+   <div class="st" style="--d:2">
+     <p style="margin-bottom:14px">${esc(c.why)}</p>
+     <div class="term"><div class="bar"><i></i><i></i><i></i><em>${c.lang==='py'?'Python':c.lang==='sql'?'SQLite':'Terminal'}</em></div>
+     <pre><span class="cmds">${cmds}</span><span class="outs"></span></pre></div>
+     <div class="cmdbtns"><button class="btn primary run">▶ Ver demo</button><button class="btn copy">Copiar comandos</button></div>
+     <p class="sim">Demo ilustrativa de la salida esperada; la tuya puede variar.</p>
+   </div>
+   <div class="col">
+     <div class="card f"><h3 class="gold">Salida esperada</h3><p style="font-size:18px">${esc(c.out)}</p></div>
+     <div class="card f"><h3 class="gold">Si falla</h3><p style="font-size:18px">${esc(c.fail)}</p></div>
+     ${c.warn?`<div class="warnbox f">${esc(c.warn)}</div>`:''}
+   </div></div>`;
+  sec._cmds=c.cmds.filter(x=>!x.pend).map(x=>x.c); sec._sim=c.sim;
+});
+
+/* ======================= Núcleo del visor ======================= */
+const slides=$$('.slide'); const N=slides.length;
+const state=slides.map(()=>({r:0,frags:[]}));
+let cur=0;
+slides.forEach((s,i)=>{
+  s.dataset.i=i;
+  state[i].frags=$$('.f',s);
+  const f=document.createElement('div'); f.className='foot';
+  f.innerHTML=`<span>UNTRM · INCID · FIZBAC · ML e IA · S0</span><span><b>${esc(partName(s.dataset.part))}</b> · ${i+1} / ${N}</span>`;
+  s.appendChild(f);
+});
+function partName(p){return p==='A'?'Parte A':p==='B'?'Parte B':'Cierre'}
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+
+function applyFrags(i){
+  const st=state[i]; st.frags.forEach((el,k)=>{ el.classList.toggle('on',k<st.r) });
+}
+function stagger(s){$$('.st',s).forEach((e,k)=>{ if(!e.style.getPropertyValue('--d')) e.style.setProperty('--d',k) })}
+slides.forEach(stagger);
+
+function go(i,full){
+  i=Math.max(0,Math.min(N-1,i));
+  const prev=cur;
+  if(prev!==i && hooks.leave[slides[prev].dataset.enter]) hooks.leave[slides[prev].dataset.enter](slides[prev]);
+  cur=i;
+  slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i)});
+  if(full!==undefined){state[i].r=full?state[i].frags.length:0}
+  applyFrags(i);
+  chrome();
+  const e=slides[i].dataset.enter; if(e&&hooks.enter[e]) hooks.enter[e](slides[i]);
+  try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+}
+function next(){
+  const st=state[cur];
+  if(st.r<st.frags.length){const el=st.frags[st.r]; st.r++; applyFrags(cur); const on=el.dataset.on; if(on) fire(on); return}
+  if(cur<N-1) go(cur+1,false);
+}
+function prev(){
+  const st=state[cur];
+  if(st.r>0){st.r--;applyFrags(cur);return}
+  if(cur>0) go(cur-1,true);
+}
+function fire(){/* reservado */}
+
+function chrome(){
+  const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N;
+  $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL;
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto: '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min';
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));
+}
+function fit(){
+  const v=$('#viewport'); const sc=Math.min(v.clientWidth/1280,v.clientHeight/720);
+  $('#stage').style.setProperty('--s',sc.toFixed(4));
+}
+addEventListener('resize',fit);
+
+/* Índice */
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(partName(s.dataset.part))} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i,false)});
+function toggle(sel,force){const el=$(sel);el.classList.toggle('on',force);}
+
+/* Controles */
+$('#bprev').onclick=prev; $('#bnext').onclick=next;
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen() };
+$$('#bar .part').forEach(b=>b.onclick=()=>{const k=slides.findIndex(s=>s.dataset.part===b.dataset.p);go(k,false)});
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();next()}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev()}
+  else if(k==='Home'){e.preventDefault();go(0,false)}
+  else if(k==='End'){e.preventDefault();go(N-1,true)}
+  else if(k==='o'||k==='O'){toggle('#index')}
+  else if(k==='s'||k==='S'){toggle('#notes')}
+  else if(k==='f'||k==='F'){$('#bfull').click()}
+  else if(k==='Escape'){toggle('#index',false);toggle('#notes',false)}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?next():prev()}},{passive:true});
+
+/* ======================= Hooks por diapositiva ======================= */
+const hooks={enter:{},leave:{}};
+let timers=[];
+function later(fn,ms){const id=setTimeout(fn,ms);timers.push(id);return id}
+function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+
+/* contadores y barras */
+hooks.enter.counters=hooks.enter.eval=hooks.enter.rhythm=function(s){
+  $$('.cnt',s).forEach(el=>{
+    const to=+el.dataset.to; if(reduce){el.textContent=to;return}
+    el.textContent='0'; const t0=performance.now();
+    (function tick(t){const p=Math.min(1,(t-t0)/1100);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick)})(t0);
+  });
+  $$('.meter i',s).forEach(i=>{i.style.width='0';later(()=>{i.style.width=i.dataset.w+'%'},250)});
+  $$('#evstack i',s).forEach((i,k)=>{i.style.transform='scaleX(0)';later(()=>{i.style.transform='scaleX(1)'},300+k*250)});
+};
+
+/* niveles de madurez de MLOps */
+(function(){
+  const L=[
+   {t:'Nivel 0 · Proceso manual',s:'S1–S2',d:'El modelo se entrena y se entrega a mano, casi siempre desde un notebook. Scripts y pasos sueltos, sin pruebas ni registro.',r:'Riesgo: el modelo se degrada sin que nadie lo note y es difícil reproducirlo.'},
+   {t:'Nivel 1 · Automatizar el pipeline',s:'S4',d:'El entrenamiento se automatiza como un pipeline que se puede reejecutar con datos nuevos, separado de la experimentación.',r:'Riesgo: el pipeline cambia sin pruebas ni revisión.'},
+   {t:'Nivel 2 · CI/CD',s:'S4–S5',d:'Pruebas, construcción y despliegue del pipeline y del modelo son automáticos, con monitoreo, versiones y rollback.',r:'Es el objetivo del curso: operar el modelo, no solo entrenarlo.'}
+  ];
+  const box=$('#lvls'),det=$('#lvdet'); let sel=0;
+  box.innerHTML=L.map((l,i)=>`<button class="lvl" data-i="${i}"><span class="lv">${i}</span><span><b>${esc(l.t)}</b><small>En el curso: ${esc(l.s)}</small></span></button>`).join('');
+  function render(){
+    $$('.lvl',box).forEach((b,i)=>b.classList.toggle('sel',i===sel));
+    const l=L[sel]; det.innerHTML=`<h3 class="gold">${esc(l.t)} <span class="tag core">${esc(l.s)}</span></h3><p>${esc(l.d)}</p><p class="risk">${esc(l.r)}</p>`;
+  }
+  box.addEventListener('click',e=>{const b=e.target.closest('.lvl');if(!b)return;sel=+b.dataset.i;render()});
+  hooks.enter.evidence=function(s){hooks.enter.counters(s);sel=0;render()}; render();
+})();
+
+/* encuesta */
+(function(){
+  const counts=POLL.map(p=>p.o.map(()=>0)); let q=0,show=false;
+  const box=$('#poll');
+  function render(){
+    const p=POLL[q],tot=counts[q].reduce((a,b)=>a+b,0);
+    box.innerHTML=`<p class="small" style="margin-bottom:6px">Pregunta ${q+1} de ${POLL.length} · responde en voz alta o en el chat; pulsa la opción para contarla</p>
+     <div class="poll-q">${esc(p.q)}</div><div class="opts">`+p.o.map((t,k)=>`<button class="popt${show&&p.ok===k?' right':''}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span class="t">${esc(t)}</span><span class="n">${counts[q][k]||''}</span><span class="bar" style="width:${tot?counts[q][k]/tot*100:0}%"></span></button>`).join('')+
+     `</div><div class="poll-nav"><button class="btn" id="pq-prev"${q===0?' disabled':''}>← Anterior</button><button class="btn" id="pq-next"${q===POLL.length-1?' disabled':''}>Siguiente →</button><button class="btn" id="pq-hint">${show?'Ocultar guía':'Mostrar guía'}</button><button class="btn" id="pq-reset">Reiniciar conteo</button></div>`+
+     (show?`<p class="poll-hint" style="margin-top:12px;max-width:none">${esc(p.h)}</p>`:'');
+  }
+  box.addEventListener('click',e=>{
+    const o=e.target.closest('.popt');
+    if(o){counts[q][+o.dataset.k]++;render();return}
+    const id=e.target.id;
+    if(id==='pq-prev'){q--;show=false;render()}
+    else if(id==='pq-next'){q++;show=false;render()}
+    else if(id==='pq-hint'){show=!show;render()}
+    else if(id==='pq-reset'){counts.forEach(a=>a.fill(0));render()}
+  });
+  hooks.enter.poll=render; render();
+})();
+
+/* mapa del curso */
+(function(){
+  const tl=$('#tl'),panel=$('#panel'); let sel=1;
+  tl.innerHTML=SESS.map((s,i)=>`<button class="node" data-i="${i}"><div class="dot">${s.id}</div><small>${esc(s.h)}</small></button>`).join('');
+  function render(){
+    $$('.node',tl).forEach((n,i)=>n.classList.toggle('sel',i===sel));
+    const s=SESS[sel];
+    panel.innerHTML=`<h2><span class="gold">${s.id}</span> ${esc(s.t)} <span class="tag">${esc(s.h)}</span></h2><p class="small" style="margin-bottom:10px">${esc(s.o)}</p><ul>`+
+      s.b.map(b=>b[0]==='~'?`<li class="o">${esc(b.slice(1))}</li>`:`<li>${esc(b)}</li>`).join('')+`</ul><p class="small" style="margin-top:8px"><b class="gold">Evidencia:</b> ${esc(s.ev)}</p>`;
+  }
+  tl.addEventListener('click',e=>{const n=e.target.closest('.node');if(!n)return;sel=+n.dataset.i;render()});
+  hooks.enter.course=render; render();
+})();
+
+/* capas */
+(function(){
+  const box=$('#layers'),det=$('#ldet'); let sel=0,tm=null;
+  box.innerHTML=LAYERS.map((l,i)=>`<button class="layer" data-i="${i}"><b>${l.n}</b><span>${l.s}</span></button>`).join('');
+  function render(){
+    $$('.layer',box).forEach((n,i)=>n.classList.toggle('sel',i===sel));
+    const l=LAYERS[sel];
+    det.innerHTML=`<h2><span class="gold">${l.n}</span><span class="tag">${l.s}</span></h2><p class="lead" style="font-size:22px;margin-bottom:8px">${esc(l.d)}</p><p class="tblname" style="margin-bottom:10px">${esc(l.t)}</p><ul class="list">`+l.x.map(x=>`<li style="font-size:18px"><span>${esc(x)}</span></li>`).join('')+'</ul>';
+  }
+  function stop(){clearInterval(tm);tm=null}
+  function play(){stop();sel=0;render();tm=setInterval(()=>{if(sel>=LAYERS.length-1){stop();return}sel++;render()},1500)}
+  box.addEventListener('click',e=>{const b=e.target.closest('.layer');if(!b)return;stop();sel=+b.dataset.i;render()});
+  $('#lplay').onclick=play; $('#lstop').onclick=stop;
+  hooks.enter.layers=()=>{stop();sel=0;render()}; hooks.leave.layers=stop; render();
+})();
+
+/* pausa */
+(function(){
+  let left=900,run=false,id=null; const el=$('#clock'),b=$('#pstart');
+  function draw(){const m=String(Math.floor(left/60)).padStart(2,'0'),s=String(left%60).padStart(2,'0');el.textContent=m+':'+s;el.classList.toggle('done',left===0);el.classList.toggle('low',left>0&&left<=60);}
+  function stop(){clearInterval(id);id=null;run=false;b.textContent=left===900?'Iniciar pausa':'Continuar pausa'}
+  b.onclick=()=>{if(run){stop();b.textContent='Continuar pausa';return}if(left===0)left=900;run=true;b.textContent='Pausar';id=setInterval(()=>{left--;draw();if(left<=0){stop();b.textContent='Iniciar pausa';el.textContent='¡Volvemos!'; el.classList.add('done')}},1000)};
+  $('#preset').onclick=()=>{stop();left=900;draw();b.textContent='Iniciar pausa'};
+  $('#pgo').onclick=()=>go(slides.findIndex(s=>s.dataset.part==='B'),false);
+  draw();
+})();
+
+/* presupuesto de tiempo de la Parte B */
+(function(){
+  const cols=['#fcd34d','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#5eead4','#2bb3ff','#34d399','#b39cff','#fcd34d'];
+  hooks.enter.budget=function(){};
+  const box=$('#budget'); const bs=slides.map((s,i)=>({s,i})).filter(o=>o.s.dataset.part==='B');
+  const tot=bs.reduce((a,o)=>a+(+o.s.dataset.min),0);
+  const short=t=>t.replace(/^Docker en Codespaces.*/,'Docker').replace(/^Google Cloud.*/,'Google Cloud').replace(/^SQLite.*/,'SQLite').replace(/^VS Code.*/,'Kernel').replace(/^Clonar.*/,'Repo').replace(/^Preparación.*/,'Intro').replace(/^Dónde corre.*/,'Mapa').replace(/^Codespaces.*/,'Codespaces').replace(/^Ruta opcional.*/,'Opc.').replace(/^Diagnóstico.*/,'Diagnóstico').replace(/^Herramientas.*/,'Kit').replace(/^Software por sesión.*/,'Matriz').replace(/^Qué se estrena.*/,'Por sesión').replace(/^Una guía.*/,'Guías');
+  box.innerHTML=bs.map((o,k)=>`<button data-i="${o.i}"${+o.s.dataset.min<=2?' class="nar"':''} style="width:${(+o.s.dataset.min)/tot*100}%;background:${cols[k%cols.length]}" title="${esc(o.s.dataset.title)} · ${o.s.dataset.min} min">${esc(short(o.s.dataset.title))}<br>${o.s.dataset.min}′</button>`).join('');
+  box.addEventListener('click',e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i,false)});
+})();
+
+/* software por sesión: matriz */
+(function(){
+  const box=$('#swm'),det=$('#swdet'); let sel=0;
+  const mk=(c,col)=>c?`<span class="c" title="${esc(col+': '+SW_MK[c][1])}"><span class="mk ${c}">${esc(SW_MK[c][0])}</span></span>`:'<span class="c"></span>';
+  box.innerHTML='<div class="swh"><span>Herramienta</span>'+SW_COLS.map(c=>`<span>${esc(c)}</span>`).join('')+'</div>'+
+    SOFT.map((t,i)=>`<button class="swr" data-i="${i}"><span class="nm">${esc(t.n)}</span>${t.m.map((c,k)=>mk(c,SW_COLS[k])).join('')}</button>`).join('');
+  $('#swlegend').innerHTML=Object.keys(SW_MK).map(c=>`<span><span class="mk ${c}">${esc(SW_MK[c][0])}</span>${esc(SW_MK[c][1])}</span>`).join('');
+  function render(i){
+    sel=i; $$('.swr',box).forEach((r,k)=>r.classList.toggle('sel',k===i));
+    const t=SOFT[i], g=t.g;
+    const gl=g[1]?`<span class="tag ok">Disponible</span> Guía de uso: <b>${esc(g[0])}</b>`:`<span class="tag pend">En preparación</span> Guía de uso: <b>${esc(g[0])}</b> · ${esc(g[2])}`;
+    det.innerHTML=`<h3>${esc(t.n)} <span class="tag ${t.tag[0]==='core'?'core':t.tag[0]==='opt'?'opt':''}">${esc(t.tag[1])}</span></h3>`+
+      `<p class="para">${esc(t.d)}</p><p class="where"><b class="gold">Dónde:</b> ${esc(t.w)}</p>`+
+      `<ul class="uso">`+t.u.map(u=>`<li><b>${esc(u[0])}</b><span>${esc(u[1])}</span></li>`).join('')+`</ul>`+
+      `<p class="gline">${gl}</p>`;
+  }
+  box.addEventListener('click',e=>{const r=e.target.closest('.swr');if(r)render(+r.dataset.i)});
+  hooks.enter.swm=()=>render(0); render(0);
+})();
+
+/* software por sesión: qué se estrena */
+(function(){
+  const tl=$('#tl2'),panel=$('#sx'); let sel=1;
+  const lab=['Instalar','Datos y modelo','API y contenedor','Nube','Pipeline','Operación'];
+  tl.innerHTML=SW_SES.map((s,i)=>`<button class="node" data-i="${i}"><div class="dot">S${i}</div><small>${esc(lab[i])}</small></button>`).join('');
+  const first=t=>t.m.findIndex(c=>c==='u'||c==='s'||c==='o');
+  const li=t=>`<li>${esc(t.n)}${t.tag[0]==='opt'?` <span class="tag opt" style="font-size:11px;padding:2px 8px;vertical-align:2px">${esc(t.tag[1])}</span>`:''}<small>${esc(t.k)}</small></li>`;
+  function render(){
+    $$('.node',tl).forEach((n,i)=>n.classList.toggle('sel',i===sel));
+    const S=SW_SES[sel]; let a,b,ha,hb;
+    if(sel===0){
+      a=SOFT.filter(t=>t.m[0]==='i'); b=SOFT.filter(t=>t.m[0]==='c'); ha='Se instala hoy'; hb='Solo se comprueba hoy';
+      var col2=`<ul>${b.map(li).join('')}</ul>`;
+    } else {
+      a=SOFT.filter(t=>t.m[0]!=='i'&&first(t)===sel); ha='Se estrena';
+      const prev=SOFT.filter(t=>t.m[sel]&&!a.includes(t)); hb='Sigue en uso';
+      var col2=`<div class="chips">${prev.map(t=>`<span class="chip2">${esc(t.n)}</span>`).join('')||'<span class="small">—</span>'}</div>`;
+    }
+    const col1=a.length?`<ul>${a.map(li).join('')}</ul>`:'<p class="small">Ninguna herramienta nueva.</p>';
+    panel.innerHTML=`<h2 style="margin-bottom:12px;font-size:28px"><span class="gold">S${sel}</span> ${esc(S.t)}</h2><div class="sx3">`+
+      `<div><h3>${esc(ha)}</h3>${col1}</div><div><h3>${esc(sel===0?hb:hb)}</h3>${col2}</div>`+
+      `<div><h3>Listo antes de empezar</h3><p>${esc(S.pre)}</p><p class="nota">${esc(S.nota)}</p></div></div>`;
+  }
+  tl.addEventListener('click',e=>{const n=e.target.closest('.node');if(!n)return;sel=+n.dataset.i;render()});
+  hooks.enter.sws=()=>{sel=1;render()}; render();
+})();
+
+/* zonas */
+(function(){
+  const zs=$$('#zones .zone'),det=$('#zdet');
+  function render(i){zs.forEach((z,k)=>z.classList.toggle('sel',k===i));const z=ZONES[i];det.innerHTML=`<h3 class="gold">${esc(z.t)}</h3><p style="font-size:19px;margin-bottom:6px">${esc(z.d)}</p><p class="mono small">${esc(z.x)}</p>`}
+  zs.forEach((z,i)=>z.onclick=()=>render(i)); hooks.enter.zones=()=>render(0); render(0);
+})();
+
+/* herramientas */
+(function(){
+  $('#filters').addEventListener('click',e=>{
+    const b=e.target.closest('.fchip');if(!b)return;
+    $$('.fchip').forEach(x=>x.classList.toggle('on',x===b));
+    $$('#toolgrid .tool').forEach(t=>t.classList.toggle('dim',b.dataset.f!=='all'&&!t.dataset.w.split(' ').includes(b.dataset.f)));
+  });
+  hooks.enter.tools=()=>{};
+})();
+
+/* terminales */
+function runDemo(sec){
+  const pre=$('pre',sec),outs=$('.outs',pre),btn=$('.run',sec);
+  if(sec._busy)return; sec._busy=true; btn.disabled=true; outs.innerHTML='';
+  const lines=sec._cmds; let li=0;
+  const tag=sec.querySelector('.cmds'); const full=tag.innerHTML;
+  const prompt=pre.querySelector('.ps')?pre.querySelector('.ps').textContent:'$';
+  if(reduce){outs.innerHTML='<span class="out">'+sec._sim.map(esc).join('\n')+'</span>';sec._busy=false;btn.disabled=false;return}
+  tag.style.display='none';
+  const live=document.createElement('span'); pre.insertBefore(live,outs);
+  function typeLine(){
+    if(li>=lines.length){ // salida
+      live.querySelector('.caret')&&live.querySelector('.caret').remove();
+      let k=0;(function printOut(){if(k>=sec._sim.length){finish();return}outs.insertAdjacentHTML('beforeend','<span class="out">'+esc(sec._sim[k++])+'</span>');setTimeout(printOut,260)})();return}
+    const txt=lines[li],row=document.createElement('div');row.innerHTML='<span class="ps">'+esc(prompt)+'</span> <span class="tx"></span><span class="caret"></span>';live.appendChild(row);
+    let c=0;(function t(){const tx=row.querySelector('.tx');tx.textContent=txt.slice(0,++c);if(c<txt.length){setTimeout(t,22)}else{row.querySelector('.caret').remove();li++;setTimeout(typeLine,320)}})();
+  }
+  function finish(){setTimeout(()=>{live.remove();tag.style.display='';outs.innerHTML=outs.innerHTML;sec._busy=false;btn.disabled=false;btn.textContent='▶ Repetir demo'},3200)}
+  typeLine();
+}
+$$('[data-cmd]').forEach(sec=>{
+  $('.run',sec).onclick=()=>runDemo(sec);
+  $('.copy',sec).onclick=async e=>{const b=e.currentTarget;const t=b.textContent;const ok=await copyText(sec._cmds.join('\n'));b.textContent=ok?'Copiado ✓':'No se pudo copiar';setTimeout(()=>b.textContent=t,1500)};
+});
+hooks.enter.term=function(s){};
+
+/* diagnóstico */
+(function(){
+  let st=store('s0-diag-v2')||DIAG.map(()=>'p'); if(st.length!==DIAG.length) st=DIAG.map(()=>'p');
+  const box=$('#checks');
+  box.innerHTML=DIAG.map((d,i)=>`<button class="chk${d[2]?' opt':''}" data-i="${i}"><span class="bx"></span><span><b>${esc(d[0])}</b><span>${esc(d[1])}</span></span></button>`).join('');
+  function draw(){
+    $$('.chk',box).forEach((b,i)=>{b.dataset.s=st[i]==='o'?'ok':st[i]==='f'?'fail':'';b.querySelector('.bx').textContent=st[i]==='o'?'✓':st[i]==='f'?'✗':''});
+    const ok=st.filter(x=>x==='o').length,pct=Math.round(ok/DIAG.length*100);
+    $('#gring').style.strokeDashoffset=(502.65*(1-ok/DIAG.length)).toFixed(1);
+    $('#gnum').textContent=pct+' %'; $('#gcap').textContent=ok+' de '+DIAG.length+' · '+st.filter(x=>x==='f').length+' con fallo';
+  }
+  box.addEventListener('click',e=>{const b=e.target.closest('.chk');if(!b)return;const i=+b.dataset.i;st[i]=st[i]==='p'?'o':st[i]==='o'?'f':'p';store('s0-diag-v2',st);draw()});
+  $('#dreset').onclick=()=>{st=DIAG.map(()=>'p');store('s0-diag-v2',st);draw();$('#dmsg').textContent=''};
+  $('#dcopy').onclick=async()=>{
+    const f=DIAG.map((d,i)=>st[i]==='f'?`- ${d[0]}\n  Paso / comando: ${d[1]}\n  Resultado esperado: \n  Resultado obtenido: \n  Mensaje de error: \n  Acción pendiente: `:null).filter(Boolean);
+    const txt='Informe de incidencias · S0\n(No incluir credenciales.)\n\n'+(f.length?f.join('\n\n'):'Sin incidencias marcadas.');
+    $('#dmsg').textContent=(await copyText(txt))?'Informe copiado ✓':'No se pudo copiar';
+  };
+  hooks.enter.diag=draw; draw();
+})();
+
+/* ======================= Arranque ======================= */
+fit();
+const h=parseInt((location.hash||'').slice(1),10);
+go(isNaN(h)?0:h-1,false);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1,false)});
+})();
+</script>
+</body>
+</html>

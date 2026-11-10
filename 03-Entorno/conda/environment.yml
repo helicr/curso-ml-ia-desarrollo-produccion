@@ -1,0 +1,45 @@
+# Entorno del curso "ML e IA: de desarrollo a produccion" (nucleo obligatorio: ML clasico).
+#
+#   Crear:    conda env create -f environment.yml
+#   Activar:  conda activate env-ia-mlops
+#
+# Solo usa el canal conda-forge. Si conda se niega a crear el entorno por los terminos de servicio de Anaconda,
+# ver "Terminos de servicio de conda" en 03-Entorno/guias/preparacion-paso-a-paso.md.
+#
+# Estado (09/11/2026): borrador. Versiones fijadas tras crear el entorno en Linux y pasar la prueba de humo
+# (capas SQLite, MLflow, modelo, API y pytest). Para Windows solo se comprobo que resuelve (--dry-run), no se ejecuto.
+# La red neuronal y el LLM son opcionales y NO estan aqui: iran en env-ia-opcional (environment-opcional.yml).
+name: env-ia-mlops
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  # datos y modelado
+  - pandas=2.3.3
+  - pyarrow=26.0.1
+  - numpy=2.4.6
+  - scikit-learn=1.9.1
+  - joblib=1.6.0
+  - matplotlib=3.11.2
+  # notebooks: ejecutarlos como pipelines (papermill) y traducirlos a .py (jupytext)
+  - jupyterlab=4.6.6
+  - ipykernel=7.4.0
+  - papermill=2.7.0
+  - jupytext=1.19.6
+  - nbclient=0.11.0
+  - openpyxl=3.1.5
+  # seguimiento y registro de modelos
+  - mlflow=3.18.0
+  # servicio
+  - fastapi=0.162.2
+  - uvicorn=0.54.0
+  - pydantic=2.14.3
+  - httpx=0.28.1
+  - requests=2.34.2
+  # pruebas
+  - pytest=9.2.0
+  # migracion a GCP (S3)
+  - google-cloud-storage=3.17.0
+  - google-cloud-bigquery=3.47.0
+  - db-dtypes=1.9.0
+  - pyyaml=6.0.3
