@@ -2,6 +2,8 @@
 
 **Nombre:** …  **Avance:** 1 / 2 / 3 / 4  **Fecha:** …  **Rama / carpeta:** …  **Commit:** …  **Tiempo dedicado (aprox.):** …
 
+Se entrega a las 10:00 (hora de Perú) del día de la sesión en que se presenta: avance 1, miércoles 18 de noviembre; 2, viernes 20; 3, miércoles 25; 4, viernes 27. Se entrega con el formulario de Google del curso (enlace en clase): tu nombre, el número de avance, el enlace a tu rama o carpeta comprimida y «qué no pude ejecutar».
+
 Borra de la sección 8 los avances que no corresponden. Si algo no lo pudiste hacer, escríbelo: declararlo es parte de lo que se evalúa.
 
 ## 1. Resultado

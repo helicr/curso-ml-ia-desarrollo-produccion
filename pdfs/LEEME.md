@@ -62,21 +62,21 @@ Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub
 |---|---|---|---|
 | [`01-teoria-y-glosario.pdf`](S1-Datos-y-Entrenamiento/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S1 | 2 | 126 KB |
 | [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 167 KB |
-| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 140 KB |
+| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 149 KB |
 | [`04-rubrica.pdf`](S1-Datos-y-Entrenamiento/02-alumno/04-rubrica.pdf) | Rúbrica de S1 | 1 | 93 KB |
 | [`05-plantilla-de-la-decision.pdf`](S1-Datos-y-Entrenamiento/02-alumno/05-plantilla-de-la-decision.pdf) | Plantilla de la decisión (evidencia) | 2 | 99 KB |
-| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 97 KB |
+| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 101 KB |
 | [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 3 | 182 KB |
-| [`08-tu-caso-bank-marketing.pdf`](S1-Datos-y-Entrenamiento/02-alumno/08-tu-caso-bank-marketing.pdf) | Tu caso: Bank Marketing | 6 | 285 KB |
-| [`09-plantilla-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/09-plantilla-de-avance.pdf) | Plantilla de cada avance del caso propio | 3 | 152 KB |
+| [`08-tu-caso-bank-marketing.pdf`](S1-Datos-y-Entrenamiento/02-alumno/08-tu-caso-bank-marketing.pdf) | Tu caso: Bank Marketing | 6 | 299 KB |
+| [`09-plantilla-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/09-plantilla-de-avance.pdf) | Plantilla de cada avance del caso propio | 3 | 154 KB |
 | [`10-rubrica-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/10-rubrica-de-avance.pdf) | Rúbrica de cada avance del caso propio | 2 | 142 KB |
 
 ### Material del instructor
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 156 KB |
-| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 135 KB |
+| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 166 KB |
+| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 148 KB |
 
 
 ## S2 · API y Docker (4 h)

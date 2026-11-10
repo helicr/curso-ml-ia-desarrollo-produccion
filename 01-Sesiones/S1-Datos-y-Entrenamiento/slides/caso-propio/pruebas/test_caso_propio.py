@@ -6,6 +6,7 @@ que los documentos y la presentación dicen lo mismo, que no se regala ninguna c
 (El aspecto en un navegador real se revisa con comprobar_diseno.py, que necesita Playwright.)
 """
 import ast
+import datetime
 import html as hlib
 import re
 import sys
@@ -247,10 +248,74 @@ def test_la_ruta_b_de_s2_es_el_avance_2_en_los_tres_sitios():
     assert 'Bank Marketing' in leer(S2 / 'tarea' / 'README.md')
 
 
-def test_las_fechas_se_dicen_por_definir_y_no_se_inventan():
+# Calendario dado por el instructor el 10/11/2026: miércoles y viernes, de 10:00 a 14:00, hora de Perú.
+SESIONES = {'S0': (2026, 11, 11), 'S1': (2026, 11, 13), 'S2': (2026, 11, 18), 'S3': (2026, 11, 20), 'S4': (2026, 11, 25), 'S5': (2026, 11, 27)}
+DIAS = {2: 'mié', 4: 'vie'}
+
+
+def entrega_en(sesion):
+    """La regla vigente: se entrega a las 10:00 del día de la sesión en que se presenta."""
+    d = datetime.date(*SESIONES[sesion])
+    return f'{DIAS[d.weekday()]} {d.day} nov, 10:00'
+
+
+def entregas_de_la_hoja():
+    filas = re.findall(r'^\| \*\*(\d|Final)\*\* \| ([^|]+) \| ([^|]+) \| ([^|]+) \| ', leer(HOJA), flags=re.M)
+    return {a: (c.strip(), d.strip()) for a, _, c, d in filas}
+
+
+def test_las_sesiones_caen_en_miercoles_o_viernes():
+    for sesion, fecha in SESIONES.items():
+        assert datetime.date(*fecha).weekday() in DIAS, f'{sesion} no cae en miércoles ni viernes'
+
+
+def test_la_entrega_de_cada_avance_es_la_fecha_de_la_sesion_en_que_se_presenta():
+    entregas = entregas_de_la_hoja()
+    for avance in '1234':
+        presenta, entrega = entregas[avance]
+        assert entrega == entrega_en(presenta), f'avance {avance}: la hoja dice «{entrega}» y la sesión {presenta} es «{entrega_en(presenta)}»'
+    assert entregas['Final'] == ('por definir', 'por definir'), 'la entrega final no tiene fecha acordada: no se inventa'
+
+
+def test_la_presentacion_dice_las_mismas_fechas_que_la_hoja():
+    t = texto_html(DECK)
+    for avance in '1234':
+        presenta, entrega = entregas_de_la_hoja()[avance]
+        assert f'{presenta} {entrega}' in t, f'la presentación no tiene la fecha del avance {avance}'
+    assert 'Final tras S5 por definir por definir' in t
+
+
+def test_la_hoja_y_la_presentacion_dicen_la_hora_de_peru():
+    assert 'hora de Perú' in leer(HOJA) and 'hora de Perú' in texto_html(DECK)
+
+
+def test_el_canal_de_entrega_es_el_formulario_de_google_en_todas_las_piezas():
+    """Decidido el 10/11/2026. El formulario aún no existe: el instructor da el enlace en clase y ninguna pieza trae uno inventado."""
+    piezas = [leer(HOJA), texto_html(DECK), leer(PLANTILLA), leer(S1 / 'tarea' / 'README.md'), leer(S1 / 'guion.md'), leer(S1 / 'slides' / 'index.html'), leer(S1 / 'checklist.md')]
+    for t in piezas:
+        assert 'ormulario de Google' in t
+        assert not re.search(r'forms\.gle|docs\.google\.com/forms', t), 'el formulario no existe todavía: no se enlaza ninguno inventado'
+    assert 'lo indicará el instructor' not in leer(HOJA), 'el canal ya está decidido: no debe decir que sigue sin definir'
+
+
+def test_las_piezas_de_s1_y_la_plantilla_dan_las_mismas_fechas_de_entrega():
+    for ruta in [S1 / 'tarea' / 'README.md', S1 / 'guion.md', S1 / 'slides' / 'index.html']:
+        assert 'miércoles 18 de noviembre' in leer(ruta), f'{ruta.name}: falta la fecha del avance 1 y de la tarea de S1'
+    for texto in [leer(PLANTILLA), leer(S1 / 'guion.md')]:
+        assert all(f in texto for f in ['miércoles 18 de noviembre', 'viernes 20', 'miércoles 25', 'viernes 27'])
+
+
+def test_el_reloj_de_s1_sigue_sumando_240_minutos():
+    """La diapositiva 18 pasó a 5 min y la 20 a 10 (el caso propio): el total no puede moverse."""
+    minutos = [int(m) for m in re.findall(r'data-min="(\d+)"', leer(S1 / 'slides' / 'index.html'))]
+    assert sum(minutos) == 240
+
+
+def test_las_fechas_no_se_inventan_fuera_del_calendario():
+    """Ni la entrega final ni el peso de cada avance tienen fecha o cifra acordada; tampoco hay fechas con año inventadas."""
     for t in [leer(HOJA), texto_html(DECK)]:
-        assert 'no están definidas' in t
         assert not re.search(r'\b\d{1,2}/\d{1,2}/20\d\d\b|\b\d{1,2} de (enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) de 20\d\d', t.replace('mayo de 2008 a noviembre de 2010', ''))
+        assert 'no están definidas' not in t, 'las fechas de los avances ya están definidas: no debe decir lo contrario'
 
 
 def pesos_de(ruta):

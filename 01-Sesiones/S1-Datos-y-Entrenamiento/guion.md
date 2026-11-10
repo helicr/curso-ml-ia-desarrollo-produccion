@@ -33,6 +33,10 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 ## 3:45–4:00 · Entrega y cierre (diap. 18–20)
 - Tarea y rúbrica (diap. 18), errores frecuentes (19), avance de S2 (20).
 - Recordar: evidencia = decisión escrita + comparación de dos ejecuciones + traducción a `.py`.
+- **Caso propio (Bank Marketing), ≈5 min dentro de estos 15. Propuesta, sin decidir** (punto 23 de `00-Planificacion/decisiones-y-pendientes.md`): con «Tu caso de S1 a S5» (`slides/caso-propio/`, diap. 2, 3, 6 y 10). Decir que **es otro trabajo distinto de la tarea**, que se entrega por avances (el 1 se presenta en S2) y que lo leen enteros en casa (`02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md`). Los 5 minutos salen de la diap. 18, porque la tarea ya está escrita en `tarea/README.md`: el reloj de la presentación cuenta 5 min en la diap. 18 y 10 en la 20 (cierre más caso propio), así que el total sigue en 240.
+- Decir las fechas: sesiones los miércoles y viernes de 10:00 a 14:00 (hora de Perú); cada avance se entrega **a las 10:00 del día de la sesión en que se presenta** (avance 1 y tarea de S1: miércoles 18 de noviembre; 2: viernes 20; 3: miércoles 25; 4: viernes 27). Los avances 2 y 4 solo tienen dos días desde la sesión anterior: avisar.
+- **Dar el enlace del formulario de Google** con el que se entrega cada avance y la tarea de S1 (crearlo antes de S1; campos en el punto 23 de `00-Planificacion/decisiones-y-pendientes.md`), y decir que quien tenga el repositorio privado debe añadirte como colaborador.
+- Decir en voz alta lo que **aún no está definido**: la fecha de la entrega final y el peso de cada avance en la nota.
 
 ## Si algo falla en directo
 | Síntoma | Respuesta |

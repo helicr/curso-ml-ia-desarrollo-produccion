@@ -1,6 +1,8 @@
 # Tarea S1 · Adapta una variable y decide
 
-**Entrega:** antes de S2 · repositorio personal con rama `tarea-s1` (o carpeta comprimida si no hay repo).
+**Entrega:** antes de que empiece S2 (miércoles 18 de noviembre, 10:00, hora de Perú) · repositorio personal con rama `tarea-s1` (o carpeta comprimida si no hay repo). Si no recuerdas cómo crear una rama y subirla: [`git-y-ramas.md`](../../../07-Recursos/guias/git-y-ramas.md). Se entrega con el formulario de Google del curso (el instructor da el enlace en clase); si tu repositorio es privado, añade al instructor como colaborador.
+
+> **No confundas las dos cosas.** Esta tarea es un ejercicio de S1 sobre el caso **Online Retail II** (añadir una variable). Tu **caso propio, Bank Marketing**, es otro trabajo: se avanza de S1 a S5 y se entrega por avances. Léelo entero antes de S1 en [«Tu caso: Bank Marketing»](../../../02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md). El avance 1 (RAW → MASTER → FS → ML y entrenamiento, como cuadernos) se presenta en S2 y se entrega a la misma hora que esta tarea; las fechas de los cuatro avances están en el apartado 9 de la hoja.
 
 ## Qué se pide
 Añadir **una variable nueva** a la capa FS del caso Online Retail II, reconstruir ML, reentrenar y **decidir con evidencia** si la variable se queda.
