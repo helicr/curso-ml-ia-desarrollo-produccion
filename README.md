@@ -25,4 +25,4 @@ La presentación de S0 distingue Parte A, Parte B obligatoria y Consulta opciona
 ## Estado
 S0, S1 y S2 están implementadas y validadas en Linux (entorno `env-ia-mlops`, datos del caso, cuadernos y pruebas); S2 además se verificó en GitHub Actions (imagen Docker, contenedor y workflow). Nada se ha probado en Windows real.
 S3–S5 solo tienen README. El Codespace del curso (`.devcontainer/`, escrito en S2) está sin probar; los workflows de publicación y despliegue y los laboratorios de S3 a S5 están pendientes de desarrollo y prueba, así que no es un curso completamente implementado.
-Trabajo en la rama `develop`; `main` está vacía hasta fusionar. Ver `00-Planificacion/decisiones-y-pendientes.md`.
+`main` trae lo que ya puede usar el alumnado (S0, S1 y S2 con sus PDF); el trabajo en curso se hace en `develop` y se fusiona en `main` cuando está listo. Ver `00-Planificacion/decisiones-y-pendientes.md`.

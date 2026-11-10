@@ -24,7 +24,7 @@ Cada elemento:
 CARPETA_SALIDA = 'pdfs'
 
 REPOSITORIO = 'https://github.com/helicr/curso-ml-ia-desarrollo-produccion'
-RAMA = 'develop'
+RAMA = 'main'
 
 CURSO = 'ML e IA: de desarrollo a producción'
 INSTITUCION = 'UNTRM · INCID · FIZBAC · 2026-II'
