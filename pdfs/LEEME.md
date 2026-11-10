@@ -18,7 +18,7 @@ El contenido de esta carpeta sale de `00-Planificacion/pdfs/contenido_pdfs.py`.
 Se pierden las animaciones, los botones, los contadores en vivo y las notas del orador. Cada diapositiva sale con todos sus pasos ya revelados y los valores finales de los contadores.
 Las interactivas (encuesta, simuladores, cronómetro) quedan como una imagen fija de su estado final. Para eso, y para las notas del orador, usa la presentación HTML.
 
-Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub.
+Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 
 ## S0 · Presentación y entorno (2 h)
 

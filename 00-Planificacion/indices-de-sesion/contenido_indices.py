@@ -12,7 +12,7 @@ Para describir un archivo nuevo o cambiar un texto: edita este archivo y ejecuta
 CURSO = 'ML e IA: de desarrollo a producción'
 SUBTITULO = 'Instructor: Helí Campos R · UNTRM · 2026-II'
 REPO_GITHUB = 'https://github.com/helicr/curso-ml-ia-desarrollo-produccion'
-RAMA = 'develop'
+RAMA = 'main'
 
 CARPETA_SESIONES = '01-Sesiones'
 ENTORNO = '03-Entorno'
