@@ -116,7 +116,7 @@ def test_las_presentaciones_con_volver_enlazan_al_indice_de_su_sesion(i, s):
 
 
 def test_los_numeros_de_diapositivas_son_los_reales():
-    cuentas = {'S0': {29, 27}, 'S1': {20}, 'S2': {21}}
+    cuentas = {'S0': {29, 27}, 'S1': {20, 12}, 'S2': {21, 24, 16, 17}}
     for i, s in SESIONES:
         if s['id'] not in cuentas:
             continue

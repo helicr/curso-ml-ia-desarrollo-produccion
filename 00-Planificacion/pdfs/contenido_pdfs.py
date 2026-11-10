@@ -123,6 +123,14 @@ SESIONES = [
                 'nota': PERDIDO_EN_PRESENTACIONES,
             },
             {
+                'origen': '01-Sesiones/S1-Datos-y-Entrenamiento/slides/caso-propio/index.html',
+                'tipo': 'presentacion', 'grupo': 'presentaciones',
+                'titulo': 'Tu caso de S1 a S5 (Bank Marketing)',
+                'archivo': '02-tu-caso-de-s1-a-s5.pdf',
+                'espera_ms': 2400,
+                'nota': PERDIDO_EN_PRESENTACIONES,
+            },
+            {
                 'origen': '01-Sesiones/S1-Datos-y-Entrenamiento/teoria/README.md',
                 'tipo': 'documento', 'grupo': 'alumno',
                 'titulo': 'Teoría y glosario de S1',
@@ -165,6 +173,24 @@ SESIONES = [
                 'archivo': '07-proyecto-base.pdf',
             },
             {
+                'origen': '02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Tu caso: Bank Marketing',
+                'archivo': '08-tu-caso-bank-marketing.pdf',
+            },
+            {
+                'origen': '02-Proyecto-Transversal/alumno/plantilla-avance.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Plantilla de cada avance del caso propio',
+                'archivo': '09-plantilla-de-avance.pdf',
+            },
+            {
+                'origen': '02-Proyecto-Transversal/alumno/rubrica-avance.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Rúbrica de cada avance del caso propio',
+                'archivo': '10-rubrica-de-avance.pdf',
+            },
+            {
                 'origen': '01-Sesiones/S1-Datos-y-Entrenamiento/README.md',
                 'tipo': 'documento', 'grupo': 'instructor',
                 'titulo': 'README de S1',
@@ -191,6 +217,33 @@ SESIONES = [
                 'archivo': '01-presentacion-s2.pdf',
                 'espera_ms': 2400,
                 'nota': PERDIDO_EN_PRESENTACIONES,
+            },
+            {
+                'origen': '03-Entorno/guia-codespaces/index.html',
+                'tipo': 'presentacion', 'grupo': 'presentaciones',
+                'titulo': 'Codespaces: tu laboratorio de Docker en la nube',
+                'archivo': '02-guia-de-codespaces.pdf',
+                'espera_ms': 700,
+                'nota': PERDIDO_EN_PRESENTACIONES + ' Los pasos se explican igual en la versión de texto, '
+                        '`03-Entorno/guias/codespaces-para-el-alumnado.md`.',
+            },
+            {
+                'origen': '01-Sesiones/S2-API-y-Docker/contenedores/modelo-mental/index.html',
+                'tipo': 'presentacion', 'grupo': 'presentaciones',
+                'titulo': 'Contenedores: el modelo mental',
+                'archivo': '03-contenedores-el-modelo-mental.pdf',
+                'espera_ms': 700,
+                'nota': PERDIDO_EN_PRESENTACIONES + ' Los mismos ejemplos están en la guía práctica '
+                        '(`01-Sesiones/S2-API-y-Docker/contenedores/guia-practica.md`).',
+            },
+            {
+                'origen': '01-Sesiones/S2-API-y-Docker/contenedores/del-dockerfile-a-produccion/index.html',
+                'tipo': 'presentacion', 'grupo': 'presentaciones',
+                'titulo': 'Contenedores: del Dockerfile a producción',
+                'archivo': '04-del-dockerfile-a-produccion.pdf',
+                'espera_ms': 700,
+                'nota': PERDIDO_EN_PRESENTACIONES + ' Los mismos ejemplos están en la guía práctica '
+                        '(`01-Sesiones/S2-API-y-Docker/contenedores/guia-practica.md`).',
             },
             {
                 'origen': '01-Sesiones/S2-API-y-Docker/teoria/README.md',
@@ -233,6 +286,18 @@ SESIONES = [
                 'tipo': 'documento', 'grupo': 'alumno',
                 'titulo': 'La API y el contenedor (proyecto base)',
                 'archivo': '07-la-api-y-el-contenedor.pdf',
+            },
+            {
+                'origen': '01-Sesiones/S2-API-y-Docker/contenedores/guia-practica.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Contenedores: guía práctica con nueve ejemplos',
+                'archivo': '08-guia-practica-de-contenedores.pdf',
+            },
+            {
+                'origen': '01-Sesiones/S2-API-y-Docker/contenedores/laboratorio-romper.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Contenedores: laboratorio «romperlo a propósito»',
+                'archivo': '09-laboratorio-romper-a-proposito.pdf',
             },
             {
                 'origen': '01-Sesiones/S2-API-y-Docker/README.md',

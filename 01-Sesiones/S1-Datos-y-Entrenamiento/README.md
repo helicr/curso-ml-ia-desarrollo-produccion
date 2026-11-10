@@ -21,6 +21,8 @@ Al terminar, la persona asistente puede:
 ## Contenido de esta carpeta
 - `index.html`: índice de la sesión (presentaciones, documentos y qué falta). Se genera con `00-Planificacion/indices-de-sesion/generar_indices.py`.
 - `slides/index.html`: presentación interactiva (20 diapositivas; flechas, **O** índice, **S** notas, **F** pantalla completa).
+- `slides/caso-propio/index.html`: «Tu caso de S1 a S5», 12 diapositivas sobre el caso propio del alumnado (Bank Marketing). Se genera con `slides/caso-propio/generar.py`; 55 pruebas en `slides/caso-propio/pruebas/`. No está en la agenda de arriba: ver el punto 23 de `00-Planificacion/decisiones-y-pendientes.md`.
+- Material del caso propio, en `02-Proyecto-Transversal/alumno/`: `tu-caso-bank-marketing.md` (hoja del alumno), `plantilla-avance.md` y `rubrica-avance.md` (20/40/40).
 - `guion.md`: guion del docente minuto a minuto.
 - `checklist.md`: comprobaciones del docente y del alumnado.
 - `teoria/README.md`: resumen de teoría y glosario.
@@ -31,7 +33,7 @@ Al terminar, la persona asistente puede:
 
 ## Qué está validado y qué no
 - **Validado (Linux, entorno `env-ia-mlops`):** los cuatro cuadernos y el paquete `ia_mlops` con la muestra y con el dato completo (resultados idénticos), 34 pruebas en verde, y la receta de la tarea (añadir `monto_180d`: pipeline completo y 30 pruebas rápidas en verde).
-- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); la tarea con un dataset distinto (por decidir).
+- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); la tarea con un dataset distinto: el caso propio es Bank Marketing, pero **no existe base de referencia** (RAW → MASTER → FS → ML con cuadernos y pruebas), así que ningún alumno ha podido comprobar la receta con él.
 - **Cifras de las diapositivas:** las del dato completo salen de `04-Proyecto-Base` ejecutado sobre el Excel de UCI; con la **muestra** del curso (23 070 filas) los modelos dan valores menores (regresión logística: valid 0,698 · test 0,747). Es esperado.
 
 ## MLflow en S1 (versión ligera)

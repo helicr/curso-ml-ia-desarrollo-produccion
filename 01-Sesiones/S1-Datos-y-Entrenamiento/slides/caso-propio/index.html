@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tu caso de S1 a S5 · ML e IA: de desarrollo a producción</title>
+<style>
+:root{--bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;--blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--r:14px;
+--mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--blue)}
+code{font-family:var(--mono);background:rgba(43,179,255,.14);padding:1px 6px;border-radius:6px;font-size:.92em;color:#d9efff}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#viewport{position:fixed;inset:0 0 46px 0;overflow:hidden;background:radial-gradient(1200px 700px at 20% 0%,#07305a 0%,var(--bg) 70%)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;padding:40px 60px 52px;opacity:0;visibility:hidden;transform:translateX(24px);transition:opacity .35s ease,transform .35s ease,visibility 0s .35s;overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .35s ease}
+.slide::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold))}
+.foot{position:absolute;left:60px;right:60px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.kick{font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;gap:14px;align-items:center}
+h1{font-size:34px;line-height:1.1;letter-spacing:-.01em;margin-bottom:8px;font-weight:800}
+h2{font-size:22px;margin-bottom:8px}
+h3{font-size:16px;margin-bottom:6px;color:var(--gold);letter-spacing:.04em;text-transform:uppercase}
+p{font-size:18px;line-height:1.45}
+.muted{color:var(--muted)} .small{font-size:14px;line-height:1.4;color:var(--muted)}
+.card{background:linear-gradient(180deg,var(--panel),#082d54);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.card.ok{border-color:rgba(52,211,153,.55)} .card.bad{border-color:rgba(251,113,133,.5)} .card.warn{border-color:rgba(251,191,36,.6)}
+.tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.tag.mixto{color:#2b2100;background:var(--gold);border-color:var(--gold)} .tag.sin{color:var(--warn);border-color:var(--warn)}
+.chip{display:inline-block;font-size:14px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--blue);color:#04213f}
+.where{display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:15px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
+.term{background:#02101f;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:10px 0 8px}
+.term .bar{display:flex;gap:6px;align-items:center;padding:6px 12px;background:#0a2a4a;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#2a5d92;display:inline-block}
+.term .bar em{margin-left:8px;font-style:normal}
+.cmd{display:flex;gap:10px;align-items:flex-start;padding:4px 10px;border-top:1px solid rgba(26,95,163,.35)}
+.cmd:first-of-type{border-top:0}
+.cmd .cp{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--panel);font-size:15px;line-height:1;display:grid;place-items:center}
+.cmd .cp:hover{background:var(--blue);color:#04213f}.cmd .cp.hecho{background:var(--ok);color:#032b1c;border-color:var(--ok)}
+.cmd .tx{flex:1;min-width:0}
+.cmd code.l{display:block;background:none;padding:2px 0;font-size:15px;color:#fff;white-space:pre-wrap;overflow-wrap:anywhere;user-select:all}
+.cmd code.l::before{content:"> ";color:var(--gold)}
+.cmd .nota{display:block;font-size:12.5px;color:var(--muted)}
+.btns{display:flex;gap:10px;margin-top:6px;align-items:center}
+.btn{padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-weight:700;font-size:14px}
+.btn:hover{background:var(--panel2)} .btn.primary{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.btn.on{background:var(--ok);color:#032b1c;border-color:var(--ok)}
+ol.ui{list-style:none;counter-reset:u;display:flex;flex-direction:column;gap:6px;margin:6px 0}
+ol.ui li{counter-increment:u;display:flex;gap:10px;font-size:15.5px;line-height:1.34}
+ol.ui li span{flex:1;min-width:0}
+ol.ui li::before{content:counter(u);flex:none;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#04213f;font-weight:800;font-size:14px;display:grid;place-items:center;margin-top:1px}
+pre.real{font-family:var(--mono);font-size:12.5px;line-height:1.32;background:#02101f;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;white-space:pre-wrap;word-break:break-word;color:#cfe8ff}
+.rn{font-size:12px;color:var(--muted);margin-top:4px}
+.side{display:flex;flex-direction:column;gap:10px}
+ul.f{list-style:none;display:flex;flex-direction:column;gap:6px}
+ul.f li{font-size:14.5px;line-height:1.38;padding-left:16px;position:relative}
+ul.f li::before{content:"›";position:absolute;left:2px;color:var(--bad);font-weight:800}
+.vn{font-size:12.5px;color:var(--muted);margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:left;padding:6px 10px;border-bottom:2px solid var(--line)}
+td{padding:7px 10px;border-bottom:1px solid rgba(26,95,163,.45);vertical-align:top;line-height:1.35}
+table.dens td{padding:5px 10px;font-size:14.5px;line-height:1.3}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+ul.p{list-style:none;display:flex;flex-direction:column;gap:7px}
+ul.p li{font-size:16.5px;line-height:1.4;padding-left:18px;position:relative}
+ul.p li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:3px;background:var(--blue)}
+ul.p.s li{font-size:15px;line-height:1.36;gap:0}
+.cover{display:flex;flex-direction:column;justify-content:center;height:100%;padding-bottom:20px}
+.cover h1{font-size:58px;line-height:1.04;margin:6px 0 14px}.cover .sub2{font-size:23px;color:var(--muted);margin-bottom:22px;max-width:940px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.check{display:flex;flex-direction:column;gap:8px}
+.check label{display:flex;gap:12px;align-items:flex-start;font-size:17px;line-height:1.35;padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok)}
+.check .ref{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap;padding-left:10px}
+ul.src{list-style:none;columns:2;column-gap:28px}
+ul.src li{break-inside:avoid;font-size:13px;line-height:1.3;margin-bottom:7px}
+ul.src a{display:block;font-family:var(--mono);font-size:11px;word-break:break-all}
+#bar{position:fixed;left:0;right:0;bottom:0;height:46px;display:flex;gap:10px;align-items:center;padding:0 14px;background:#02101f;border-top:1px solid var(--line);font-size:14px}
+#bar button{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
+#bar .sp{flex:1}
+#bar a#bhome{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);text-decoration:none;white-space:nowrap}
+#bar a#bhome:hover{border-color:var(--gold)}
+@media(max-width:900px){#bar a#bhome .tx{display:none}}
+#prog{position:fixed;left:0;bottom:46px;height:3px;background:var(--gold);width:0;transition:width .3s}
+#index{position:fixed;inset:0 0 46px 0;background:rgba(2,16,31,.97);padding:26px 40px;overflow:auto;display:none;z-index:20}
+#index.on{display:block}#index h2{font-size:26px;margin-bottom:14px}
+#idxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+#idxgrid button{text-align:left;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-size:15px}
+#idxgrid button small{display:block;color:var(--gold);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase}
+#idxgrid button.cur{border-color:var(--gold)}#idxgrid button.hecho::after{content:" ✓";color:var(--ok);font-weight:800}
+@media (prefers-reduced-motion:reduce){.slide,.slide.active{transition:none}}
+@media print{html,body{overflow:visible;height:auto}#bar,#prog,#index{display:none}#viewport{position:static}#stage{position:static;transform:none;width:auto;height:auto}
+.slide{position:relative;opacity:1;visibility:visible;transform:none;page-break-after:always;height:720px;width:1280px}}
+
+.stack{display:flex;flex-direction:column;gap:5px}
+.stack .l{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-size:15px}
+.stack .l code{background:none;padding:0;color:#fff}
+.stack .l small{color:var(--muted);font-size:12.5px;white-space:nowrap}
+.stack .l.mio{border-color:var(--gold);background:#3a3110;color:#fff4cf}
+.stack .l.rw{border-color:var(--ok);background:#08352b;border-style:dashed}
+.stack .l.base{background:#0b2644}
+.flow{display:flex;align-items:stretch;gap:8px}
+.flow .b{flex:1;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:center;font-size:15px;line-height:1.3}
+.flow .b b{display:block;color:var(--gold);font-size:14px;letter-spacing:.04em;margin-bottom:3px}
+.flow .b.ok{border-color:rgba(52,211,153,.6)} .flow .b.bad{border-color:rgba(251,113,133,.6)} .flow .b.warn{border-color:rgba(251,191,36,.6)}
+.flow .a{align-self:center;color:var(--gold);font-weight:800;font-size:22px}
+.num{font-size:34px;font-weight:800;color:var(--gold);line-height:1}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pair .card{padding:10px 14px}
+.k{font-size:13px;color:var(--muted)}
+.lead{font-size:17px;line-height:1.4;color:var(--muted)}
+pre.real.g{font-size:12px;line-height:1.28;padding:6px 9px;margin-top:6px}
+.mt{margin-top:10px}
+.row{display:flex;gap:12px;align-items:stretch}
+.row>*{flex:1;min-width:0}
+.mini{padding:7px 11px}
+.mini .k{font-family:var(--mono);font-size:11.5px;color:var(--gold);margin-bottom:2px;overflow-wrap:anywhere;line-height:1.25}
+.mini pre.real{margin-top:3px}
+.wide .cmd{padding:2px 10px}
+.wide .cmd .cp{width:24px;height:24px;font-size:13px}
+.wide .cmd code.l{font-size:14px;padding:1px 0}
+.piensa{font-size:14.5px;line-height:1.35;margin-top:8px}
+.wide+.btns .btn{padding:4px 12px}
+.zoom{transform-origin:0 0;transform:scale(var(--z,1));width:calc(100% / var(--z,1))}
+.pdfonly{display:none}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+<section class="slide" data-title="Portada" data-bloque="Inicio"><div class="cover"><div class="kick">ML e IA: de desarrollo a producción · S1 a S5</div><h1>Tu caso: Bank Marketing</h1><p class="sub2">Una pregunta, un dato y cuatro avances: de las capas RAW → MASTER → FS → ML hasta un servicio en GCP orquestado con GitHub Actions.</p><div class="chips"><span class="chip">Bank Marketing (UCI)</span><span class="chip">CC BY 4.0</span><span class="chip">41 188 llamadas</span><span class="chip">De S1 a S5</span></div><div class="card" style="max-width:1040px"><h3>Cómo usar estas diapositivas</h3><p style="font-size:16.5px"><b>← →</b> navegan · <b>O</b> índice · <b>F</b> pantalla completa. La hoja <code>tu-caso-bank-marketing.md</code> tiene lo mismo en texto.</p><p class="small" style="margin-top:8px">Las cifras son recuentos del archivo del repositorio, comprobados con código. <b>No hay ningún modelo de referencia</b>: se evalúa tu razonamiento, no que tu métrica sea alta.</p></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Inicio</span></div></section>
+<section class="slide" data-title="La pregunta" data-bloque="Tu caso: Bank Marketing"><div class="kick">El caso</div><h1>Antes de llamar a un cliente: ¿contratará el depósito?</h1><div class="zoom" data-max="1.4"><div class="cols" style="grid-template-columns:1.1fr .9fr;margin-bottom:14px"><div class="card " style=""><h3>Qué pasó</h3><ul class="p"><li>Un <b>banco portugués</b> llamó por teléfono a sus clientes para venderles un <b>depósito a plazo</b>.</li><li>Las llamadas van de <b>mayo de 2008 a noviembre de 2010</b>.</li><li>Cada fila es <b>una llamada</b>: no hay identificador de cliente.</li></ul></div><div class="card ok" style=""><h3>Lo que predices</h3><p style="font-size:17px;line-height:1.42">La columna <code>y</code>: <b>sí</b> o <b>no</b>. Solo puedes usar lo que se sabe <b>antes</b> de que el cliente conteste.</p></div></div><div class="three"><div class="card " style=""><div class="num">41 188</div><p class="k" style="margin-top:6px">llamadas (filas)</p></div><div class="card " style=""><div class="num">11,27 %</div><p class="k" style="margin-top:6px">dijeron que sí (4 640 llamadas)</p></div><div class="card " style=""><div class="num">20 + 1</div><p class="k" style="margin-top:6px">variables, más el objetivo <code>y</code></p></div></div><p class="small" style="margin-top:12px">Fuente: Moro, Rita y Cortez (2014), <i>Bank Marketing</i>, UCI Machine Learning Repository, licencia CC BY 4.0 (citarla es obligatorio). doi:10.24432/C5K306</p></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Misma receta, otro dato" data-bloque="Tu caso: Bank Marketing"><div class="kick">Lo que se repite y lo que cambia</div><h1>Misma receta que el docente, otro dato</h1><div class="zoom" data-max="1.4"><div class="flow"><div class="b "><b>RAW</b>el dato tal cual</div><div class="a">→</div><div class="b "><b>MASTER</b>limpio y ordenado</div><div class="a">→</div><div class="b "><b>FS</b>variables conocidas antes</div><div class="a">→</div><div class="b "><b>ML</b>objetivo y partición</div><div class="a">→</div><div class="b ok"><b>Entrenamiento</b>modelos y MLflow</div></div><div style="height:10px"></div><table class="dens"><tr><th></th><th>Caso del docente: Online Retail II</th><th>Tu caso: Bank Marketing</th></tr><tr><td>Pregunta</td><td>¿Volverá el cliente a comprar en los 90 días siguientes?</td><td>Antes de llamar, ¿contratará el depósito?</td></tr><tr><td>Una fila es</td><td>un cliente en una fecha de corte</td><td>una llamada (sin cliente identificable)</td></tr><tr><td>Tiempo</td><td>fecha de corte explícita</td><td>solo mes y día de la semana; el archivo va ordenado por fecha</td></tr><tr><td>Partición</td><td>temporal, por fecha de corte</td><td>aleatoria estratificada en S1 a S4; por orden de filas en S5</td></tr><tr><td>La trampa</td><td>usar datos posteriores al corte</td><td><code>duration</code>: se conoce al terminar la llamada</td></tr><tr><td>Suciedad</td><td>duplicados, cancelaciones, códigos que no son productos</td><td><code>unknown</code>, filas idénticas, <code>pdays</code> = 999</td></tr></table></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Dónde está y cómo leerlo" data-bloque="Tu caso: Bank Marketing"><div class="kick">El dato</div><h1>Dónde está y cómo leerlo</h1><div class="zoom" data-max="1.4"><div class="term"><div class="bar"><i></i><i></i><i></i><em>Terminal · desde la raíz del repositorio, con el entorno env-ia-mlops</em></div><div class="cmd"><button class="cp" data-t="python -c &quot;import pandas as pd; d = pd.read_csv(&#x27;02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv&#x27;, sep=&#x27;;&#x27;); print(d.shape); print(d[&#x27;y&#x27;].value_counts().to_dict())&quot;" title="Copiar esta línea" aria-label="Copiar: python -c &quot;import pandas as pd; d = pd.read_csv(&#x27;02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv&#x27;, sep=&#x27;;&#x27;); print(d.shape); print(d[&#x27;y&#x27;].value_counts().to_dict())&quot;">⧉</button><div class="tx"><code class="l">python -c &quot;import pandas as pd; d = pd.read_csv(&#x27;02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv&#x27;, sep=&#x27;;&#x27;); print(d.shape); print(d[&#x27;y&#x27;].value_counts().to_dict())&quot;</code></div></div><div class="cmd"><button class="cp" data-t="cd 02-Proyecto-Transversal/datos" title="Copiar esta línea" aria-label="Copiar: cd 02-Proyecto-Transversal/datos">⧉</button><div class="tx"><code class="l">cd 02-Proyecto-Transversal/datos</code></div></div><div class="cmd"><button class="cp" data-t="sha256sum -c SHA256SUMS" title="Copiar esta línea" aria-label="Copiar: sha256sum -c SHA256SUMS">⧉</button><div class="tx"><code class="l">sha256sum -c SHA256SUMS</code></div></div></div><div class="two mt"><div class="card ok" style=""><h3>Debe salir</h3><pre class="real g">(41188, 21)
+{&#x27;no&#x27;: 36548, &#x27;yes&#x27;: 4640}</pre><p class="rn">Salida real del primer comando, medida al preparar S0 (Linux). El tercero debe decir <b>OK</b> en cada línea.</p></div><div class="card bad" style=""><h3>No hagas esto</h3><ul class="p s"><li>Abrirlo y guardarlo con <b>Excel</b>: cambia el archivo.</li><li><b>Reordenar las filas</b>: el orden es la única información temporal (y la necesitas en S5).</li><li>Editarlo a mano: todo cambio, con código y sobre tu capa RAW.</li><li>No leer <code>bank-additional-names.txt</code>: es la documentación del autor.</li></ul></div></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Las variables en cuatro grupos" data-bloque="Tu caso: Bank Marketing"><div class="kick">Veinte variables y un objetivo</div><h1>Las variables, en cuatro grupos</h1><div class="zoom" data-max="1.4"><div class="two"><div class="card " style=""><h3>Del cliente · 7</h3><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>age</code> edad · <code>job</code> trabajo · <code>marital</code> estado civil</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>education</code> estudios · <code>default</code> crédito en mora</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>housing</code> crédito de vivienda · <code>loan</code> préstamo personal</p></div><div class="card bad" style=""><h3>Del último contacto · 4</h3><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>contact</code> móvil o fijo · <code>month</code> mes · <code>day_of_week</code> día de la semana</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><span style="text-decoration:line-through"><code>duration</code></span> duración de la llamada: <b>fuera del modelo</b></p></div><div class="card " style=""><h3>De campañas anteriores y de esta · 4</h3><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>campaign</code> contactos de esta campaña (<b>incluye la llamada actual</b>)</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>pdays</code> días desde el último contacto anterior (999 es un código)</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>previous</code> contactos anteriores · <code>poutcome</code> resultado de la campaña anterior</p></div><div class="card " style=""><h3>Contexto económico · 5</h3><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>emp.var.rate</code> empleo · <code>cons.price.idx</code> precios · <code>cons.conf.idx</code> confianza</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><code>euribor3m</code> euríbor a 3 meses · <code>nr.employed</code> empleados</p><p style="font-size:15px;line-height:1.38;margin-bottom:2px"><span class="small">Indicadores del país (Banco de Portugal), no del cliente: trimestrales, mensuales y diarios.</span></p></div></div><div class="card" style="margin-top:12px;border-color:var(--gold)"><p style="font-size:17px"><b>Objetivo:</b> <code>y</code> · <code>yes</code> si contrató el depósito, <code>no</code> si no. Hay 4 640 síes y 36 548 noes.</p></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="La trampa: duration" data-bloque="Tu caso: Bank Marketing"><div class="kick">La más importante</div><h1><code>duration</code>: solo se conoce cuando la llamada termina</h1><div class="zoom" data-max="1.4"><div class="flow"><div class="b ok"><b>Antes de llamar</b>sabes todo lo demás: cliente, campañas, contexto</div><div class="a">→</div><div class="b warn"><b>Llamas</b>ocurre la conversación</div><div class="a">→</div><div class="b bad"><b><code>duration</code></b>solo existe aquí: cuántos segundos duró</div><div class="a">→</div><div class="b "><b><code>y</code></b>sí o no</div></div><div class="two mt"><div class="card bad" style=""><h3>Por qué queda fuera</h3><ul class="p"><li>Una llamada larga suele ser una que <b>acaba bien</b>: usarla es darle al modelo lo que debe adivinar.</li><li>El autor lo advierte en <code>bank-additional-names.txt</code>: con duración 0 la respuesta es «no» (4 filas de este archivo lo cumplen) y recomienda descartarla en un modelo realista.</li></ul></div><div class="card ok" style=""><h3>Qué haces</h3><ul class="p"><li>Déjala <b>fuera de FS y de ML</b>.</li><li>Escribe una <b>prueba que falle</b> si <code>duration</code> (o cualquier columna que no se conozca antes de llamar) vuelve a entrar.</li><li>Si tu AUC te parece demasiado bueno, <b>sospecha de una fuga</b> antes de celebrarlo.</li></ul></div></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Las trampas de MASTER" data-bloque="Tu caso: Bank Marketing"><div class="kick">Lo que encuentras al limpiar</div><h1>Lo que tendrás que decidir al limpiar</h1><div class="zoom" data-max="1.4"><table class="dens"><tr><th>Qué encuentras</th><th>Cifra en el archivo</th><th>Tu decisión</th></tr><tr><td><code>unknown</code> en seis columnas</td><td><code>job</code> 330 · <code>marital</code> 80 · <code>education</code> 1 731 · <code>default</code> 8 597 · <code>housing</code> 990 · <code>loan</code> 990</td><td>¿Valor perdido, categoría o descartar filas?</td></tr><tr><td>Filas idénticas</td><td>12 pares, iguales en las 21 columnas</td><td>Sin cliente no sabes si es la misma llamada. ¿Se descartan?</td></tr><tr><td><code>pdays</code> = 999</td><td>39 673 filas; en 4 110 de ellas <code>previous</code> &gt; 0</td><td>Es un código, no días. ¿Cómo lo representas?</td></tr><tr><td><code>poutcome</code> y <code>previous</code></td><td><code>nonexistent</code> (35 563) son justo las filas con <code>previous</code> = 0</td><td>Dicen lo mismo: ¿conservas las dos?</td></tr><tr><td>Nombres con punto</td><td><code>emp.var.rate</code>, <code>cons.price.idx</code>, <code>cons.conf.idx</code>, <code>nr.employed</code></td><td>Renómbralas con una convención y anótala</td></tr></table><p class="small" style="margin-top:10px">Lo que descartes no desaparece: queda en una tabla de descartes con su motivo, para que <b>raw = master + descartes</b>.</p></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="FS: lo que se sabe antes de llamar" data-bloque="Tu caso: Bank Marketing"><div class="kick">La capa FS en este caso</div><h1>FS: lo que se sabe antes de marcar el número</h1><div class="zoom" data-max="1.4"><p class="lead" style="margin-bottom:10px">Sin identificador de cliente no hay historial por cliente: FS es <b>una fila por llamada</b>, con las variables conocidas antes de llamar, y un <b>catálogo</b> que explica por qué se conocen.</p><table class="dens"><tr><th>Variables</th><th>¿Se conoce antes de llamar?</th><th>Qué decides</th></tr><tr><td>Del cliente (7)</td><td><span class="tag ">Sí</span></td><td>qué haces con <code>unknown</code></td></tr><tr><td><code>contact</code>, <code>month</code>, <code>day_of_week</code></td><td><span class="tag ">Sí</span></td><td>se planifican con la llamada; cómo codificas <code>month</code>, que no trae año</td></tr><tr><td><code>campaign</code></td><td><span class="tag mixto">Depende</span></td><td>cuenta la llamada actual: úsala solo si puedes justificarlo</td></tr><tr><td><code>pdays</code>, <code>previous</code>, <code>poutcome</code></td><td><span class="tag ">Sí</span></td><td>vienen de campañas anteriores; el 999</td></tr><tr><td>Contexto económico (5)</td><td><span class="tag mixto">Depende</span></td><td>¿estaba publicado el valor el día de la llamada?</td></tr><tr><td><code>duration</code></td><td><span class="tag sin">No</span></td><td>fuera, con una prueba que lo vigila</td></tr></table></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="La partición" data-bloque="Tu caso: Bank Marketing"><div class="kick">Cómo se reparten los datos</div><h1>La partición: aleatoria ahora, por orden de filas en S5</h1><div class="zoom" data-max="1.4"><p class="k" style="margin-bottom:6px"><span style="color:var(--blue)">■</span> entrenamiento · <span style="color:var(--gold)">■</span> validación · <span style="color:var(--ok)">■</span> prueba · ilustración, no son datos</p><div class="two"><div class="card ok" style=""><h3>S1 a S4 · aleatoria y estratificada</h3><div style="display:flex;gap:3px;margin:8px 0 4px"><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span></div><ul class="p s"><li>La misma <b>proporción de síes</b> en entrenamiento, validación y prueba.</li><li>Semilla fija y <b>guardada</b>.</li><li>Es <b>optimista</b>, y lo dejas escrito: probablemente porque las llamadas de una misma época se parecen y quedan repartidas entre entrenamiento y prueba.</li></ul></div><div class="card warn" style=""><h3>S5 · el mismo modelo, por orden de filas</h3><div style="display:flex;gap:3px;margin:8px 0 4px"><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--blue)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--gold)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span><span style="flex:1;height:24px;border-radius:5px;background:var(--ok)"></span></div><ul class="p s"><li>Las <b>primeras filas</b> entrenan y las <b>últimas</b> prueban: el orden del archivo es el del tiempo.</li><li>Compara con lo anterior y <b>explica la diferencia</b>; empieza mirando la proporción de síes en cada tramo.</li><li>Por eso no puedes reordenar el archivo.</li></ul></div></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Los avances" data-bloque="Tu caso: Bank Marketing"><div class="kick">Qué se entrega y cuándo</div><h1>Cuatro avances y una entrega final</h1><div class="zoom" data-max="1.4"><table class="dens"><tr><th>Avance</th><th>Trabajas en</th><th>Se presenta en</th><th>Qué lleva</th></tr><tr><td><b>1</b></td><td>S1 y trabajo autónomo</td><td>S2</td><td>Capas RAW → MASTER → FS → ML, entrenamiento y métricas, <b>como cuadernos</b></td></tr><tr><td><b>2</b></td><td>S2 y trabajo autónomo</td><td>S3</td><td>El pipeline <b>ya en Python</b>, API, contenedor y pruebas. La Ruta B de la tarea de S2 es este avance</td></tr><tr><td><b>3</b></td><td>S3 y trabajo autónomo</td><td>S4</td><td>Migración a GCP y despliegue: inventario, datos migrados y validados, servicio y registros</td></tr><tr><td><b>4</b></td><td>S4 y trabajo autónomo</td><td>S5</td><td>Pipeline orquestado con GitHub Actions: workflow funcionando, historial y una decisión explicada</td></tr><tr><td><b>Final</b></td><td>tras S5</td><td>por definir</td><td>Repositorio, informe y demostración, con la evaluación por orden de filas de S5</td></tr></table><p class="small" style="margin-top:12px">Cada avance se presenta en la <b>sesión siguiente</b>. Las fechas las fija el instructor y <b>aún no están definidas</b>. Las tareas de cada sesión son un ejercicio aparte, salvo la Ruta B de S2.</p></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Cada avance y su rúbrica" data-bloque="Tu caso: Bank Marketing"><div class="kick">Cómo se evalúa</div><h1>Qué lleva cada avance y cómo se evalúa</h1><div class="zoom" data-max="1.4"><div class="two"><div class="card " style=""><h3>Cada avance presenta</h3><ul class="p s"><li>El <b>resultado</b>: qué funciona y qué no.</li><li>Cómo se <b>ejecuta</b>, en orden y con versiones.</li><li>Las <b>pruebas</b>, y que fallan si se rompe la regla.</li><li><b>Una decisión</b>, con evidencia.</li><li>Las <b>dificultades</b> y lo que no pudiste ejecutar.</li><li>Los <b>pasos</b> para que otra persona lo reproduzca.</li></ul><p class="small" style="margin-top:6px">Se entrega con <code>plantilla-avance.md</code>.</p></div><div class="card " style=""><h3>Rúbrica · 100 puntos</h3><table class="dens"><tr><th>Criterio</th><th>Peso</th></tr><tr><td>Reproducibilidad</td><td>20</td></tr><tr><td>Técnica</td><td>40</td></tr><tr><td>Análisis y decisión</td><td>40</td></tr></table><p class="small" style="margin-top:8px">Ver <code>rubrica-avance.md</code>. No hay modelo de referencia: una decisión de «no» bien argumentada vale tanto como una de «sí».</p></div></div><div class="card warn" style="margin-top:12px"><h3>Alertas que limitan la nota</h3><ul class="p s"><li><code>duration</code> (o algo que no se conoce antes de llamar) en el modelo: la <b>técnica</b> no supera 15.</li><li>Solo capturas, sin código ni pruebas ejecutables: la <b>reproducibilidad</b> no supera 8.</li><li>Sin citar la fuente del dato: la <b>reproducibilidad</b> no supera 15.</li></ul></div></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+<section class="slide" data-title="Lista final" data-bloque="Tu caso: Bank Marketing"><div class="kick">Tu caso: Bank Marketing</div><h1>Listo para S1</h1><div class="zoom" data-max="1.4"><div class="check"><label><input type="checkbox" data-k="fin0"><span>La huella de mi copia del CSV es correcta (<code>sha256sum -c SHA256SUMS</code>).</span><span class="ref">Dónde está</span></label><label><input type="checkbox" data-k="fin1"><span>El comando de lectura imprime <code>(41188, 21)</code> y el recuento de síes.</span><span class="ref">Dónde está</span></label><label><input type="checkbox" data-k="fin2"><span>He leído <code>bank-additional-names.txt</code> entera.</span><span class="ref">Dónde está</span></label><label><input type="checkbox" data-k="fin3"><span>Puedo explicar por qué <code>duration</code> queda fuera.</span><span class="ref">La trampa</span></label><label><input type="checkbox" data-k="fin4"><span>Sé qué decisiones son mías: <code>unknown</code>, filas idénticas, <code>pdays</code>, <code>campaign</code> e indicadores.</span><span class="ref">MASTER y FS</span></label><label><input type="checkbox" data-k="fin5"><span>Sé qué se entrega en cada avance y que no hay un modelo de referencia.</span><span class="ref">Los avances</span></label></div><p class="small" style="margin-top:10px">Las marcas se guardan solo en este navegador.</p><p style="margin-top:12px;font-size:16px">Siguiente: la hoja <code>02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md</code>, con lo mismo en texto y las decisiones una por una.</p></div><div class="foot"><span>Tu caso de S1 a S5</span><span>Tu caso: Bank Marketing</span></div></section>
+</div></div>
+<div id="prog"></div>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div id="idxgrid"></div></div>
+<nav id="bar" aria-label="Controles"><button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button><span id="count">1</span><span class="sp"></span><a id="bhome" href="../../index.html" title="Volver al índice de la sesión S1">⌂ <span class="tx">Índice de </span>S1</a><button id="bidx">Índice (O)</button><button id="bfull">Pantalla completa (F)</button></nav>
+<noscript>Esta presentación necesita JavaScript. La hoja tu-caso-bank-marketing.md (02-Proyecto-Transversal/alumno) tiene el mismo contenido en texto.</noscript>
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+function store(k,v){try{if(v===undefined){return JSON.parse(localStorage.getItem(k))}localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();const ok=document.execCommand('copy');a.remove();return ok}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+let hecho=store('caso-propio-hecho')||{};
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+function go(i){cur=Math.max(0,Math.min(N-1,i));slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  $('#count').textContent=(cur+1)+' / '+N;$('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur)); location.hash='#'+(cur+1);}
+function marcar(){$$('.slide[data-id]').forEach(s=>{const id=s.dataset.id,b=$('.hecho-btn',s);if(b){b.classList.toggle('on',!!hecho[id]);b.textContent=hecho[id]?'✓ Hecho':'Marcar como hecho'}});
+  $$('#idxgrid button').forEach(b=>b.classList.toggle('hecho',!!hecho[b.dataset.id]));
+  const ids=[...new Set($$('.slide[data-id]').map(s=>s.dataset.id))], total=ids.length, n=ids.filter(id=>hecho[id]).length;const c=$('#cuenta');if(c)c.textContent=n+' de '+total+' pasos marcados como hechos en este navegador'}
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}" data-id="${s.dataset.id||''}"><small>${s.dataset.bloque||''}</small>${i+1}. ${s.dataset.title}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('#index').classList.remove('on');go(+b.dataset.i)});
+document.addEventListener('click',async e=>{
+  const cp=e.target.closest('.cp');
+  if(cp){const ok=await copyText(cp.dataset.t);cp.classList.toggle('hecho',ok);cp.textContent=ok?'✓':'!';setTimeout(()=>{cp.classList.remove('hecho');cp.textContent='⧉'},1300);return}
+  const all=e.target.closest('.cpall');
+  if(all){const ok=await copyText(all.dataset.t);const t=all.textContent;all.textContent=ok?'Copiado ✓':'No se pudo copiar';setTimeout(()=>{all.textContent=t},1500);return}
+  const hb=e.target.closest('.hecho-btn');
+  if(hb){const id=hb.closest('[data-id]').dataset.id;hecho[id]=!hecho[id];store('caso-propio-hecho',hecho);marcar();return}
+});
+document.addEventListener('change',e=>{const c=e.target.closest('.check input');if(c){hecho['lista-'+c.dataset.k]=c.checked;store('caso-propio-hecho',hecho)}});
+$('#bprev').onclick=()=>go(cur-1);$('#bnext').onclick=()=>go(cur+1);$('#bidx').onclick=()=>$('#index').classList.toggle('on');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();go(cur+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){go(0)}else if(k==='End'){go(N-1)}else if(k==='o'||k==='O'){$('#index').classList.toggle('on')}
+  else if(k==='f'||k==='F'){$('#bfull').click()}else if(k==='Escape'){$('#index').classList.remove('on')}
+  else if(k==='c'||k==='C'){const b=$('.cpall',slides[cur]);if(b)b.click()}});
+$$('.check input').forEach(c=>{c.checked=!!hecho['lista-'+c.dataset.k]});
+fit();marcar();const h=parseInt((location.hash||'').slice(1),10);go(h>0?h-1:0);
+})();
+</script>
+<script>
+(function(){
+'use strict';
+// Agranda el contenido de cada diapositiva (hasta data-max) mientras quepa encima del pie. Se repite al cargar las fuentes.
+function ajustar(){
+  document.querySelectorAll('.zoom').forEach(function(z){
+    var tope=parseFloat(z.getAttribute('data-max')||'1.4'), lim=720-52-8, arriba=z.offsetTop, mejor=1;
+    for(var v=tope; v>1.001; v-=0.05){
+      z.style.setProperty('--z', v.toFixed(2));
+      if(arriba + z.offsetHeight*v <= lim){ mejor=v; break; }
+    }
+    z.style.setProperty('--z', mejor.toFixed(2));
+  });
+}
+ajustar(); addEventListener('load',ajustar);
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(ajustar);}
+})();
+</script>
+</body>
+</html>

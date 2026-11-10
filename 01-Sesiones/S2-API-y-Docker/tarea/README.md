@@ -8,7 +8,7 @@ Llevar **el modelo de tu caso** al punto al que hoy llevamos el proyecto base: u
 Hay dos rutas. Elige una y dilo en la evidencia.
 
 - **Ruta A · Online Retail II.** Partes de `04-Proyecto-Base/` y haces entrar en el servicio la **variable de la tarea de S1** (si en S1 decidiste no conservarla, úsala igualmente aquí: esta tarea trata del servicio, no de si la variable mejora el modelo).
-- **Ruta B · tu caso** (Default of Credit Card Clients o Bank Marketing, como en el enunciado transversal). Partes del modelo y los datos de tu caso. El criterio es el mismo; el esquema, los límites y los casos de prueba son tuyos.
+- **Ruta B · tu caso** (Bank Marketing, como en el enunciado transversal). Partes del modelo y los datos de tu caso. El criterio es el mismo; el esquema, los límites y los casos de prueba son tuyos.
 
 **Punto de partida de la Ruta A.** Crea la rama `tarea-s2` desde `develop` (que ya trae la API y el Dockerfile) e incorpora los cambios de tu rama `tarea-s1` (con `git merge tarea-s1`, o repitiendo la receta de S1). Si hay conflictos, resuélvelos y anótalo en la evidencia. Con tu variable dentro y la API sin tocar, las pruebas de la API **fallarán**: es lo esperado, y es de lo que trata el paso 2.
 

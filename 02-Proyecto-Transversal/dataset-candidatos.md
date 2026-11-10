@@ -10,6 +10,7 @@ Tras permitir `archive.ics.uci.edu` y `www.kaggle.com` en la red del entorno, se
   Se construyeron RAW, MASTER, FS y ML completos (`04-Proyecto-Base/`), con un modelo base de **AUC 0,796 en test**. **Esta es la decisión final del caso transversal.**
 - **Olist (tarea) — DESCARTADO el 09/11/2026.** La página de Kaggle respondió 404 a una petición sin cuenta y no se intentó eludir esa protección.
   Su licencia (CC BY-NC-SA 4.0 según una fuente secundaria) nunca se confirmó en la fuente, así que no se usa.
+- **Decisión del 10/11/2026:** el caso de los alumnos es **Bank Marketing**; Default of Credit Card Clients queda como referencia opcional (reglas en `enunciado/README.md`). Lo que sigue del informe original (Olist, comparaciones) es histórico.
 - **Tarea de los alumnos: Default of Credit Card Clients y Bank Marketing (UCI) — LICENCIA VERIFICADA el 09/11/2026.** Decisión de la tarde del 09/11/2026.
   Ambas fichas oficiales de UCI indican **CC BY 4.0** (se pueden compartir y adaptar con atribución). Se leyeron las fichas (no los archivos: la descarga no se pudo hacer, ver «No verificado»).
   - *Default of Credit Card Clients* (I-Cheng Yeh; DOI 10.24432/C55S3H; donado el 25/01/2016): 30 000 instancias, 23 variables, sin valores ausentes según la ficha;

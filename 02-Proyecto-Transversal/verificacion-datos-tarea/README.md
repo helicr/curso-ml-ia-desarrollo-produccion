@@ -6,7 +6,7 @@ Scripts y salidas con los que se perfilaron los dos datasets de la tarea (*Defau
 ## Procedencia
 Los archivos los descargó el instructor desde las fichas de UCI y los adjuntó a la sesión el 09/11/2026. Desde el entorno de trabajo no se pudieron descargar (el proxy bloquea `archive.ics.uci.edu`).
 Los tamaños coinciden con los que anuncian las fichas (5,3 MB el `.xls`; 434,2 KB `bank-additional.zip`; 565,5 KB `bank.zip`), pero UCI no publica un hash, así que `sha256.txt` solo fija **qué archivos se usaron**, no que sean los originales.
-**Los datos no están en el repositorio** (decisión pendiente, ver `00-Planificacion/decisiones-y-pendientes.md`, punto 15). `bank-additional.zip` trae basura de macOS (`__MACOSX`, `.DS_Store`) y un `.Rhistory`; `bank.zip` está limpio. La ingesta debe ignorar esos archivos.
+Los datos **sí** están ahora en el repositorio (`../datos/`, desde el 09/11/2026); los scripts de aquí usan los archivos tal como llegaron (zip descomprimidos), no esa copia. `bank-additional.zip` trae basura de macOS (`__MACOSX`, `.DS_Store`) y un `.Rhistory`; `bank.zip` está limpio. La ingesta debe ignorar esos archivos.
 
 ## Cómo reproducir
 1. Descomprimir cada zip **en su propia carpeta**. El zip de Bank Marketing contiene a su vez `bank.zip` y `bank-additional.zip`, que también se descomprimen, cada uno en su carpeta.

@@ -1,0 +1,830 @@
+{
+ "meta": {
+  "fecha": "2026-11-10",
+  "docker": "29.4.2",
+  "sistema": "Ubuntu 26.04.1 LTS",
+  "kernel": "7.0.0-1019-azure",
+  "nota": "Ejecutado con Docker en GitHub Actions (Ubuntu)."
+ },
+ "ejemplos": {
+  "e1": [
+   {
+    "fase": "paso",
+    "cmd": "docker pull python:3.11-slim",
+    "rc": 0,
+    "segundos": 2.4,
+    "salida": "3.11-slim: Pulling from library/python\n37fb86c2a767: Pulling fs layer\nbbe7053e6def: Pulling fs layer\n53daecf7856e: Pulling fs layer\n7efbce397249: Pulling fs layer\nbbe7053e6def: Download complete\n53daecf7856e: Download complete\n7efbce397249: Download complete\n50e2aab0fb81: Download complete\ne0063bf9ebd8: Download complete\n37fb86c2a767: Download complete\n53daecf7856e: Pull complete\n37fb86c2a767: Pull complete\nbbe7053e6def: Pull complete\n7efbce397249: Pull complete\nDigest: sha256:07d4824036af…\nStatus: Downloaded newer image for python:3.11-slim\ndocker.io/library/python:3.11-slim"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker image ls python:3.11-slim",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "IMAGE              ID             DISK USAGE   CONTENT SIZE   EXTRA\npython:3.11-slim   07d4824036af        189MB         47.8MB        "
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm python:3.11-slim python -c \"import sys; print(sys.version)\"",
+    "rc": 0,
+    "segundos": 2.1,
+    "salida": "3.11.18 (main, Nov  5 2026, 07:57:53) [GCC 14.2.0]"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm python:3.11-slim sh -c \"head -2 /etc/os-release\"",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --name hola python:3.11-slim python -c \"print('hola desde un contenedor')\"",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "hola desde un contenedor"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Image}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     IMAGE              STATUS\nhola      python:3.11-slim   Exited (0) Less than a second ago"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm hola",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "hola"
+   }
+  ],
+  "e2": [
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name reloj python:3.11-slim sh -c \"while true; do echo tic; sleep 1; done\"",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "bb6179882561…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker logs --tail 3 reloj",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "tic\ntic\ntic"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker exec reloj sh -c \"ls / | head -5\"",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "bin\nboot\ndev\netc\nhome"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker stop reloj",
+    "rc": 0,
+    "segundos": 10.1,
+    "salida": "reloj"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\nreloj     Exited (137) Less than a second ago"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker start reloj",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "reloj"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\nreloj     Up 1 second"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm -f reloj",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "reloj"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --name efimero python:3.11-slim sh -c \"echo dato > /tmp/nota.txt && cat /tmp/nota.txt\"",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "dato"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm efimero",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "efimero"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm python:3.11-slim cat /tmp/nota.txt",
+    "rc": 1,
+    "segundos": 0.2,
+    "salida": "cat: /tmp/nota.txt: No such file or directory"
+   }
+  ],
+  "e3": [
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name web python:3.11-slim python -m http.server 8000",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "9aae11d11a31…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "curl -sS --max-time 3 http://127.0.0.1:8000/",
+    "rc": 7,
+    "segundos": 0.0,
+    "salida": "curl: (7) Failed to connect to 127.0.0.1 port 8000 after 0 ms: Could not connect to server"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm -f web",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "web"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name web -p 8000:8000 python:3.11-slim python -m http.server 8000",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "ee777137c6ff…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "curl -sS -o /dev/null -w \"%{http_code}\\n\" http://127.0.0.1:8000/",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "200"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker port web",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "8000/tcp -> 0.0.0.0:8000\n8000/tcp -> [::]:8000"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm -f web",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "web"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name web -p 8000:8000 python:3.11-slim python -m http.server 8000 --bind 127.0.0.1",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "6f9954c7a1a7…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "curl -sS --max-time 3 http://127.0.0.1:8000/",
+    "rc": 56,
+    "segundos": 0.0,
+    "salida": "curl: (56) Recv failure: Connection reset by peer"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm -f web",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "web"
+   }
+  ],
+  "e4": [
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -t saludo:1 . 2>&1 | grep -E \"\\[[0-9]+/[0-9]+\\]|naming to\"",
+    "rc": 0,
+    "segundos": 0.6,
+    "salida": "#5 [1/3] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#6 [2/3] WORKDIR /app\n#7 [3/3] COPY app.py .\n#8 naming to docker.io/library/saludo:1 done"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm saludo:1",
+    "rc": 0,
+    "segundos": 0.3,
+    "salida": "Hola desde un contenedor con Python 3.11.18"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker history --format \"{{.Size}}\\t{{.CreatedBy}}\" saludo:1 | head -5",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "0B\tCMD [\"python\" \"app.py\"]\n12.3kB\tCOPY app.py .\n8.19kB\tWORKDIR /app\n0B\tCMD [\"python3\"]\n16.4kB\tRUN /bin/sh -c set -eux;  for src in idle3 p…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker image ls python:3.11-slim",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "IMAGE              ID             DISK USAGE   CONTENT SIZE   EXTRA\npython:3.11-slim   07d4824036af        189MB         47.8MB        "
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker image ls saludo:1",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "IMAGE      ID             DISK USAGE   CONTENT SIZE   EXTRA\nsaludo:1   a16f43127cc8        187MB         45.6MB        "
+   }
+  ],
+  "e5": [
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -f Dockerfile.malo -t cache:malo . 2>&1 | grep -E \"\\[[0-9]+/[0-9]+\\]|CACHED\"",
+    "rc": 0,
+    "segundos": 6.8,
+    "salida": "#4 [1/4] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#5 [2/4] WORKDIR /app\n#5 CACHED\n#7 [3/4] COPY . .\n#8 [4/4] RUN pip install --no-cache-dir -r requirements.txt"
+   },
+   {
+    "fase": "paso",
+    "cmd": "echo \"# cambio\" >> app.py",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -f Dockerfile.malo -t cache:malo . 2>&1 | grep -E \"\\[[0-9]+/[0-9]+\\]|CACHED\"",
+    "rc": 0,
+    "segundos": 8.0,
+    "salida": "#4 [1/4] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#6 [2/4] WORKDIR /app\n#6 CACHED\n#7 [3/4] COPY . .\n#8 [4/4] RUN pip install --no-cache-dir -r requirements.txt"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -f Dockerfile.bueno -t cache:bueno . 2>&1 | grep -E \"\\[[0-9]+/[0-9]+\\]|CACHED\"",
+    "rc": 0,
+    "segundos": 7.7,
+    "salida": "#5 [1/5] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#6 [2/5] WORKDIR /app\n#6 CACHED\n#7 [3/5] COPY requirements.txt .\n#8 [4/5] RUN pip install --no-cache-dir -r requirements.txt\n#9 [5/5] COPY app.py ."
+   },
+   {
+    "fase": "paso",
+    "cmd": "echo \"# otro cambio\" >> app.py",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -f Dockerfile.bueno -t cache:bueno . 2>&1 | grep -E \"\\[[0-9]+/[0-9]+\\]|CACHED\"",
+    "rc": 0,
+    "segundos": 1.2,
+    "salida": "#5 [1/5] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#6 [3/5] COPY requirements.txt .\n#6 CACHED\n#7 [2/5] WORKDIR /app\n#7 CACHED\n#8 [4/5] RUN pip install --no-cache-dir -r requirements.txt\n#8 CACHED\n#9 [5/5] COPY app.py ."
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm cache:bueno",
+    "rc": 0,
+    "segundos": 0.3,
+    "salida": "numpy 1.26.4 -> 45"
+   },
+   {
+    "fase": "paso",
+    "cmd": "sed -i '/^# /d' app.py",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   }
+  ],
+  "e6": [
+   {
+    "fase": "paso",
+    "cmd": "docker build -q -t entorno:1 .",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "sha256:efe1f66e628a…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm entorno:1",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "saludo: hola por defecto\ntoken presente: False"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -e SALUDO=\"hola desde -e\" -e TOKEN_API=abc entorno:1",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "saludo: hola desde -e\ntoken presente: True"
+   },
+   {
+    "fase": "paso",
+    "cmd": "printf 'SALUDO=desde archivo\\nTOKEN_API=xyz\\n' > mi.env",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm --env-file mi.env entorno:1",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "saludo: desde archivo\ntoken presente: True"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build -f Dockerfile.mal -t entorno:mal . 2>&1 | grep SecretsUsedInArgOrEnv",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "#1 WARN: SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV \"TOKEN_API\") (line 6)\n - SecretsUsedInArgOrEnv: Do not use ARG or ENV instructions for sensitive data (ENV \"TOKEN_API\") (line 6)"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker history --no-trunc --format \"{{.CreatedBy}}\" entorno:mal | grep TOKEN_API",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "ENV TOKEN_API=no-es-un-secreto-real-123"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker inspect --format \"{{.Config.Env}}\" entorno:mal | grep -o \"TOKEN_API=[^] ]*\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "TOKEN_API=no-es-un-secreto-real-123"
+   },
+   {
+    "fase": "paso",
+    "cmd": "rm -f mi.env",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   }
+  ],
+  "e7": [
+   {
+    "fase": "paso",
+    "cmd": "docker volume create datos",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "datos"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -v datos:/datos python:3.11-slim sh -c \"echo version 1 > /datos/nota.txt\"",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -v datos:/datos python:3.11-slim cat /datos/nota.txt",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "version 1"
+   },
+   {
+    "fase": "paso",
+    "cmd": "mkdir -p modelo-demo && echo \"modelo v1\" > modelo-demo/modelo.txt",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -v \"$PWD/modelo-demo:/modelos:ro\" python:3.11-slim cat /modelos/modelo.txt",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "modelo v1"
+   },
+   {
+    "fase": "paso",
+    "cmd": "echo \"modelo v2\" > modelo-demo/modelo.txt",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -v \"$PWD/modelo-demo:/modelos:ro\" python:3.11-slim cat /modelos/modelo.txt",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "modelo v2"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm -v \"$PWD/modelo-demo:/modelos:ro\" python:3.11-slim sh -c \"echo x > /modelos/otro.txt\"",
+    "rc": 2,
+    "segundos": 0.2,
+    "salida": "sh: 1: cannot create /modelos/otro.txt: Read-only file system"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker volume rm datos && rm -rf modelo-demo",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "datos"
+   }
+  ],
+  "e8": [
+   {
+    "fase": "paso",
+    "cmd": "dd if=/dev/zero of=datos-grandes.bin bs=1M count=50 status=none && du -h datos-grandes.bin",
+    "rc": 0,
+    "segundos": 0.4,
+    "salida": "50M\tdatos-grandes.bin"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -t contexto:con-basura . 2>&1 | grep -E \"transferring context|COPY \\. \\.\"",
+    "rc": 0,
+    "segundos": 1.7,
+    "salida": "#3 transferring context: 2B done\n#5 transferring context: 52.44MB 0.1s done\n#7 [3/3] COPY . ."
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker image ls contexto:con-basura",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "IMAGE                 ID             DISK USAGE   CONTENT SIZE   EXTRA\ncontexto:con-basura   111b7a2c64de        240MB         45.7MB        "
+   },
+   {
+    "fase": "paso",
+    "cmd": "printf 'datos-grandes.bin\\n' > .dockerignore",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build --progress=plain -t contexto:limpio . 2>&1 | grep -E \"transferring context|COPY \\. \\.\"",
+    "rc": 0,
+    "segundos": 0.6,
+    "salida": "#3 transferring context: 58B done\n#4 transferring context: 178B done\n#7 [3/3] COPY . ."
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker image ls contexto:limpio",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "IMAGE             ID             DISK USAGE   CONTENT SIZE   EXTRA\ncontexto:limpio   551966da0d9e        187MB         45.6MB        "
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm contexto:limpio",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "el proceso corre con el usuario numero 0"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker build -q -f Dockerfile.noroot -t contexto:noroot .",
+    "rc": 0,
+    "segundos": 0.4,
+    "salida": "sha256:a671aec5abe1…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --rm contexto:noroot",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "el proceso corre con el usuario numero 10001"
+   },
+   {
+    "fase": "paso",
+    "cmd": "rm -f datos-grandes.bin .dockerignore",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   }
+  ],
+  "e9": [
+   {
+    "fase": "paso",
+    "cmd": "docker build -q -t api-minima:1 .",
+    "rc": 0,
+    "segundos": 0.4,
+    "salida": "sha256:d72852dee7da…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name mini -p 8081:8080 -e MODELO=v2 --memory 128m api-minima:1",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "6de2857694af…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS                                     PORTS\nmini      Up Less than a second (health: starting)   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS                   PORTS\nmini      Up 6 seconds (healthy)   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp"
+   },
+   {
+    "fase": "paso",
+    "cmd": "curl -s http://127.0.0.1:8081/modelo",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "{\"modelo\": \"v2\"}"
+   },
+   {
+    "fase": "paso",
+    "cmd": "curl -s -o /dev/null -w \"%{http_code}\\n\" http://127.0.0.1:8081/nada",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "404"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker logs mini",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "{\"ts\": …, \"evento\": \"arranque\", \"puerto\": 8080, \"modelo\": \"v2\"}\n{\"ts\": …, \"metodo\": \"GET\", \"ruta\": \"/salud\", \"codigo\": 200}\n{\"ts\": …, \"metodo\": \"GET\", \"ruta\": \"/modelo\", \"codigo\": 200}\n{\"ts\": …, \"metodo\": \"GET\", \"ruta\": \"/nada\", \"codigo\": 404}"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker stats --no-stream --format \"table {{.Name}}\\t{{.MemUsage}}\\t{{.MemPerc}}\" mini",
+    "rc": 0,
+    "segundos": 1.0,
+    "salida": "NAME      MEM USAGE / LIMIT   MEM %\nmini      13.97MiB / 128MiB   10.91%"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker exec mini id -u",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "10001"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker rm -f mini",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "mini"
+   }
+  ],
+  "r1": [
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name uno -p 8082:8000 python:3.11-slim python -m http.server 8000",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "0c9fc1f70a8b…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name dos -p 8082:8000 python:3.11-slim python -m http.server 8000",
+    "rc": 125,
+    "segundos": 0.3,
+    "salida": "4569e403336f…\ndocker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint dos (669256e029e1575c706389159cb18d1cb875aef0fea8e1dd50edbf37fc2c2b78): Bind for 0.0.0.0:8082 failed: port is already allocated\n\nRun 'docker run --help' for more information"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS                  PORTS\ndos       Created                 \nuno       Up Less than a second   0.0.0.0:8082->8000/tcp, [::]:8082->8000/tcp"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker rm -f dos",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "dos"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker run -d --name dos -p 8083:8000 python:3.11-slim python -m http.server 8000",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "caf97f4879f7…"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker ps --format \"table {{.Names}}\\t{{.Ports}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     PORTS\ndos       0.0.0.0:8083->8000/tcp, [::]:8083->8000/tcp\nuno       0.0.0.0:8082->8000/tcp, [::]:8082->8000/tcp"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker rm -f uno dos",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "uno\ndos"
+   }
+  ],
+  "r2": [
+   {
+    "fase": "paso",
+    "cmd": "docker build -q -t r2:1 .",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "sha256:d9affa0ac1ff…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker run --name r2 r2:1",
+    "rc": 2,
+    "segundos": 0.2,
+    "salida": "python: can't open file '/app/aap.py': [Errno 2] No such file or directory"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\nr2        Exited (2) Less than a second ago"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker logs r2",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "python: can't open file '/app/aap.py': [Errno 2] No such file or directory"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "sed 's/aap.py/app.py/' Dockerfile > Dockerfile.arreglado",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker build -q -f Dockerfile.arreglado -t r2:2 .",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "sha256:147c5a200b1e…"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker run --rm r2:2",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "la aplicacion arranco bien"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker rm r2 && rm Dockerfile.arreglado",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "r2"
+   }
+  ],
+  "r3": [
+   {
+    "fase": "paso",
+    "cmd": "docker build -t r3:1 .",
+    "rc": 1,
+    "segundos": 0.2,
+    "salida": "#0 building with \"default\" instance using docker driver\n\n#1 [internal] load build definition from Dockerfile\n#1 transferring dockerfile: 182B done\n#1 DONE 0.0s\n\n#2 [internal] load metadata for docker.io/library/python:3.11-slim\n#2 DONE 0.0s\n\n#3 [internal] load .dockerignore\n#3 transferring context: 2B done\n#3 DONE 0.0s\n\n#4 [internal] load build context\n#4 transferring context: 2B done\n#4 DONE 0.0s\n\n#5 [2/3] WORKDIR /app\n#5 CACHED\n\n#6 [3/3] COPY models/modelo.joblib models/modelo.joblib\n#6 ERROR: failed to calculate checksum of ref …: \"/models/modelo.joblib\": not found\n\n#7 [1/3] FROM docker.io/library/python:3.11-slim@sha256:07d4824036af…\n#7 resolve docker.io/library/python:3.11-slim@sha256:07d4824036af… done\n#7 CANCELED\n------\n > [3/3] COPY models/modelo.joblib models/modelo.joblib:\n------\nDockerfile:3\n--------------------\n   1 |     FROM python:3.11-slim\n   2 |     WORKDIR /app\n   3 | >>> COPY models/modelo.joblib models/modelo.joblib\n   4 |     CMD [\"python\", \"-c\", \"print('el modelo esta en la imagen')\"]\n   5 |     \n--------------------\nERROR: failed to build: failed to solve: failed to compute cache key: failed to calculate checksum of ref …: \"/models/modelo.joblib\": not found"
+   },
+   {
+    "fase": "paso",
+    "cmd": "ls",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "Dockerfile"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "mkdir -p models && echo \"modelo de ejemplo\" > models/modelo.joblib",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker build -q -t r3:2 .",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "sha256:05643cc4bab5…"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker run --rm r3:2",
+    "rc": 0,
+    "segundos": 0.2,
+    "salida": "el modelo esta en la imagen"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "rm -rf models",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   }
+  ],
+  "r4": [
+   {
+    "fase": "paso",
+    "cmd": "docker run --name oom --memory 64m --memory-swap 64m python:3.11-slim python -c \"x = b'x' * (200 * 1024 * 1024); print('ok')\"",
+    "rc": 137,
+    "segundos": 0.2,
+    "salida": ""
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\noom       Exited (137) Less than a second ago"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker inspect --format \"estado={{.State.Status}} salida={{.State.ExitCode}} oom={{.State.OOMKilled}}\" oom",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "estado=exited salida=137 oom=true"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker run --rm --memory 512m python:3.11-slim python -c \"x = b'x' * (200 * 1024 * 1024); print('ok')\"",
+    "rc": 0,
+    "segundos": 0.3,
+    "salida": "ok"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker rm oom",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "oom"
+   }
+  ],
+  "r5": [
+   {
+    "fase": "paso",
+    "cmd": "docker run -d --name vacio python:3.11-slim",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "95d2773e05e4…"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker ps -a --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\nvacio     Exited (0) 1 second ago"
+   },
+   {
+    "fase": "paso",
+    "cmd": "docker logs vacio",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": ""
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker run -d --name vivo python:3.11-slim sleep 300",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "a02106693f27…"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker ps --format \"table {{.Names}}\\t{{.Status}}\"",
+    "rc": 0,
+    "segundos": 0.0,
+    "salida": "NAMES     STATUS\nvivo      Up 1 second"
+   },
+   {
+    "fase": "arreglo",
+    "cmd": "docker rm -f vacio vivo",
+    "rc": 0,
+    "segundos": 0.1,
+    "salida": "vacio\nvivo"
+   }
+  ]
+ }
+}

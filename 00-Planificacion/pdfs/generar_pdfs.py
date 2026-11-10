@@ -69,8 +69,21 @@ RETOQUES_TEXTO = [
     ('Pulsa <b>⧉</b> junto a cada línea para copiarla y pégala con Ctrl+V en la terminal que indica la diapositiva. '
      '<b>← →</b> navegan · <b>C</b> copia todo el bloque · <b>O</b> índice · <b>F</b> pantalla completa. ',
      'Copia cada línea y pégala en la terminal que indica la diapositiva. '),
+    ('Pulsa <b>⧉</b> junto a cada línea para copiarla y pégala en la terminal del Codespace. '
+     '<b>← →</b> navegan · <b>C</b> copia todo el bloque · <b>O</b> índice · <b>F</b> pantalla completa.',
+     'Copia cada línea y pégala en la terminal del Codespace.'),
+    ('Las marcas se guardan solo en este navegador. ', ''),
+    ('0 de 8 pasos marcados como hechos en este navegador', ''),
     ('Cópialas una a una (⧉)', 'Cópialas una a una'),
     ('Copia con <b>⧉</b> y pega con <b>Ctrl+V</b>', 'Copia cada línea y pégala con <b>Ctrl+V</b>'),
+    # Presentaciones de contenedores (01-Sesiones/S2-API-y-Docker/contenedores/): portada y última diapositiva
+    ('Pulsa <b>⧉</b> junto a cada línea para copiarla y pégala en la terminal de tu Codespace, <b>de una en una</b>, '
+     'leyendo lo que sale. <b>← →</b> navegan · <b>O</b> índice · <b>F</b> pantalla completa.',
+     'Copia cada línea y pégala en la terminal de tu Codespace, <b>de una en una</b>, leyendo lo que sale.'),
+    ('0 de 4 pasos marcados como hechos en este navegador</span>. Las marcas se guardan solo en este navegador.',
+     '</span>Comprueba cada punto antes de pasar a lo siguiente.'),
+    ('0 de 5 pasos marcados como hechos en este navegador</span>. Las marcas se guardan solo en este navegador.',
+     '</span>Comprueba cada punto antes de pasar a lo siguiente.'),
 ]
 
 JS_RETOQUES = """

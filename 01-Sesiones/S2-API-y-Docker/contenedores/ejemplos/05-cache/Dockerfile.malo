@@ -1,0 +1,7 @@
+# Orden MALO: el codigo se copia antes de instalar las dependencias.
+# Cualquier cambio en app.py invalida la capa del COPY y, con ella, la del pip install.
+FROM python:3.11-slim
+WORKDIR /app
+COPY . .
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["python", "app.py"]

@@ -17,6 +17,7 @@ Todo lo que necesita Docker o Kubernetes se hace en la nube, y el portátil solo
 1. **GitHub Codespaces (recomendada).** Entorno en el navegador o VS Code, con Docker, `kind` y `kubectl`
    preconfigurados mediante `devcontainer.json`. El repo ya está en GitHub, así que es el camino natural.
    Pendiente: crear y probar el `devcontainer`, y revisar la cuota gratuita mensual vigente de horas de Codespaces.
+   Guía para el alumnado (S2, bloque 4): [`codespaces-para-el-alumnado.md`](codespaces-para-el-alumnado.md) y, en diapositivas, `../guia-codespaces/index.html`.
 2. **GitHub Actions.** Los runners de GitHub traen Docker. Sirve para construir la imagen, ejecutar pruebas y orquestar
    el pipeline completo sin tocar el equipo del alumno. Los repositorios públicos tienen minutos gratuitos; revisar el límite
    si el repo del alumno es privado.

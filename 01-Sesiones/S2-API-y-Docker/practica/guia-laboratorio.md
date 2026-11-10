@@ -137,7 +137,7 @@ Ahora **rompe una regla del esquema y mira qué prueba lo detecta**. Una por vez
 Anota en tu incidencia cuál falló y qué mensaje daba. **Pregunta:** ¿qué pasaría si nadie hubiera escrito esa prueba?
 
 ## 4. Docker en Codespaces (25 min)
-Docker no se instala en tu equipo. Abre un **Codespace** del repositorio del curso (rama `develop`; botón verde *Code* → *Codespaces*). En su terminal:
+Docker no se instala en tu equipo. Abre un **Codespace** del repositorio del curso (rama `develop`; botón verde *Code* → *Codespaces*). Antes de la clase, repasa la guía en diapositivas `03-Entorno/guia-codespaces/index.html` (en texto: [`codespaces-para-el-alumnado.md`](../../../03-Entorno/guias/codespaces-para-el-alumnado.md)): cómo abrirlo en el navegador o desde tu VS Code, qué hacer si falla y cuánta cuota gastas. Si Docker es nuevo para ti, haz antes el autoestudio de contenedores ([`guia-practica.md`](../contenedores/guia-practica.md) y sus dos presentaciones; unos 60 min como mínimo). En su terminal:
 ```bash
 cd 04-Proyecto-Base
 docker version

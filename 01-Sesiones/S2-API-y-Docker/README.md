@@ -29,13 +29,15 @@ Al terminar, la persona asistente puede:
 - `practica/guia-laboratorio.md`: laboratorio paso a paso con presupuesto de tiempo y salidas esperadas.
 - `tarea/README.md` y `tarea/rubrica.md`: tarea y rúbrica (20/40/40).
 - `evidencias/plantilla-api-y-contenedor.md`: plantilla de la evidencia entregable.
+- `contenedores/`: autoestudio **antes** de S2 en el Codespace: dos presentaciones (16 y 17 diapositivas), `guia-practica.md` (nueve ejemplos; unos 60 min los seis primeros y 97 min todos, estimado) y `laboratorio-romper.md` (cinco fallos; unos 34 min, estimado). No cambia la agenda de la sesión. Ver su `README.md`.
 
 Los casos de la práctica están en `04-Proyecto-Base/tests/datos/` (`cliente_ejemplo.json`, `lote_ejemplo.json` y `casos/01…10`), y una prueba comprueba que cada uno da el código y el mensaje que dicen la guía y la presentación.
 
 ## Qué está validado y qué no
 - **Validado (Linux, entorno `env-ia-mlops`):** las 112 pruebas del proyecto base (108 rápidas y 4 lentas); 24 modificaciones deliberadas del código, todas detectadas por alguna prueba; los diez casos de la práctica y la receta de la tarea (añadir `monto_180d` al servicio: el API avisa con 503, 18 pruebas fallan hasta actualizar el contrato y vuelven a verde).
 - **Validado en GitHub Actions (Ubuntu con Docker):** el `Dockerfile` y el workflow `deploy/github-actions/ci.yml`, con el proyecto en la raíz del repositorio y en la subcarpeta `04-Proyecto-Base/` (variable `PROYECTO`). La imagen se construye, el contenedor responde, rechaza un campo fuera del contrato (422) y corre con el usuario `10001`. La probabilidad del cliente de ejemplo es idéntica en local y en el contenedor.
-- **No validado:** el **Codespace del curso** (`.devcontainer/devcontainer.json`, escrito sin abrir ningún Codespace; probarlo antes de clase con `docker version`), `docker build` en un equipo propio, y los comandos en **Windows** (PowerShell y CMD) de esta sesión. La tarea con un dataset distinto del caso transversal.
+- **Validado con Docker real en GitHub Actions (Ubuntu, Docker 29.4.2, 10/11/2026):** los 113 pasos de los ejemplos y roturas de `contenedores/`. Lo que esas diapositivas dicen de Cloud Run sale solo de la documentación de Google (consultada el 10/11/2026) y está marcado como sin probar.
+- **No validado:** el **Codespace del curso** (`.devcontainer/devcontainer.json`, escrito sin abrir ningún Codespace; probarlo antes de clase con `docker version`; ahí también hay que ejecutar los ejemplos de `contenedores/`, que todavía no se han ejecutado en un Codespace), `docker build` en un equipo propio, y los comandos en **Windows** (PowerShell y CMD) de esta sesión. La tarea con un dataset distinto del caso transversal.
 - **Cifras de las diapositivas:** con la **muestra** del curso (23 070 filas). La probabilidad del ejemplo es `0.8278889191932133`; otro sistema operativo puede cambiar los últimos decimales.
 
 ## Docker en esta sesión

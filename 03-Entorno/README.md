@@ -9,6 +9,10 @@
 | `scripts/pruebas/` | Pruebas de la lógica de ambos scripts en Linux. Ver su README. |
 | `guias/requisitos.md` | Qué va en tu equipo y qué va en la nube. |
 | `guias/preparacion-paso-a-paso.md` | Los mismos pasos en texto. |
+| `guia-codespaces/index.html` | Guía en diapositivas de Codespaces para el alumnado: abrirlo en el navegador o desde tu VS Code, el bloque 4 de S2 paso a paso (entrenar, construir la imagen, arrancar el contenedor, comparar), cuota y qué hacer si falla. También en PDF (`pdfs/S2-API-y-Docker/01-presentaciones/02-guia-de-codespaces.pdf`). |
+| `guia-codespaces/generar.py`, `capturar.py`, `comprobar_diseno.py` y `pruebas/` | `generar.py` produce las diapositivas y la versión en texto a partir de una sola fuente; `capturar.py` renueva las salidas reales (`salidas-reales.json`); `comprobar_diseno.py` revisa en Chrome que nada se desborde; `pruebas/` vigila que los comandos coincidan con la guía de laboratorio y el `devcontainer`. Ver `guia-codespaces/README.md`. |
+| `../01-Sesiones/S2-API-y-Docker/contenedores/` | Autoestudio de contenedores antes de S2, para hacer en el Codespace: dos presentaciones («el modelo mental» y «del Dockerfile a producción»), una guía práctica con nueve ejemplos y un laboratorio de cinco fallos provocados. Comandos y salidas reales de Docker (ejecutados en GitHub Actions; **sin probar todavía en un Codespace del curso**). También en PDF (`pdfs/S2-API-y-Docker/`). |
+| `guias/codespaces-para-el-alumnado.md` | La misma guía de Codespaces en texto (se genera con `guia-codespaces/generar.py`; no editar a mano). |
 | `guias/docker-y-kubernetes-sin-instalacion-local.md` | Cómo trabajar Docker y Kubernetes sin instalarlos. |
 | `guias/migracion-on-premise-a-gcp.md` | Hilo de migración de local a GCP. |
 | `conda/environment.yml` | Entorno `env-ia-mlops` (ML clásico, MLflow, FastAPI, pruebas, GCP), 23 paquetes con versión fijada. Probado en Linux. |

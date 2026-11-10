@@ -16,7 +16,7 @@ El script de instalación del curso añade estas siete (`03-Entorno/scripts/inst
 | Container Tools | `ms-azuretools.vscode-containers` | Ver imágenes y contenedores de Docker (S2) |
 | Kubernetes | `ms-kubernetes-tools.vscode-kubernetes-tools` | Ver clústeres (laboratorio opcional de S3) |
 | Dev Containers | `ms-vscode-remote.remote-containers` | Abrir el proyecto dentro de un contenedor |
-| GitHub Codespaces | `GitHub.codespaces` | Abrir el Codespace del curso desde VS Code |
+| GitHub Codespaces | `GitHub.codespaces` | Abrir el Codespace del curso desde VS Code (cómo conectar: `03-Entorno/guias/codespaces-para-el-alumnado.md`) |
 
 Desde la terminal:
 ```text
