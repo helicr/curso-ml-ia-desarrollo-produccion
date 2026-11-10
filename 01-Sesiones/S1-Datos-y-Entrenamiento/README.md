@@ -33,7 +33,7 @@ Al terminar, la persona asistente puede:
 
 ## Qué está validado y qué no
 - **Validado (Linux, entorno `env-ia-mlops`):** los cuatro cuadernos y el paquete `ia_mlops` con la muestra y con el dato completo (resultados idénticos), 34 pruebas en verde, y la receta de la tarea (añadir `monto_180d`: pipeline completo y 30 pruebas rápidas en verde).
-- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); el caso propio (Bank Marketing) con un alumno real: la receta de RAW a entrenamiento sí se comprobó con una base de referencia del docente (fuera del repositorio público; punto 16 de `00-Planificacion/decisiones-y-pendientes.md`), pero nadie ha seguido la hoja sin ayuda, y la API, el contenedor, GCP y el workflow con ese caso siguen sin probarse.
+- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); el caso propio (Bank Marketing) con un alumno real: la receta de RAW a entrenamiento sí se comprobó con una base de referencia del docente (fuera del repositorio público; punto 16 de `00-Planificacion/decisiones-y-pendientes.md`), pero nadie ha seguido la hoja sin ayuda, y el contenedor, GCP real, el workflow en GitHub y Windows siguen sin probarse con las reglas de la hoja (la API, la migración local y el entrenamiento sí, en el repositorio privado de práctica; punto 16).
 - **Cifras de las diapositivas:** las del dato completo salen de `04-Proyecto-Base` ejecutado sobre el Excel de UCI; con la **muestra** del curso (23 070 filas) los modelos dan valores menores (regresión logística: valid 0,698 · test 0,747). Es esperado.
 
 ## MLflow en S1 (versión ligera)
