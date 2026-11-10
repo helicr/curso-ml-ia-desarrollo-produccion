@@ -181,7 +181,7 @@ def deck():
                 ['<b>2</b>', 'S2 y trabajo autónomo', 'S3', 'vie 20 nov, 10:00', 'El pipeline <b>ya en Python</b>, API, contenedor y pruebas. La Ruta B de la tarea de S2 es este avance'],
                 ['<b>3</b>', 'S3 y trabajo autónomo', 'S4', 'mié 25 nov, 10:00', 'Migración a GCP y despliegue: inventario, datos migrados y validados, servicio y registros'],
                 ['<b>4</b>', 'S4 y trabajo autónomo', 'S5', 'vie 27 nov, 10:00', 'Pipeline orquestado con GitHub Actions: workflow funcionando, historial y una decisión explicada'],
-                ['<b>Final</b>', 'tras S5', 'por definir', 'por definir', 'Repositorio, informe y demostración, con la evaluación por orden de filas de S5'],
+                ['<b>Final</b>', 'tras S5', 'por definir', 'vie 11 dic, 10:00','Repositorio, informe y demostración, con la evaluación por orden de filas de S5'],
             ])
             + '<p class="small" style="margin-top:12px">Sesiones los miércoles y viernes, de 10:00 a 14:00 (hora de Perú). Cada avance se presenta en la <b>sesión siguiente</b> y se entrega antes de que empiece. '
               'Entre S2 y S3 y entre S4 y S5 solo hay dos días. Se entrega con el <b>formulario de Google del curso</b>: el instructor da el enlace en clase. '

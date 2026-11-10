@@ -75,8 +75,8 @@ Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 166 KB |
-| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 148 KB |
+| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 167 KB |
+| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 149 KB |
 
 
 ## S2 · API y Docker (4 h)

@@ -274,7 +274,16 @@ def test_la_entrega_de_cada_avance_es_la_fecha_de_la_sesion_en_que_se_presenta()
     for avance in '1234':
         presenta, entrega = entregas[avance]
         assert entrega == entrega_en(presenta), f'avance {avance}: la hoja dice «{entrega}» y la sesión {presenta} es «{entrega_en(presenta)}»'
-    assert entregas['Final'] == ('por definir', 'por definir'), 'la entrega final no tiene fecha acordada: no se inventa'
+    assert entregas['Final'] == ('por definir', 'vie 11 dic, 10:00'), 'la entrega final es el viernes 11 de diciembre a las 10:00 (elegido el 10/11/2026); dónde se presenta sigue sin decidir'
+
+
+def test_la_entrega_final_cae_en_viernes_despues_de_s5_y_no_en_feriado():
+    """Elegida por el docente el 10/11/2026: viernes 11 de diciembre. Los feriados de diciembre de 2026 en Perú son el 8, el 9 y el 25."""
+    final = datetime.date(2026, 12, 11)
+    assert final.weekday() == 4
+    assert final > datetime.date(*SESIONES['S5'])
+    assert (final.month, final.day) not in [(12, 8), (12, 9), (12, 25)]
+    assert entregas_de_la_hoja()['Final'][1] == f'{DIAS[final.weekday()]} {final.day} dic, 10:00'
 
 
 def test_la_presentacion_dice_las_mismas_fechas_que_la_hoja():
@@ -282,7 +291,7 @@ def test_la_presentacion_dice_las_mismas_fechas_que_la_hoja():
     for avance in '1234':
         presenta, entrega = entregas_de_la_hoja()[avance]
         assert f'{presenta} {entrega}' in t, f'la presentación no tiene la fecha del avance {avance}'
-    assert 'Final tras S5 por definir por definir' in t
+    assert 'Final tras S5 por definir vie 11 dic, 10:00' in t
 
 
 def test_la_hoja_y_la_presentacion_dicen_la_hora_de_peru():
@@ -312,7 +321,7 @@ def test_el_reloj_de_s1_sigue_sumando_240_minutos():
 
 
 def test_las_fechas_no_se_inventan_fuera_del_calendario():
-    """Ni la entrega final ni el peso de cada avance tienen fecha o cifra acordada; tampoco hay fechas con año inventadas."""
+    """La entrega final tiene fecha (vie 11 dic) pero no el sitio de la demostración; el peso de cada avance no tiene cifra acordada; tampoco hay fechas con año inventadas."""
     for t in [leer(HOJA), texto_html(DECK)]:
         assert not re.search(r'\b\d{1,2}/\d{1,2}/20\d\d\b|\b\d{1,2} de (enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre) de 20\d\d', t.replace('mayo de 2008 a noviembre de 2010', ''))
         assert 'no están definidas' not in t, 'las fechas de los avances ya están definidas: no debe decir lo contrario'
