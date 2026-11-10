@@ -24,8 +24,10 @@ la 15 (matriz herramienta × sesión, con «para qué sirve» y la guía de uso 
 consola ni peticiones externas, barra de tiempo con salto correcto e impresión a PDF de 29 páginas. Las comprobaciones de arriba (PDF de 26 páginas, 22 interacciones)
 corresponden a la versión de 26 diapositivas. Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
 
-`slides/anexos/index.html` conserva la edición anterior (con React y ECharts, licencias en `slides/anexos/licencias/`) solo como
-material de consulta: sus anexos A–F siguen vigentes; el resto está desactualizado.
+`slides/anexos/index.html` es la presentación de consulta con los anexos A–F (React y ECharts, licencias en `slides/anexos/licencias/`).
+El 10/11/2026 se le quitaron las 26 diapositivas de la edición anterior, que la presentación principal ya sustituye: quedan el separador y los seis anexos (7 diapositivas).
+El código de esas diapositivas viejas sigue dentro del archivo sin usarse; quitarlo del todo exigiría reconstruir la presentación. Comprobado en Chrome sin interfaz:
+7 diapositivas, los seis enlaces del separador, teclas, calculadora, 7 páginas al imprimir, sin errores de consola ni peticiones externas. No se revisó en otros navegadores ni en proyector.
 
 La guía de instalación para Windows (`03-Entorno/guia-instalacion/`) se probó en Chromium (interacciones, copia, progreso y móvil). Los dos scripts
 (`instalar_entorno.cmd` y `.ps1`) se probaron con un `winget` falso: PowerShell 7 en Linux (20 comprobaciones) y `cmd.exe` de Wine (26),
@@ -51,7 +53,7 @@ botones que en papel no existen (lista en `RETOQUES_TEXTO`); las fuentes no camb
 pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comprobado: 19 PDF de S0 y S1 abiertos y revisados a mano en hojas de contacto; de S2 se revisaron a mano la presentación (21 páginas) y la guía de laboratorio (y, en hoja de contacto, la guía de Codespaces, 24 páginas y las dos presentaciones de contenedores, 16 y 17 páginas); los otros diez, entre ellos la guía práctica y el laboratorio de contenedores, se comprobaron con `--comprobar` y por su texto (sin controles, con las salidas reales y con lo no probado); `--comprobar` limpio
 (tamaño, número de páginas = diapositivas, sin `file:///`, sin palabras internas) y 120 pruebas automáticas en `00-Planificacion/pdfs/pruebas/` (se ejecutan con un Python que tenga `pypdf`, no con `env-ia-mlops`). No se abrieron en
 otros visores que Chrome y poppler (no en Acrobat ni en el visor de Windows) y no se ha comprobado la impresión en papel. Excluidos a propósito: la guía interactiva
-de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos antiguos y `verificar_s1.py`.
+de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos de consulta y `verificar_s1.py`.
 
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.
