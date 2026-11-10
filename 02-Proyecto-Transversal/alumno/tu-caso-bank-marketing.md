@@ -140,7 +140,7 @@ Cada avance se presenta en la **sesión siguiente** a aquella en la que se traba
 | **2** | S2 y trabajo autónomo | S3 | vie 20 nov, 10:00 | El pipeline **ya en Python** (la traducción de los cuadernos), API, contenedor y pruebas. **La Ruta B de la tarea de S2 es este avance** |
 | **3** | S3 y trabajo autónomo | S4 | mié 25 nov, 10:00 | Migración a GCP y despliegue: inventario, datos migrados y validados, servicio desplegado y registros. Opcional: módulo neuronal |
 | **4** | S4 y trabajo autónomo | S5 | vie 27 nov, 10:00 | Pipeline orquestado con GitHub Actions: workflow funcionando, historial de ejecuciones y una decisión explicada |
-| **Final** | tras S5 | por definir | por definir | Repositorio, informe y demostración, con la evaluación por orden de filas de S5 |
+| **Final** | tras S5 | por definir | vie 11 dic, 10:00 | Repositorio, informe y demostración, con la evaluación por orden de filas de S5 |
 
 Las tareas de cada sesión (por ejemplo, la de S1: añadir una variable al caso Online Retail II) son un ejercicio aparte de estos avances, salvo la Ruta B de S2.
 Cada avance se entrega con [`plantilla-avance.md`](plantilla-avance.md) completada y se evalúa con [`rubrica-avance.md`](rubrica-avance.md). Entrégalo en tu repositorio personal, con una rama por avance (`avance-1`, `avance-2`…), o en una carpeta comprimida si no hay repositorio. Si tu repositorio es privado, añade al instructor como colaborador antes de entregar (su usuario lo indica en clase); si entregas una carpeta comprimida, súbela a tu nube y comparte el enlace con acceso para quien lo tenga. Para crear ramas y subirlas: [`git-y-ramas.md`](../../07-Recursos/guias/git-y-ramas.md).

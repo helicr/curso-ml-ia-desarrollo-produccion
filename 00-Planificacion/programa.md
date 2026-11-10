@@ -71,7 +71,7 @@ introducción a costes.
 
 Tarea: Consolidar repositorio, informe y demostración.
 
-Evidencia: Entrega posterior a S5; fecha por definir.
+Evidencia: Entrega posterior a S5: viernes 11 de diciembre, a las 10:00 (hora de Perú).
 
 ## Módulo opcional: LLMs abiertos (sesión extra)
 Fuera del núcleo; ver `06-Modulo-LLMs/README.md`. Se imparte solo si hay tiempo.
