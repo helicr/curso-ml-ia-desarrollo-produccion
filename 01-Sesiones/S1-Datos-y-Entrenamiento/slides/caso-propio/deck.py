@@ -176,14 +176,15 @@ def deck():
 
     # 10 ------------------------------------------------------------------------------------------- los avances
     P.libre('Los avances', B, 'Qué se entrega y cuándo', 'Cuatro avances y una entrega final',
-            tabla(['Avance', 'Trabajas en', 'Se presenta en', 'Qué lleva'], [
-                ['<b>1</b>', 'S1 y trabajo autónomo', 'S2', 'Capas RAW → MASTER → FS → ML, entrenamiento y métricas, <b>como cuadernos</b>'],
-                ['<b>2</b>', 'S2 y trabajo autónomo', 'S3', 'El pipeline <b>ya en Python</b>, API, contenedor y pruebas. La Ruta B de la tarea de S2 es este avance'],
-                ['<b>3</b>', 'S3 y trabajo autónomo', 'S4', 'Migración a GCP y despliegue: inventario, datos migrados y validados, servicio y registros'],
-                ['<b>4</b>', 'S4 y trabajo autónomo', 'S5', 'Pipeline orquestado con GitHub Actions: workflow funcionando, historial y una decisión explicada'],
-                ['<b>Final</b>', 'tras S5', 'por definir', 'Repositorio, informe y demostración, con la evaluación por orden de filas de S5'],
+            tabla(['Avance', 'Trabajas en', 'Presentas en', 'Entrega, a más tardar', 'Qué lleva'], [
+                ['<b>1</b>', 'S1 y trabajo autónomo', 'S2', 'mié 18 nov, 10:00', 'Capas RAW → MASTER → FS → ML, entrenamiento y métricas, <b>como cuadernos</b>'],
+                ['<b>2</b>', 'S2 y trabajo autónomo', 'S3', 'vie 20 nov, 10:00', 'El pipeline <b>ya en Python</b>, API, contenedor y pruebas. La Ruta B de la tarea de S2 es este avance'],
+                ['<b>3</b>', 'S3 y trabajo autónomo', 'S4', 'mié 25 nov, 10:00', 'Migración a GCP y despliegue: inventario, datos migrados y validados, servicio y registros'],
+                ['<b>4</b>', 'S4 y trabajo autónomo', 'S5', 'vie 27 nov, 10:00', 'Pipeline orquestado con GitHub Actions: workflow funcionando, historial y una decisión explicada'],
+                ['<b>Final</b>', 'tras S5', 'por definir', 'por definir', 'Repositorio, informe y demostración, con la evaluación por orden de filas de S5'],
             ])
-            + '<p class="small" style="margin-top:12px">Cada avance se presenta en la <b>sesión siguiente</b>. Las fechas las fija el instructor y <b>aún no están definidas</b>. '
+            + '<p class="small" style="margin-top:12px">Sesiones los miércoles y viernes, de 10:00 a 14:00 (hora de Perú). Cada avance se presenta en la <b>sesión siguiente</b> y se entrega antes de que empiece. '
+              'Entre S2 y S3 y entre S4 y S5 solo hay dos días. Se entrega con el <b>formulario de Google del curso</b>: el instructor da el enlace en clase. '
               'Las tareas de cada sesión son un ejercicio aparte, salvo la Ruta B de S2.</p>')
 
     # 11 ------------------------------------------------------------------------------------------- qué lleva cada avance y la rúbrica
