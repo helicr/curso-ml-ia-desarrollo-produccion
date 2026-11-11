@@ -431,12 +431,12 @@ input[type=range]{width:100%;accent-color:var(--gold)}
  <div>
   <p class="kick st" style="--d:1">UNTRM · INCID · FIZBAC · 2026-II</p>
   <h1 class="st" style="--d:2;font-size:56px">De los datos al modelo</h1>
-  <p class="lead muted st" style="--d:3">RAW → MASTER → FS → ML, con un cuaderno por capa y un modelo que se puede explicar.</p>
+  <p class="lead muted st" style="--d:3">OPERACIONAL → RAW → MASTER → FS → ML, con un cuaderno por capa y un modelo que se puede explicar.</p>
   <div class="chips st" style="--d:4;margin-top:26px"><span class="tag core">Caso: Online Retail II</span><span class="tag">Pregunta: ¿volverá en 90 días?</span><span class="tag">MLflow · tracking</span></div>
  </div>
  <div class="card st" style="--d:3"><p class="small">Lo que construimos hoy</p>
   <p style="font-size:44px;font-weight:800;color:var(--gold);line-height:1.1">1 067 371 filas<br>→ 38 404 ejemplos</p>
-  <p class="small" style="margin-top:8px">de un Excel con suciedad real a una tabla lista para entrenar, sin usar información del futuro.</p></div>
+  <p class="small" style="margin-top:8px">de un sistema de ventas con suciedad real a una tabla lista para entrenar, sin usar información del futuro.</p></div>
 </div>
 </section>
 
@@ -447,7 +447,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 <div class="grid2" style="margin-top:20px">
  <div class="card f"><h3>0:00 · Revisión (30 min)</h3><p class="small">Cada quien comprueba <span class="mono">env-ia-mlops</span> con la prueba de humo. Quien falla, trabaja con Codespaces o en pareja.</p></div>
  <div class="card f"><h3>0:30 · Teoría (60 min)</h3><p class="small">Capas, linaje, calidad, regla de oro de FS, partición temporal, entrenamiento y MLflow.</p></div>
- <div class="card f"><h3>1:30 · Práctica (135 min)</h3><p class="small">Los cuatro cuadernos, con pausa de 10 min. Termina con la traducción a <span class="mono">.py</span> y las pruebas.</p></div>
+ <div class="card f"><h3>1:30 · Práctica (135 min)</h3><p class="small">Los cinco cuadernos (00 a 04), con pausa de 10 min. Termina con la traducción a <span class="mono">.py</span> y las pruebas.</p></div>
  <div class="card f"><h3>3:45 · Entrega (15 min)</h3><p class="small">Se explica la tarea y la rúbrica, se resuelven dudas y se avanza a S2.</p></div>
 </div>
 </section>
@@ -462,7 +462,7 @@ cd 04-Proyecto-Base
 <b>python</b> ../03-Entorno/conda/prueba_de_humo.py
 <b>python</b> -m pytest -q</div>
   <div class="row st"><button class="btn primary" id="r-copy">Copiar comandos</button><span class="small" id="r-msg" style="align-self:center"></span></div>
-  <div class="callout f">Esperado: la prueba de humo termina sin errores y <b>pytest</b> informa <span class="mono">34 passed</span>.</div>
+  <div class="callout f">Esperado: la prueba de humo termina sin errores y <b>pytest</b> informa <span class="mono">44 passed</span>.</div>
  </div>
  <div class="card f"><h3>Si algo falla</h3>
   <ul class="list"><li><span><b>conda pide aceptar términos</b>: usar la receta de 4 comandos de la guía.</span></li>
@@ -483,10 +483,10 @@ cd 04-Proyecto-Base
 
 <section class="slide" data-part="A" data-min="6" data-title="Cuatro capas" data-enter="capas"
  data-notes="Haga clic en cada capa. Cada una se puede borrar y regenerar desde la anterior; nada se edita a mano. FS va antes que ML: ML toma las variables de FS y les agrega objetivo y partición.">
-<p class="kick st">Arquitectura de datos</p><h1 class="st">RAW → MASTER → FS → ML</h1>
+<p class="kick st">Arquitectura de datos</p><h1 class="st">OPERACIONAL → RAW → MASTER → FS → ML</h1>
 <div class="layers st" id="layers"></div><div class="track"><i class="packet"></i><i class="packet"></i><i class="packet"></i></div>
 <div class="ldetail card" id="ldet"></div>
-<p class="small" style="margin-top:8px">Todo vive en una base SQLite con prefijos <span class="mono">raw_ master_ fs_ ml_</span>. Hacer clic en una capa.</p>
+<p class="small" style="margin-top:8px">Dos bases SQLite: el origen, <span class="mono">retail.db</span> (el pipeline solo la lee), y <span class="mono">curso.db</span>, con prefijos <span class="mono">raw_ master_ fs_ ml_</span>. Hacer clic en una capa.</p>
 </section>
 
 <section class="slide" data-part="A" data-min="4" data-title="RAW: lo que trae el dato" data-enter="dirt"
@@ -504,17 +504,16 @@ cd 04-Proyecto-Base
 </section>
 
 <section class="slide" data-part="A" data-min="4" data-title="Linaje: de RAW a MASTER"
- data-notes="Una misma línea en las dos capas. El linaje (_id, _hoja, _fila) permite volver al Excel original. Pregunta para la audiencia: ¿qué pasaría si limpiáramos directamente sobre RAW?">
+ data-notes="Una misma línea en las dos capas. RAW es la copia fiel del sistema operacional (retail.db): el linaje (linea_id, la clave de origen, y _carga_id, la carga en raw_carga) permite volver a la línea original y saber cuándo llegó. El cliente está en raw_facturas. Pregunta para la audiencia: ¿qué pasaría si limpiáramos directamente sobre RAW?">
 <p class="kick st">Linaje</p><h1 class="st">Una fila, dos capas</h1>
 <div class="grid2">
- <div class="card f"><h3>raw_online_retail_ii</h3><div class="pre" style="font-size:14px"><b>_id</b>        1
-<b>_hoja</b>      Year 2009-2010
-<b>_fila</b>      2
-Invoice    489434
-StockCode  85048
-Quantity   12
-Price      6.95
-Customer   13085.0</div></div>
+ <div class="card f"><h3>raw_lineas_factura</h3><div class="pre" style="font-size:14px"><b>linea_id</b>        1
+<b>_carga_id</b>       4
+factura_id      489434
+codigo_producto 85048
+cantidad        12
+precio_unitario 6.95
+registrada_en   2009-12-01 07:45</div></div>
  <div class="card f"><h3>master_lineas + master_facturas</h3><div class="pre" style="font-size:14px"><b>linea_id</b>        1
 factura_id      489434
 codigo_producto 85048
@@ -524,7 +523,7 @@ monto_linea     <b>83.4</b>
 es_venta_valida 1
 cliente_id      <b>13085</b>  (entero)</div></div>
 </div>
-<div class="callout f" style="margin-top:16px">El <span class="mono">Customer ID</span> 13085.0 pasó a entero y el monto de la línea se calculó (12 × 6.95 = 83.40). El <span class="mono">_id</span> sigue siendo el <span class="mono">linea_id</span>.</div>
+<div class="callout f" style="margin-top:16px">El cliente (13085) llega en <span class="mono">raw_facturas</span> y MASTER lo une a la línea; el monto se calculó (12 × 6.95 = 83.40). El <span class="mono">linea_id</span> de origen se conserva en las dos capas.</div>
 </section>
 
 <section class="slide" data-part="A" data-min="4" data-title="MASTER: modelo relacional"
@@ -631,21 +630,24 @@ master_descartes  (motivo)        master_calidad  (reglas)</div>
  data-notes="Los pipelines son cuadernos; el paquete ia_mlops es su traducción. La prueba de equivalencia exige tablas y métricas idénticas entre cuaderno, paquete y script jupytext. Así la traducción no es un acto de fe.">
 <p class="kick st">Cookiecutter Data Science</p><h1 class="st">El cuaderno es la fuente; el paquete, su traducción</h1>
 <div class="grid2">
- <div class="card f"><h3>notebooks/</h3><div class="pre" style="font-size:14px">01_pipeline_raw_a_master
+ <div class="card f"><h3>notebooks/</h3><div class="pre" style="font-size:14px">00_pipeline_operacional
+01_pipeline_raw_a_master
 02_pipeline_master_a_fs
 03_pipeline_fs_a_ml
 04_entrenamiento_y_seguimiento</div><p class="small" style="margin-top:8px">Parametrizados con papermill.</p></div>
- <div class="card f"><h3>ia_mlops/</h3><div class="pre" style="font-size:14px">dataset.py   features.py
-calidad.py   pipeline.py
-modeling/ml_dataset.py
-modeling/train.py · predict.py</div><p class="small" style="margin-top:8px">Mismo resultado, ejecutable por <span class="mono">python -m ia_mlops.pipeline</span>.</p></div>
+ <div class="card f"><h3>ia_mlops/</h3><div class="pre" style="font-size:14px">pipeline_ingesta_raw.py     ← 01
+pipeline_ingesta_master.py  ← 01
+pipeline_ml.py              ← 02 + 03
+pipeline_train.py           ← 04
++ la lógica: dataset · calidad · features
+  modeling/ml_dataset · train · predict</div><p class="small" style="margin-top:8px">Cuatro pipelines <b>independientes e idempotentes</b>: <span class="mono">python -m ia_mlops.pipeline_ml</span>… Mismo resultado que el cuaderno.</p></div>
 </div>
 <div class="callout f" style="margin-top:16px">Prueba de equivalencia: <b>cuaderno = paquete = script de jupytext</b> (mismas tablas, mismas métricas). La tarea también se entrega traducida.</div>
 </section>
 
 <section class="slide" data-part="D" data-min="135" data-title="Práctica: 135 minutos" data-enter="prac"
  data-notes="Pulse cada bloque para ver qué se hace. Pausa de 10 minutos a mitad. Quien termine antes pasa a la tarea. Mantenga el reloj visible: los bloques son guía, no obligación.">
-<p class="kick st">Práctica guiada · 135 min</p><h1 class="st">Los cuatro cuadernos, en orden</h1>
+<p class="kick st">Práctica guiada · 135 min</p><h1 class="st">Los cinco cuadernos, en orden</h1>
 <div class="budget st" id="pbudget"></div>
 <div class="card" id="pdet" style="min-height:200px"></div>
 <p class="small" style="margin-top:8px">Guía completa: <span class="mono">01-Sesiones/S1-Datos-y-Entrenamiento/practica/</span></p>
@@ -809,7 +811,8 @@ hooks.enter.rev=()=>{
 
 /* Capas */
 const CAPAS=[
- {k:'RAW',s:'tal cual llegó',t:'raw_online_retail_ii · raw_carga',d:'El dato original sin corregir, más el linaje (_id, _hoja, _fila) y la huella sha256 del archivo.',r:['1 067 371 filas','No se edita jamás','Se puede volver a cargar']},
+ {k:'OPERACIONAL',s:'el sistema de ventas',t:'retail.db: clientes · productos · facturas · lineas_factura',d:'Simula la base con la que funciona la tienda: normalizada, con claves y con la suciedad del origen. La crea el cuaderno 00 desde el archivo de UCI; el pipeline solo la lee.',r:['53 628 facturas','4 tablas de negocio','Nadie la limpia']},
+ {k:'RAW',s:'tal cual llegó',t:'raw_facturas · raw_lineas_factura · … · raw_carga',d:'Copia fiel de cada tabla del sistema operacional (retail.db), sin corregir, más el linaje (clave de origen y _carga_id) y la huella sha256 de cada carga.',r:['1 067 371 líneas','No se edita jamás','Se puede volver a cargar']},
  {k:'MASTER',s:'depurado y relacional',t:'master_clientes · productos · facturas · lineas · descartes · calidad',d:'Tipos correctos, entidades separadas y todo lo descartado con su motivo. Las reglas de calidad se ejecutan aquí.',r:['1 033 036 líneas','34 335 descartes con motivo','13 reglas de calidad']},
  {k:'FS',s:'variables reutilizables',t:'fs_cliente_corte · fs_catalogo',d:'Una fila por cliente y fecha de corte. Cada variable usa solo datos anteriores al corte y está documentada en el catálogo.',r:['13 variables','Regla de oro: sin futuro','Probada con test']},
  {k:'ML',s:'listo para entrenar',t:'ml_dataset · ml_particiones',d:'Variables de FS + objetivo (compra en 90 días) + partición temporal con ventanas que no se solapan.',r:['38 404 ejemplos','train / valid / test','Objetivo hacia el futuro']}
@@ -865,7 +868,7 @@ hooks.leave.cmp=sec=>{ timers.forEach(clearTimeout); timers=[] };
 /* Práctica */
 const PRAC=[
  {m:10,c:'#94a3b8',t:'Preparar',d:'Abrir 04-Proyecto-Base, elegir kernel env-ia-mlops, ejecutar make test.'},
- {m:30,c:'var(--blue)',t:'01 RAW → MASTER',d:'Cargar la muestra, inspeccionar descartes, comprobar la conciliación y las reglas de calidad.'},
+ {m:30,c:'var(--blue)',t:'00 y 01 · operacional, RAW → MASTER',d:'Crear retail.db con la muestra (00), ingerirla en RAW, inspeccionar descartes, comprobar la conciliación y las reglas de calidad.'},
  {m:25,c:'var(--blue)',t:'02 MASTER → FS',d:'Construir las 13 variables, mover el corte, ejecutar la prueba de no-fuga.'},
  {m:10,c:'#cbd5e1',t:'Pausa',d:'Diez minutos.'},
  {m:25,c:'var(--gold)',t:'03 FS → ML',d:'Objetivo a 90 días, partición temporal, tasa por partición.'},

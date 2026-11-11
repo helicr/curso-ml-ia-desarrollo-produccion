@@ -9,7 +9,7 @@ Añadir **una variable nueva** a la capa FS del caso Online Retail II, reconstru
 
 1. **Diseña** la variable. Debe usar solo datos anteriores al corte. Ejemplos: `monto_180d` (gasto en los 180 días previos), `ratio_devoluciones` (devoluciones/frecuencia), `dias_desde_ultima_devolucion`.
 2. **Impleméntala** (ver «Dónde se toca» abajo) y documéntala en `fs_catalogo` (descripción, fórmula, unidad).
-3. **Reconstruye** FS y ML y reentrena (`python -m ia_mlops.pipeline`).
+3. **Reconstruye** FS y ML y reentrena: `python -m ia_mlops.pipeline_ml` y `python -m ia_mlops.pipeline_train` (o `python -m ia_mlops.pipeline`, que solo rehace lo que cambió: RAW y MASTER dirán «sin cambios»).
 4. **Compara dos ejecuciones** en MLflow (antes y después). Comprueba que la huella del dato cambió (los datos son otros) y que las demás condiciones son iguales.
 5. **Decide** y escribe la decisión en `evidencias/plantilla-decision.md`: ¿se queda la variable? ¿por qué? Una decisión de «no» bien argumentada vale tanto como una de «sí».
 6. **Entrega la traducción a `.py`** de los cuadernos que modificaste (`jupytext`) y la salida de las pruebas.

@@ -26,7 +26,8 @@ def esc(t):
 
 def relativa(ruta, carpeta):
     """Ruta (desde la raíz del repositorio) vista desde la carpeta de la sesión, con barras /."""
-    return PurePosixPath(os.path.relpath(RAIZ / ruta, RAIZ / carpeta)).as_posix()
+    # os.path.relpath usa «\» en Windows: se pasa a «/» para que los enlaces sean iguales en cualquier sistema.
+    return os.path.relpath(RAIZ / ruta, RAIZ / carpeta).replace(os.sep, '/')
 
 
 def contar_diapositivas(ruta):

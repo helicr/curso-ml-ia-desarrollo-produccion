@@ -335,35 +335,36 @@ _Validación: El cuaderno se ejecutó con `jupyter nbconvert` en Linux (NOTEBOOK
 
 ### E2 · Pruebas del proyecto base
 
-**Bloque E (Pruebas para S1) · Terminal:** Anaconda Prompt con (env-ia-mlops) activo, en la carpeta del repositorio · **Validación:** Probado en Linux
+**Bloque E (Pruebas para S1) · Terminal:** Anaconda Prompt con (env-ia-mlops) activo, en la carpeta del repositorio · **Validación:** Probado en Linux y en Windows
 
 `04-Proyecto-Base` es el proyecto con el que se trabaja en S1. Sus pruebas confirman que el entorno hace lo que el curso espera. No hace falta instalar el paquete con `pip` para S1.
 
 ```text
 cd 04-Proyecto-Base
 python -m pytest -q -m "not lento"
-# opcional: incluye ejecutar los 4 cuadernos (más lento)
+# opcional: incluye ejecutar los 5 cuadernos (más lento)
 python -m pytest -q
 ```
 
-**Debe salir:** Rápidas: **30 passed, 4 deselected**. Completas: **34 passed**. Cualquier `failed` o `error` hay que contarlo al instructor.
+**Debe salir:** Rápidas: **40 passed, 4 deselected**. Completas: **44 passed**. Cualquier `failed` o `error` hay que contarlo al instructor.
 
 ```text
-..............................                                           [100%]
-30 passed, 4 deselected in 10.73s
-..................................                                       [100%]
-34 passed in 47.60s
+........................................                                 [100%]
+40 passed, 4 deselected in 59.48s
+............................................                             [100%]
+44 passed in 256.76s (0:04:16)
 ```
 
-_Salida real en Linux. Los segundos dependen de tu equipo._
+_Salida real en Windows (11/11/2026). Los segundos dependen de tu equipo._
 
 **Si falla:**
 
-- Solo ves puntos y no la línea «30 passed»: tu copia es anterior al 09/11/2026. Actualiza con `git pull`.
+- Solo ves puntos y no la línea «40 passed»: tu copia es anterior al 09/11/2026. Actualiza con `git pull`.
+- Sale **30 passed** o **34 passed**: tu copia es anterior al 11/11/2026 (antes de la base operacional y los pipelines). Actualiza con `git pull`.
 - `ModuleNotFoundError`: entorno equivocado. Mira que el prompt empiece por (env-ia-mlops).
 - Si falla alguna prueba, copia la salida completa y envíala; no la edites.
 
-_Validación: Ejecutado en un entorno recién creado desde environment.yml, sin instalar nada más._
+_Validación: Ejecutado en Linux en un entorno recién creado desde environment.yml (09/11/2026) y en Windows 11 con la base operacional y los pipelines ya incluidos (11/11/2026), sin instalar nada más._
 
 ### E3 · SQLite
 
@@ -497,14 +498,14 @@ Entorno: env-ia-mlops   Repositorio: curso-ml-ia-desarrollo-produccion
   [OK   ] dato Bank Marketing        huella correcta; 41188 filas de datos (+ encabezado)
   [OK   ] disco                      24 GB libres
   [OK   ] puerto 5000                libre para «mlflow ui»
-  [OK   ] pruebas del proyecto base  30 passed, 4 deselected in 8.62s (11 s)
+  [OK   ] pruebas del proyecto base  40 passed, 4 deselected in 60.22s (0:01:00) (68 s)
 
 Resultado: LISTO PARA S1  (14 OK, 0 AVISO, 0 FALLA)
 
 Informe guardado en verificacion-s1.txt (en la carpeta actual). Enviaselo al instructor si algo no se resuelve.
 ```
 
-_Salida real en Linux. El informe no incluye tu nombre de usuario ni tu correo de Git._
+_Salida real en Linux (la línea de pruebas, recapturada en Windows el 11/11/2026). El informe no incluye tu nombre de usuario ni tu correo de Git._
 
 **Si falla:**
 
@@ -545,7 +546,7 @@ gcloud auth list
 | `CondaValueError: prefix already exists` | El entorno ya existe. | `conda env update -f 03-Entorno\conda\environment.yml --prune`, o bórralo y créalo. |
 | `ModuleNotFoundError` | Entorno o kernel equivocado. | El prompt debe empezar por (env-ia-mlops). En un cuaderno, elige ese kernel. |
 | Faltan carpetas del curso | Clonaste `main`. | `git fetch origin` y `git switch develop`. |
-| pytest solo muestra puntos | Copia anterior al 09/11/2026. | `git pull`. Debe verse «30 passed». |
+| pytest solo muestra puntos | Copia anterior al 09/11/2026. | `git pull`. Debe verse «40 passed». |
 | «la huella no coincide» | El CSV de Bank Marketing se modificó. | `git restore` de ese archivo; no lo guardes con Excel. |
 | `mlflow ui` no abre | Puerto 5000 ocupado o servidor aún arrancando. | `--port 5001`; espera 20 s y refresca. |
 
@@ -560,7 +561,7 @@ Envía al instructor: (1) el comando que ejecutaste y en qué terminal; (2) el m
 - [ ] `conda --version` responde en Anaconda Prompt _(A3)_
 - [ ] `conda activate env-ia-mlops` y la prueba de humo termina en **HUMO OK** _(D1 · D2)_
 - [ ] El cuaderno de prueba imprime **NOTEBOOK OK** con el kernel env-ia-mlops _(E1)_
-- [ ] `pytest` del proyecto base: **30 passed** (y 34 con las lentas) _(E2)_
+- [ ] `pytest` del proyecto base: **40 passed** (y 44 con las lentas) _(E2)_
 - [ ] SQLite, MLflow UI y el dato de Bank Marketing responden _(E3 · E4 · E5)_
 - [ ] `verificar_s1.py` termina en **LISTO PARA S1** _(E6)_
 
@@ -583,7 +584,7 @@ Más detalle: `07-Recursos/guias/` (Miniconda, Git y ramas, VS Code, SQLite) y l
 
 ## Qué se probó y qué no
 
-**Probado el 09/11/2026 en Linux (kernel 6.18.44-fc-v310), en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, versiones instaladas frente a las fijadas, 30 pruebas rápidas y 34 completas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`).
+**Probado el 09/11/2026 en Linux (kernel 6.18.44-fc-v310), en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, versiones instaladas frente a las fijadas, pruebas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`), salvo las de las pruebas del proyecto base (40 rápidas y 44 completas), recapturadas en Windows el 11/11/2026 al añadir la base operacional y los pipelines.
 
 **Sin probar:**
 

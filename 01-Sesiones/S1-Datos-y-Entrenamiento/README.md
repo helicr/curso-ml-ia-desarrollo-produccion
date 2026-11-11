@@ -7,7 +7,7 @@ Proyecto de trabajo: [`04-Proyecto-Base/`](../../04-Proyecto-Base/README.md).
 
 ## Objetivo
 Al terminar, la persona asistente puede:
-1. Explicar y reconstruir las capas **RAW → MASTER → FS → ML** con un cuaderno por capa.
+1. Explicar y reconstruir las capas **OPERACIONAL → RAW → MASTER → FS → ML** con un cuaderno por capa.
 2. Justificar por qué una variable no puede usar información posterior al corte y comprobarlo con una prueba.
 3. Entrenar tres modelos con partición temporal, compararlos y registrar las ejecuciones en **MLflow**.
 4. Traducir los cuadernos a Python y comprobar que el resultado es idéntico.
@@ -33,7 +33,8 @@ Al terminar, la persona asistente puede:
 
 ## Qué está validado y qué no
 - **Validado (Linux, entorno `env-ia-mlops`):** los cuatro cuadernos y el paquete `ia_mlops` con la muestra y con el dato completo (resultados idénticos), 34 pruebas en verde, y la receta de la tarea (añadir `monto_180d`: pipeline completo y 30 pruebas rápidas en verde).
-- **No validado:** ejecución en Windows real (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); la tarea con un dataset distinto (por decidir).
+- **Validado el 11/11/2026 (Windows 11, entorno `env-ia-mlops`), tras añadir el cuaderno 00 y la base operacional:** los cinco cuadernos y el paquete con la muestra y con el dato completo; MASTER, FS y ML idénticos a los de antes; 44 pruebas en verde (40 rápidas), con los cuatro pipelines independientes e idempotentes. La receta de `monto_180d` no se ha repetido con el flujo nuevo.
+- **No validado:** una instalación limpia en Windows siguiendo la guía (ver `03-Entorno/PRUEBA-EN-WINDOWS.md`); la tarea con un dataset distinto (por decidir).
 - **Cifras de las diapositivas:** las del dato completo salen de `04-Proyecto-Base` ejecutado sobre el Excel de UCI; con la **muestra** del curso (23 070 filas) los modelos dan valores menores (regresión logística: valid 0,698 · test 0,747). Es esperado.
 
 ## MLflow en S1 (versión ligera)

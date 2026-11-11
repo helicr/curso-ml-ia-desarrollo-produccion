@@ -55,6 +55,7 @@ Si no lo hace, lanza el comando a mano, o usa Anaconda Prompt. Comprobación rá
 Comandos del flujo del curso, desde la terminal de VS Code:
 ```text
 cd 04-Proyecto-Base
+python -m ia_mlops.operacional
 python -m ia_mlops.pipeline
 python -m pytest -q -m "not lento"
 ```

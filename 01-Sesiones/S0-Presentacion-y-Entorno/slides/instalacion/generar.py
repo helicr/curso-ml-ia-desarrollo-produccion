@@ -85,7 +85,7 @@ p{font-size:18px;line-height:1.45}
 .card{background:linear-gradient(180deg,var(--panel),#082d54);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
 .card.ok{border-color:rgba(52,211,153,.55)} .card.bad{border-color:rgba(251,113,133,.5)}
 .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-.tag.linux{color:#032b1c;background:var(--ok);border-color:var(--ok)} .tag.mixto{color:#2b2100;background:var(--gold);border-color:var(--gold)} .tag.sin{color:var(--warn);border-color:var(--warn)}
+.tag.linux,.tag.linux_windows{color:#032b1c;background:var(--ok);border-color:var(--ok)} .tag.mixto{color:#2b2100;background:var(--gold);border-color:var(--gold)} .tag.sin{color:var(--warn);border-color:var(--warn)}
 .chip{display:inline-block;font-size:14px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--blue);color:#04213f}
 .where{display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:15px;color:var(--muted)}
 .cols{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
@@ -378,7 +378,7 @@ def slide_no_probado():
               '<div class="two"><div class="card ok"><h3>Probado ' + C.FECHA + ' (Linux)</h3><ul class="p">'
               '<li>Creación del entorno desde cero con <code>environment.yml</code>, y <b>HUMO OK</b>.</li>'
               '<li>Versiones instaladas = versiones fijadas (verificador).</li>'
-              '<li>30 pruebas rápidas y 34 completas del proyecto base.</li>'
+              '<li>Pruebas del proyecto base (hoy 40 rápidas y 44 completas, recapturadas en Windows el 11/11/2026).</li>'
               '<li>SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel y ejecución del cuaderno de prueba.</li>'
               '<li><code>git clone --branch develop</code> contra GitHub (clon superficial).</li></ul></div>'
               f'<div class="card bad"><h3 style="color:var(--bad)">Sin probar</h3><ul class="p">{li}</ul></div></div>'
@@ -508,8 +508,9 @@ def construir_md():
     a('Más detalle: `07-Recursos/guias/` (Miniconda, Git y ramas, VS Code, SQLite) y la guía interactiva `03-Entorno/guia-instalacion/index.html`.\n')
     a('## Qué se probó y qué no\n')
     a(f'**Probado el {C.FECHA} en Linux (kernel {meta.get("sistema", "").replace("Linux ", "")}), en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, '
-      'versiones instaladas frente a las fijadas, 30 pruebas rápidas y 34 completas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, '
-      'registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`).\n')
+      'versiones instaladas frente a las fijadas, pruebas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, '
+      'registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`), '
+      'salvo las de las pruebas del proyecto base (40 rápidas y 44 completas), recapturadas en Windows el 11/11/2026 al añadir la base operacional y los pipelines.\n')
     a('**Sin probar:**\n')
     for t in C.NO_PROBADO:
         a(f'- {md(t)}')

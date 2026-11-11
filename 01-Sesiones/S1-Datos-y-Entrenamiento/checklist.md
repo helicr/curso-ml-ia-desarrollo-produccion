@@ -2,13 +2,14 @@
 
 ## Antes de la sesión (docente)
 - [ ] Rama `develop` actualizada y proyecto base clonado en tu máquina.
-- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **34 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **30 passed, 4 deselected**.
+- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **44 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **40 passed, 4 deselected**.
 - [ ] `slides/index.html` abre sin conexión; probar las diapositivas 5, 10, 13 y 17 (interactivas).
 - [ ] Probar `mlflow ui` con el backend SQLite y verificar que se ven las ejecuciones.
 - [ ] Confirmar la lista de quién no pasó la verificación de entorno en S0.
 
 ## Durante la sesión (alumnado)
 - [ ] Entorno verificado (`prueba_de_humo.py` y `pytest` en verde).
+- [ ] Cuaderno 00 ejecutado: `retail.db` creada, claves foráneas sin errores y las 23 070 líneas reconstruidas.
 - [ ] Cuaderno 01 ejecutado: conciliación `raw = master + descartes` cuadra y `master_calidad` sin reglas duras fallidas.
 - [ ] Cuaderno 02 ejecutado: prueba de no-fuga en verde (`pytest tests -k futuro`).
 - [ ] Cuaderno 03 ejecutado: tasa de recompra por partición revisada.

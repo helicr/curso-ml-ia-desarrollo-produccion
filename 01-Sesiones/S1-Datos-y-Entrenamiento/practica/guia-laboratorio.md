@@ -6,7 +6,7 @@ Los comandos valen en CMD y PowerShell. `make` no existe en Windows: se usan las
 | Min | Bloque |
 |---|---|
 | 0–10 | 0. Preparar |
-| 10–40 | 1. Cuaderno 01: RAW → MASTER |
+| 10–40 | 1. Cuadernos 00 y 01: operacional, RAW → MASTER |
 | 40–65 | 2. Cuaderno 02: MASTER → FS |
 | 65–75 | **Pausa** |
 | 75–100 | 3. Cuaderno 03: FS → ML |
@@ -21,18 +21,21 @@ conda activate env-ia-mlops
 cd 04-Proyecto-Base
 python -m pytest -q -m "not lento"
 ```
-Esperado: `30 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
+Esperado: `40 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
 
-## 1. Cuaderno 01 · RAW → MASTER (30 min)
-Abre `notebooks/01_pipeline_raw_a_master.ipynb` y ejecuta celda a celda (parámetro `FUENTE = 'muestra'`).
+## 1. Cuadernos 00 y 01 · operacional, RAW → MASTER (30 min)
+Abre `notebooks/00_pipeline_operacional.ipynb`: su introducción explica todo el recorrido. Ejecútalo (parámetro `FUENTE = 'muestra'`).
+**Mira:** el diagrama E-R de `retail.db`, la comprobación «un cliente y un país por factura» y que se reconstruyen las 23 070 líneas.
+
+Después abre `notebooks/01_pipeline_raw_a_master.ipynb` y ejecuta celda a celda.
 **Mira:**
-- La carga a RAW: 23 070 filas con `_id`, `_hoja`, `_fila`.
+- La ingesta a RAW: cuatro tablas `raw_*` copiadas del operacional y `raw_carga` con filas y huella de cada una (23 070 líneas).
 - `master_descartes`: cuántas filas y con qué motivo.
 - La conciliación: `raw = master_lineas + descartes`.
-- `master_calidad`: las 13 reglas deben estar en `OK`.
+- `master_calidad`: 13 reglas, ninguna en `ERROR`; con la muestra, R06 (facturas con líneas en fechas distintas) da `ALERTA` con valor 1.
 
-**Preguntas:** ¿cuántas líneas no tienen cliente? ¿Por qué no se descartan?
-**Comprobación:** `SELECT COUNT(*) FROM raw_online_retail_ii;` da 23 070 en el visor SQLite.
+**Preguntas:** ¿cuántas líneas no tienen cliente? ¿Por qué no se descartan? ¿Por qué R06 es una alerta y no un error?
+**Comprobación:** `SELECT COUNT(*) FROM raw_lineas_factura;` da 23 070 en el visor SQLite.
 
 ## 2. Cuaderno 02 · MASTER → FS (25 min)
 Ejecuta `notebooks/02_pipeline_master_a_fs.ipynb`.
@@ -63,12 +66,14 @@ Abre http://127.0.0.1:5000, entra al experimento `retencion-90d`, selecciona **d
 
 ## 5. Traducir a `.py` y probar (10 min)
 ```bash
-python -m ia_mlops.pipeline
+python -m ia_mlops.pipeline                 # los cuatro pipelines .py: ingesta_raw, ingesta_master, ml, train
+python -m ia_mlops.pipeline                 # otra vez: los cuatro dicen «sin cambios» (idempotencia)
+python -m ia_mlops.pipeline_train --forzar  # uno solo, forzado
 jupytext --to py:percent notebooks/01_pipeline_raw_a_master.ipynb -o scripts_desde_notebooks/01_pipeline_raw_a_master.py
 python -m pytest tests/test_notebooks.py -q
 ```
-(`jupytext` se convierte un cuaderno a la vez; repite con los otros tres si hay tiempo. La prueba de equivalencia puede tardar unos minutos.)
-**Pregunta:** ¿qué demuestra la prueba de equivalencia?
+(`jupytext` convierte un cuaderno a la vez; repite con los otros si hay tiempo. La prueba de equivalencia puede tardar unos minutos.)
+**Preguntas:** ¿qué demuestra la prueba de equivalencia? ¿Por qué la segunda ejecución del pipeline no vuelve a entrenar ni añade ejecuciones a MLflow?
 
 ## Si algo falla
 | Síntoma | Qué hacer |

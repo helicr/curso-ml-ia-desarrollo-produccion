@@ -85,7 +85,7 @@ SESIONES = [
     ),
     dict(
         id='S1', titulo='Datos y entrenamiento', horas='4 h', carpeta=S1, estado=PREPARADO, esperados=TODOS,
-        resumen='RAW → MASTER → FS → ML con un cuaderno por capa, partición temporal, tres modelos comparados y seguimiento con MLflow. '
+        resumen='OPERACIONAL → RAW → MASTER → FS → ML con un cuaderno por capa, partición temporal, tres modelos comparados y seguimiento con MLflow. '
                 'Tarea: añadir una variable a la capa FS del caso del instructor (Online Retail II) y decidir con evidencia.',
         nota='El caso propio de los alumnos (Bank Marketing) empieza aquí y sigue hasta S5: ver 02-Proyecto-Transversal/enunciado/README.md.',
         enlaces=[

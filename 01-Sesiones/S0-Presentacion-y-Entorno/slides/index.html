@@ -991,7 +991,7 @@ const SESS=[
 ];
 
 const LAYERS=[
- {n:'RAW',s:'S1',d:'Archivos originales conservados, sin tocar.',t:'data/raw',x:['Se verifica su integridad con un checksum','Nunca se edita: todo lo demás se regenera desde aquí']},
+ {n:'RAW',s:'S1',d:'El dato de origen copiado tal cual, sin tocar: un archivo o una base operacional.',t:'raw_* · data/raw',x:['Se verifica su integridad con un checksum','Nunca se edita: todo lo demás se regenera desde aquí']},
  {n:'MASTER',s:'S1',d:'Datos depurados y transformados.',t:'master_*',x:['Tablas SQLite con prefijo master_','Limpieza, tipos, duplicados y reglas de calidad']},
  {n:'FS',s:'S1',d:'Variables reutilizables.',t:'fs_*',x:['Tablas SQLite con prefijo fs_','Capa didáctica, no una plataforma completa de feature store']},
  {n:'ML',s:'S1',d:'Datasets del modelo, objetivo y particiones.',t:'ml_*',x:['Tablas SQLite con prefijo ml_','Variable objetivo y partición train / valid / test']},

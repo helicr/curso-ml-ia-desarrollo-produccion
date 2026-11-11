@@ -6,7 +6,7 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `34 passed`.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `44 passed`.
 - Anotar quién no pasa y el mensaje de error (checklist). Quien falle: Codespaces o pareja. **No se detiene la sesión.**
 - Si pasan los 30 min y hay más de un tercio sin entorno: recortar teoría (diap. 11 y 16), no práctica.
 
@@ -14,9 +14,9 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 | Min | Diap. | Mensaje clave | Pregunta a la audiencia |
 |---|---|---|---|
 | 3 | 4 | Una pregunta de negocio, no de estadística. | ¿Quién decide a quién se le escribe? |
-| 6 | 5 | Cuatro capas, cada una regenerable. Clic en cada capa. | ¿Por qué FS va antes que ML? |
+| 6 | 5 | El operacional (la fuente, solo se lee) y cuatro capas, cada una regenerable. Clic en cada capa. | ¿Por qué FS va antes que ML? |
 | 4 | 6 | El dato real viene sucio; los contadores justifican MASTER. | ¿Cuál de estos problemas rompería un promedio? |
-| 4 | 7 | El linaje permite volver al Excel. | ¿Qué pasa si limpiamos sobre RAW? |
+| 4 | 7 | RAW copia el sistema operacional (`retail.db`); el linaje (`linea_id`, `_carga_id`) permite volver a la línea de origen. | ¿Qué pasa si limpiamos sobre RAW? |
 | 4 | 8 | Nada se pierde: 1 033 036 + 34 335 = 1 067 371. | ¿Qué haría el pipeline si no cuadra? |
 | 3 | 9 | Reglas duras, alertas e informativas. | ¿Una alerta detiene el pipeline? |
 | 8 | 10 | **Regla de oro.** Mover el deslizador y ver qué se usa. | ¿Dónde estaría la fuga si usáramos la factura roja? |

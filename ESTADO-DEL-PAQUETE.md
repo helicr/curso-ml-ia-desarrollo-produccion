@@ -56,6 +56,31 @@ pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comproba
 otros visores que Chrome y poppler (no en Acrobat ni en el visor de Windows) y no se ha comprobado la impresión en papel. Excluidos a propósito: la guía interactiva
 de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos antiguos y `verificar_s1.py`.
 
+El 11/11/2026 el proyecto base (`04-Proyecto-Base/`) pasó a ingerir desde una **base operacional simulada**: el cuaderno nuevo `00_pipeline_operacional.ipynb`
+(y `ia_mlops/operacional.py`) deriva del archivo de UCI `data/external/retail.db` (clientes, productos, facturas, lineas_factura), y RAW es ahora la copia fiel
+de esas cuatro tablas (`raw_*` + `raw_carga` con huella por tabla). La regla R06 pasó a ser «facturas con líneas en fechas distintas» (alerta: 1 en la muestra, 83 en el completo).
+Comprobado con la muestra y con el dato completo (1 067 371 líneas): MASTER, FS y ML son idénticos a los de antes, RAW reconstruye cada línea original y la muestra regenerada
+conserva su sha256; 38 pruebas pasan (incluida la equivalencia cuaderno = paquete = jupytext). Los cinco cuadernos y los módulos `.py` llevan más teoría (capas, fuga, partición,
+métricas, MLflow) y el 00 una introducción con diagramas (`docs/img/`, generados con `generar_diagramas.py`). Se actualizaron las diapositivas 7 y el mapa de capas de S1,
+la guía de laboratorio, la teoría, el guion y `07-Recursos/guias/sqlite.md`.
+También el 11/11/2026: se corrigió una fuga en `es_reino_unido` (usaba `master_clientes.pais`, que resume toda la historia del cliente; ahora es el país más frecuente
+**antes del corte**). No cambia ningún valor de FS (13 clientes con varios países, 0 filas afectadas), y la prueba de fuga ahora borra también `master_clientes`.
+Se actualizaron los recuentos de pruebas en S0 y S1 (34 rápidas y 38 completas; salidas recapturadas en Windows en `salidas-reales.json`), las diapositivas de S1
+(capa OPERACIONAL, cinco cuadernos, linaje) y la de capas de S0, y se regeneraron las diapositivas de instalación, la guía rápida de S0, los guiones D01, los índices de sesión
+y **los 19 PDF de S0 y S1** (con Edge y el `pandoc` de `pypandoc`; `--comprobar` correcto y 75 pruebas del generador en verde). El generador de PDF ahora incrusta las imágenes
+locales de los Markdown (el `README` del proyecto base lleva el diagrama del recorrido).
+Después, el cuaderno 03 recibió un diagrama de train/valid/test (`docs/img/particiones.png`), cómo se cargan las particiones y la trayectoria de un cliente;
+y el 04, un diagrama de MLflow (`docs/img/mlflow.png`), lectura del registro con `search_runs`, gráficas (AUC por partición, ROC, aciertos por decil, probabilidades
+por clase; en `reports/figures/`), recuperación del modelo desde MLflow (predice igual) y una guía paso a paso de `mlflow ui`. `docs/de-notebook-a-python.md`
+documenta el mapa cuaderno → módulo, los comandos de Windows y la reproducibilidad: dos ejecuciones del paquete desde cero y la traducción jupytext dieron
+tablas, métricas y huella idénticas.
+Finalmente, el paquete se dividió en **cuatro pipelines independientes e idempotentes**: `pipeline_ingesta_raw`, `pipeline_ingesta_master`, `pipeline_ml`
+(FS + ML) y `pipeline_train` (`ia_mlops/control.py`: cada uno comprueba su entrada y, si su huella de entrada —datos + código + configuración— no cambió,
+no hace nada; `--forzar` lo rehace; registro en `control_pipelines`). `pipeline.py` queda como orquestador sin lógica; la base operacional es un paso aparte
+(`python -m ia_mlops.operacional`). Repetir el entrenamiento ya no duplica ejecuciones en MLflow. 44 pruebas en verde (40 rápidas), con 6 nuevas de
+independencia e idempotencia; recuentos y salidas reales actualizados en S0 y S1 y PDF regenerados. También se corrigió `generar_indices.py`, que en Windows
+escribía enlaces con «\», y su prueba del número de diapositivas de S0 (31).
+
 Los datos de la tarea están en `02-Proyecto-Transversal/datos/` (Bank Marketing, caso de los alumnos; Default of Credit Card Clients, referencia), con `SHA256SUMS` y atribución CC BY 4.0. Falta el script de descarga y la base de referencia (RAW → MASTER → FS → ML) de la tarea.
 
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
