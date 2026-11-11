@@ -1,0 +1,20 @@
+Verificacion para S1 - 2026-11-11 01:26 - Windows 10 - Python 3.11.18
+Entorno: env-ia-mlops   Repositorio: curso-ml-ia-desarrollo-produccion
+
+  [OK   ] python                     3.11.18
+  [OK   ] entorno                    env-ia-mlops
+  [OK   ] paquetes                   23 paquetes con la version fijada en environment.yml
+  [OK   ] importaciones              12 librerias clave se importan (5.1 s)
+  [OK   ] sqlite                     version 3.54.1; consultas con funciones de ventana correctas
+  [OK   ] mlflow                     version 3.18.0; guarda y lee una ejecucion en SQLite
+  [OK   ] kernel                     kernel «env-ia-mlops» registrado
+  [OK   ] git                        git version 2.47.1.windows.1
+  [OK   ] git: identidad             nombre y correo configurados (no se muestran)
+  [OK   ] repositorio                material del curso completo en la carpeta clonada
+  [OK   ] dato Bank Marketing        huella correcta; 41188 filas de datos (+ encabezado)
+  [OK   ] disco                      282 GB libres
+  [AVISO] puerto 5000                ocupado (lo necesita «mlflow ui» por defecto)
+          -> que hacer: Usa otro puerto:  mlflow ui --port 5001 --backend-store-uri sqlite:///mlflow.db
+  [OK   ] pruebas del proyecto base  30 passed, 4 deselected in 16.56s (21 s)
+
+Resultado: LISTO PARA S1  (13 OK, 1 AVISO, 0 FALLA)
