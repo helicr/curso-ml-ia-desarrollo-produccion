@@ -242,8 +242,8 @@ class TestPdfGenerados:
 
     def test_s0_diapositivas_en_orden(self):
         ruta = pdf('S0', '01-presentacion-principal.pdf')
-        for n in (1, 14, 29):
-            assert f'{n} / 29' in texto_pagina(ruta, n).replace('  ', ' ')
+        for n in (1, 14, 31):
+            assert f'{n} / 31' in texto_pagina(ruta, n).replace('  ', ' ')
 
     def test_presentacion_de_instalacion_sin_botones_de_copiar(self):
         ruta = pdf('S0', '02-tu-equipo-listo-para-s1.pdf')
