@@ -44,7 +44,7 @@ Progresión sugerida: S2 construye la imagen (pasos 1 y 4); S4 completa el pipel
 Autenticación con GCP: Workload Identity Federation, sin claves JSON ni secretos en el repositorio.
 
 ## Pendiente
-- Crear y probar `.devcontainer/devcontainer.json` (Docker, kind, kubectl).
+- Probar `.devcontainer/devcontainer.json` (escrito el 10/11/2026: Docker en Docker, kubectl, kind y `env-ia-mlops`) con el workflow «Validar Codespace del curso» o abriendo un Codespace; confirmar la versión de `kind`.
 - Probar `kind` dentro de Codespaces y, como respaldo, en Cloud Shell.
 - Escribir y probar el workflow base y la configuración de Workload Identity Federation.
 - Verificar cuotas de Codespaces, Actions y Cloud Shell, y los costes de Cloud Run y Artifact Registry.
