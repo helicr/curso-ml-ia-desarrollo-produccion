@@ -38,7 +38,10 @@ def test_fs_catalogo_describe_todas_las_variables(con):
 
 @pytest.mark.parametrize('corte', ['2010-12-01', '2011-06-01'])
 def test_fs_no_usa_informacion_del_futuro(con, ruta_db, tmp_path, corte):
-    """Si borramos TODO lo posterior al corte y recalculamos, las variables no deben cambiar."""
+    """Si borramos TODO lo posterior al corte y recalculamos, las variables no deben cambiar.
+
+    Tambien se borra master_clientes: resume toda la historia del cliente (pais mas frecuente, ultimo movimiento),
+    pasado y futuro, asi que FS no debe depender de ella."""
     original = _fs(con, corte)
     copia = tmp_path / 'sin_futuro.db'
     shutil.copy(ruta_db, copia)
@@ -46,6 +49,7 @@ def test_fs_no_usa_informacion_del_futuro(con, ruta_db, tmp_path, corte):
     c2.execute('PRAGMA foreign_keys = OFF')
     c2.execute('DELETE FROM master_lineas WHERE factura_id IN (SELECT factura_id FROM master_facturas WHERE fecha_factura >= ?)', (corte,))
     c2.execute('DELETE FROM master_facturas WHERE fecha_factura >= ?', (corte,))
+    c2.execute('DELETE FROM master_clientes')
     c2.commit()
     features.construir_fs(c2, cortes=[corte], verbose=False)
     sin_futuro = _fs(c2, corte)

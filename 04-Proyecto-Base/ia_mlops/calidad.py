@@ -1,10 +1,14 @@
 """Reglas de calidad de la capa MASTER.
 
-Cada regla es una consulta SQL que devuelve un numero. Hay tres tipos:
-  duro    -> si falla, el pipeline se detiene (estado ERROR).
+Una regla de calidad es una consulta SQL que devuelve UN numero, mas un criterio que dice si ese numero es aceptable.
+Hay tres tipos:
+  duro    -> si falla, el pipeline se detiene (estado ERROR): seguir produciria resultados falsos.
+             Ej.: R01, conciliacion: lineas de RAW = lineas de MASTER + descartes.
   alerta  -> se registra y se avisa, pero el pipeline sigue (estado ALERTA).
-  info    -> solo informa (estado OK).
-El resultado queda en la tabla master_calidad.
+             Ej.: R06, facturas cuyas lineas tienen fechas distintas (MASTER toma la primera).
+  info    -> solo informa (estado OK). Ej.: R08, porcentaje de lineas sin cliente.
+El resultado queda en la tabla master_calidad, con fecha: es la evidencia de que el dato se reviso.
+La misma lista esta en el cuaderno 01; las pruebas exigen que ambos produzcan la misma tabla.
 """
 from datetime import datetime
 
@@ -19,8 +23,8 @@ class CalidadError(RuntimeError):
 def _reglas():
     cero = lambda v: v == 0  # noqa: E731
     return [
-        ('R01_conciliacion', 'Filas de RAW menos (líneas de MASTER + descartes). Debe ser 0.',
-         "SELECT (SELECT COUNT(*) FROM raw_online_retail_ii) - (SELECT COUNT(*) FROM master_lineas) - (SELECT COUNT(*) FROM master_descartes)",
+        ('R01_conciliacion', 'Líneas de RAW menos (líneas de MASTER + descartes). Debe ser 0.',
+         "SELECT (SELECT COUNT(*) FROM raw_lineas_factura) - (SELECT COUNT(*) FROM master_lineas) - (SELECT COUNT(*) FROM master_descartes)",
          'duro', '= 0', cero),
         ('R02_facturas_sin_lineas', 'Facturas que no tienen ninguna línea.',
          "SELECT COUNT(*) FROM master_facturas f WHERE NOT EXISTS (SELECT 1 FROM master_lineas l WHERE l.factura_id = f.factura_id)",
@@ -32,9 +36,9 @@ def _reglas():
         ('R05_fechas_en_rango', f'Facturas fuera del rango {FECHA_MINIMA} a {FECHA_LIMITE} (exclusivo).',
          f"SELECT COUNT(*) FROM master_facturas WHERE fecha_factura < '{FECHA_MINIMA}' OR fecha_factura >= '{FECHA_LIMITE}'",
          'duro', '= 0', cero),
-        ('R06_facturas_con_varios_clientes', 'Facturas de RAW asociadas a más de un cliente.',
-         "SELECT COUNT(*) FROM (SELECT TRIM(Invoice) FROM raw_online_retail_ii WHERE Customer_ID IS NOT NULL "
-         "GROUP BY TRIM(Invoice) HAVING COUNT(DISTINCT Customer_ID) > 1)",
+        ('R06_facturas_con_varias_fechas', 'Facturas de RAW cuyas líneas tienen fechas distintas (MASTER toma la primera).',
+         "SELECT COUNT(*) FROM (SELECT TRIM(factura_id) FROM raw_lineas_factura "
+         "GROUP BY TRIM(factura_id) HAVING COUNT(DISTINCT registrada_en) > 1)",
          'alerta', '= 0', cero),
         ('R07_cancelaciones_con_cantidad_positiva', 'Líneas de facturas canceladas con cantidad positiva.',
          "SELECT COUNT(*) FROM master_lineas l JOIN master_facturas f ON f.factura_id = l.factura_id WHERE f.es_cancelacion = 1 AND l.cantidad > 0",

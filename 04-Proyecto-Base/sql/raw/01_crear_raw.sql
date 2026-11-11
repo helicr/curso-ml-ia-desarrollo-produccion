@@ -1,29 +1,50 @@
--- CAPA RAW: el dato original, sin limpiar.
--- Regla: RAW conserva los valores tal como vienen. SQLite necesita un tipo por columna, asi que las
--- columnas que en el original mezclan numeros y texto (Invoice, StockCode, Description) se guardan como TEXT.
--- Las columnas _id, _hoja y _fila son el LINAJE: permiten volver siempre a la fila original.
-DROP TABLE IF EXISTS raw_online_retail_ii;
-CREATE TABLE raw_online_retail_ii (
-    _id          INTEGER PRIMARY KEY AUTOINCREMENT,  -- identificador de carga
-    _hoja        TEXT,                               -- hoja del Excel o nombre del CSV de origen
-    _fila        INTEGER,                            -- numero de fila en el archivo de origen
-    Invoice      TEXT,                               -- numero de factura; empieza por 'C' si es una cancelacion
-    StockCode    TEXT,                               -- codigo del producto (a veces texto, a veces numero)
-    Description  TEXT,                               -- descripcion del producto
-    Quantity     INTEGER,                            -- unidades (negativas en las cancelaciones)
-    InvoiceDate  TEXT,                               -- fecha y hora en ISO 8601: AAAA-MM-DD HH:MM:SS
-    Price        REAL,                               -- precio unitario en libras
-    Customer_ID  REAL,                               -- el original lo guarda como decimal; puede ser nulo
-    Country      TEXT
+-- CAPA RAW: copia fiel de la base operacional «retail», sin limpiar nada.
+-- Regla: una tabla RAW por tabla de origen, con las mismas columnas y los mismos valores. RAW no valida ni corrige:
+-- por eso no declara claves ni restricciones (si el origen trae un problema, RAW lo conserva y MASTER lo trata).
+-- LINAJE: la clave de origen (cliente_id, factura_id, linea_id...) mas _carga_id, que apunta a raw_carga.
+DROP TABLE IF EXISTS raw_clientes;
+CREATE TABLE raw_clientes (
+    cliente_id   INTEGER,
+    fecha_alta   TEXT,
+    _carga_id    INTEGER
 );
 
--- Auditoria de cada carga: que archivo, con que huella y cuantas filas.
+DROP TABLE IF EXISTS raw_productos;
+CREATE TABLE raw_productos (
+    codigo_producto TEXT,
+    descripcion     TEXT,
+    _carga_id       INTEGER
+);
+
+DROP TABLE IF EXISTS raw_facturas;
+CREATE TABLE raw_facturas (
+    factura_id    TEXT,
+    cliente_id    INTEGER,
+    pais          TEXT,
+    fecha_emision TEXT,
+    _carga_id     INTEGER
+);
+
+DROP TABLE IF EXISTS raw_lineas_factura;
+CREATE TABLE raw_lineas_factura (
+    linea_id        INTEGER,
+    factura_id      TEXT,
+    codigo_producto TEXT,
+    descripcion     TEXT,
+    cantidad        INTEGER,
+    precio_unitario REAL,
+    registrada_en   TEXT,
+    _carga_id       INTEGER
+);
+
+-- Auditoria de cada extraccion: de que tabla, cuantas filas y la huella sha256 de su contenido.
+-- Si la huella cambia entre dos cargas, cambio el origen.
 DROP TABLE IF EXISTS raw_carga;
 CREATE TABLE raw_carga (
-    carga_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-    fuente     TEXT NOT NULL,   -- 'muestra' o 'completo'
-    archivo    TEXT NOT NULL,
-    sha256     TEXT NOT NULL,   -- huella del archivo cargado
-    filas      INTEGER NOT NULL,
-    cargado_en TEXT NOT NULL
+    carga_id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    origen      TEXT NOT NULL,    -- 'retail'
+    tabla       TEXT NOT NULL,
+    filas       INTEGER NOT NULL,
+    sha256      TEXT NOT NULL,
+    extraido_en TEXT NOT NULL
 );

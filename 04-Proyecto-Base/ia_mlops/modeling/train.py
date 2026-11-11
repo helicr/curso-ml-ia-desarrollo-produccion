@@ -2,10 +2,35 @@
 
 Es la traduccion a Python de  notebooks/04_entrenamiento_y_seguimiento.ipynb.
 
-Lee ml_dataset, entrena tres modelos (referencia sin aprendizaje, regresion logistica y gradient boosting), elige el mejor
-segun la VALIDACION (AUC), lo evalua en test y guarda:
-  models/modelo.joblib       el modelo completo (preprocesamiento + clasificador)
-  models/metadatos.json      variables, particiones, huella de los datos, versiones de librerias
+METODO
+    1. Cada modelo se entrena con train.  2. Se comparan con valid y se elige el de mayor AUC.
+    3. El elegido se mide en test UNA vez (test no se usa para elegir: dejaria de ser un examen sorpresa).
+
+MODELOS
+    referencia_sin_aprender  da a todos la tasa base de train (AUC 0,5): el minimo que hay que superar.
+    regresion_logistica      suma ponderada de variables -> probabilidad. Va en un Pipeline con imputar (mediana),
+                             log1p (comprime variables asimetricas) y escalar: el preprocesamiento viaja DENTRO del modelo,
+                             asi la API aplica exactamente el mismo.
+    gradient_boosting        muchos arboles pequenos en secuencia; cada uno corrige los errores de los anteriores.
+
+METRICAS (evaluar)
+    auc                      probabilidad de puntuar mas alto a un cliente que si compro que a uno que no (0,5 azar, 1 perfecto).
+    precision_media          calidad del orden mirando los positivos; se compara con tasa_base.
+    aciertos_en_el_10_mejor  de los clientes con el 10 % de probabilidades mas altas, cuantos compraron de verdad.
+
+MLFLOW: el cuaderno de laboratorio del proyecto
+    experimento   agrupa todos los intentos de un mismo problema: 'retencion-90d'.
+    ejecucion     (run) un entrenamiento concreto: una por modelo, mas 'MEJOR-<modelo>' para el elegido.
+    parametros    lo que se decide ANTES de entrenar (modelo, ventana, n_variables, huella_datos).
+    metricas      lo que se mide DESPUES, con el prefijo de la particion (valid_auc, test_auc...).
+    artefactos    archivos de la ejecucion: el modelo del mejor, con su firma (columnas de entrada y salida).
+    Donde se guarda: models/mlflow.db (backend store: experimentos, ejecuciones, parametros y metricas; es el tracking URI
+    'sqlite:///models/mlflow.db') y models/mlartifacts/ (artifact store: los archivos). Para verlo en el navegador:
+        mlflow ui --backend-store-uri sqlite:///models/mlflow.db      (anade --port 5001 si el 5000 esta ocupado)
+
+SALIDAS
+  models/modelo.joblib       el modelo completo (preprocesamiento + clasificador), el que carga predict.py y la API de S2
+  models/metadatos.json      variables, particiones, huella de los datos, versiones de librerias (para reproducir)
   models/mlflow.db           seguimiento de MLflow (y models/mlartifacts/ con los modelos registrados)
   reports/metricas.json      metricas de todos los modelos
 
@@ -33,6 +58,7 @@ from .. import config, db
 
 
 def cargar_datos(con):
+    """Lee ml_dataset y lo separa por particion (sin mezclar filas entre particiones). Devuelve (partes, tabla completa)."""
     df = pd.read_sql('SELECT * FROM ml_dataset', con)
     return {p: df[df['particion'] == p].reset_index(drop=True) for p in ('train', 'valid', 'test')}, df
 
@@ -44,7 +70,8 @@ def huella_datos(df):
 
 
 def modelos():
-    log1p = FunctionTransformer(np.log1p, feature_names_out='one-to-one')
+    """Los tres modelos a comparar, sin entrenar. El preprocesamiento de la regresion logistica va dentro de su Pipeline."""
+    log1p =FunctionTransformer(np.log1p, feature_names_out='one-to-one')
     return {
         'referencia_sin_aprender': DummyClassifier(strategy='prior'),
         'regresion_logistica': Pipeline([('imputar', SimpleImputer(strategy='median')), ('log', log1p),
@@ -54,7 +81,8 @@ def modelos():
 
 
 def evaluar(modelo, X, y):
-    prob = modelo.predict_proba(X)[:, 1]
+    """Metricas de un modelo ya entrenado sobre una particion (ver METRICAS en la cabecera del modulo)."""
+    prob =modelo.predict_proba(X)[:, 1]
     corte = max(1, int(round(len(y) * 0.10)))
     top = np.argsort(-prob)[:corte]
     return {
@@ -66,6 +94,7 @@ def evaluar(modelo, X, y):
 
 
 def entrenar(con=None, usar_mlflow=True, verbose=True):
+    """Entrena y compara los modelos, registra cada uno como ejecucion de MLflow y guarda el mejor con sus metadatos."""
     cierre = con is None
     con = con or db.conectar()
     partes, df = cargar_datos(con)
@@ -75,6 +104,7 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
         if len(partes[k]) == 0 or y[k].nunique() < 2:
             raise RuntimeError(f'La particion {k} esta vacia o tiene una sola clase: revisa los cortes de config.py.')
 
+    # MLflow: donde escribir (tracking URI) y en que experimento. El experimento se crea la primera vez con su carpeta de artefactos.
     mlflow = None
     if usar_mlflow:
         import mlflow
@@ -94,7 +124,7 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
         if verbose:
             print(f'  {nombre_modelo:26s} AUC valid {metricas["valid"]["auc"]:.3f} | test {metricas["test"]["auc"]:.3f}'
                   f' | precision media test {metricas["test"]["precision_media"]:.3f}')
-        if mlflow:
+        if mlflow:   # una ejecucion por modelo: parametros (lo decidido) y metricas (lo medido)
             with mlflow.start_run(run_name=nombre_modelo):
                 mlflow.log_param('modelo', nombre_modelo)
                 mlflow.log_param('ventana_objetivo_dias', config.VENTANA_OBJETIVO_DIAS)
@@ -104,10 +134,11 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
                     for k, v in m.items():
                         mlflow.log_metric(f'{p}_{k}', v)
 
+    # Se elige con VALID (nunca con test). La referencia solo sirve de minimo.
     mejor = max((n for n in resultados if n != 'referencia_sin_aprender'), key=lambda n: resultados[n]['valid']['auc'])
     modelo = ajustados[mejor]
 
-    if mlflow:
+    if mlflow:   # el elegido se registra con el modelo como artefacto, su firma y un ejemplo de entrada
         with mlflow.start_run(run_name=f'MEJOR-{mejor}'):
             mlflow.log_param('modelo', mejor)
             mlflow.log_param('huella_datos', huella_datos(df))

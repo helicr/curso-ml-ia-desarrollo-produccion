@@ -27,7 +27,7 @@ INSERT INTO fs_catalogo (feature, descripcion, formula, unidad) VALUES
  ('frecuencia_180d',          'Facturas en los 180 dias previos al corte',                  'count(factura) con fecha >= corte - 180 dias',        'facturas'),
  ('dias_medios_entre_compras','Intervalo medio entre compras (NULL si solo hay una)',       '(ultima - primera) / (frecuencia - 1)',               'dias'),
  ('devoluciones',             'Facturas de cancelacion antes del corte',                    'count(distinct factura) con es_cancelacion = 1',      'facturas'),
- ('es_reino_unido',           'El cliente es del Reino Unido (1) o de otro pais (0)',       'pais = ''United Kingdom''',                           'indicador');
+ ('es_reino_unido',           'El cliente es del Reino Unido (1) o de otro pais (0) antes del corte', 'pais mas frecuente antes del corte = ''United Kingdom''', 'indicador');
 
 CREATE TABLE fs_cliente_corte (
     cliente_id                INTEGER NOT NULL REFERENCES master_clientes (cliente_id),

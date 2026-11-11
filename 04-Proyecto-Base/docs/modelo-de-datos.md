@@ -9,21 +9,46 @@ Cita: Chen, D. (2012). *Online Retail II* [Dataset]. https://doi.org/10.24432/C5
 
 ## El orden de las capas
 ```
-RAW  →  MASTER  →  FS  →  ML  →  ARTEFACTOS  →  SERVICIO
+OPERACIONAL  →  RAW  →  MASTER  →  FS  →  ML  →  ARTEFACTOS  →  SERVICIO
 ```
+![Recorrido completo](img/recorrido.png)
+
+Hay **dos bases**: `data/external/retail.db` simula el **sistema operacional** de la tienda (la fuente) y `data/processed/curso.db` es la
+**base analítica**, donde el pipeline construye las capas. El pipeline lee del operacional y nunca escribe en él.
 **FS va antes que ML**: ML se construye a partir de las variables de FS, más el objetivo y la partición. Cada capa se puede borrar y regenerar
 desde la anterior; nada se edita a mano.
 
 | Capa | Qué contiene | Tablas | Se construye con |
 |---|---|---|---|
-| **RAW** | El dato original, sin limpiar, con linaje | `raw_online_retail_ii`, `raw_carga` | `sql/raw/` · `ia_mlops/dataset.py` |
+| **OPERACIONAL** (`retail.db`) | El sistema de ventas simulado: normalizado, con claves y con la suciedad del origen | `clientes`, `productos`, `facturas`, `lineas_factura`, `origen_simulacion` | `sql/operacional/` · `ia_mlops/operacional.py` |
+| **RAW** | Copia fiel de cada tabla del operacional, sin limpiar, con linaje | `raw_clientes`, `raw_productos`, `raw_facturas`, `raw_lineas_factura`, `raw_carga` | `sql/raw/` · `ia_mlops/dataset.py` |
 | **MASTER** | El dato depurado y relacional | `master_clientes`, `master_productos`, `master_facturas`, `master_lineas`, `master_descartes`, `master_calidad` | `sql/master/` · `ia_mlops/dataset.py` |
 | **FS** | Variables reutilizables por cliente y corte | `fs_cliente_corte`, `fs_catalogo` | `sql/fs/` · `ia_mlops/features.py` |
 | **ML** | Dataset de entrenamiento: variables + objetivo + partición | `ml_dataset`, `ml_particiones` | `sql/ml/` · `ia_mlops/modeling/ml_dataset.py` |
 | **ARTEFACTOS** | Modelo, métricas y metadatos | `models/`, `reports/` y MLflow | `ia_mlops/modeling/train.py` |
 
-Cada capa tiene su **cuaderno** en `notebooks/` (el pipeline) y su traducción en el paquete `ia_mlops` (ver `de-notebook-a-python.md`).
-Todo el flujo: `python -m ia_mlops.pipeline` (usa la muestra incluida) o `python -m ia_mlops.pipeline --fuente completo`.
+Cada capa tiene su **cuaderno** en `notebooks/` (el pipeline, del 00 al 04) y su traducción en el paquete `ia_mlops` (ver `de-notebook-a-python.md`).
+Cada capa la construye un pipeline independiente e idempotente (`pipeline_ingesta_raw`, `pipeline_ingesta_master`, `pipeline_ml`, `pipeline_train`).
+Todo el flujo: `python -m ia_mlops.operacional` (una vez; `--fuente completo` para el dato completo) y `python -m ia_mlops.pipeline`.
+
+## OPERACIONAL: el sistema de ventas simulado
+El dataset de UCI es una exportación plana (una fila por línea, con cliente y país repetidos). El cuaderno 00 reconstruye el modelo **normalizado**
+que tendría la tienda:
+
+![Modelo E-R de retail.db](img/operacional_er.png)
+
+```mermaid
+erDiagram
+    clientes  |o--o{ facturas       : "cliente_id (nulo = venta sin cliente)"
+    facturas  ||--|{ lineas_factura : "factura_id"
+    productos ||--o{ lineas_factura : "codigo_producto"
+```
+- Cliente y país van en `facturas`: se comprueba antes que cada factura tiene uno solo (en el dato completo, 0 excepciones).
+- La fecha va en cada línea (`registrada_en`): 83 facturas del dato completo tienen líneas en minutos distintos; `facturas.fecha_emision` es la primera.
+- La descripción va en cada línea; `productos.descripcion` es la más usada del código.
+- **No se limpia nada**: duplicados, descripciones vacías, ventas sin cliente, cancelaciones y códigos que no son productos se conservan.
+- Verificado con el dato completo (1 067 371 líneas): uniendo línea y cabecera se reconstruye cada fila del original, en el mismo orden, y
+  MASTER, FS y ML salen **idénticos** a los que se obtenían cargando el archivo directamente.
 
 ## Diagrama de MASTER, FS y ML
 ```mermaid
@@ -45,12 +70,13 @@ erDiagram
 ```
 
 ## RAW: lo que se conserva
-Una tabla plana con las 8 columnas del original (`Invoice`, `StockCode`, `Description`, `Quantity`, `InvoiceDate`, `Price`, `Customer_ID`, `Country`)
-más el **linaje** `_id`, `_hoja` y `_fila`. `raw_carga` guarda la huella sha256 de cada archivo cargado.
+**Ingesta** completa: una tabla RAW por tabla del operacional (`raw_clientes`, `raw_productos`, `raw_facturas`, `raw_lineas_factura`), con las mismas
+columnas y valores, sin claves ni restricciones (RAW no valida). La copia es SQL: `ATTACH` de `retail.db` e `INSERT INTO raw_x SELECT … FROM retail.x`.
+**Linaje:** cada fila conserva su clave de origen y `_carga_id`, que apunta a `raw_carga` (tabla, filas, huella sha256 del contenido y fecha de extracción).
 RAW no corrige nada. Los problemas que se encuentran en el dato real (medidos sobre el archivo completo):
-- `Invoice` mezcla números (1 047 871 filas) y texto como `C489449` (19 500 filas); `StockCode` mezcla enteros (932 385) y texto (134 986); `Description` trae a veces números.
-- `Customer ID` viene como decimal y a veces falta.
-- Hay duplicados exactos, cantidades negativas (cancelaciones), precios en cero y códigos que no son productos (`POST`, `BANK CHARGES`, `M`, `gift_0001_20`…).
+- En el archivo de UCI, `Invoice` mezcla números (1 047 871 filas) y texto como `C489449` (19 500 filas); `StockCode` mezcla enteros (932 385) y texto (134 986);
+  `Customer ID` viene como decimal. El cuaderno 00 armoniza los tipos (texto y entero) sin cambiar los valores.
+- Hay ventas sin cliente, duplicados exactos, cantidades negativas (cancelaciones), precios en cero y códigos que no son productos (`POST`, `BANK CHARGES`, `M`, `gift_0001_20`…).
 
 ## MASTER: reglas de limpieza
 1. Recortar espacios y pasar `StockCode` y `Description` a mayúsculas.
@@ -61,7 +87,7 @@ RAW no corrige nada. Los problemas que se encuentran en el dato real (medidos so
 6. `es_venta_valida = 1` si la cantidad y el precio son positivos, la factura no está cancelada y el código es un producto real.
 
 **Reglas de calidad** (`ia_mlops/calidad.py` y el cuaderno 01, resultado en `master_calidad`): conciliación `raw = master + descartes`, facturas sin líneas, integridad referencial,
-monto coherente, fechas en rango (duras: si fallan, el pipeline se detiene); facturas con varios clientes y cancelaciones con cantidad positiva (alertas);
+monto coherente, fechas en rango (duras: si fallan, el pipeline se detiene); facturas con líneas en fechas distintas y cancelaciones con cantidad positiva (alertas);
 porcentaje de líneas sin cliente, de ventas válidas, duplicados, precios no positivos y códigos que no son producto (informativas).
 
 ## FS: variables por cliente y corte
@@ -79,7 +105,7 @@ La prueba `test_fs_no_usa_informacion_del_futuro` lo verifica borrando todo lo p
 | `frecuencia_90d`, `monto_90d`, `frecuencia_180d` | Actividad reciente |
 | `dias_medios_entre_compras` | Ritmo de compra (nulo si solo hay una) |
 | `devoluciones` | Facturas de cancelación |
-| `es_reino_unido` | País del cliente |
+| `es_reino_unido` | País más frecuente del cliente antes del corte (no se usa `master_clientes.pais`, que incluye el futuro) |
 
 ## ML: objetivo y partición
 `y = 1` si el cliente compra al menos una vez en la ventana **[corte, corte + 90 días)**. La partición es **temporal**, con ventanas que no se solapan:
@@ -95,4 +121,4 @@ Antes de construir ML se comprueba que la ventana de cada corte cabe en los dato
 ## Cómo adaptar el caso a la tarea
 La tarea de los alumnos repite esta receta con **otro dataset de estructura similar** (entidad, fecha de corte, objetivo y variables propias):
 cambian `sql/master/`, las variables de `sql/fs/` y el objetivo de `sql/ml/`; se mantienen las reglas (RAW intacto, descartes con motivo, sin fuga, partición temporal)
-y las pruebas de `tests/`. La tarea también es un cuaderno-pipeline: su traducción a `.py` es parte de la entrega. Entregable de S1: «adaptar una transformación o variable» (por ejemplo, añadir una variable a FS, documentarla en `fs_catalogo` y mostrar su efecto en el modelo).
+y las pruebas de `tests/`. La capa operacional es propia de este caso: en la tarea la fuente es un archivo, y RAW lo carga tal cual. La tarea también es un cuaderno-pipeline: su traducción a `.py` es parte de la entrega. Entregable de S1: «adaptar una transformación o variable» (por ejemplo, añadir una variable a FS, documentarla en `fs_catalogo` y mostrar su efecto en el modelo).

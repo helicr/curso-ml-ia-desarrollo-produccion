@@ -8,17 +8,26 @@
 
 ## Las capas, en este orden
 ```
-RAW  →  MASTER  →  FS  →  ML  →  ARTEFACTOS  →  SERVICIO (S2)
+OPERACIONAL (retail.db)  →  RAW  →  MASTER  →  FS  →  ML  →  ARTEFACTOS  →  SERVICIO (S2)
 ```
-**FS va antes que ML:** ML se construye a partir de las variables de FS, más el objetivo y la partición.
+![Recorrido completo](docs/img/recorrido.png)
 
-| Capa | Cuaderno (el pipeline) | Paquete (traducción a `.py`) | SQL |
-|---|---|---|---|
-| RAW y MASTER | `notebooks/01_pipeline_raw_a_master.ipynb` | `ia_mlops/dataset.py`, `ia_mlops/calidad.py` | `sql/raw/`, `sql/master/` |
-| FS | `notebooks/02_pipeline_master_a_fs.ipynb` | `ia_mlops/features.py` | `sql/fs/` |
-| ML | `notebooks/03_pipeline_fs_a_ml.ipynb` | `ia_mlops/modeling/ml_dataset.py` | `sql/ml/` |
-| Entrenamiento y MLflow | `notebooks/04_entrenamiento_y_seguimiento.ipynb` | `ia_mlops/modeling/train.py` | |
-| Predicción (base de la API) | | `ia_mlops/modeling/predict.py` | |
+El dato nace en una **base operacional** simulada (`data/external/retail.db`, el sistema de ventas de la tienda) y el pipeline lo **ingiere** en la
+base analítica (`data/processed/curso.db`). **FS va antes que ML:** ML se construye a partir de las variables de FS, más el objetivo y la partición.
+
+| Capa | Cuaderno (el pipeline) | Pipeline `.py` (se ejecuta solo) | Lógica (módulos) | SQL |
+|---|---|---|---|---|
+| OPERACIONAL (simulación) | `00_pipeline_operacional` | `python -m ia_mlops.operacional` | `operacional.py` | `sql/operacional/` |
+| RAW | `01_pipeline_raw_a_master` (1) | `python -m ia_mlops.pipeline_ingesta_raw` | `dataset.py` | `sql/raw/` |
+| MASTER | `01_pipeline_raw_a_master` (2–4) | `python -m ia_mlops.pipeline_ingesta_master` | `dataset.py`, `calidad.py` | `sql/master/` |
+| FS y ML | `02_pipeline_master_a_fs` y `03_pipeline_fs_a_ml` | `python -m ia_mlops.pipeline_ml` | `features.py`, `modeling/ml_dataset.py` | `sql/fs/`, `sql/ml/` |
+| Entrenamiento y MLflow | `04_entrenamiento_y_seguimiento` | `python -m ia_mlops.pipeline_train` | `modeling/train.py` | |
+| Predicción (base de la API) | | | `modeling/predict.py` | |
+
+**Los cuatro pipelines son independientes e idempotentes** (`ia_mlops/control.py`). Cada uno comprueba que su entrada existe (si no, dice qué
+ejecutar antes) y calcula una **huella de entrada** (datos que lee + su código + la configuración). Si coincide con la de su última ejecución
+correcta, **no hace nada**; si cambió, reconstruye su capa desde cero. `--forzar` lo rehace siempre. Repetirlos no duplica nada, ni siquiera
+ejecuciones en MLflow. `python -m ia_mlops.pipeline` solo los lanza en orden, por comodidad; en S4 los lanzará GitHub Actions.
 
 ## Estructura (Cookiecutter Data Science)
 ```
@@ -26,37 +35,44 @@ RAW  →  MASTER  →  FS  →  ML  →  ARTEFACTOS  →  SERVICIO (S2)
 ├── README.md · Makefile · pyproject.toml
 ├── data/
 │   ├── raw/            muestra_online_retail_ii.csv (en el repo) y online_retail_ii/ (el original, se descarga)
-│   ├── external/       datos de terceros                     interim/   pasos intermedios
-│   └── processed/      curso.db: la base SQLite con todas las capas
-├── docs/               modelo-de-datos.md · de-notebook-a-python.md
+│   ├── external/       retail.db: la base operacional simulada (se genera)   interim/   pasos intermedios
+│   └── processed/      curso.db: la base analítica con las capas RAW a ML (se genera)
+├── docs/               modelo-de-datos.md · de-notebook-a-python.md · img/ (diagramas)
 ├── models/             modelo.joblib · metadatos.json · mlflow.db (se generan)
-├── notebooks/          los cuatro cuadernos-pipeline
+├── notebooks/          los cinco cuadernos-pipeline (00 a 04)
 ├── references/         fuente del dato y licencia
 ├── reports/            metricas.json y figures/ (se generan)
 ├── sql/                esquemas (DDL) y scripts de inserción de cada capa
 ├── ia_mlops/           el paquete Python
-│   ├── config.py · db.py · calidad.py · dataset.py · features.py · pipeline.py
+│   ├── config.py · db.py · control.py · operacional.py · dataset.py · calidad.py · features.py
+│   ├── pipeline_ingesta_raw.py · pipeline_ingesta_master.py · pipeline_ml.py · pipeline_train.py · pipeline.py (orquestador)
 │   ├── modeling/       ml_dataset.py · train.py · predict.py
 │   └── api/            la API de S2
 ├── deploy/             docker · cloud-run · kubernetes (S2 a S5)
-└── tests/              34 pruebas, incluida la equivalencia cuaderno = paquete
+└── tests/              44 pruebas, incluidas la equivalencia cuaderno = paquete y la idempotencia de los pipelines
 ```
 
 ## Empezar (con el entorno `env-ia-mlops` activo, desde esta carpeta)
 ```text
 pip install -e .                                   # instala ia_mlops en modo editable (una vez)
-python -m ia_mlops.pipeline                        # todo el flujo con la muestra (segundos)
+python -m ia_mlops.operacional                     # simula la base de ventas retail.db con la muestra (una vez)
+python -m ia_mlops.pipeline                        # los cuatro pipelines en orden (segundos)
+python -m ia_mlops.pipeline                        # otra vez: «sin cambios» en los cuatro
+python -m ia_mlops.pipeline_train --forzar         # uno solo, forzado
 ```
-Los **cuadernos** (el camino de S1): ábrelos en VS Code con el kernel `env-ia-mlops` y ejecútalos en orden, o desde la terminal:
+Los **cuadernos** (el camino de S1): ábrelos en VS Code con el kernel `env-ia-mlops` y ejecútalos **en orden, del 00 al 04**. El 00 explica
+todo el recorrido. Desde la terminal:
 ```text
-papermill notebooks/01_pipeline_raw_a_master.ipynb salida01.ipynb -p FUENTE muestra
+papermill notebooks/00_pipeline_operacional.ipynb salida00.ipynb -p FUENTE muestra
+papermill notebooks/01_pipeline_raw_a_master.ipynb salida01.ipynb
 ```
 Con el dato **completo** (1,07 millones de filas, unos 2 minutos):
 ```text
 python -m ia_mlops.dataset descargar               # baja el Excel de UCI y verifica su huella sha256
-python -m ia_mlops.pipeline --fuente completo
+python -m ia_mlops.operacional --fuente completo   # el operacional cambia...
+python -m ia_mlops.pipeline                        # ...y los pipelines lo detectan y rehacen todo
 ```
-`make` hace lo mismo con atajos (`make pipeline`, `make notebooks`, `make test`, `make traducir`). En Windows no hay `make`: ejecuta las líneas `python` y `papermill` del `Makefile`.
+`make` hace lo mismo con atajos (`make operacional`, `make pipeline`, `make raw`, `make master`, `make ml`, `make train`, `make notebooks`, `make test`, `make traducir`). En Windows no hay `make`: ejecuta las líneas `python` y `papermill` del `Makefile`.
 
 ## De cuaderno a Python
 Dos caminos, y las pruebas exigen que den **el mismo resultado**: ver `docs/de-notebook-a-python.md`.
@@ -68,7 +84,7 @@ Dos caminos, y las pruebas exigen que den **el mismo resultado**: ver `docs/de-n
 python -m pytest tests                  # todas (incluye ejecutar los cuadernos)
 python -m pytest tests -m "not lento"   # sin ejecutar los cuadernos
 ```
-Comprueban, entre otras cosas: que `raw = master + descartes`, la integridad referencial, que **FS no usa información del futuro**, que la partición es temporal y sus
+Comprueban, entre otras cosas: que el operacional reconstruye cada fila del archivo, que RAW es copia exacta del operacional, que `raw = master + descartes`, la integridad referencial, que **FS no usa información del futuro**, que la partición es temporal y sus
 ventanas no se solapan, que el objetivo se recalcula igual con pandas, que los cuadernos y el paquete producen **las mismas tablas y las mismas métricas**, y que los cuadernos
 traducidos a `.py` con jupytext también.
 
@@ -83,4 +99,4 @@ La tasa de recompra cambia entre periodos (48 % en train, 35 % en valid, 38 % en
 Las cifras salen de `reports/metricas.json` tras ejecutar el pipeline completo.
 
 ## Estado
-S1 usa los cuatro cuadernos. S2 construirá la API en `ia_mlops/api/` sobre `predict.py`; los Dockerfile irán en `deploy/docker/`.
+S1 usa los cinco cuadernos. S2 construirá la API en `ia_mlops/api/` sobre `predict.py`; los Dockerfile irán en `deploy/docker/`.

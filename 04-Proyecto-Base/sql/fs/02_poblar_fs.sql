@@ -1,5 +1,5 @@
 -- Puebla fs_cliente_corte para UNA fecha de corte (parametro :corte, formato AAAA-MM-DD).
--- Se ejecuta una vez por cada corte (ver src/features/construir_fs.py).
+-- Se ejecuta una vez por cada corte (ver ia_mlops/features.py y el cuaderno 02).
 -- Regla de oro: todos los filtros usan  fecha_factura < :corte  (estrictamente antes del corte).
 WITH ventas AS (
     SELECT f.cliente_id, f.factura_id, f.fecha_factura, l.codigo_producto, l.cantidad, l.monto_linea
@@ -33,6 +33,18 @@ devoluciones AS (
     FROM master_facturas
     WHERE es_cancelacion = 1 AND cliente_id IS NOT NULL AND fecha_factura < :corte
     GROUP BY cliente_id
+),
+-- Pais del cliente EN EL CORTE: el mas frecuente de sus lineas anteriores al corte.
+-- No se usa master_clientes.pais: resume TODA la historia del cliente (tambien el futuro) y seria una fuga.
+pais AS (
+    SELECT cliente_id, pais FROM (
+        SELECT f.cliente_id, f.pais,
+               ROW_NUMBER() OVER (PARTITION BY f.cliente_id ORDER BY COUNT(*) DESC, f.pais) AS rn
+        FROM master_lineas l
+        JOIN master_facturas f ON f.factura_id = l.factura_id
+        WHERE f.cliente_id IS NOT NULL AND f.fecha_factura < :corte
+        GROUP BY f.cliente_id, f.pais
+    ) WHERE rn = 1
 )
 INSERT INTO fs_cliente_corte (
     cliente_id, fecha_corte, recencia_dias, frecuencia, monto_total, ticket_medio, unidades_total,
@@ -54,8 +66,8 @@ SELECT p.cliente_id,
        CASE WHEN p.frecuencia > 1
             THEN ROUND((julianday(p.ultima) - julianday(p.primera)) / (p.frecuencia - 1), 1) END,
        COALESCE(d.devoluciones, 0),
-       CASE WHEN c.pais = 'United Kingdom' THEN 1 ELSE 0 END
+       CASE WHEN pa.pais = 'United Kingdom' THEN 1 ELSE 0 END
 FROM por_cliente p
 JOIN productos pr        ON pr.cliente_id = p.cliente_id
-JOIN master_clientes c   ON c.cliente_id  = p.cliente_id
+JOIN pais pa             ON pa.cliente_id = p.cliente_id
 LEFT JOIN devoluciones d ON d.cliente_id  = p.cliente_id;

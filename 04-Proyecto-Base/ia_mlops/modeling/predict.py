@@ -3,6 +3,9 @@
 El modelo guardado incluye el preprocesamiento: la API solo debe entregarle las variables, en cualquier orden,
 y este modulo se encarga de validarlas y ordenarlas. Asi el servicio y el entrenamiento comparten el MISMO preproceso.
 
+Carga models/modelo.joblib (el mejor modelo, guardado por train.py) y models/metadatos.json (la lista de variables).
+No usa MLflow: MLflow es el historial de entrenamientos; el servicio solo necesita el modelo elegido.
+
 Uso:
     from ia_mlops.modeling import predict
     predict.predecir_probabilidad({'recencia_dias': 12, 'frecuencia': 5, ...})

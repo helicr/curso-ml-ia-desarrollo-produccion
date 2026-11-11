@@ -13,7 +13,8 @@ Cita sugerida: Chen, D. (2012). *Online Retail II* [Dataset]. UCI Machine Learni
 ## Qué se incluye en este repositorio
 - `data/raw/muestra_online_retail_ii.csv`: **muestra de 23 070 filas** (150 clientes elegidos al azar con semilla 42 y 300 líneas sin cliente), con las mismas columnas del original.
   Se redistribuye bajo CC BY 4.0, citando la fuente. Conserva la suciedad del original (cancelaciones, duplicados, códigos que no son productos, clientes nulos).
-  Se regenera con `python -m ia_mlops.dataset muestra` (necesita el dato completo en RAW).
+  Se regenera con `python -m ia_mlops.dataset muestra` (necesita el Excel completo descargado); la muestra regenerada tiene la misma huella sha256.
+- A partir del archivo, el cuaderno `00_pipeline_operacional.ipynb` construye la base operacional simulada `data/external/retail.db`, que es la fuente del pipeline.
 - El archivo original **no** se incluye: se descarga con `python -m ia_mlops.dataset descargar`, que verifica la huella.
 
 ## Suciedad real del dato (medida sobre el archivo completo)

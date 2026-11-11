@@ -3,8 +3,12 @@
 Caso transversal: Online Retail II (UCI, CC BY 4.0). Pregunta de negocio:
     «Dado un cliente y una fecha de corte, ¿volvera a comprar en los 90 dias siguientes?»
 
+Todo lo que define el caso esta aqui, en un solo sitio: cambiar la ventana, los cortes o las variables no exige tocar el resto
+del codigo. Los cuadernos repiten estos valores en su celda de parametros; las pruebas comprueban que dan el mismo resultado.
+
 Las rutas se pueden cambiar con variables de entorno (util en pruebas y en contenedores):
-    CURSO_DB       base SQLite                 (por defecto data/processed/curso.db)
+    CURSO_DB_OPERACIONAL  base operacional «retail», la fuente   (por defecto data/external/retail.db)
+    CURSO_DB       base SQLite analitica       (por defecto data/processed/curso.db)
     CURSO_MODELOS  carpeta de modelos          (por defecto models/)
     CURSO_REPORTES carpeta de reportes         (por defecto reports/)
 """
@@ -15,11 +19,13 @@ RAIZ = Path(__file__).resolve().parents[1]
 DATA_RAW = RAIZ / 'data' / 'raw'
 DATA_PROCESSED = RAIZ / 'data' / 'processed'
 SQL = RAIZ / 'sql'
-DB = Path(os.environ.get('CURSO_DB', DATA_PROCESSED / 'curso.db'))
+# Dos bases: la OPERACIONAL simula el sistema de ventas (la fuente); la ANALITICA guarda las capas RAW a ML.
+DB_OPERACIONAL = Path(os.environ.get('CURSO_DB_OPERACIONAL', RAIZ / 'data' / 'external' / 'retail.db'))
+DB =Path(os.environ.get('CURSO_DB', DATA_PROCESSED / 'curso.db'))
 MODELOS = Path(os.environ.get('CURSO_MODELOS', RAIZ / 'models'))
 REPORTES = Path(os.environ.get('CURSO_REPORTES', RAIZ / 'reports'))
 
-# Fuentes de datos para la capa RAW.
+# Archivos de los que se construye la base operacional (cuaderno 00).
 #   muestra:  CSV pequeno incluido en el repositorio (150 clientes). Para pruebas, CI y clase.
 #   completo: Excel original de UCI (1,07 millones de lineas). Se descarga con `python -m ia_mlops.dataset descargar`.
 FUENTES = {
