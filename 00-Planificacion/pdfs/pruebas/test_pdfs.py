@@ -42,8 +42,8 @@ def texto_pagina(ruta, n):
 # Manifiesto
 # ---------------------------------------------------------------------------
 class TestManifiesto:
-    def test_hay_s0_y_s1(self):
-        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1']
+    def test_hay_s0_s1_y_s2(self):
+        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1', 'S2']
 
     @pytest.mark.parametrize('sesion,e', todos(), ids=[f"{s['id']}-{e['archivo']}" for s, e in todos()])
     def test_cada_origen_existe(self, sesion, e):
@@ -258,6 +258,82 @@ class TestPdfGenerados:
         ruta = pdf('S1', '01-presentacion-s1.pdf')
         todo = ' '.join(p.extract_text() or '' for p in PdfReader(str(ruta)).pages)
         assert 'Hacer clic' not in todo and 'Haz clic' not in todo
+
+    def test_s2_presentacion_sin_ordenes_de_hacer_clic_ni_botones_de_control(self):
+        from pypdf import PdfReader
+        ruta = pdf('S2', '01-presentacion-s2.pdf')
+        paginas = PdfReader(str(ruta)).pages
+        assert len(paginas) == 21
+        todo = ' '.join(p.extract_text() or '' for p in paginas)
+        assert 'Hacer clic' not in todo and 'Haz clic' not in todo
+        assert 'Pantalla completa (F)' not in todo
+
+    def test_s2_guia_de_codespaces_sin_controles_de_la_pagina(self):
+        from pypdf import PdfReader
+        paginas = PdfReader(str(pdf('S2', '02-guia-de-codespaces.pdf'))).pages
+        assert len(paginas) == 24
+        todo = ' '.join(p.extract_text() or '' for p in paginas)
+        for sobra in ('⧉', 'Marcar como hecho', 'Copiar todo', 'pasos marcados', 'en este navegador',
+                      'C copia todo el bloque', 'file:///'):
+            assert sobra not in todo, sobra
+        assert 'Copia cada línea y pégala en la terminal del Codespace' in todo
+        # lo esencial del laboratorio sigue en el PDF
+        for debe in ('docker version', 'docker build -f deploy/docker/Dockerfile -t retencion-api:local .', '10001'):
+            assert debe in todo.replace('\n', ' '), debe
+
+    def test_s2_conserva_las_cifras_reales_de_la_practica(self):
+        from pypdf import PdfReader
+        todo = ' '.join(p.extract_text() or '' for p in PdfReader(str(pdf('S2', '01-presentacion-s2.pdf'))).pages)
+        assert '0.8278889191932133' in todo.replace(' ', '') and '108 passed' in todo
+
+    @pytest.mark.parametrize('archivo,paginas', [('03-contenedores-el-modelo-mental.pdf', 16), ('04-del-dockerfile-a-produccion.pdf', 17)])
+    def test_s2_presentaciones_de_contenedores_sin_controles_y_con_lo_no_probado(self, archivo, paginas):
+        from pypdf import PdfReader
+        lector = PdfReader(str(pdf('S2', archivo)))
+        assert len(lector.pages) == paginas
+        todo = ' '.join(p.extract_text() or '' for p in lector.pages).replace('\n', ' ')
+        for sobra in ('⧉', 'Marcar como hecho', 'pasos marcados', 'en este navegador', 'Pulsa', 'pulsa', 'Hacer clic', 'Haz clic',
+                      'Pantalla completa', 'file:///'):
+            assert sobra not in todo, sobra
+        assert 'Copia cada línea y pégala en la terminal de tu Codespace' in todo
+        assert 'Comprueba cada punto antes de pasar a lo siguiente' in todo
+        # lo que no se ha probado sigue diciéndose en el PDF
+        assert 'Todavía no se han ejecutado en un Codespace del curso' in todo
+        assert 'docker 29.4.2'.lower() in todo.lower()
+        assert 'sin probar aquí' in todo.lower()
+
+    def test_s2_contenedores_conservan_las_salidas_reales_y_los_comandos(self):
+        from pypdf import PdfReader
+        def texto(archivo):
+            return ' '.join(' '.join(p.extract_text() or '' for p in PdfReader(str(pdf('S2', archivo))).pages).split())
+        modelo, produccion = texto('03-contenedores-el-modelo-mental.pdf'), texto('04-del-dockerfile-a-produccion.pdf')
+        assert 'Exited (137)' in modelo and 'Failed to connect' in modelo and 'Connection reset by peer' in modelo
+        assert '52.44MB' in produccion and '178B' in produccion and 'CACHED' in produccion and 'USER 10001' in produccion
+        guia, lab = texto('08-guia-practica-de-contenedores.pdf'), texto('09-laboratorio-romper-a-proposito.pdf')
+        assert 'docker run --rm' in guia and 'docker build --progress=plain' in guia and 'Exited (137)' in guia
+        for n in range(1, 6):
+            assert f'Rotura {n}' in lab, n
+        assert 'Todavía no se han ejecutado en un Codespace' in guia and 'Todavía no se han ejecutado en un Codespace' in lab
+
+    def test_los_pdf_de_documentos_estan_al_dia_con_su_fuente(self):
+        """Cada título de la fuente Markdown (sin bloques de código) aparece en su PDF: si se edita el .md y no se regenera, falla.
+        Se compara sin espacios ni marcas de código porque el PDF parte las líneas largas en cualquier punto."""
+        from pypdf import PdfReader
+
+        def limpio(s):
+            return re.sub(r'\s+', '', re.sub(r'[`*_]', '', s)).lower()
+
+        desactualizados = []
+        for s, e in todos():
+            if e['tipo'] != 'documento':
+                continue
+            texto = limpio(' '.join(p.extract_text() or '' for p in PdfReader(str(G.ruta_pdf(s, e))).pages))
+            fuente = re.sub(r'```.*?```', '', (RAIZ / e['origen']).read_text(encoding='utf-8'), flags=re.S)
+            titulos = [re.sub(r'\[([^\]]+)\]\([^)]*\)', r'\1', h) for h in re.findall(r'^#{1,4} +(.+?)\s*$', fuente, re.M)]
+            faltan = [h for h in titulos if limpio(h) not in texto]
+            if faltan:
+                desactualizados.append((s['id'], e['archivo'], faltan[:3]))
+        assert desactualizados == [], f'PDF sin regenerar tras editar su fuente: {desactualizados}'
 
     def test_documentos_con_pie_de_pagina_en_todas_las_paginas(self):
         from pypdf import PdfReader

@@ -6,7 +6,7 @@ FUENTE ?= muestra
 
 FORZAR ?=
 
-.PHONY: ayuda datos operacional raw master ml train pipeline notebooks traducir test test-rapido diagramas limpiar
+.PHONY: ayuda datos operacional raw master ml train pipeline notebooks traducir test test-rapido diagramas api comparar imagen contenedor lock limpiar
 
 ayuda:  ## Muestra esta ayuda
 	@grep -E '^[a-z-]+:.*##' Makefile | sed 's/:.*##/ -> /'
@@ -50,9 +50,26 @@ test:  ## Todas las pruebas (incluye ejecutar los cuadernos)
 test-rapido:  ## Pruebas sin ejecutar los cuadernos
 	$(PYTHON) -m pytest tests -m "not lento"
 
-diagramas:  ## Regenera las imagenes de docs/img (el cuaderno 00 las lleva embebidas: regeneralo despues)
+diagramas:  ## Regenera las imagenes de docs/img (los cuadernos 00, 03 y 04 las llevan embebidas: regeneralos despues)
 	$(PYTHON) docs/img/generar_diagramas.py
+
+api:  ## Arranca la API en http://127.0.0.1:8080 (docs en /docs). Antes: make pipeline
+	$(PYTHON) -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080
+
+comparar:  ## Compara paquete, joblib y MLflow y, con URL=http://127.0.0.1:8080, tambien la API. Antes: make pipeline
+	$(PYTHON) -m ia_mlops.modeling.comparar $(if $(URL),--url $(URL),)
+
+imagen:  ## Construye la imagen Docker (en Codespaces; en tu equipo no hay Docker). Antes: make pipeline
+	docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+
+contenedor:  ## Ejecuta la imagen en http://127.0.0.1:8080
+	docker run --rm -p 8080:8080 retencion-api:local
+
+lock:  ## Regenera requirements-api.lock (versiones exactas) en un entorno vacio con uv
+	uv venv .venv-lock --python 3.11 -q && uv pip install -r requirements-api.txt --python .venv-lock/bin/python -q
+	(echo "# Dependencias EXACTAS (directas y transitivas) de la imagen. Se genera con:  make lock   (a partir de requirements-api.txt, en un entorno vacio)"; echo "# La imagen instala ESTE archivo para que dos construcciones den las mismas versiones."; uv pip freeze --python .venv-lock/bin/python) > requirements-api.lock
+	rm -rf .venv-lock
 
 limpiar:  ## Borra lo generado (bases de datos, modelos y reportes). No toca los datos originales
 	rm -f data/external/retail.db data/processed/*.db models/*.joblib models/*.json models/mlflow.db reports/metricas.json
-	rm -rf models/mlartifacts reports/notebooks_ejecutados scripts_desde_notebooks
+	rm -rf models/modelo_mlflow models/mlartifacts reports/notebooks_ejecutados scripts_desde_notebooks

@@ -21,7 +21,7 @@ conda activate env-ia-mlops
 cd 04-Proyecto-Base
 python -m pytest -q -m "not lento"
 ```
-Esperado: `40 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
+Esperado: `119 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
 
 ## 1. Cuadernos 00 y 01 · operacional, RAW → MASTER (30 min)
 Abre `notebooks/00_pipeline_operacional.ipynb`: su introducción explica todo el recorrido. Ejecútalo (parámetro `FUENTE = 'muestra'`).

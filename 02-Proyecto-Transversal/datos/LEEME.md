@@ -4,7 +4,7 @@ Copia de dos datasets del UCI Machine Learning Repository, ambos con licencia **
 
 | Carpeta | Papel en el curso | Para qué |
 |---|---|---|
-| `bank-marketing/` | **El caso de los alumnos** (decidido el 09/11/2026) | Lo desarrollan de S1 a S5: RAW → MASTER → FS → ML, modelo, API, GCP, workflow y operación |
+| `bank-marketing/` | **El caso de los alumnos** (confirmado el 10/11/2026) | Lo desarrollan de S1 a S5: RAW → MASTER → FS → ML, modelo, API, GCP, workflow y operación |
 | `default-credit-card/` | **Referencia para investigar por su cuenta** | Misma estructura de problema (clasificación binaria sobre datos tabulares) con otras trampas: encabezado doble, formato ancho, sin dimensión temporal |
 
 ## Qué contiene cada carpeta

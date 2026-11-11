@@ -11,6 +11,7 @@ Las rutas se pueden cambiar con variables de entorno (util en pruebas y en conte
     CURSO_DB       base SQLite analitica       (por defecto data/processed/curso.db)
     CURSO_MODELOS  carpeta de modelos          (por defecto models/)
     CURSO_REPORTES carpeta de reportes         (por defecto reports/)
+    CURSO_LOG_NIVEL nivel de registro de la API (por defecto INFO)
 """
 import os
 from pathlib import Path
@@ -53,3 +54,6 @@ FEATURES = [
     'devoluciones', 'es_reino_unido',
 ]
 OBJETIVO = 'y'
+
+# El modelo en formato MLflow (con su FIRMA) que se guarda dentro de MODELOS. Es lo que carga la API y lo que se copia a la imagen Docker.
+CARPETA_MODELO_MLFLOW = 'modelo_mlflow'

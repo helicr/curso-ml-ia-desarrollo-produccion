@@ -120,5 +120,5 @@ Antes de construir ML se comprueba que la ventana de cada corte cabe en los dato
 
 ## Cómo adaptar el caso a la tarea
 La tarea de los alumnos repite esta receta con **otro dataset de estructura similar** (entidad, fecha de corte, objetivo y variables propias):
-cambian `sql/master/`, las variables de `sql/fs/` y el objetivo de `sql/ml/`; se mantienen las reglas (RAW intacto, descartes con motivo, sin fuga, partición temporal)
+cambian `sql/master/`, las variables de `sql/fs/` y el objetivo de `sql/ml/`; se mantienen las reglas (RAW intacto, descartes con motivo, sin fuga y, si el dato tiene fecha, partición temporal; Bank Marketing, que no trae fecha ni cliente, se parte de forma aleatoria y se documenta que es optimista: ver `02-Proyecto-Transversal/enunciado/README.md`)
 y las pruebas de `tests/`. La capa operacional es propia de este caso: en la tarea la fuente es un archivo, y RAW lo carga tal cual. La tarea también es un cuaderno-pipeline: su traducción a `.py` es parte de la entrega. Entregable de S1: «adaptar una transformación o variable» (por ejemplo, añadir una variable a FS, documentarla en `fs_catalogo` y mostrar su efecto en el modelo).

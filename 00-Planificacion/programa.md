@@ -35,9 +35,11 @@ Materiales preparados: `01-Sesiones/S1-Datos-y-Entrenamiento/` (slides, guion, c
 Contenido: Carga del modelo (desde MLflow), preprocesamiento, FastAPI, validación, errores, Dockerfile e imagen
 (construida en Codespaces). Primer workflow de GitHub Actions que construye la imagen.
 
-Tarea: Crear API propia, contenerizar y comparar predicciones.
+Tarea: Crear API propia, contenerizar y comparar predicciones. Dos rutas: A (Online Retail II: hacer entrar en el servicio la variable de la tarea de S1) o B (el caso propio).
 
-Evidencia: Avance en S3: API, contenedor y pruebas.
+Evidencia: `evidencias/plantilla-api-y-contenedor.md`; avance en S3: API, contenedor y pruebas.
+
+Materiales preparados: `01-Sesiones/S2-API-y-Docker/` (slides, guion, checklist, teoría, práctica, tarea y rúbrica) y, en `04-Proyecto-Base/`, la API (`ia_mlops/api/`), el `Dockerfile`, la plantilla `deploy/github-actions/ci.yml` y `docs/api-y-contenedor.md`. Sin probar: el Codespace del curso (`.devcontainer/`), Docker en un equipo propio y Windows.
 
 ## S3 · De local a GCP: migración y despliegue · 4 horas (red neuronal opcional)
 
@@ -69,7 +71,7 @@ introducción a costes.
 
 Tarea: Consolidar repositorio, informe y demostración.
 
-Evidencia: Entrega posterior a S5; fecha por definir.
+Evidencia: Entrega posterior a S5: viernes 11 de diciembre, a las 10:00 (hora de Perú).
 
 ## Módulo opcional: LLMs abiertos (sesión extra)
 Fuera del núcleo; ver `06-Modulo-LLMs/README.md`. Se imparte solo si hay tiempo.

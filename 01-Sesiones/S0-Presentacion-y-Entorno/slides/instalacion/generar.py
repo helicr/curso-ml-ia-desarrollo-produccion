@@ -378,7 +378,7 @@ def slide_no_probado():
               '<div class="two"><div class="card ok"><h3>Probado ' + C.FECHA + ' (Linux)</h3><ul class="p">'
               '<li>Creación del entorno desde cero con <code>environment.yml</code>, y <b>HUMO OK</b>.</li>'
               '<li>Versiones instaladas = versiones fijadas (verificador).</li>'
-              '<li>Pruebas del proyecto base (hoy 40 rápidas y 44 completas, recapturadas en Windows el 11/11/2026).</li>'
+              '<li>Pruebas del proyecto base (hoy 119 rápidas y 123 completas, recapturadas en Windows el 11/11/2026).</li>'
               '<li>SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel y ejecución del cuaderno de prueba.</li>'
               '<li><code>git clone --branch develop</code> contra GitHub (clon superficial).</li></ul></div>'
               f'<div class="card bad"><h3 style="color:var(--bad)">Sin probar</h3><ul class="p">{li}</ul></div></div>'
@@ -510,7 +510,7 @@ def construir_md():
     a(f'**Probado el {C.FECHA} en Linux (kernel {meta.get("sistema", "").replace("Linux ", "")}), en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, '
       'versiones instaladas frente a las fijadas, pruebas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, '
       'registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`), '
-      'salvo las de las pruebas del proyecto base (40 rápidas y 44 completas), recapturadas en Windows el 11/11/2026 al añadir la base operacional y los pipelines.\n')
+      'salvo las de las pruebas del proyecto base (119 rápidas y 123 completas), recapturadas en Windows el 11/11/2026 con la base operacional, los pipelines y la API de S2.\n')
     a('**Sin probar:**\n')
     for t in C.NO_PROBADO:
         a(f'- {md(t)}')

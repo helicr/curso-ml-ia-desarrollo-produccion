@@ -12,7 +12,7 @@ Para describir un archivo nuevo o cambiar un texto: edita este archivo y ejecuta
 CURSO = 'ML e IA: de desarrollo a producción'
 SUBTITULO = 'Instructor: Helí Campos R · UNTRM · 2026-II'
 REPO_GITHUB = 'https://github.com/helicr/curso-ml-ia-desarrollo-produccion'
-RAMA = 'develop'
+RAMA = 'main'
 
 CARPETA_SESIONES = '01-Sesiones'
 ENTORNO = '03-Entorno'
@@ -71,7 +71,7 @@ SESIONES = [
         enlaces=[
             deck('Presentación principal', f'{S0}/slides/index.html', 'Parte A, pausa, Parte B y cierre. Teclas: ← → avanzar, O índice, S notas, F pantalla completa.', volver=True),
             deck('Tu equipo listo para S1', f'{S0}/slides/instalacion/index.html', 'Para copiar y pegar: instalación en orden, entorno desde environment.yml, pruebas y verificador.', volver=True),
-            deck('Anexos de consulta', f'{S0}/slides/anexos/index.html', 'Edición anterior (con React y ECharts). Los anexos A–F siguen vigentes; el resto está desactualizado.'),
+            deck('Anexos de consulta', f'{S0}/slides/anexos/index.html', 'Anexos A–F: estadísticas, herramientas, calculadora de coste de Cloud Run y fuentes. Consulta; no suman a las dos horas de S0.'),
             deck('Plan docente', f'{S0}/slides/fuentes/plan-docente.html', 'Una página: programa, ritmo, reparto de S0 y cautelas.'),
             alumno('Guía rápida del entorno (S0 → S1)', f'{S0}/practica/guia-rapida-entorno-s0-s1.md', 'Lo mismo que «Tu equipo listo para S1», en texto.'),
             deck('Guía de instalación para Windows', f'{ENTORNO}/guia-instalacion/index.html', 'Interactiva: elige ruta y terminal, copia los comandos y marca tu progreso.'),
@@ -87,26 +87,54 @@ SESIONES = [
         id='S1', titulo='Datos y entrenamiento', horas='4 h', carpeta=S1, estado=PREPARADO, esperados=TODOS,
         resumen='OPERACIONAL → RAW → MASTER → FS → ML con un cuaderno por capa, partición temporal, tres modelos comparados y seguimiento con MLflow. '
                 'Tarea: añadir una variable a la capa FS del caso del instructor (Online Retail II) y decidir con evidencia.',
-        nota='El caso propio de los alumnos (Bank Marketing) empieza aquí y sigue hasta S5: ver 02-Proyecto-Transversal/enunciado/README.md.',
+        nota='El caso propio de los alumnos (Bank Marketing) empieza aquí y sigue hasta S5: ver 02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md.',
         enlaces=[
             deck('Presentación de S1', f'{S1}/slides/index.html', 'Revisión del entorno, teoría, práctica, entrega y cierre.', volver=True),
+            deck('Tu caso de S1 a S5 (Bank Marketing)', f'{S1}/slides/caso-propio/index.html', 'El caso propio del alumnado: la pregunta, el dato, las trampas, la partición y los cuatro avances.', volver=True),
             alumno('Teoría y glosario', f'{S1}/teoria/README.md'),
             alumno('Guía de laboratorio', f'{S1}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo.'),
             alumno('Tarea', f'{S1}/tarea/README.md'),
-            alumno('Rúbrica', f'{S1}/tarea/rubrica.md', '20 % conocimiento · 40 % desempeño · 40 % producto.'),
+            alumno('Rúbrica', f'{S1}/tarea/rubrica.md', '20 % reproducibilidad · 40 % técnica · 40 % análisis y decisión.'),
             alumno('Plantilla de la decisión', f'{S1}/evidencias/plantilla-decision.md', 'La evidencia que se entrega.'),
             alumno('Checklist', f'{S1}/checklist.md'),
             alumno('Proyecto base (Online Retail II)', '04-Proyecto-Base/README.md', 'Cuadernos, paquete ia_mlops, pruebas y Makefile.'),
+            alumno('Tu caso: Bank Marketing', '02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md', 'La hoja del caso propio: pregunta, dato, cifras para comprobar tu carga, decisiones tuyas y entregas.'),
+            alumno('Plantilla de cada avance', '02-Proyecto-Transversal/alumno/plantilla-avance.md', 'Lo que se entrega en cada uno de los cuatro avances del caso propio.'),
+            alumno('Rúbrica de cada avance', '02-Proyecto-Transversal/alumno/rubrica-avance.md', '20 % reproducibilidad · 40 % técnica · 40 % análisis y decisión.'),
             instructor('README de S1', f'{S1}/README.md', 'Agenda por minutos y qué está validado.'),
             instructor('Guion', f'{S1}/guion.md'),
         ],
     ),
     dict(
-        id='S2', titulo='API y Docker', horas='4 h', carpeta=S2, estado=SOLO_README, esperados=TODOS,
-        resumen='Carga del modelo desde MLflow, FastAPI, validación, Dockerfile e imagen (en Codespaces) y primer workflow de GitHub Actions.',
+        id='S2', titulo='API y Docker', horas='4 h', carpeta=S2, estado=PREPARADO, esperados=TODOS,
+        resumen='Del modelo guardado a un servicio: API con FastAPI cuyo contrato sale de la firma del modelo, errores 422/503/500, registros JSON, imagen Docker mínima, '
+                'comparación de predicciones por todos los caminos y primer workflow de GitHub Actions. Tarea: llevar el modelo propio al mismo punto.',
+        nota='Probado en Linux y en GitHub Actions. Sin probar: el Codespace del curso (.devcontainer), Docker en un equipo propio y Windows. '
+             'Los ejemplos de contenedores se ejecutaron con Docker real en GitHub Actions, no en un Codespace; lo que dicen de Cloud Run es solo la documentación de Google.',
         enlaces=[
-            alumno('Docker y Kubernetes sin instalación local', f'{ENTORNO}/guias/docker-y-kubernetes-sin-instalacion-local.md', 'Ya escrita: cómo trabajar con Docker en Codespaces.'),
-            instructor('README de S2', f'{S2}/README.md'),
+            deck('Presentación de S2', f'{S2}/slides/index.html', 'Revisión del entorno, teoría, laboratorio de códigos, práctica, entrega y cierre.', volver=True),
+            alumno('Teoría y glosario', f'{S2}/teoria/README.md'),
+            alumno('Guía de laboratorio', f'{S2}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo y salidas esperadas.'),
+            alumno('Tarea', f'{S2}/tarea/README.md'),
+            alumno('Rúbrica', f'{S2}/tarea/rubrica.md', '20 % reproducibilidad · 40 % técnica · 40 % análisis y decisión.'),
+            alumno('Plantilla de la evidencia', f'{S2}/evidencias/plantilla-api-y-contenedor.md', 'La evidencia que se entrega.'),
+            alumno('Checklist', f'{S2}/checklist.md'),
+            alumno('La API y el contenedor', '04-Proyecto-Base/docs/api-y-contenedor.md', 'Contrato, errores, registros, imagen, workflow y qué se probó.'),
+            deck('Codespaces: tu laboratorio de Docker en la nube', f'{ENTORNO}/guia-codespaces/index.html',
+                 'Guía en diapositivas: abrir el Codespace (navegador o VS Code), el bloque 4 paso a paso y la cuota.', volver=True),
+            alumno('Guía de Codespaces (versión en texto)', f'{ENTORNO}/guias/codespaces-para-el-alumnado.md', 'El mismo contenido, para leer sin diapositivas.'),
+            deck('Contenedores 1: el modelo mental', f'{S2}/contenedores/modelo-mental/index.html',
+                 'Antes de S2: imagen y contenedor, ciclo de vida, lo que se pierde al borrar, puertos y volúmenes. Cuatro prácticas con salidas reales.', volver=True),
+            deck('Contenedores 2: del Dockerfile a producción', f'{S2}/contenedores/del-dockerfile-a-produccion/index.html',
+                 'Antes de S2: capas y caché, .dockerignore, secretos, usuario sin privilegios, healthcheck. Cinco prácticas con salidas reales.', volver=True),
+            alumno('Contenedores: guía práctica con nueve ejemplos', f'{S2}/contenedores/guia-practica.md',
+                   'Los mismos ejemplos de las dos presentaciones, para hacer en el Codespace (unos 60 min los seis primeros, 97 min todos; estimado).'),
+            alumno('Contenedores: laboratorio «romperlo a propósito»', f'{S2}/contenedores/laboratorio-romper.md',
+                   'Cinco fallos que provocas, diagnosticas y arreglas (unos 34 min; estimado).'),
+            alumno('Docker y Kubernetes sin instalación local', f'{ENTORNO}/guias/docker-y-kubernetes-sin-instalacion-local.md', 'Cómo trabajar con Docker en Codespaces.'),
+            instructor('README de S2', f'{S2}/README.md', 'Agenda por minutos y qué está validado.'),
+            instructor('Guion', f'{S2}/guion.md'),
+            instructor('Contenedores: cómo se generó y cómo regenerarlo', f'{S2}/contenedores/README.md', 'Una sola fuente de comandos, salidas reales de Docker, pruebas y comprobación de diseño.'),
         ],
     ),
     dict(

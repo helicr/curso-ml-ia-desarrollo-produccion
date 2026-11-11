@@ -85,7 +85,7 @@ def test_los_cuadernos_producen_las_mismas_metricas_que_el_paquete(corrida_cuade
 
 
 def test_los_cuadernos_dejan_los_artefactos_y_las_figuras(corrida_cuadernos):
-    for ruta in ['models/modelo.joblib', 'models/metadatos.json', 'models/mlflow.db', 'reports/metricas.json',
+    for ruta in ['models/modelo.joblib', 'models/modelo_mlflow/MLmodel', 'models/metadatos.json', 'models/mlflow.db', 'reports/metricas.json',
                  'reports/figures/fs_distribuciones.png', 'reports/figures/ml_ventanas.png', 'reports/figures/importancia_variables.png']:
         assert (corrida_cuadernos / ruta).exists(), ruta
 

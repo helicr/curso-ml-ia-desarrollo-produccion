@@ -6,7 +6,7 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `44 passed`.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `123 passed`.
 - Anotar quién no pasa y el mensaje de error (checklist). Quien falle: Codespaces o pareja. **No se detiene la sesión.**
 - Si pasan los 30 min y hay más de un tercio sin entorno: recortar teoría (diap. 11 y 16), no práctica.
 
@@ -36,6 +36,11 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 - Tarea y rúbrica (diap. 18), errores frecuentes (19), avance de S2 (20).
 - Recordar los **dos entregables**: (1) la tarea de la variable nueva, sobre Online Retail II; (2) el **avance en S2** sobre su caso, Bank Marketing: RAW → MASTER → FS → ML, entrenamiento y métricas, como cuadernos (ver `02-Proyecto-Transversal/enunciado/README.md`). Recordar: `duration` se excluye y las filas de `bank-additional-full.csv` no se reordenan.
 - Recordar: evidencia = decisión escrita + comparación de dos ejecuciones + traducción a `.py`.
+- **Caso propio (Bank Marketing), ≈5 min dentro de estos 15. Propuesta, sin decidir** (punto 23 de `00-Planificacion/decisiones-y-pendientes.md`): con «Tu caso de S1 a S5» (`slides/caso-propio/`, diap. 2, 3, 6 y 10). Decir que **es otro trabajo distinto de la tarea**, que se entrega por avances (el 1 se presenta en S2) y que lo leen enteros en casa (`02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md`). Los 5 minutos salen de la diap. 18, porque la tarea ya está escrita en `tarea/README.md`: el reloj de la presentación cuenta 5 min en la diap. 18 y 10 en la 20 (cierre más caso propio), así que el total sigue en 240.
+- Decir las fechas: sesiones los miércoles y viernes de 10:00 a 14:00 (hora de Perú); cada avance se entrega **a las 10:00 del día de la sesión en que se presenta** (avance 1 y tarea de S1: miércoles 18 de noviembre; 2: viernes 20; 3: miércoles 25; 4: viernes 27). Los avances 2 y 4 solo tienen dos días desde la sesión anterior: avisar.
+- **Dar el enlace del formulario de Google** con el que se entrega cada avance y la tarea de S1 (crearlo antes de S1; campos en el punto 23 de `00-Planificacion/decisiones-y-pendientes.md`), y decir que quien tenga el repositorio privado debe añadirte como colaborador.
+- Decir la fecha de la **entrega final**: viernes 11 de diciembre, a las 10:00 (hora de Perú). No hay sesión ese día salvo que se añada una: dónde y cómo se hace la demostración sigue por definir.
+- Decir en voz alta lo que **aún no está definido**: el peso de cada avance en la nota, la rúbrica de la entrega final y dónde se hace la demostración.
 
 ## Si algo falla en directo
 | Síntoma | Respuesta |

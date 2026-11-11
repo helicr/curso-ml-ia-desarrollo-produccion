@@ -2,7 +2,8 @@
 
 Cuaderno equivalente: notebooks/04_entrenamiento_y_seguimiento.ipynb.
 Entrada: ml_dataset (lo produce pipeline_ml).
-Salida:  models/modelo.joblib, models/metadatos.json, reports/metricas.json y, en MLflow, una ejecucion por modelo + MEJOR-<modelo>.
+Salida:  models/modelo.joblib, models/modelo_mlflow/ (con su firma: lo que sirve la API de S2), models/metadatos.json,
+         reports/metricas.json y, en MLflow, una ejecucion por modelo + MEJOR-<modelo>.
 
 Idempotente (ver control.py): la huella de entrada es la huella de los datos de entrenamiento (huella_datos) + las variables,
 el objetivo, los cortes y la ventana + el codigo de entrenamiento. Si nada cambio y el modelo guardado corresponde a esos datos,
@@ -34,7 +35,8 @@ def huella_entrada(con, usar_mlflow):
 def salida_ok(huella_datos, usar_mlflow):
     """El modelo guardado existe y se entreno con estos mismos datos."""
     meta = config.MODELOS / 'metadatos.json'
-    if not ((config.MODELOS / 'modelo.joblib').exists() and meta.exists() and (config.REPORTES / 'metricas.json').exists()):
+    if not ((config.MODELOS / 'modelo.joblib').exists() and meta.exists() and (config.REPORTES / 'metricas.json').exists()
+            and (config.MODELOS / config.CARPETA_MODELO_MLFLOW / 'MLmodel').exists()):
         return False
     if usar_mlflow and not (config.MODELOS / 'mlflow.db').exists():
         return False

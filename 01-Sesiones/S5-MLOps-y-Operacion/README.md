@@ -14,6 +14,6 @@ nueva versión desde el workflow; practicar la recuperación de la versión ante
 Consolidar repositorio, informe y demostración.
 
 ## Evidencia
-Entrega posterior a S5; fecha por definir.
+Entrega posterior a S5: viernes 11 de diciembre, a las 10:00 (hora de Perú).
 
 Laboratorio y materiales completos: pendientes de implementación y validación.

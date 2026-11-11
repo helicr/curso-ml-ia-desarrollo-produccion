@@ -78,6 +78,16 @@ def test_un_pipeline_se_puede_ejecutar_solo(copia):
     assert pipeline_ml.ejecutar(analitica, forzar=True, verbose=False)['estado'] == 'ejecutado'
 
 
+def test_el_orquestador_crea_el_operacional_si_falta_y_los_pipelines_sueltos_no(tmp_path):
+    """En un clon recien hecho (CI, Codespace) `python -m ia_mlops.pipeline` funciona de una vez; el pipeline suelto, no."""
+    from ia_mlops import pipeline
+    with pytest.raises(control.EntradaFaltanteError):
+        pipeline_ingesta_raw.ejecutar(tmp_path / 'curso.db', tmp_path / 'retail.db', verbose=False)
+    assert not (tmp_path / 'retail.db').exists()
+    r = pipeline.ejecutar(['pipeline_ingesta_raw'], ruta_db=tmp_path / 'curso.db', ruta_operacional=tmp_path / 'retail.db', verbose=False)
+    assert (tmp_path / 'retail.db').exists() and r[0]['estado'] == 'ejecutado'
+
+
 def test_entrenar_otra_vez_sin_cambios_no_duplica_ejecuciones_en_mlflow(copia, salidas_tmp):
     _, analitica = copia
     assert pipeline_train.ejecutar(analitica, verbose=False)['estado'] == 'ejecutado'

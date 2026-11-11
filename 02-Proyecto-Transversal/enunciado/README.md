@@ -23,9 +23,9 @@ Siguen el programa vigente (`00-Planificacion/programa.md`). Cada avance se pres
 
 Además, la tarea de cada sesión adapta el caso del instructor (por ejemplo, la de S1 añade una variable a Online Retail II y se decide con evidencia): es un ejercicio aparte de este avance.
 
-## La tarea de los alumnos: caso propio (decidido el 09/11/2026)
+## La tarea de los alumnos: caso propio (Bank Marketing, confirmado el 10/11/2026)
 Repetir la receta (RAW → MASTER → FS → ML → entrenamiento, con cuadernos, su traducción a `.py`, seguimiento en MLflow y pruebas) sobre **otro dataset** de estructura similar,
-y llevarlo después a API, contenedor, GCP y workflow. El alumno trabaja con **uno de estos dos datasets de UCI** (licencia **CC BY 4.0**, leída en las fichas oficiales).
+y llevarlo después a API, contenedor, GCP y workflow. El caso de los alumnos es **Bank Marketing** (UCI, licencia **CC BY 4.0**, leída en la ficha oficial). **Default of Credit Card Clients** (misma licencia) queda como **referencia opcional** para quien termine antes o quiera comparar; la tabla pone los dos lado a lado.
 Las cifras de la tabla están **medidas** con los archivos que adjuntó el instructor (`../verificacion-datos-tarea/`).
 
 | | **Default of Credit Card Clients** | **Bank Marketing** |
@@ -59,16 +59,27 @@ Una partición y una semilla (0), sin afinar: orden de magnitud, no solución de
 | Sin `duration` (logística / boosting) | 0,577 / 0,514 | 0,787 / 0,804 |
 
 Lecturas: en Default, las variables de FS mejoran la logística (+0,02 a +0,04) y casi no cambian el boosting, un buen caso de «decide con evidencia».
-En Bank Marketing, `duration` infla el AUC en unos 0,15, y la partición por orden de filas hunde el modelo hasta el azar (0,51 con boosting): es deriva real y un ejemplo excelente para S5, pero **mal primer modelo** para S1.
+En Bank Marketing, `duration` infla el AUC en unos 0,15, y la partición por orden de filas hunde el modelo hasta el azar (0,51 con boosting): es deriva real y un ejemplo excelente para S5. Por eso la partición por orden de filas se reserva a S5 y en S1 a S4 se usa la aleatoria (ver «Cómo se usa Bank Marketing»).
+
+### Material para el alumnado (10/11/2026)
+`../alumno/` tiene lo que ven los alumnos, **sin cifras de referencia del modelo**: `tu-caso-bank-marketing.md` (hoja del caso), `plantilla-avance.md` y `rubrica-avance.md`. La presentación «Tu caso de S1 a S5» está en `../../01-Sesiones/S1-Datos-y-Entrenamiento/slides/caso-propio/` y los PDF en `../../pdfs/S1-Datos-y-Entrenamiento/`. Este documento **sí trae** los AUC medidos: no lo enlaces desde material de alumnos.
+
+### Cómo se usa Bank Marketing (decidido el 10/11/2026)
+1. **Unidad y objetivo:** cada fila es una llamada (no hay identificador de cliente) y el objetivo es `y` (¿contrata el depósito a plazo?). **`duration` queda fuera del modelo**: no se conoce antes de llamar.
+2. **S1 a S4: partición aleatoria estratificada.** Es la que da un modelo utilizable (AUC de prueba ≈0,79–0,80 sin `duration`, en el modelo base rápido de arriba) y es **optimista**, porque las filas de una misma época se parecen: cada alumno deja escrito ese riesgo (es parte de «decidir con evidencia»). El archivo no trae fecha ni cliente, así que no hay un corte temporal que defender como en Online Retail II.
+3. **S5: se evalúa el mismo modelo por orden de filas.** Los síes pasan del 5,6 % al 38,5 % y el AUC cae a 0,51–0,58: es la deriva real que se estudia en esa sesión.
+4. **Default of Credit Card Clients** es opcional y se trabaja por cuenta propia; el curso no lo evalúa. Si se usa, lleva su CSV derivado (`../datos/default-credit-card/`).
+
+*Todas las cifras son de una partición y una semilla (0), sin afinar: orden de magnitud, no resultado de referencia.*
 
 ### Reglas
 - Citar la fuente (obligatorio por la licencia): Yeh, I. (2009). *Default of Credit Card Clients* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C55S3H · Moro, S., Rita, P., & Cortez, P. (2014). *Bank Marketing* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5K306.
   La documentación del zip de Bank Marketing pide además citar a Moro, Cortez y Rita (2014), *A Data-Driven Approach to Predict the Success of Bank Telemarketing*, Decision Support Systems, doi:10.1016/j.dss.2014.03.001.
-- Los filtros usan solo datos anteriores al corte; la prueba de «no futuro» debe seguir en verde.
+- Los filtros usan solo datos anteriores al corte; la prueba de «no futuro» debe seguir en verde. En Bank Marketing, que no tiene corte, la regla equivale a no usar `duration` ni nada que se conozca después de la llamada.
 - No publicar datos sensibles ni secretos. No evaluar solo mediante capturas.
 
 ### Estado (leer antes de impartir)
 - **Hecho:** licencias leídas en las fichas oficiales; archivos recibidos, perfilados y con sha256; modelo base rápido (`../verificacion-datos-tarea/`).
-- **No hecho:** base de referencia (RAW → MASTER → FS → ML con cuadernos y pruebas), script de descarga. La copia de los datos ya está en `../datos/` (ver su `LEEME.md`).
-- **Hallazgo:** el `.xls` de Default **no se puede leer con `env-ia-mlops`**, que no trae `xlrd`. Se entrega ya convertido a CSV (`../datos/default-credit-card/`); queda decidir si se añade `xlrd` al entorno.
-- **Decidido el 09/11/2026:** el caso de los alumnos es Bank Marketing y Default queda como referencia (`../datos/LEEME.md`); la comparación de arriba se conserva como contexto. **Por decidir:** las fechas de los avances. Ver `00-Planificacion/decisiones-y-pendientes.md` (puntos 15 a 18).
+- **Hecho además:** la copia de los datos está en `../datos/` (atribución y huellas incluidas). El `.xls` de Default no se lee con `env-ia-mlops` (no trae `xlrd`); por eso se entrega también su CSV derivado, con un solo encabezado y verificado igual.
+- **No hecho:** base de referencia (RAW → MASTER → FS → ML con cuadernos y pruebas).
+- **Decidido el 10/11/2026:** el caso de los alumnos es Bank Marketing, con las reglas de «Cómo se usa Bank Marketing». **Por fechar:** los avances (punto 2 de `00-Planificacion/decisiones-y-pendientes.md`).

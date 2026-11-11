@@ -1,0 +1,31 @@
+# Fuera del contexto de construccion: todo lo que la imagen no necesita (y todo lo que podria filtrar algo).
+.git
+.github
+.devcontainer
+.gitignore
+.gitattributes
+**/.env
+**/*.key
+**/credenciales*.json
+
+# Datos, cuadernos, pruebas, documentos y salidas no se sirven
+data/
+notebooks/
+tests/
+docs/
+reports/
+references/
+sql/
+deploy/
+mlruns/
+scripts_desde_notebooks/
+
+# Del directorio models/ solo entra el modelo MLflow y sus metadatos (se copian explicitamente en el Dockerfile)
+models/mlflow.db
+models/mlartifacts/
+models/modelo.joblib
+
+**/__pycache__
+**/*.py[cod]
+**/*.egg-info
+**/.pytest_cache

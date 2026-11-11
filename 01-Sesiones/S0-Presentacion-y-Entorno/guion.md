@@ -62,8 +62,8 @@ Los datos de las slides 15 y 16 están en el propio `index.html` (constantes `SO
 | 31 | Nos vemos en S1 | 1 |
 
 ## Consulta (fuera del cómputo)
-`slides/anexos/index.html`: material de la edición anterior; los anexos A–F (estadísticas, costes, calculadora de Cloud Run
-y fuentes) siguen siendo de consulta. El resto de ese archivo está desactualizado respecto a la presentación principal.
+`slides/anexos/index.html`: anexos A–F (estadísticas, herramientas, calculadora de coste de Cloud Run y fuentes), solo de consulta.
+No se presentan en clase ni suman a las dos horas; la sesión se imparte con `slides/index.html`.
 
 ## Teclas
 → / espacio: avanzar (revela pasos) · ←: retroceder · O: índice · S: notas del ponente · F: pantalla completa · Inicio / Fin.
