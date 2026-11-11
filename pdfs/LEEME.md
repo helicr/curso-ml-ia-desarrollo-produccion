@@ -33,7 +33,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-guia-rapida-del-entorno.pdf`](S0-Presentacion-y-Entorno/02-alumno/01-guia-rapida-del-entorno.pdf) | Guía rápida del entorno (S0 → S1) | 13 | 368 KB |
+| [`01-guia-rapida-del-entorno.pdf`](S0-Presentacion-y-Entorno/02-alumno/01-guia-rapida-del-entorno.pdf) | Guía rápida del entorno (S0 → S1) | 13 | 370 KB |
 | [`02-checklist.pdf`](S0-Presentacion-y-Entorno/02-alumno/02-checklist.pdf) | Checklist de 12 comprobaciones | 1 | 81 KB |
 | [`03-requisitos-del-entorno.pdf`](S0-Presentacion-y-Entorno/02-alumno/03-requisitos-del-entorno.pdf) | Requisitos del entorno | 1 | 80 KB |
 | [`04-preparacion-paso-a-paso.pdf`](S0-Presentacion-y-Entorno/02-alumno/04-preparacion-paso-a-paso.pdf) | Preparación paso a paso (Windows) | 2 | 102 KB |
@@ -59,17 +59,17 @@ Los enlaces entre archivos del repositorio apuntan a la rama `develop` en GitHub
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-teoria-y-glosario.pdf`](S1-Datos-y-Entrenamiento/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S1 | 2 | 88 KB |
-| [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 134 KB |
-| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 120 KB |
+| [`01-teoria-y-glosario.pdf`](S1-Datos-y-Entrenamiento/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S1 | 2 | 91 KB |
+| [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 158 KB |
+| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 122 KB |
 | [`04-rubrica.pdf`](S1-Datos-y-Entrenamiento/02-alumno/04-rubrica.pdf) | Rúbrica de S1 | 1 | 55 KB |
 | [`05-plantilla-de-la-decision.pdf`](S1-Datos-y-Entrenamiento/02-alumno/05-plantilla-de-la-decision.pdf) | Plantilla de la decisión (evidencia) | 2 | 67 KB |
-| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 77 KB |
-| [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 3 | 149 KB |
+| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 78 KB |
+| [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 4 | 324 KB |
 
 ### Material del instructor
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 123 KB |
-| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 113 KB |
+| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 127 KB |
+| [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 2 | 118 KB |
