@@ -75,6 +75,12 @@ Todo lo de esta tabla se ejecutó de verdad; las salidas que muestran las diapos
 5. **Sin resolver:** `pip check` en el entorno recién creado avisa de que `databricks-sdk 0.73.0` (dependencia de `mlflow`) pide `protobuf<7` y hay `protobuf 7.35.1`. No afecta a las pruebas ni a MLflow en S1; si se quiere evitar el aviso, habría que fijar `protobuf` en `environment.yml` y repetir esta validación.
 6. **Aviso para S3 y S4:** `duckdb` y `sqlglot` no están en `environment.yml`; el caso de referencia los pide en su propio `requirements-dev.txt` (simulación de BigQuery en las pruebas).
 
+## Primera prueba en un Windows real (10/11/2026, equipo corporativo)
+Hallazgos de la primera ejecución de la guía en un equipo real (Windows 11 corporativo, con MKS Toolkit y varias copias de Git en el `PATH`):
+- `winget --version` → v1.29.380; `winget install --id Git.Git -e` instaló Git 2.56.0.4 (descarga, hash y permiso de administrador correctos).
+- **Quedó activo otro Git:** justo después, `git --version` seguía diciendo 2.47.1. Hay varias copias en el `PATH` (la del propio equipo va antes) y la terminal abierta no ve la nueva. Comprobar con `where git` y abrir una terminal nueva.
+- **`git config --global` falla** con `could not lock config file M:C:/Users/<usuario>/OneDrive - …/.gitconfig: Invalid argument`: la variable `HOME` está mal formada (`M:C:/…`, la deja MKS Toolkit). Solución sin tocar `HOME`: `setx GIT_CONFIG_GLOBAL "%USERPROFILE%\.gitconfig"` y abrir una terminal nueva (vale desde Git 2.32). Pendiente de confirmar en ese equipo y de añadir a «Si falla» de la guía.
+
 ## Lo que NO se validó
 - **Windows real**, Windows PowerShell 5.1 y el `winget` real: los identificadores de paquete (`Git.Git`, `Anaconda.Miniconda3`, `DBBrowserForSQLite.DBBrowserForSQLite`,
   `Google.CloudSDK`, `Microsoft.VisualStudioCode`) y los de las extensiones de VS Code son de memoria.

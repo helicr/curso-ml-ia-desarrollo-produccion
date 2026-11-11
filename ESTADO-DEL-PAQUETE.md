@@ -6,7 +6,9 @@ orquestación con GitHub Actions. No es una copia visual exacta de los HTML expl
 
 No incluye el PDF original ni las versiones anteriores alternativas.
 S0 y S1 están completas (presentaciones, documentos, laboratorio, tarea, rúbrica, proyecto base y entorno) y validadas en Linux; nada se ha probado en Windows real.
-S2–S5 solo tienen README; el Codespace del curso y los workflows de GitHub Actions no están implementados.
+S2–S5 solo tienen README; los workflows de GitHub Actions del curso no están implementados (solo existen `validar-windows.yml` y `validar-codespace.yml`, sin ejecutar).
+El Codespace del curso está escrito el 10/11/2026 (`.devcontainer/`: Docker en Docker, kubectl, kind, entorno `env-ia-mlops` y `verificar.sh`) y las diapositivas 23, 25 y 27 de S0 ya no lo marcan como pendiente, pero **no se ha probado en un Codespace real**; falta la versión de `kind` por confirmar (`KIND_VERSION` en `postcreate.sh`).
+El día 1 (S0 + S1, 6 horas) tiene guion de alumno y de profesor: `01-Sesiones/D01-Guion-Alumno.html` y `D01-Guion-Profesor.html` (se generan con `00-Planificacion/guion-d01/generar.py`).
 Los scripts `instalar_entorno.*` instalan programas con winget y nunca se ejecutaron en Windows real.
 
 La presentación principal (`slides/index.html`) se rehízo el 08/11/2026 (26 diapositivas; el 09/11/2026 pasó a 29, ver más abajo): diapositivas interactivas en un solo archivo
@@ -22,7 +24,8 @@ El 09/11/2026 se añadieron tres diapositivas a la Parte B para explicar, antes 
 la 15 (matriz herramienta × sesión, con «para qué sirve» y la guía de uso de cada una), la 16 (qué estrena cada sesión y qué debe estar listo antes) y la 18
 (una guía de uso por herramienta). La Parte B sigue sumando 70 min. Comprobado en Chrome sin conexión: 29 diapositivas recorridas con →, sin errores de
 consola ni peticiones externas, barra de tiempo con salto correcto e impresión a PDF de 29 páginas. Las comprobaciones de arriba (PDF de 26 páginas, 22 interacciones)
-corresponden a la versión de 26 diapositivas. Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
+corresponden a la versión de 26 diapositivas. El 11/11/2026 se añadieron dos diapositivas de cierre (28 y 29) que presentan los dos casos: Online Retail II (el que desarrolla el instructor) y Bank Marketing (la tarea de los alumnos), con qué se hará, qué hay en cada archivo y dónde está el CSV. La presentación pasó a 31 diapositivas; el cierre sigue sumando 10 min (3 + 3 + 3 + 1). Revisadas en Edge, sin desbordes ni errores de consola.
+Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
 
 `slides/anexos/index.html` conserva la edición anterior (con React y ECharts, licencias en `slides/anexos/licencias/`) solo como
 material de consulta: sus anexos A–F siguen vigentes; el resto está desactualizado.

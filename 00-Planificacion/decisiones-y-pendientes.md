@@ -40,7 +40,7 @@
 3. Elegir versiones y probar instalaciones por sistema operativo (local: Git, VS Code, Miniconda, SQLite, gcloud).
 4. Implementar scripts, entornos, notebooks, API, workflows y pruebas.
 5. Decidir si se imparte la sesión extra opcional de LLMs abiertos y en qué fecha; elegir motor y modelo.
-6. Crear y validar el Codespace del curso (docker, kind, kubectl); revisar cuota gratuita vigente.
+6. Validar el Codespace del curso: `.devcontainer/` escrito el 10/11/2026 (docker, kind, kubectl, `env-ia-mlops`) pero sin probar; ejecutar el workflow «Validar Codespace del curso» o abrirlo una vez, confirmar la versión de `kind` y revisar la cuota gratuita vigente.
 7. Definir autenticación de GitHub Actions con GCP (Workload Identity Federation, sin claves en el repo).
 8. Validar cloud, accesos, costes y limpieza.
 9. **Fusionar `develop` en `main` antes de S0** y subir los commits a GitHub (requiere instalar el Claude GitHub App o hacerlo desde tu PC).

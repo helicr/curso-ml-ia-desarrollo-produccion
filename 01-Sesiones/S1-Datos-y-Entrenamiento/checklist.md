@@ -2,7 +2,7 @@
 
 ## Antes de la sesión (docente)
 - [ ] Rama `develop` actualizada y proyecto base clonado en tu máquina.
-- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **34 passed**.
+- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **34 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **30 passed, 4 deselected**.
 - [ ] `slides/index.html` abre sin conexión; probar las diapositivas 5, 10, 13 y 17 (interactivas).
 - [ ] Probar `mlflow ui` con el backend SQLite y verificar que se ven las ejecuciones.
 - [ ] Confirmar la lista de quién no pasó la verificación de entorno en S0.

@@ -16,7 +16,7 @@ Los pipelines se orquestan con GitHub Actions.
 Contenido: Parte A: objetivos, recorrido, caso y entregas. Parte B: software local
 (Git, VS Code, Miniconda, SQLite), repositorio, Docker y Kubernetes en Codespaces, cloud y diagnóstico.
 
-Tarea: Completar preparación y leer el caso.
+Tarea: Completar preparación y leer el caso de Bank Marketing (el de los alumnos; el del instructor es Online Retail II).
 
 Evidencia: Entorno comprobado antes de S1.
 

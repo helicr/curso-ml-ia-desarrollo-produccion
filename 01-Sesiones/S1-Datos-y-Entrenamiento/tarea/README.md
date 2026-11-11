@@ -2,6 +2,8 @@
 
 **Entrega:** antes de S2 · repositorio personal con rama `tarea-s1` (o carpeta comprimida si no hay repo).
 
+> **No confundir con el avance en S2.** Esta tarea es sobre el caso del instructor (Online Retail II). Aparte, cada alumno presenta en S2 el avance de **su** caso, Bank Marketing (`02-Proyecto-Transversal/enunciado/README.md`).
+
 ## Qué se pide
 Añadir **una variable nueva** a la capa FS del caso Online Retail II, reconstruir ML, reentrenar y **decidir con evidencia** si la variable se queda.
 

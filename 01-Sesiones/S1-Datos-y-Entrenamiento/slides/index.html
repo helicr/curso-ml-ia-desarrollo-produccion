@@ -471,14 +471,14 @@ cd 04-Proyecto-Base
 </div>
 </section>
 
-<section class="slide" data-part="A" data-min="3" data-title="El caso y la pregunta"
- data-notes="Una tienda online británica, dos años de facturas. La pregunta es de negocio, no de estadística: ¿este cliente volverá a comprar en 90 días? Insista en que el objetivo mira al futuro y las variables al pasado.">
-<p class="kick st">El caso · Online Retail II (UCI, CC BY 4.0)</p><h1 class="st">¿Volverá este cliente en los próximos 90 días?</h1>
+<section class="slide" data-part="A" data-min="3" data-title="El caso del instructor"
+ data-notes="Una tienda online británica, dos años de facturas. La pregunta es de negocio, no de estadística: ¿este cliente volverá a comprar en 90 días? Insista en que el objetivo mira al futuro y las variables al pasado. Recuerde que este es el caso del instructor; el de los alumnos es Bank Marketing.">
+<p class="kick st">El caso del instructor · Online Retail II (UCI, CC BY 4.0)</p><h1 class="st">¿Volverá este cliente en los próximos 90 días?</h1>
 <div class="grid2">
  <div class="card f"><h3>Los datos</h3><ul class="list"><li><span>Facturas de una tienda online, <b>01/12/2009 – 09/12/2011</b></span></li><li><span><b>1 067 371</b> filas en dos hojas de Excel</span></li><li><span><b>5 942</b> clientes · <b>53 628</b> facturas válidas</span></li></ul></div>
  <div class="card f"><h3>La decisión que apoya</h3><ul class="list"><li><span>¿A quién enviar una campaña de retención?</span></li><li><span>Un ejemplo = <b>un cliente en una fecha de corte</b></span></li><li><span>Etiqueta <span class="mono">y = 1</span> si compra en <span class="mono">[corte, corte+90 d)</span></span></li></ul></div>
 </div>
-<div class="callout f" style="margin-top:18px">Dos reglas que repetiremos todo el día: <b>RAW no se toca</b> y <b>las variables solo miran hacia atrás</b>.</div>
+<div class="callout f" style="margin-top:18px">Dos reglas que repetiremos todo el día: <b>RAW no se toca</b> y <b>las variables solo miran hacia atrás</b>.<br><span class="small">Tu caso, Bank Marketing, repite esta receta y se presenta como avance en S2.</span></div>
 </section>
 
 <section class="slide" data-part="A" data-min="6" data-title="Cuatro capas" data-enter="capas"
@@ -652,10 +652,10 @@ modeling/train.py · predict.py</div><p class="small" style="margin-top:8px">Mis
 </section>
 
 <section class="slide" data-part="D" data-min="10" data-title="La tarea y la rúbrica"
- data-notes="La tarea adapta una variable al caso: añadirla a FS, reconstruir ML, reentrenar, comparar dos ejecuciones de MLflow y decidir. Se entrega también la traducción a .py. Rúbrica: 20 % reproducibilidad, 40 % técnica, 40 % análisis y decisión.">
+ data-notes="La tarea adapta una variable al caso: añadirla a FS, reconstruir ML, reentrenar, comparar dos ejecuciones de MLflow y decidir. Se entrega también la traducción a .py. Aparte, cada alumno presenta en S2 el avance de su caso, Bank Marketing. Rúbrica: 20 % reproducibilidad, 40 % técnica, 40 % análisis y decisión.">
 <p class="kick st">Entrega</p><h1 class="st">Adapta una variable y decide</h1>
 <div class="split">
- <div class="card f"><h3>Pasos</h3><ol class="list" style="list-style:none"><li><span>Diseña <b>una variable nueva</b> en FS (solo con datos anteriores al corte).</span></li><li><span>Documéntala en <span class="mono">fs_catalogo</span> y reconstruye ML.</span></li><li><span>Reentrena y <b>compara dos ejecuciones</b> en MLflow.</span></li><li><span>Escribe una <b>decisión</b>: ¿se queda o no? ¿por qué?</span></li><li><span>Entrega también la traducción a <span class="mono">.py</span>.</span></li></ol></div>
+ <div class="card f"><h3>Pasos</h3><ol class="list" style="list-style:none"><li><span>Diseña <b>una variable nueva</b> en FS (solo con datos anteriores al corte).</span></li><li><span>Documéntala en <span class="mono">fs_catalogo</span> y reconstruye ML.</span></li><li><span>Reentrena y <b>compara dos ejecuciones</b> en MLflow.</span></li><li><span>Escribe una <b>decisión</b>: ¿se queda o no? ¿por qué?</span></li><li><span>Entrega también la traducción a <span class="mono">.py</span>.</span></li></ol><p class="small" style="margin-top:10px">Aparte: tu <b>avance en S2</b> sobre Bank Marketing (RAW → MASTER → FS → ML, entrenamiento y métricas, en cuadernos).</p></div>
  <div class="card f"><h3>Rúbrica</h3>
   <div class="stack"><i style="flex:20;background:var(--blue)"></i><i style="flex:40;background:var(--gold)"></i><i style="flex:40;background:var(--ok)"></i></div>
   <ul class="list"><li><span><b>20 %</b> Reproducibilidad</span></li><li><span><b>40 %</b> Técnica (sin fuga, pruebas)</span></li><li><span><b>40 %</b> Análisis y decisión</span></li></ul></div>
@@ -674,13 +674,13 @@ modeling/train.py · predict.py</div><p class="small" style="margin-top:8px">Mis
 </section>
 
 <section class="slide" data-part="D" data-min="5" data-title="Cierre y siguiente sesión"
- data-notes="Cierre. S2: de los cuadernos al servicio, con pruebas, empaquetado y carga del modelo desde MLflow. Recuerde fechas de entrega y canal de dudas.">
+ data-notes="Cierre. S2: de los cuadernos al servicio: carga del modelo desde MLflow, API con FastAPI e imagen Docker. Recuerde el avance de Bank Marketing. Recuerde fechas de entrega y canal de dudas.">
 <p class="kick st">Cierre</p><h1 class="st">Qué te llevas y qué viene</h1>
 <div class="grid2">
  <div class="card f"><h3>Hoy</h3><ul class="list"><li><span>Cuatro capas con linaje y calidad</span></li><li><span>FS sin fuga y partición temporal</span></li><li><span>Modelo comparado y registrado en MLflow</span></li></ul></div>
- <div class="card f"><h3>S2</h3><ul class="list"><li><span>De cuaderno a paquete y pruebas</span></li><li><span>Cargar el modelo desde MLflow (firma)</span></li><li><span>Primer pipeline con GitHub Actions</span></li></ul></div>
+ <div class="card f"><h3>S2</h3><ul class="list"><li><span>Cargar el modelo desde MLflow (firma)</span></li><li><span>API con FastAPI, validación y errores</span></li><li><span>Imagen Docker y primer workflow de GitHub Actions</span></li></ul></div>
 </div>
-<div class="callout f" style="margin-top:18px">Pendiente para ti: <b>la tarea</b> y registrar tus incidencias del entorno.</div>
+<div class="callout f" style="margin-top:18px">Pendiente para ti: <b>la tarea</b>, el <b>avance de Bank Marketing</b> para S2 y tus incidencias del entorno.</div>
 </section>
 
 </div></div>

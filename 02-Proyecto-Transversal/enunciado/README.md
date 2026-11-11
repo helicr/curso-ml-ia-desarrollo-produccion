@@ -1,4 +1,4 @@
-# Caso transversal: retención de clientes con Online Retail II
+# Caso transversal: retención de clientes con Online Retail II (caso del instructor; el de los alumnos es Bank Marketing)
 
 **Decisión del 09/11/2026:** el caso del instructor es **Online Retail II** (UCI, CC BY 4.0). Es didáctico y comprensible: una tienda online, clientes que compran
 y vuelven, y una pregunta que cualquiera entiende.

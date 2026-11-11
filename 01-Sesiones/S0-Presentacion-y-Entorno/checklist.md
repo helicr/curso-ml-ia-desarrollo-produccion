@@ -11,7 +11,7 @@ Coincide con la diapositiva 27. Marcar y anotar el resultado obtenido.
 - [ ] 7. SQLite comprobable: `SELECT 1 AS entorno_listo;` en el visor.
 - [ ] 8. Docker operativo **en Codespaces**: `docker version`, `docker run --rm hello-world`.
 - [ ] 9. gcloud autenticado y proyecto fijado, sin crear recursos de pago.
-- [ ] 10. Codespaces del curso abierto: `docker`, `kind` y `kubectl` responden (cuando se publique).
+- [ ] 10. Codespaces del curso abierto: `docker`, `kind` y `kubectl` responden (`bash .devcontainer/verificar.sh` → «Fallos: 0»).
 - [ ] 11. (Opcional) Ruta neural / LLM comprendida. No bloquea S1.
 - [ ] 12. Incidencias registradas y comunicadas.
 

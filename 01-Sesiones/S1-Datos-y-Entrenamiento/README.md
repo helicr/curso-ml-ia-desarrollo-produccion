@@ -3,6 +3,8 @@
 Caso transversal: **Online Retail II** → *¿volverá este cliente a comprar en los próximos 90 días?*
 Proyecto de trabajo: [`04-Proyecto-Base/`](../../04-Proyecto-Base/README.md).
 
+**Dos casos (presentados en S0):** el del instructor, Online Retail II, es el de esta sesión y su tarea. El de los alumnos es **Bank Marketing** (`02-Proyecto-Transversal/datos/`): repiten la receta sobre él y lo presentan como **avance en S2**. Ver `02-Proyecto-Transversal/enunciado/README.md`.
+
 ## Objetivo
 Al terminar, la persona asistente puede:
 1. Explicar y reconstruir las capas **RAW → MASTER → FS → ML** con un cuaderno por capa.
@@ -16,7 +18,7 @@ Al terminar, la persona asistente puede:
 | 0–30 | Revisión de entorno | `slides/` diap. 3 · `checklist.md` |
 | 30–90 | Teoría | `slides/` diap. 4–16 · `teoria/README.md` |
 | 90–225 | Práctica (135 min, pausa de 10) | `practica/guia-laboratorio.md` |
-| 225–240 | Entrega y cierre | `tarea/README.md` · `slides/` diap. 18–20 |
+| 225–240 | Entrega y cierre (tarea y avance en Bank Marketing) | `tarea/README.md` · `slides/` diap. 18–20 |
 
 ## Contenido de esta carpeta
 - `index.html`: índice de la sesión (presentaciones, documentos y qué falta). Se genera con `00-Planificacion/indices-de-sesion/generar_indices.py`.

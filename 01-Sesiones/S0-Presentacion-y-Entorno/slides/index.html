@@ -587,15 +587,15 @@ h1{position:relative}h1 .badge{position:absolute;right:0;top:-47px;margin:0}
   <div class="bands st" style="--d:3">
     <span class="band l" style="grid-column:1/3">Entorno comprobado</span>    <span class="band m" style="grid-column:2/7">Hilo MLflow · seguimiento → carga → registro → alias</span>
     <span class="band a" style="grid-column:3/7">Hilo GitHub Actions · imagen → pipeline → operación</span>
-    <span class="band l" style="grid-column:2/4">En local (on-premise simulado)</span><span class="band g" style="grid-column:4/7">Migración y operación en GCP</span>
-    <span class="band o" style="grid-column:4/5">Red neuronal</span><span class="band o" style="grid-column:6/7;grid-row:auto">+ LLM (sesión extra)</span>
+    <span class="band l" style="grid-column:2/4">Hilo local → GCP · en local (on-premise)</span><span class="band g" style="grid-column:4/7">Hilo local → GCP · migración y operación en GCP</span>
+    <span class="band o" style="grid-column:4/5">Opcional · red neuronal</span><span class="band o" style="grid-column:6/7;grid-row:auto">Opcional · LLM (extra)</span>
   </div>
   <div class="card panel st" style="--d:4" id="panel"></div>
 </section>
 
 <!-- 7 · CAPAS -->
 <section class="slide" data-part="A" data-min="3" data-title="Estructura del caso práctico" data-enter="layers"
- data-notes="Recorra las siete capas con el botón de reproducir o haciendo clic. Señale los prefijos master_, fs_ y ml_ en SQLite. FS es una capa didáctica, no una plataforma completa de feature store. El caso y el dataset concretos se revelan en S1: no los anticipe hoy.">
+ data-notes="Recorra las siete capas con el botón de reproducir o haciendo clic. Señale los prefijos master_, fs_ y ml_ en SQLite. FS es una capa didáctica, no una plataforma completa de feature store. Anuncie los dos casos: el del instructor (Online Retail II, se trabaja en S1) y el de ellos (Bank Marketing, ya está en el repositorio). No entrene nada hoy.">
   <p class="kick st">Parte A · Caso práctico transversal</p>
   <h1 class="st" style="--d:1">Del archivo original al servicio en producción</h1>
   <div class="layers st" style="--d:2" id="layers"></div>
@@ -603,7 +603,7 @@ h1{position:relative}h1 .badge{position:absolute;right:0;top:-47px;margin:0}
   <div class="ldetail st" style="--d:3"><div class="card" id="ldet"></div>
     <div class="col"><div class="card"><h3 class="gold">Cómo se recorre</h3><p class="small">Cada capa se construye a partir de la anterior y nunca modifica la original. Haz clic en una capa o pulsa ▶ para el recorrido completo.</p></div>
     <div class="row"><button class="btn primary" id="lplay">▶ Recorrer capas</button><button class="btn" id="lstop">Detener</button></div>
-    <p class="small">El caso y el conjunto de datos se revelan en S1.</p></div>
+    <p class="small">Dos casos: el del instructor (Online Retail II, en S1) y el tuyo (Bank Marketing, UCI), que desarrollas de S1 a S5.</p></div>
   </div>
 </section>
 
@@ -644,11 +644,11 @@ h1{position:relative}h1 .badge{position:absolute;right:0;top:-47px;margin:0}
 
 <!-- 10 · ENTREGAS -->
 <section class="slide" data-part="A" data-min="3" data-title="Un avance construye el siguiente"
- data-notes="Lea la cadena hasta el informe final. Recalque la lista de evidencias: una captura, sola, no demuestra entorno ni comando.">
+ data-notes="Lea la cadena hasta el informe final; el primer avance (S2) se hace sobre su caso, Bank Marketing. Recalque la lista de evidencias: una captura, sola, no demuestra entorno ni comando.">
   <p class="kick st">Parte A · Cadena de entregas</p>
   <h1 class="st" style="--d:1">Un avance construye el siguiente</h1>
   <div class="chain">
-    <div class="link f"><div class="when">S2</div><div class="box">Pipeline de datos + modelo + métricas<small>Se revisa en S2</small></div></div>
+    <div class="link f"><div class="when">S2</div><div class="box">Pipeline de datos + modelo + métricas<small>Se revisa en S2 · tu caso: Bank Marketing</small></div></div>
     <div class="link f"><div class="when">S3</div><div class="box">API + contenedor<small>Se revisa en S3</small></div></div>
     <div class="link f"><div class="when">S4</div><div class="box">Migración a GCP y despliegue<small>Opcional: módulo neuronal</small></div></div>
     <div class="link f"><div class="when">S5</div><div class="box">Pipeline orquestado con GitHub Actions<small>Se revisa en S5</small></div></div>
@@ -831,26 +831,62 @@ h1{position:relative}h1 .badge{position:absolute;right:0;top:-47px;margin:0}
 </section>
 
 <!-- 28 · ANTES DE S1 -->
-<section class="slide" data-part="C" data-min="8" data-title="Antes de S1"
- data-notes="Cuatro encargos: diagnóstico, bloqueos, leer el caso cuando se publique, no improvisar el entorno. No adelantar el entrenamiento. S1 empieza con datos y entrenamiento; quien llegue sin entorno perderá la práctica.">
+<section class="slide" data-part="C" data-min="3" data-title="Caso 1 · Online Retail II"
+ data-notes="Caso del instructor: el que desarrollamos juntos en S1. Explique la pregunta con un ejemplo de negocio: una tienda online quiere decidir a quién escribirle para que vuelva a comprar. Cada fila del archivo es una línea de factura. Muestre dónde está el archivo: la muestra de 23 070 filas va en el repositorio; el Excel completo se descarga con un comando. No entre en el modelo hoy.">
+  <p class="kick st">Cierre · Los dos casos (1 de 2)</p>
+  <h1 class="st" style="--d:1">Caso 1 · Online Retail II · el que desarrollamos</h1>
+  <div class="grid2">
+    <div class="card f"><h3 class="gold">¿Qué vamos a hacer?</h3><ul class="list">
+      <li style="font-size:18px"><span>Una tienda online quiere saber <b>a quién escribir</b>: ¿este cliente volverá a comprar en los próximos <b>90 días</b>?</span></li>
+      <li style="font-size:18px"><span>Yo lo resuelvo en vivo en <b>S1</b>, capa a capa: RAW → MASTER → FS → ML, y entrenamos el modelo.</span></li>
+      <li style="font-size:18px"><span>Tú lo ejecutas en tu equipo y haces la <b>tarea de S1</b>: añadir una variable y decidir con evidencia.</span></li></ul></div>
+    <div class="card f"><h3 class="gold">¿Qué hay en el archivo?</h3><ul class="list">
+      <li style="font-size:18px"><span>Cada fila es una <b>línea de factura</b>: un producto dentro de una compra.</span></li>
+      <li style="font-size:18px"><span>8 columnas: <code>Invoice</code>, <code>StockCode</code>, <code>Description</code>, <code>Quantity</code>, <code>InvoiceDate</code>, <code>Price</code>, <code>Customer ID</code>, <code>Country</code>.</span></li>
+      <li style="font-size:18px"><span>Ejemplo: factura 489547, 18 unidades de «PAPER CHAIN KIT 50'S CHRISTMAS» a 2,95, cliente 13599, Reino Unido.</span></li>
+      <li style="font-size:18px"><span>Trae suciedad real: cancelaciones, duplicados y compras sin cliente.</span></li></ul></div>
+  </div>
+  <p class="callout f" style="margin-top:16px"><b>Dónde está:</b> <code>04-Proyecto-Base/data/raw/muestra_online_retail_ii.csv</code> (muestra de 23 070 filas, ya en el repositorio). El archivo completo, 1 067 371 filas en Excel, se descarga con <code>python -m ia_mlops.dataset descargar</code>.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Caso 2 · Bank Marketing"
+ data-notes="Caso de los alumnos: es su tarea de S1 a S5. Explique la pregunta con un ejemplo: un banco llama por teléfono para vender un depósito a plazo; ¿quién dirá que sí? Cada fila es una llamada. Dos reglas que deben quedar claras hoy: duration no se usa porque solo se conoce después de llamar, y no se reordenan las filas porque el orden es la fecha. Muestre dónde está el archivo y su documentación. Default of Credit Card Clients queda solo como referencia opcional.">
+  <p class="kick st">Cierre · Los dos casos (2 de 2)</p>
+  <h1 class="st" style="--d:1">Caso 2 · Bank Marketing · el de tu tarea</h1>
+  <div class="grid2">
+    <div class="card f"><h3 class="gold">¿Qué vas a hacer?</h3><ul class="list">
+      <li style="font-size:18px"><span>Un banco portugués llamó por teléfono para vender un <b>depósito a plazo</b>. Pregunta: ¿este cliente lo <b>contratará</b>?</span></li>
+      <li style="font-size:18px"><span>Repites <b>la misma receta</b> que yo hago en S1, pero con tus datos y de S1 a S5.</span></li>
+      <li style="font-size:18px"><span>Lo presentas como <b>avance en S2</b> y después lo llevas a API, contenedor, GCP y workflow.</span></li></ul></div>
+    <div class="card f"><h3 class="gold">¿Qué hay en el archivo?</h3><ul class="list">
+      <li style="font-size:18px"><span>Cada fila es una <b>llamada</b>: 41 188 filas, 20 columnas y la respuesta <code>y</code> (sí o no). Separador <code>;</code>.</span></li>
+      <li style="font-size:18px"><span>Ejemplo: cliente de 56 años (<code>job</code> housemaid, <code>marital</code> married), por teléfono, un lunes de mayo, 261 segundos → <code>y</code> = no.</span></li>
+      <li style="font-size:18px"><span>Solo un <b>11 %</b> dice «sí».</span></li>
+      <li style="font-size:18px"><span>Dos reglas: <b>no uses <code>duration</code></b> (se sabe después de llamar) y <b>no reordenes las filas</b> (el orden es la fecha).</span></li></ul></div>
+  </div>
+  <p class="callout f" style="margin-top:16px"><b>Dónde está:</b> <code>02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv</code>; las columnas se explican en <code>bank-additional-names.txt</code>, en la misma carpeta. Opcional para investigar por tu cuenta: <code>datos/default-credit-card/</code>.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Antes de S1"
+ data-notes="Cuatro encargos: diagnóstico, bloqueos, leer el caso de Bank Marketing, no improvisar el entorno. No adelantar el entrenamiento. S1 empieza con datos y entrenamiento; quien llegue sin entorno perderá la práctica.">
   <p class="kick st">Cierre · 10 minutos</p>
   <h1 class="st" style="--d:1">Antes de S1</h1>
   <div class="cards4">
     <div class="card f"><h3 class="gold">1 · Completar el diagnóstico</h3><p>Las doce comprobaciones (la de la ruta neural/LLM es opcional), con nota de lo que falló y lo que se obtuvo.</p></div>
     <div class="card f"><h3 class="gold">2 · Comunicar bloqueos</h3><p>No esperar a S1 para decir que Codespaces, gcloud o la cuenta de la nube no arrancan.</p></div>
-    <div class="card f"><h3 class="gold">3 · Leer el caso cuando se publique</h3><p>Localizar los archivos raw. No adelantar el entrenamiento ni «limpiar» por intuición.</p></div>
+    <div class="card f"><h3 class="gold">3 · Leer el caso de Bank Marketing</h3><p>Lee el enunciado y <code>bank-additional-names.txt</code>; comprueba la huella del archivo. No adelantes el entrenamiento ni «limpies» por intuición.</p></div>
     <div class="card f"><h3 class="gold">4 · No improvisar el entorno</h3><p>Crea el entorno solo desde environment.yml; no armes uno paralelo con paquetes sueltos. El entorno del curso es env-ia-mlops.</p></div>
   </div>
-  <p class="callout f">S1 empieza con datos y entrenamiento. Quien llegue sin entorno perderá la práctica. El caso concreto —conjunto de datos incluido— se revela entonces.</p>
+  <p class="callout f">S1 empieza con datos y entrenamiento. Quien llegue sin entorno perderá la práctica. En S1 trabajamos el caso del instructor (Online Retail II); tu caso es Bank Marketing y lo desarrollas de S1 a S5.</p>
 </section>
 
 <!-- 29 · FIN -->
-<section class="slide" data-part="C" data-min="2" data-title="Nos vemos en S1"
+<section class="slide" data-part="C" data-min="1" data-title="Nos vemos en S1"
  data-notes="Esta diapositiva cierra la sesión principal. Recapitule la tarea previa a S1, los bloqueos y el próximo paso: datos → modelo. El material posterior es opcional y de consulta: anexos con estadísticas, costes y fuentes. No continúe como si fuera contenido obligatorio de S0.">
   <p class="kick st">Cierre · Fin de la sesión principal</p>
   <h1 class="st" style="--d:1">Nos vemos en S1, con el entorno listo</h1>
   <div class="grid2">
-    <div class="card st" style="--d:2"><h3 class="gold">Tu tarea antes de S1</h3><p>Completa la preparación, comprueba el entorno y lee el enunciado del caso cuando se publique. Comunica los bloqueos con el comando y la salida obtenida.</p></div>
+    <div class="card st" style="--d:2"><h3 class="gold">Tu tarea antes de S1</h3><p>Completa la preparación, comprueba el entorno y lee el enunciado del caso (Bank Marketing, en <code>02-Proyecto-Transversal/</code>). Comunica los bloqueos con el comando y la salida obtenida.</p></div>
     <div class="card st" style="--d:3"><h3 class="gold">Próximo paso: datos → modelo</h3><p>En S1 construiremos las capas de datos, haremos el seguimiento con MLflow, entrenaremos y evaluaremos.</p></div>
   </div>
   <div class="row st" style="--d:4;margin-top:26px;flex-wrap:wrap">
@@ -914,7 +950,7 @@ const CMD = {
   cmds:[{c:'docker version'},{c:'docker run --rm hello-world'}],
   sim:['Client:  Version <x>','Server:  Engine <x>','Hello from Docker!','This message shows that your installation appears to be working correctly.'],
   out:'Versiones de cliente y servidor, y el mensaje clásico de hello-world. La primera vez descarga la imagen.',
-  fail:'El Codespace aún no está publicado, la cuota de GitHub se agotó o se abrió un entorno genérico. Si usas Docker en local (opcional): Docker Desktop apagado, virtualización o WSL2 sin habilitar. Anota el error completo; no sustituyas la prueba por una captura del icono.',
+  fail:'El Codespace no arranca, la cuota de GitHub se agotó o se abrió un entorno genérico, sin el .devcontainer del curso. Si usas Docker en local (opcional): Docker Desktop apagado, virtualización o WSL2 sin habilitar. Anota el error completo; no sustituyas la prueba por una captura del icono.',
   notes:'docker version y hello-world, dentro del Codespace. La primera vez descarga la imagen. Docker Desktop local es opcional; si alguien lo usa, anotar errores de virtualización o WSL2.'},
  gcloud:{min:7,title:'Google Cloud: autenticar, no gastar',kick:'Parte B · Nube',
   why:'Sustituye el marcador por el identificador real de tu proyecto. El objetivo de hoy es dejar la CLI reconocida, no crear servicios.',
@@ -924,19 +960,19 @@ const CMD = {
   fail:'CLI no instalada, cuenta distinta a la del proyecto, o identificador mal copiado. Alternativa: usar Cloud Shell desde el navegador.',
   warn:'No crear recursos de pago en esta comprobación. Cloud Storage, BigQuery, Artifact Registry y Cloud Run llegan en S3, con presupuesto y alertas.',
   notes:'auth login, set project con el marcador sustituido, auth list. Prohíba crear recursos de pago. Cloud Storage, BigQuery, Artifact Registry y Cloud Run llegan en S3.'},
- codespaces:{min:6,title:'Codespaces: Docker, kind y kubectl',kick:'Parte B · Docker y Kubernetes',badge:'configuración pendiente',
-  why:'Docker y Kubernetes no se instalan como requisito local. El instructor publicará un Codespace preconfigurado con Docker, kind y kubectl: allí se hacen las prácticas de contenedores.',
-  cmds:[{c:'docker version'},{c:'kind version'},{c:'kubectl version --client'}],
-  sim:['Client:  Version <x>','kind v<x>','Client Version: v<x>'],
-  out:'Tres versiones coherentes dentro del Codespace, no en el portátil personal. «kubectl version --client» no necesita un clúster encendido.',
-  fail:'El Codespace aún no está publicado, las cuotas de GitHub lo bloquean o se abrió un entorno genérico en lugar del del curso. Comunicarlo: hay plan de respaldo.',
-  notes:'La configuración completa está pendiente. Cuando exista: docker, kind y kubectl --client dentro del Codespace, no en el portátil.'}
+ codespaces:{min:6,title:'Codespaces: Docker, kind y kubectl',kick:'Parte B · Docker y Kubernetes',badge:'.devcontainer del curso',
+  why:'Docker y Kubernetes no se instalan como requisito local. El repositorio trae un devcontainer (carpeta .devcontainer) con Docker, kind, kubectl y el entorno env-ia-mlops. En GitHub: Code → Codespaces → Create codespace on develop. Allí se hacen las prácticas de contenedores.',
+  cmds:[{c:'docker version'},{c:'kind version'},{c:'kubectl version --client'},{c:'bash .devcontainer/verificar.sh'}],
+  sim:['Client:  Version <x>','kind v<x>','Client Version: v<x>','Fallos: 0'],
+  out:'Tres versiones coherentes dentro del Codespace, no en el portátil personal, y «Fallos: 0» al final de verificar.sh. «kubectl version --client» no necesita un clúster encendido.',
+  fail:'Las cuotas de GitHub lo bloquean, la cuenta de empresa no permite Codespaces, o se abrió un entorno genérico en lugar del del curso. Comunicarlo: hay plan de respaldo (Cloud Shell o trabajar en pareja).',
+  notes:'docker, kind y kubectl --client dentro del Codespace, no en el portátil; al final, bash .devcontainer/verificar.sh debe decir Fallos: 0. Aviso para el instructor: el devcontainer está escrito pero aún no se ha probado en un Codespace real; ejecute antes el workflow Validar Codespace del curso o ábralo usted una vez.'}
 };
 
 const POLL=[
  {q:'¿Has llevado un modelo más allá del notebook, para que otra persona lo use?',o:['Todavía no: el trabajo termina en el cuaderno o en un script local.','Lo intenté: hubo API, archivo o demo, pero no quedó reproducible.','Sí: lo empaqué o lo serví, al menos en mi máquina.','Sí: llegó a un entorno compartido o a la nube.'],h:'No hay respuesta incorrecta. Sirve para calibrar el ritmo de S1 a S5.'},
  {q:'Si la predicción en tu portátil es correcta, ¿basta para entregarla?',o:['Sí: una métrica alta es evidencia suficiente.','No: faltan entorno, preproceso alineado, pruebas, registro y una forma de servirlo.','Sí, si adjunto una captura del notebook.','Solo si el algoritmo es una red neuronal.'],ok:1,h:'Una captura no es evidencia. El curso evalúa código, comandos, pruebas, README y decisiones.'},
- {q:'¿Qué parte del camino te preocupa más hoy?',o:['Datos, validación y entrenamiento reproducible.','API, errores y el contenedor.','Desplegar y observar el servicio en la nube.','Operar: versiones, alertas y poder volver atrás.'],h:'Eso es exactamente la cadena S1 → S5. El caso concreto se revela más adelante.'}
+ {q:'¿Qué parte del camino te preocupa más hoy?',o:['Datos, validación y entrenamiento reproducible.','API, errores y el contenedor.','Desplegar y observar el servicio en la nube.','Operar: versiones, alertas y poder volver atrás.'],h:'Eso es exactamente la cadena S1 → S5. El caso del instructor se trabaja en S1 y el tuyo, Bank Marketing, lo desarrollas de S1 a S5.'}
 ];
 
 const SESS=[
@@ -966,7 +1002,7 @@ const LAYERS=[
 
 const ZONES=[
  {t:'Tu equipo',d:'Es el lugar por defecto de S1 y de las pruebas unitarias: explorar, validar, entrenar el modelo clásico y comprobar la API antes de empaquetar.',x:'Git · VS Code · Miniconda · SQLite · gcloud (o Cloud Shell)'},
- {t:'Codespaces',d:'Docker y Kubernetes no se instalan en cada portátil. Se trabajan en el Codespace preconfigurado del instructor, cuando se publique.',x:'docker · kind · kubectl'},
+ {t:'Codespaces',d:'Docker y Kubernetes no se instalan en cada portátil. Se trabajan en el Codespace del curso (carpeta .devcontainer del repositorio).',x:'docker · kind · kubectl'},
  {t:'GitHub Actions',d:'Orquesta el pipeline: pruebas, entrenamiento, construcción de la imagen y despliegue, con aprobaciones. Los runners ya traen Docker.',x:'.github/workflows · S2 (imagen) · S4 (pipeline completo)'},
  {t:'Google Cloud',d:'Datos y servicio. En S0 solo se comprueba la autenticación; no se crean recursos de pago hoy.',x:'Cloud Storage · BigQuery · Artifact Registry · Cloud Run · Secret Manager · IAM'}
 ];
@@ -1002,7 +1038,7 @@ const SOFT=[
   g:['FastAPI y probar APIs',0,'antes de S2']},
  {n:'Docker',m:['c','','u','s','s','',''],tag:['info','En Codespaces'],w:'Codespaces: no se instala en el portátil',k:'empaquetar la API en una imagen',
   d:'Empaqueta la API y sus dependencias en una imagen que se ejecuta igual en cualquier sitio. No se instala en el portátil: se usa en Codespaces.',
-  u:[['S0','Comprobar docker version en el Codespace (cuando se publique)'],['S2','Escribir el Dockerfile, construir la imagen y ejecutar el contenedor'],['S3','Esa imagen se publica en Artifact Registry y corre en Cloud Run'],['S4','El pipeline la construye en un runner de Actions']],
+  u:[['S0','Comprobar docker version en el Codespace del curso'],['S2','Escribir el Dockerfile, construir la imagen y ejecutar el contenedor'],['S3','Esa imagen se publica en Artifact Registry y corre en Cloud Run'],['S4','El pipeline la construye en un runner de Actions']],
   g:['Docker',0,'antes de S2']},
  {n:'kind y kubectl',m:['c','','','o','','',''],tag:['opt','Si hay tiempo'],w:'Codespaces: no se instala en el portátil',k:'practicar Kubernetes sin clúster de pago',
   d:'kind levanta un clúster de Kubernetes de juguete dentro de Docker y kubectl es la herramienta para hablar con él. Sirve para entender Kubernetes sin pagar un clúster.',
@@ -1040,7 +1076,7 @@ const DIAG=[
  ['SQLite comprobable','SELECT 1 AS entorno_listo; · DB Browser'],
  ['Docker operativo en Codespaces','docker version · docker run --rm hello-world'],
  ['gcloud autenticado y proyecto fijado','Sin crear recursos de pago'],
- ['Codespaces del curso abierto','docker, kind, kubectl · pendiente de publicar'],
+ ['Codespaces del curso abierto','docker, kind, kubectl · bash .devcontainer/verificar.sh'],
  ['Ruta neural / LLM comprendida','Sin GPU · no bloquea S1',true],
  ['Incidencias registradas y comunicadas','Esperado vs. obtenido']
 ];

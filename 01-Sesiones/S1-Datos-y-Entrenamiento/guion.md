@@ -1,5 +1,7 @@
 # Guion del docente · S1 (240 min)
 
+**Presentación:** `01-Sesiones/S1-Datos-y-Entrenamiento/slides/index.html`
+
 Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ritmo y qué comprobar.
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
@@ -32,6 +34,7 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 
 ## 3:45–4:00 · Entrega y cierre (diap. 18–20)
 - Tarea y rúbrica (diap. 18), errores frecuentes (19), avance de S2 (20).
+- Recordar los **dos entregables**: (1) la tarea de la variable nueva, sobre Online Retail II; (2) el **avance en S2** sobre su caso, Bank Marketing: RAW → MASTER → FS → ML, entrenamiento y métricas, como cuadernos (ver `02-Proyecto-Transversal/enunciado/README.md`). Recordar: `duration` se excluye y las filas de `bank-additional-full.csv` no se reordenan.
 - Recordar: evidencia = decisión escrita + comparación de dos ejecuciones + traducción a `.py`.
 
 ## Si algo falla en directo
