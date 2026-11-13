@@ -9,7 +9,8 @@ En `real_nota`, {clave} se sustituye por los segundos medidos de esa captura (p.
 Los textos admiten solo <code>, <b> y <br>; `generar.py` los convierte a Markdown para la guia.
 """
 
-FECHA = '09/11/2026'
+FECHA = '09/11/2026'          # captura original en Linux: creación del entorno, git clone y la mayoría de las salidas
+FECHA_SALIDAS = '13/11/2026'  # recaptura de las salidas (salvo crear_entorno) en el Codespace del curso
 REPO_URL = 'https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git'
 CARPETA_REPO = 'curso-ml-ia-desarrollo-produccion'
 ENTORNO = 'env-ia-mlops'
@@ -155,13 +156,13 @@ PASOS = [
          cmds=[dict(c='cd 04-Proyecto-Base'),
                dict(c='python -m pytest -q -m "not lento"', k='pytest_rapido'),
                dict(c='python -m pytest -q', k='pytest_total', nota='opcional: incluye ejecutar los 5 cuadernos (más lento)', aparte=True)],
-         esperado='Rápidas: <b>119 passed, 4 deselected</b>. Completas: <b>123 passed</b>. Cualquier <code>failed</code> o <code>error</code> hay que contarlo al instructor.',
+         esperado='Rápidas: <b>127 passed, 4 deselected</b>. Completas: <b>131 passed</b>. Cualquier <code>failed</code> o <code>error</code> hay que contarlo al instructor.',
          real=['pytest_rapido', 'pytest_total'], real_nota='Salida real en Windows (11/11/2026). Los segundos dependen de tu equipo.',
-         si_falla=['Solo ves puntos y no la línea «119 passed»: tu copia es anterior al ' + FECHA + '. Actualiza con <code>git pull</code>.',
+         si_falla=['Solo ves puntos y no la línea «127 passed»: tu copia es anterior al ' + FECHA_SALIDAS + '. Actualiza con <code>git pull</code>.',
                    'Sale <b>30</b>, <b>34</b>, <b>40</b> o <b>108 passed</b>: tu copia es anterior al 11/11/2026 (antes de juntar la base operacional, los pipelines y la API de S2). Actualiza con <code>git pull</code>.',
                    '<code>ModuleNotFoundError</code>: entorno equivocado. Mira que el prompt empiece por (env-ia-mlops).',
                    'Si falla alguna prueba, copia la salida completa y envíala; no la edites.'],
-         val='linux_windows', val_nota='Ejecutado en Linux en un entorno recién creado desde environment.yml (09/11/2026) y en Windows 11 con la base operacional y los pipelines ya incluidos (11/11/2026), sin instalar nada más.'),
+         val='linux_windows', val_nota='Ejecutado en Linux en un entorno recién creado desde environment.yml (09/11/2026) y en Windows 11 con la base operacional y los pipelines ya incluidos (11/11/2026), sin instalar nada más; recapturado en el Codespace del curso (13/11/2026).'),
     dict(id='E3', bloque='E', titulo='SQLite', donde='entorno',
          por_que='Todas las capas del curso (raw, master, fs, ml) viven en una base SQLite. Python ya trae SQLite; solo hay que comprobar la versión y que ejecuta consultas.',
          cmds=[dict(c='python -c "import sqlite3; print(sqlite3.sqlite_version, sqlite3.connect(\':memory:\').execute(\'SELECT 1 AS entorno_listo\').fetchone())"', k='sqlite')],
@@ -222,7 +223,7 @@ ERRORES = [
     ('<code>CondaValueError: prefix already exists</code>', 'El entorno ya existe.', '<code>conda env update -f 03-Entorno\\conda\\environment.yml --prune</code>, o bórralo y créalo.'),
     ('<code>ModuleNotFoundError</code>', 'Entorno o kernel equivocado.', 'El prompt debe empezar por (env-ia-mlops). En un cuaderno, elige ese kernel.'),
     ('Faltan carpetas del curso', 'Clonaste <code>main</code>.', '<code>git fetch origin</code> y <code>git switch develop</code>.'),
-    ('pytest solo muestra puntos', 'Copia anterior al ' + FECHA + '.', '<code>git pull</code>. Debe verse «119 passed».'),
+    ('pytest solo muestra puntos', 'Copia anterior al ' + FECHA_SALIDAS + '.', '<code>git pull</code>. Debe verse «127 passed».'),
     ('«la huella no coincide»', 'El CSV de Bank Marketing se modificó.', '<code>git restore</code> de ese archivo; no lo guardes con Excel.'),
     ('<code>mlflow ui</code> no abre', 'Puerto 5000 ocupado o servidor aún arrancando.', '<code>--port 5001</code>; espera 20 s y refresca.'),
 ]
@@ -233,7 +234,7 @@ LISTA_FINAL = [
     ('<code>conda --version</code> responde en Anaconda Prompt', 'A3'),
     ('<code>conda activate env-ia-mlops</code> y la prueba de humo termina en <b>HUMO OK</b>', 'D1 · D2'),
     ('El cuaderno de prueba imprime <b>NOTEBOOK OK</b> con el kernel env-ia-mlops', 'E1'),
-    ('<code>pytest</code> del proyecto base: <b>119 passed</b> (y 123 con las lentas)', 'E2'),
+    ('<code>pytest</code> del proyecto base: <b>127 passed</b> (y 131 con las lentas)', 'E2'),
     ('SQLite, MLflow UI y el dato de Bank Marketing responden', 'E3 · E4 · E5'),
     ('<code>verificar_s1.py</code> termina en <b>LISTO PARA S1</b>', 'E6'),
 ]
