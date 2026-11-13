@@ -2,7 +2,7 @@
 
 Guía del alumnado de «ML e IA: de desarrollo a producción». Qué es un Codespace, cómo abrirlo (en el navegador o desde tu VS Code), qué haremos dentro en S2 (bloque 4) y cómo cuidar tu cuota.
 
-> **Estado.** Las cifras de cuota y los pasos de la interfaz salen de la documentación de GitHub (10/11/2026). Los comandos del laboratorio se ejecutaron en Linux y en GitHub Actions. **Todavía no se ha abierto ningún Codespace del curso**; si algo difiere, anota el mensaje exacto del error y envíaselo al instructor.
+> **Estado.** Las capturas y los tiempos son de un Codespace real del curso, abierto el 12/11/2026 (2 núcleos, rama `develop`). Lo que no se probó allí (VS Code de escritorio, cuotas) sale de la documentación de GitHub (10/11/2026) y lo indica cada paso. Si algo difiere, anota el mensaje exacto del error y envíaselo al instructor.
 
 El mismo contenido, en diapositivas con botones de copiar: `03-Entorno/guia-codespaces/index.html`.
 
@@ -12,7 +12,7 @@ El mismo contenido, en diapositivas con botones de copiar: `03-Entorno/guia-code
 
 **Qué es.** Un ordenador Linux que GitHub te presta en la nube, con VS Code en el navegador o conectado a tu VS Code. Se crea a partir de un repositorio y de `.devcontainer/devcontainer.json`. Trae Docker funcionando (un motor propio dentro del Codespace): no instalas Docker Desktop. Todos usamos el mismo Python 3.11 y los mismos comandos.
 
-**Para qué lo usamos.** Para lo que necesita Docker: construir la imagen de la API y ejecutar el contenedor (S2, bloque 4, 25 min). En S3 podría servir para un laboratorio de Kubernetes con `kind` (pendiente).
+**Para qué lo usamos.** Para lo que necesita Docker: construir la imagen de la API y ejecutar el contenedor (S2, bloque 4, 25 min). Trae también `kind` y `kubectl` para un laboratorio de Kubernetes en S3 (el laboratorio está pendiente).
 
 **Conviene tener claro:**
 - No sustituye a tu entorno local: S1 y los bloques 1 a 3 de S2 siguen en tu equipo con `env-ia-mlops`.
@@ -24,7 +24,7 @@ El mismo contenido, en diapositivas con botones de copiar: `03-Entorno/guia-code
 | Dónde | Qué hay | Qué haces ahí |
 |---|---|---|
 | Tu equipo | `env-ia-mlops` (conda), VS Code, Git | S1 completa · S2 bloques 1 a 3: API, errores, comparar predicciones |
-| **Codespace** | Python 3.11 + Docker (+ `kind` y `kubectl` en S3, pendiente) | **S2 bloque 4**: imagen y contenedor |
+| **Codespace** | El mismo `env-ia-mlops` (Python 3.11) + Docker + `kind` y `kubectl` | **S2 bloque 4**: imagen y contenedor (S3: Kubernetes, pendiente) |
 | GitHub Actions | Un servidor de GitHub que ejecuta el workflow `ci.yml` | S2 bloque 5: el CI construye la imagen y prueba el contenedor |
 | Cloud Shell (respaldo) | Terminal de Google Cloud en el navegador | Solo si falla el Codespace; por verificar antes de impartir |
 
@@ -53,13 +53,13 @@ Si no puedes usar el Codespace, el bloque 5 (GitHub Actions) construye la imagen
 - Una sesión de 4 h con el Codespace abierto todo el rato son 8 horas de núcleo (cálculo: 2 × 4), el 7 % de 120.
 - Parado no gasta cómputo, pero su disco cuenta mientras exista. Borrarlo no devuelve el disco que ya contó este mes.
 - GitHub avisa por correo al llegar al 75, 90 y 100 %. Sin método de pago, al agotar una cuota se bloquea hasta el ciclo siguiente.
-- Deja la máquina por defecto (la más pequeña): para S2 debería bastar (sin probar).
+- Deja la máquina por defecto (la más pequeña, 2 núcleos): el bloque 4 entero funcionó en ella el 12/11/2026.
 
 
 # B · Abrir el Codespace
 
 ## Crear el Codespace del curso
-*B · Abrir el Codespace · paso 1 de 8 · Según la doc. de GitHub · sin probar en un Codespace*
+*B · Abrir el Codespace · paso 1 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** tu navegador, con tu sesión de GitHub
 
@@ -67,44 +67,69 @@ Se crea desde la página del repositorio, eligiendo la rama `develop`.
 
 1. Abre `github.com/helicr/curso-ml-ia-desarrollo-produccion` e inicia sesión con tu cuenta personal.
 2. En el desplegable de ramas elige `develop`.
-3. Pulsa el botón verde **Code** y la pestaña **Codespaces**.
-4. Pulsa **+** (opciones por defecto). Si quieres ver rama, configuración y máquina antes de crear: **⋯ → New with options**.
-5. Si GitHub pregunta qué configuración usar, elige la del curso: <i>Curso ML e IA (S2: API y Docker)</i>.
+3. Pulsa el botón verde **Code** y la pestaña **Codespaces**: verás **Create codespace on develop**.
+4. Mejor por **⋯ → New with options…**: comprueba la rama (`develop`), la configuración (solo hay una: <i>Curso ML e IA: de desarrollo a producción</i>), la **región** (elige la más cercana: desde Perú, <i>US East</i>) y la máquina (**2-core**). Pulsa **Create codespace**.
 
 ```bash
 https://github.com/codespaces/new
 ```
 
-**Debe salir.** Se abre una pestaña nueva con **VS Code en el navegador** y el Codespace empieza a prepararse. La primera vez puede tardar unos minutos porque construye el contenedor. GitHub indica antes **qué cuenta paga** el Codespace: debe ser la tuya.
+**Debe salir.** Se abre una pestaña nueva con **VS Code en el navegador**. La primera vez tarda unos **3 minutos** en construir el contenedor y conectar (abajo a la izquierda pone «Abriendo remoto…»), y después unos **2 minutos** más en instalar `kind` y el entorno `env-ia-mlops`. Al pie del menú de Codespaces, GitHub dice **qué cuenta paga**: debe ser la tuya.
 
 **Si falla:**
 - No puedes crear uno o se bloquea: revisa tu uso y cuota (diapositiva «Cuánto es gratis») y que entras con tu cuenta personal.
+- «Maximum running codespaces reached»: ya tienes otro encendido. Páralo en `github.com/codespaces` (⋯ → **Stop codespace**) y repite.
 - Pide permiso para hacer un fork: el repositorio del curso es público; acepta. Solo tienes lectura, y el fork se crea cuando haces tu primer commit.
 - Aparece «modo recuperación»: ve a «Si algo falla».
 
+![Code → pestaña Codespaces en la rama develop. Al pie: quién paga el uso (aquí, la cuenta del instructor; en tu caso, la tuya).](../guia-codespaces/capturas/01-pestana-codespaces.webp)
+
+![⋯ → New with options: rama, la única configuración del curso, región y máquina de 2 núcleos.](../guia-codespaces/capturas/02-nuevo-con-opciones.webp)
+
+## Mientras se crea… y el primer aviso
+
+Mientras se construye, abajo a la izquierda pone «Abriendo remoto…» (la primera vez, unos 3 minutos). No cierres la pestaña. Cuando conecta, pasa a decir «Codespaces: <nombre>» y aparece el Explorador con las carpetas del curso.
+
+VS Code pregunta **«¿Confía en los autores de los archivos de esta carpeta?»**. Es el repositorio del curso: pulsa **Confiar en la carpeta y continuar**. Sin eso, la terminal no se abre (modo restringido).
+
+![Construyendo el Codespace](../guia-codespaces/capturas/03-construyendo.webp)
+
+![Confiar en los autores de la carpeta](../guia-codespaces/capturas/04-confiar.webp)
+
 ## Qué se prepara mientras esperas
 
-| En `.devcontainer/devcontainer.json` | Qué consigue |
+| En `.devcontainer/` | Qué consigue |
 |---|---|
-| `image: mcr.microsoft.com/devcontainers/python:1-3.11-bookworm` | Python 3.11 (el de `environment.yml`) sobre Debian «bookworm». |
-| `features: docker-in-docker:2` | Un motor Docker propio dentro del Codespace: `docker build` y `docker run` funcionan sin instalar nada. |
-| `postCreateCommand` | `pip install -r 04-Proyecto-Base/requirements-dev.txt`: las mismas versiones que `env-ia-mlops`, con pip. |
-| `forwardPorts: [8080]` | Reenvía el puerto de la API (etiqueta «API ia-mlops»). |
-| `extensions` | Python y Docker dentro del editor. |
+| `image: mcr.microsoft.com/devcontainers/miniconda:3` | Linux con conda, como en tu equipo. |
+| `docker-in-docker:2` con `"moby": false` | Un motor Docker propio dentro del Codespace: `docker build` y `docker run` sin instalar nada. |
+| `kubectl-helm-minikube:1` | `kubectl` (para S3). |
+| `postcreate.sh` | Instala `kind` y crea `env-ia-mlops` con las versiones del curso, y ejecuta `verificar.sh`. |
+| `forwardPorts: [8080, 5000]` | Reenvía la API («API ia-mlops (S2)») y MLflow («MLflow UI»). |
+| `extensions` | Python, Jupyter, Docker, Kubernetes, GitHub Actions y un visor de SQLite. |
 
-La terminal se abre en la raíz del repositorio: entra con `cd 04-Proyecto-Base`. Tú no editas este archivo. Si falla, GitHub abre el Codespace en modo recuperación.
+**Lo que comprueba al terminar** (registro de creación real, 12/11/2026):
 
-> **Sin probar.** Nadie ha abierto todavía un Codespace con este archivo. Es la parte con más riesgo de toda la guía.
+```text
+[OK   ] docker       cliente 29.9.3 · servidor 29.9.3
+[OK   ] hello        Unable to find image 'hello-world:latest' locally
+[OK   ] kind         kind v0.27.0 go1.23.6 linux/amd64
+[OK   ] kubectl      Client Version: v1.37.2
+[OK   ] python       Python 3.11.18
+Fallos: 0
+```
+
+La terminal se abre en la raíz del repositorio y con `(env-ia-mlops)` activado: entra con `cd 04-Proyecto-Base`. Tú no editas estos archivos. Si fallan, GitHub abre el Codespace en modo recuperación.
 
 ## Orientarte y comprobar Docker
-*B · Abrir el Codespace · paso 2 de 8 · Según la doc. de GitHub · sin probar en un Codespace*
+*B · Abrir el Codespace · paso 2 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** la terminal del Codespace
 
 Cuando termine de prepararse, abre una terminal y comprueba lo mínimo antes de seguir.
 
 1. Abre la terminal: menú **☰ → Terminal → Nuevo terminal** (<i>New Terminal</i> si está en inglés). Los comandos se ejecutan **en el Codespace**, no en tu equipo.
-2. Junto a la terminal verás la pestaña **PORTS** (puertos): la usaremos después.
+2. El indicador debe empezar por `(env-ia-mlops)`, como en tu equipo.
+3. Junto a la terminal verás la pestaña **Puertos** (<i>PORTS</i>): la usaremos después.
 
 ```bash
 cd 04-Proyecto-Base
@@ -112,12 +137,15 @@ python --version
 docker version
 ```
 
-**Debe salir.** `Python 3.11.x`. `docker version` debe mostrar dos bloques: **Client** y **Server**. Sin Server, Docker no ha arrancado.
+**Debe salir.** `Python 3.11.18`. `docker version` debe mostrar dos bloques: **Client** y **Server** (en el Codespace de prueba, Docker Engine Community 29.9.3). Sin Server, Docker no ha arrancado.
 
 **Si falla:**
+- El indicador dice `(base)` en vez de `(env-ia-mlops)`: `conda activate env-ia-mlops`.
 - `docker: command not found`: la configuración no se aplicó. Paleta de comandos (**F1**) → **Codespaces: Rebuild Container**.
 - Solo aparece Client o dice `Cannot connect to the Docker daemon`: repite al cabo de un minuto; si sigue, reconstruye el contenedor.
 - Sigue sin ir: usa el bloque 5 (Actions), que construye la imagen por ti, y **anota el mensaje exacto**.
+
+![docker version en el Codespace: Client y Server, y el indicador (env-ia-mlops) en la carpeta 04-Proyecto-Base.](../guia-codespaces/capturas/06-docker-version.webp)
 
 ## En el navegador o en tu VS Code: el mismo Codespace
 
@@ -166,7 +194,7 @@ gh codespace code
 **Preguntas para pensar:** ¿cuánto ocupa la imagen? Si cambias una línea de `ia_mlops/` y vuelves a construir, ¿qué capas se reutilizan? ¿Por qué el contenedor escucha en `0.0.0.0` y no en `127.0.0.1`?
 
 ## Entrenar el modelo en el Codespace
-*C · Laboratorio de S2 · paso 4 de 8 · Probado en Linux y Actions · Codespace sin probar*
+*C · Laboratorio de S2 · paso 4 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** la terminal del Codespace, en 04-Proyecto-Base
 
@@ -176,7 +204,7 @@ La imagen copia `models/modelo_mlflow/`, y esa carpeta no viaja con el repositor
 python -m ia_mlops.pipeline
 ```
 
-**Debe salir.** Termina sin error y deja en `models/` el modelo (`modelo_mlflow/`, `modelo.joblib`) y `metadatos.json`. Con la muestra de 150 clientes tardó unos 9 s en Linux. Estas son sus últimas líneas:
+**Debe salir.** Termina sin error y deja en `models/` el modelo (`modelo_mlflow/`, `modelo.joblib`) y `metadatos.json`. En el Codespace tardó 31 s. Últimas líneas:
 
 ```text
   referencia_sin_aprender    AUC valid 0.500 | test 0.500 | precision media test 0.404
@@ -185,14 +213,16 @@ python -m ia_mlops.pipeline
   Mejor modelo: regresion_logistica. Guardado en …/models/modelo.joblib
   (7.2 s)
 ```
-*Salida real en Linux (2026-11-10), ruta recortada (…). En tu Codespace los números deberían coincidir; si no, anótalo.*
+*Salida real en Linux (2026-11-10), ruta recortada (…); en el Codespace, el mismo modelo. Los avisos WARNING de MLflow son normales.*
 
 **Si falla:**
-- `ModuleNotFoundError`: no terminó la instalación de dependencias del Codespace. Ejecuta `pip install -r requirements-dev.txt` y repite.
-- `No such file or directory` al ejecutar el módulo: no estás en `04-Proyecto-Base` (`pwd`).
+- `ModuleNotFoundError`: la terminal no está en el entorno del curso. `conda activate env-ia-mlops` y repite.
+- `No module named ia_mlops`: no estás en `04-Proyecto-Base` (`pwd`).
+
+![Final del pipeline en el Codespace: «Mejor modelo: regresion_logistica», en unos 31 s.](../guia-codespaces/capturas/07-pipeline.webp)
 
 ## Construir la imagen
-*C · Laboratorio de S2 · paso 5 de 8 · Probado en Linux y Actions · Codespace sin probar*
+*C · Laboratorio de S2 · paso 5 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** la terminal del Codespace, en 04-Proyecto-Base
 
@@ -203,15 +233,19 @@ docker build -f deploy/docker/Dockerfile -t retencion-api:local .
 docker image ls retencion-api:local
 ```
 
-**Debe salir.** El build termina sin error y `docker image ls` lista `retencion-api` con la etiqueta `local`. En GitHub Actions la imagen ocupó **826 MB** en disco. La primera vez descarga la imagen base; si repites el build, las capas sin cambios salen de la caché.
+**Debe salir.** El build termina con `FINISHED` (la primera vez, 78 s en el Codespace; si repites, las capas sin cambios salen de la caché). `docker image ls` lista `retencion-api:local`: con Docker 29 las columnas son **DISK USAGE** (826MB, lo que ocupa en disco, igual que en GitHub Actions) y **CONTENT SIZE** (183MB, comprimida).
 
 **Si falla:**
 - `COPY failed … models/modelo_mlflow`: falta entrenar. Ejecuta antes `python -m ia_mlops.pipeline`.
 - `docker: command not found` o no conecta con el daemon: vuelve a «Orientarte y comprobar Docker».
 - Un error al descargar la imagen base: repite; si persiste, anótalo y usa el bloque 5 (Actions).
 
+![docker build en el Codespace: 14 pasos FINISHED; la instalación de dependencias (paso 4/8) es lo que más tarda.](../guia-codespaces/capturas/08-docker-build.webp)
+
+![docker image ls retencion-api:local: DISK USAGE 826MB · CONTENT SIZE 183MB.](../guia-codespaces/capturas/09-image-ls.webp)
+
 ## Arrancar el contenedor y comparar
-*C · Laboratorio de S2 · paso 6 de 8 · Probado en Linux y Actions · Codespace sin probar*
+*C · Laboratorio de S2 · paso 6 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** la terminal del Codespace, en 04-Proyecto-Base
 
@@ -234,33 +268,40 @@ MLflow                                      100             0.000e+00  coincide
 API http://127.0.0.1:8080                   100             0.000e+00  coincide
 Todos los caminos dan la misma probabilidad.
 ```
-*Salida real en Linux con la API sin contenedor. Según la versión de MLflow puede aparecer antes una línea INFO: es informativa.*
+*Salida real en Linux con la API sin contenedor; en el Codespace, contra el contenedor, dio lo mismo (captura). Según la versión de MLflow puede aparecer antes una línea INFO: es informativa.*
 
 **Si falla:**
 - `port is already allocated` o `container name "/api" is already in use`: `docker rm -f api` y repite.
 - `/listo` da 503: lee el campo `detalle` (falta el modelo o el esquema no coincide).
 - La comparación dice `No se pudo comparar`: falta el modelo o la base; ejecuta el pipeline.
 
+![Justo después del run, el primer curl da «Connection reset by peer»; seis segundos después, {"estado":"listo"}.](../guia-codespaces/capturas/10-run-listo.webp)
+![comparar contra el contenedor: los cuatro caminos coinciden (diferencia 0), en 12 s.](../guia-codespaces/capturas/13-comparar.webp)
+
 ## Ver la API en el navegador (puertos)
-*C · Laboratorio de S2 · paso 7 de 8 · opcional · Según la doc. de GitHub · sin probar en un Codespace*
+*C · Laboratorio de S2 · paso 7 de 8 · opcional · Probado en un Codespace real · 12/11/2026*
 
 **En:** el Codespace, panel PORTS
 
 Con `curl` no necesitas esto: `127.0.0.1:8080` ya es el Codespace. Los puertos sirven para abrir `/docs` en tu navegador.
 
-1. Abre el panel **PORTS**, junto a la terminal. Debe listar el **8080** con la etiqueta «API ia-mlops».
-2. Si no aparece: **Add port** → `8080`.
-3. Abre la dirección del puerto en el navegador (icono del globo o clic derecho → <i>Open in Browser</i>) y añade `/docs`.
+1. Abre el panel **Puertos** (<i>PORTS</i>), junto a la terminal. Con el contenedor en marcha lista el **8080** como «API ia-mlops (S2)» con un punto verde.
+2. Si no aparece: **Agregar puerto** (<i>Add port</i>) → `8080`.
+3. Abre la dirección reenviada (`https://<tu-codespace>-8080.app.github.dev`; icono del globo o clic derecho → abrir en el navegador) y añade `/docs`.
 4. Verás la página interactiva de la API: prueba `/salud`, `/listo`, `/modelo` y `/predecir`.
 
-**Debe salir.** La página de documentación de la API. La visibilidad del puerto debe ser **privada** (compruébalo en la columna «Visibility»): solo tu cuenta de GitHub puede abrirla.
+**Debe salir.** La página de documentación de la API, servida **desde el contenedor**. La visibilidad del puerto debe ser **privada** (columna «Visibilidad»: <i>Private</i>): solo tu cuenta de GitHub puede abrirla. Cada visita aparece después en `docker logs api`.
 
 **Si falla:**
 - No carga: comprueba que el contenedor sigue vivo (`docker ps`) y que el puerto es el 8080.
 - **No pongas el puerto en «Public»**: cualquiera con la dirección llegaría a la API, que no tiene autenticación.
 
+![Panel Puertos: el 8080 «API ia-mlops (S2)» reenviado y privado; el 5000 es el de MLflow.](../guia-codespaces/capturas/11-puertos.webp)
+
+![La dirección reenviada + /docs: la documentación interactiva de la API del contenedor.](../guia-codespaces/capturas/12-api-docs.webp)
+
 ## Inspeccionar el contenedor y limpiar
-*C · Laboratorio de S2 · paso 8 de 8 · Probado en Linux y Actions · Codespace sin probar*
+*C · Laboratorio de S2 · paso 8 de 8 · Probado en un Codespace real · 12/11/2026*
 
 **En:** la terminal del Codespace
 
@@ -278,6 +319,10 @@ docker rm -f api
 - `container … is not running`: el contenedor murió. `docker logs api` dice por qué (p. ej., sin modelo).
 - Si quieres repetir desde cero: `docker rm -f api` y vuelve a «Arrancar el contenedor».
 - Para la tarea, pega estas salidas en la plantilla de evidencias de S2.
+
+![docker logs api: una línea JSON por petición, con su id; aparecen también las visitas a /docs desde el navegador.](../guia-codespaces/capturas/14-logs.webp)
+
+![docker exec api id -u → 10001 (no es root); docker rm -f api → api.](../guia-codespaces/capturas/15-id-rm.webp)
 
 
 # D · Cuidarlo
@@ -298,11 +343,22 @@ En S2, bloque 4, no hay nada que guardar: lo que te llevas son las salidas, que 
 
 El disco cuenta mientras el Codespace exista, aunque esté parado, y borrarlo no devuelve el disco que ya contó este mes. *Cifras leídas en la documentación de GitHub el 10/11/2026.*
 
+## Parar (o borrar) desde github.com/codespaces
+
+En `github.com/codespaces`, menú ⋯ del Codespace: **Stop codespace**, **Export changes to a branch**, abrir en el navegador o en VS Code… (Delete está más abajo). Al pararlo aparece «Codespace … stopped»: ya no gasta cómputo, pero su disco sigue contando hasta que lo borres.
+
+![Menú del Codespace en github.com/codespaces](../guia-codespaces/capturas/16-menu-codespace.webp)
+
+![Codespace parado](../guia-codespaces/capturas/17-parado.webp)
+
 ## Si algo falla
 
 | Lo que ves | Causa | Qué hacer |
 |---|---|---|
-| «This codespace is currently running in recovery mode…» | El contenedor no se pudo construir con la configuración. | **View creation log** y anota el error; luego **F1 → Codespaces: Rebuild Container** (si no, <i>Full Rebuild</i>). |
+| «This codespace is currently running in recovery mode…» | El contenedor no se pudo construir con la configuración. | **View creation log** y anota el error; avisa al instructor. Tras corregirlo: **F1 → Codespaces: Rebuild Container**. |
+| «¿Confía en los autores de los archivos de esta carpeta?» | VS Code abre las carpetas nuevas en modo restringido. | Es el repositorio del curso: **Confiar en la carpeta y continuar**. |
+| El indicador dice `(base)` | La terminal no está en el entorno del curso. | `conda activate env-ia-mlops` |
+| «Maximum running codespaces reached» | Tienes otro Codespace encendido. | Páralo en `github.com/codespaces` (⋯ → Stop codespace). |
 | `docker: command not found` / `Cannot connect to the Docker daemon` | Docker no está disponible o no ha arrancado. | Repite al cabo de un minuto; <i>Rebuild Container</i>; si no, bloque 5 (Actions). |
 | `COPY failed … models/modelo_mlflow` | Falta entrenar. | `python -m ia_mlops.pipeline` y vuelve a construir. |
 | `Connection reset by peer` justo tras `docker run` | La API aún está arrancando. | Espera unos segundos y repite el `curl`. |
@@ -312,27 +368,33 @@ El disco cuenta mientras el Codespace exista, aunque esté parado, y borrarlo no
 
 Siempre: copia el mensaje completo como texto y envíalo con el comando que ejecutaste. Nunca envíes contraseñas, tokens ni capturas con tu sesión abierta.
 
+## Así se ve el modo recuperación
+
+Le pasó al propio curso la primera vez que se abrió (12/11/2026): la imagen base había cambiado y la configuración de Docker ya no servía. Ya está corregido. Si te ocurre: **View Creation Log**, copia las líneas con `ERROR` y envíaselas al instructor; mientras tanto, el bloque 5 (GitHub Actions) construye la imagen por ti.
+
+![Modo recuperación](../guia-codespaces/capturas/05-modo-recuperacion.webp)
+
 
 # E · Cierre
 
 ## Más allá de S2 y qué hacer si no puedes usarlo
 
-**S3 (pendiente).** El programa prevé, si hay tiempo, un laboratorio acotado de Kubernetes en el Codespace con `kind` y `kubectl`. La configuración actual no los incluye; hay que añadirlos al `devcontainer.json` y probarlos.
+**S3 (pendiente).** El programa prevé, si hay tiempo, un laboratorio acotado de Kubernetes en el Codespace. Las herramientas ya vienen: `kind` v0.27.0 y `kubectl` v1.37.2 (comprobadas el 12/11/2026). El laboratorio está por escribir y probar.
 
 **Si no puedes usar Codespaces:** GitHub Actions (bloque 5 de S2: el workflow construye la imagen y prueba el contenedor; se verificó), trabajar en pareja, Cloud Shell de Google Cloud como respaldo (por verificar) o Docker Desktop en tu equipo (opcional).
 
 ## Qué se verificó y qué no
 
 **Verificado.**
+- Un Codespace real del curso (12/11/2026, 2 núcleos, rama `develop`): creación y conexión, `verificar.sh` sin fallos, el bloque 4 entero (pipeline 31 s, build 78 s, `/listo`, comparación, logs, `id -u` = 10001), el panel Puertos con `/docs`, el diálogo de confianza, el modo recuperación y parar desde la web.
 - GitHub Actions: `docker build` con el Dockerfile (826 MB), `docker run`, `/listo`, `/modelo`, predicción, 422 al enviar `y` y usuario no root.
-- Linux: pipeline (9 s con la muestra), API, `curl /listo` y la comparación entre caminos (las salidas de esta guía).
-- Documentación de GitHub (10/11/2026): cuotas, inactividad, retención, VS Code, puertos, fork y modo recuperación.
+- Linux: pipeline (9 s con la muestra), API, `curl /listo` y la comparación entre caminos (las salidas en texto de esta guía).
 
 **Sin probar.**
-- Abrir un Codespace con el `.devcontainer/devcontainer.json` del curso, y que `docker-in-docker` arranque en él.
-- El laboratorio completo dentro de un Codespace (tiempos y memoria de la máquina de 2 núcleos).
-- La conexión desde VS Code de escritorio y el panel PORTS con el contenedor.
-- Cloud Shell como respaldo y `kind` / `kubectl` para S3.
+- La conexión desde VS Code de escritorio (paso 3).
+- Las cuotas y los tiempos de inactividad y retención: salen de la documentación de GitHub (10/11/2026).
+- Una cuenta de estudiante (región de EE. UU., cuota propia) y Export changes to a branch.
+- Cloud Shell como respaldo y el laboratorio de Kubernetes de S3.
 
 Si ves algo distinto de lo que muestra esta guía, envía el comando y el mensaje exacto.
 

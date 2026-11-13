@@ -109,10 +109,12 @@ SESIONES = [
         id='S2', titulo='API y Docker', horas='4 h', carpeta=S2, estado=PREPARADO, esperados=TODOS,
         resumen='Del modelo guardado a un servicio: API con FastAPI cuyo contrato sale de la firma del modelo, errores 422/503/500, registros JSON, imagen Docker mínima, '
                 'comparación de predicciones por todos los caminos y primer workflow de GitHub Actions. Tarea: llevar el modelo propio al mismo punto.',
-        nota='Probado en Linux y en GitHub Actions. Sin probar: el Codespace del curso (.devcontainer), Docker en un equipo propio y Windows. '
+        nota='Probado en Linux, en GitHub Actions y, el bloque 4, en un Codespace real del curso (12/11/2026). Sin probar: Docker en un equipo propio y los comandos en Windows. '
              'Los ejemplos de contenedores se ejecutaron con Docker real en GitHub Actions, no en un Codespace; lo que dicen de Cloud Run es solo la documentación de Google.',
         enlaces=[
             deck('Presentación de S2', f'{S2}/slides/index.html', 'Revisión del entorno, teoría, laboratorio de códigos, práctica, entrega y cierre.', volver=True),
+            deck('Recap de S1: de los datos al modelo', '01-Sesiones/recap/recap-01/index.html',
+                 'Para empezar: S1 en cinco minutos, con diagramas, las capas interactivas y una autoevaluación.'),
             alumno('Teoría y glosario', f'{S2}/teoria/README.md'),
             alumno('Guía de laboratorio', f'{S2}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo y salidas esperadas.'),
             alumno('Tarea', f'{S2}/tarea/README.md'),
@@ -121,7 +123,7 @@ SESIONES = [
             alumno('Checklist', f'{S2}/checklist.md'),
             alumno('La API y el contenedor', '04-Proyecto-Base/docs/api-y-contenedor.md', 'Contrato, errores, registros, imagen, workflow y qué se probó.'),
             deck('Codespaces: tu laboratorio de Docker en la nube', f'{ENTORNO}/guia-codespaces/index.html',
-                 'Guía en diapositivas: abrir el Codespace (navegador o VS Code), el bloque 4 paso a paso y la cuota.', volver=True),
+                 'Guía en diapositivas con capturas de un Codespace real: abrirlo (navegador o VS Code), el bloque 4 paso a paso y la cuota.', volver=True),
             alumno('Guía de Codespaces (versión en texto)', f'{ENTORNO}/guias/codespaces-para-el-alumnado.md', 'El mismo contenido, para leer sin diapositivas.'),
             deck('Contenedores 1: el modelo mental', f'{S2}/contenedores/modelo-mental/index.html',
                  'Antes de S2: imagen y contenedor, ciclo de vida, lo que se pierde al borrar, puertos y volúmenes. Cuatro prácticas con salidas reales.', volver=True),

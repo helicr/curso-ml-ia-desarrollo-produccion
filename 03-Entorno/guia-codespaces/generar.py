@@ -6,11 +6,14 @@ Uso (desde cualquier carpeta):   python generar.py
 No edites a mano esos dos archivos: cambia este script y vuelve a ejecutarlo.
 Las salidas que muestra la guía salen de salidas-reales.json (capturar.py las renueva).
 
-Origen de los datos (todo verificado el 10/11/2026):
+Origen de los datos:
   - Comandos del laboratorio: 01-Sesiones/S2-API-y-Docker/practica/guia-laboratorio.md, bloque 4 (una prueba lo vigila).
   - Configuración del Codespace: .devcontainer/devcontainer.json de la raíz del repositorio (una prueba lo vigila).
-  - Cuotas, tiempos de inactividad y retención, VS Code, puertos y fork: documentación oficial de GitHub (ver FUENTES).
+  - Cuotas, tiempos de inactividad y retención, VS Code, puertos y fork: documentación oficial de GitHub (ver FUENTES, 10/11/2026).
+  - Capturas (capturas/*.webp) y tiempos del Codespace: un Codespace real del curso abierto el 12/11/2026 (2 núcleos, rama develop),
+    con salidas-codespace.json. Las salidas en texto de los pasos siguen saliendo de salidas-reales.json (Linux, capturar.py).
 """
+import base64
 import html
 import json
 import re
@@ -22,6 +25,8 @@ SALIDA_HTML = AQUI / 'index.html'
 SALIDA_MD = RAIZ / '03-Entorno' / 'guias' / 'codespaces-para-el-alumnado.md'
 TITULO = 'Codespaces: tu laboratorio de Docker en la nube'
 FECHA = '10/11/2026'
+FECHA_PRUEBA = '12/11/2026'          # primer Codespace real del curso
+CAPTURAS = AQUI / 'capturas'
 REPO = 'helicr/curso-ml-ia-desarrollo-produccion'
 PROYECTO = '04-Proyecto-Base'
 STORE = 'codespaces-guia-hecho'
@@ -41,6 +46,7 @@ COMANDOS_LAB = [CMD_ENTRAR, 'docker version', CMD_PIPELINE, CMD_BUILD, CMD_LS, C
 
 # (clase de la etiqueta, texto)
 VAL = {
+    'probado': ('ok', 'Probado en un Codespace real · ' + FECHA_PRUEBA),
     'lab': ('mixto', 'Probado en Linux y Actions · Codespace sin probar'),
     'docs': ('sin', 'Según la doc. de GitHub · sin probar en un Codespace'),
     'cifras': ('mixto', 'Cifras leídas en la doc. de GitHub el ' + FECHA + ' · pueden cambiar'),
@@ -83,6 +89,23 @@ def cargar_salidas():
     return json.loads((AQUI / 'salidas-reales.json').read_text(encoding='utf-8'))
 
 
+def cargar_codespace():
+    return json.loads((AQUI / 'salidas-codespace.json').read_text(encoding='utf-8'))
+
+
+def captura(nombre, pie, alto=None):
+    """Captura real embebida (data URI): el HTML sigue abriéndose con doble clic, sin archivos aparte."""
+    datos = base64.b64encode((CAPTURAS / f'{nombre}.webp').read_bytes()).decode('ascii')
+    estilo = f' style="max-height:{alto}px;width:auto;max-width:100%;margin:0 auto"' if alto else ''
+    return (f'<figure class="shot"><img src="data:image/webp;base64,{datos}" alt="{esc(pie)}"{estilo}>'
+            f'<figcaption>{esc(pie)}</figcaption></figure>')
+
+
+def captura_md(nombre, pie):
+    """La misma captura en la versión en texto (03-Entorno/guias/), enlazada como archivo."""
+    return f'![{pie}](../guia-codespaces/capturas/{nombre}.webp)'
+
+
 # ================================================================== CSS y JS (misma familia que «Tu equipo listo para S1»)
 CSS = r"""
 :root{--bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;--blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
@@ -110,6 +133,11 @@ p{font-size:18px;line-height:1.45}
 .card.ok{border-color:rgba(52,211,153,.55)} .card.bad{border-color:rgba(251,113,133,.5)} .card.warn{border-color:rgba(251,191,36,.6)}
 .tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 .tag.mixto{color:#2b2100;background:var(--gold);border-color:var(--gold)} .tag.sin{color:var(--warn);border-color:var(--warn)}
+.tag.ok{color:#032b1c;background:var(--ok);border-color:var(--ok)}
+figure.shot{margin:8px 0 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#02101f}
+figure.shot img{display:block;width:100%;height:auto}
+figure.shot figcaption{font-size:12.5px;color:var(--muted);padding:5px 10px;border-top:1px solid var(--line)}
+.shots{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .chip{display:inline-block;font-size:14px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--blue);color:#04213f}
 .where{display:flex;gap:10px;align-items:center;margin-bottom:10px;font-size:15px;color:var(--muted)}
 .cols{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:start}
@@ -241,8 +269,11 @@ def val_html(v):
 
 
 def paso(id_, bloque, n_de, titulo, donde, por_que, cmds=None, ui=None, esperado='', real=None, real_nota='', si_falla=(), val='lab',
-         terminal_titulo='Terminal del Codespace', ui_despues=False, hecho=True, extra_md='', dividir=False):
-    """Una diapositiva de paso: qué hacer (izquierda) y «Debe salir» / «Si falla» (derecha)."""
+         terminal_titulo='Terminal del Codespace', ui_despues=False, hecho=True, extra_md='', dividir=False, capturas=()):
+    """Una diapositiva de paso: qué hacer (izquierda) y «Debe salir» / «Si falla» (derecha).
+
+    capturas: lista de grupos; cada grupo es una lista de (nombre, pie) y da una diapositiva «Así se ve» (una o dos imágenes).
+    """
     cmds = cmds or []
     ui_html = ('<ol class="ui">' + ''.join(f'<li><span>{t}</span></li>' for t in ui) + '</ol>') if ui else ''
     term = terminal(terminal_titulo, cmds) if cmds else ''
@@ -287,6 +318,15 @@ def paso(id_, bloque, n_de, titulo, donde, por_que, cmds=None, ui=None, esperado
     m += ['**Si falla:**'] + [f'- {md(t)}' for t in si_falla]
     if extra_md:
         m += ['', extra_md]
+    for g, grupo in enumerate(capturas, 1):
+        n_imgs = len(grupo)
+        alto = 540 if n_imgs == 1 else 500
+        figuras = ''.join(captura(nombre, pie, alto=alto) for nombre, pie in grupo)
+        cuerpo = (f'<div class="kick"><span>{esc(bloque)} · paso {n_de} · Así se ve</span>{val_html("probado")}</div><h1>{esc(titulo)}</h1>'
+                  + (f'<div class="shots">{figuras}</div>' if n_imgs > 1 else figuras))
+        sufijo = ' · Así se ve' + (f' ({g})' if len(capturas) > 1 else '')
+        paginas.append((titulo + sufijo, cuerpo, None, sufijo))
+        m += [''] + [captura_md(nombre, pie) for nombre, pie in grupo]
     for k, (tit, cuerpo, ident, sufijo) in enumerate(paginas):
         agregar(tit, bloque, cuerpo, '\n'.join(m) if k == 0 else '', id_=ident, pie=bloque + sufijo)
 
@@ -300,6 +340,9 @@ def libre(titulo, bloque, kick, h1, cuerpo_html, cuerpo_md, id_=None, pie=None):
 def construir_contenido():
     S = cargar_salidas()
     sal = S['salidas']
+    CS = cargar_codespace()
+    t = CS['tiempos_segundos']
+    verificar = '\n'.join(CS['verificar_sh'])
     comparar = sal['comparar']['salida']
     pipeline_fin = '\n'.join(sal['pipeline']['ultimas_lineas'][-5:])
     listo = sal['listo']['salida']
@@ -312,13 +355,14 @@ def construir_contenido():
                '<div class="card" style="max-width:1010px"><h3>Cómo usar estas diapositivas</h3>'
                '<p style="font-size:16.5px">Pulsa <b>⧉</b> junto a cada línea para copiarla y pégala en la terminal del Codespace. '
                '<b>← →</b> navegan · <b>C</b> copia todo el bloque · <b>O</b> índice · <b>F</b> pantalla completa.</p>'
-               f'<p class="small" style="margin-top:8px">Las cifras de cuota y los pasos de la interfaz salen de la documentación de GitHub ({FECHA}). Los comandos del laboratorio se ejecutaron en Linux y en GitHub Actions. '
-               '<b>Todavía no se ha abierto ningún Codespace del curso</b>: cada diapositiva de paso lo indica en su etiqueta. Si algo difiere, anota el mensaje exacto.</p></div></div>')
+               f'<p class="small" style="margin-top:8px"><b>Las capturas son de un Codespace real del curso</b>, abierto el {FECHA_PRUEBA} con la máquina de 2 núcleos y la rama <code>develop</code>: '
+               f'las diapositivas «Así se ve» enseñan lo que vas a encontrar. Lo que no se probó allí (VS Code de escritorio, cuotas) sale de la documentación de GitHub ({FECHA}) y lo dice su etiqueta. '
+               'Si algo difiere, anota el mensaje exacto.</p></div></div>')
     agregar('Portada', 'Inicio', portada,
             f'# {TITULO}\n\nGuía del alumnado de «ML e IA: de desarrollo a producción». Qué es un Codespace, cómo abrirlo (en el navegador o desde tu VS Code), '
-            f'qué haremos dentro en S2 (bloque 4) y cómo cuidar tu cuota.\n\n> **Estado.** Las cifras de cuota y los pasos de la interfaz salen de la documentación de GitHub ({FECHA}). '
-            'Los comandos del laboratorio se ejecutaron en Linux y en GitHub Actions. **Todavía no se ha abierto ningún Codespace del curso**; si algo difiere, '
-            'anota el mensaje exacto del error y envíaselo al instructor.\n\nEl mismo contenido, en diapositivas con botones de copiar: `03-Entorno/guia-codespaces/index.html`.',
+            f'qué haremos dentro en S2 (bloque 4) y cómo cuidar tu cuota.\n\n> **Estado.** Las capturas y los tiempos son de un Codespace real del curso, abierto el {FECHA_PRUEBA} '
+            f'(2 núcleos, rama `develop`). Lo que no se probó allí (VS Code de escritorio, cuotas) sale de la documentación de GitHub ({FECHA}) y lo indica cada paso. '
+            'Si algo difiere, anota el mensaje exacto del error y envíaselo al instructor.\n\nEl mismo contenido, en diapositivas con botones de copiar: `03-Entorno/guia-codespaces/index.html`.',
             pie='')
 
     # ---- 2. qué es
@@ -329,21 +373,21 @@ def construir_contenido():
           '<li>Trae <b>Docker ya funcionando</b> (un motor propio dentro del Codespace): no instalas Docker Desktop.</li>'
           '<li>Todos usamos el mismo Python 3.11 y los mismos comandos, también quien no puede instalar programas.</li></ul></div>'
           '<div><div class="card ok"><h3>Para qué lo usamos</h3><p style="font-size:16.5px">Para <b>lo que necesita Docker</b>: construir la imagen de la API y ejecutar el contenedor '
-          '(S2, bloque 4, 25 min). En S3 podría servir para un laboratorio de Kubernetes con <code>kind</code> (pendiente).</p></div>'
+          '(S2, bloque 4, 25 min). Trae también <code>kind</code> y <code>kubectl</code> para un laboratorio de Kubernetes en S3 (el laboratorio está pendiente).</p></div>'
           '<div class="card warn" style="margin-top:12px"><h3 style="color:var(--warn)">Lo que conviene tener claro</h3><ul class="p s">'
           '<li><b>No sustituye a tu entorno local</b>: S1 y los bloques 1 a 3 de S2 siguen en tu equipo con <code>env-ia-mlops</code>.</li>'
           '<li>Es <b>temporal</b>: si lo borras, lo que no hayas subido a un repositorio desaparece.</li>'
           '<li>Tiene <b>cuota mensual</b> gratuita; hay que pararlo y borrarlo (diapositivas del final del curso de uso).</li></ul></div></div></div>',
           '**Qué es.** Un ordenador Linux que GitHub te presta en la nube, con VS Code en el navegador o conectado a tu VS Code. Se crea a partir de un repositorio y de '
           '`.devcontainer/devcontainer.json`. Trae Docker funcionando (un motor propio dentro del Codespace): no instalas Docker Desktop. Todos usamos el mismo Python 3.11 y los mismos comandos.\n\n'
-          '**Para qué lo usamos.** Para lo que necesita Docker: construir la imagen de la API y ejecutar el contenedor (S2, bloque 4, 25 min). En S3 podría servir para un laboratorio '
-          'de Kubernetes con `kind` (pendiente).\n\n**Conviene tener claro:**\n- No sustituye a tu entorno local: S1 y los bloques 1 a 3 de S2 siguen en tu equipo con `env-ia-mlops`.\n'
+          '**Para qué lo usamos.** Para lo que necesita Docker: construir la imagen de la API y ejecutar el contenedor (S2, bloque 4, 25 min). Trae también `kind` y `kubectl` '
+          'para un laboratorio de Kubernetes en S3 (el laboratorio está pendiente).\n\n**Conviene tener claro:**\n- No sustituye a tu entorno local: S1 y los bloques 1 a 3 de S2 siguen en tu equipo con `env-ia-mlops`.\n'
           '- Es temporal: si lo borras, lo que no hayas subido a un repositorio desaparece.\n- Tiene cuota mensual gratuita: hay que pararlo y borrarlo.')
 
     # ---- 3. dónde se hace cada cosa
     filas = [
         ('Tu equipo', '<code>env-ia-mlops</code> (conda), VS Code, Git', 'S1 completa · S2 bloques 1 a 3: API, errores, comparar predicciones'),
-        ('<b>Codespace</b>', 'Python 3.11 + Docker (+ <code>kind</code> y <code>kubectl</code> en S3, pendiente)', '<b>S2 bloque 4</b>: imagen y contenedor'),
+        ('<b>Codespace</b>', 'El mismo <code>env-ia-mlops</code> (Python 3.11) + Docker + <code>kind</code> y <code>kubectl</code>', '<b>S2 bloque 4</b>: imagen y contenedor (S3: Kubernetes, pendiente)'),
         ('GitHub Actions', 'Un servidor de GitHub que ejecuta el workflow <code>ci.yml</code>', 'S2 bloque 5: el CI construye la imagen y prueba el contenedor'),
         ('Cloud Shell (respaldo)', 'Terminal de Google Cloud en el navegador', 'Solo si falla el Codespace; por verificar antes de impartir'),
     ]
@@ -385,7 +429,7 @@ def construir_contenido():
           '<li>Una sesión de 4 h con el Codespace abierto todo el rato son 8 horas de núcleo (cálculo: 2 × 4), el 7 % de 120.</li>'
           '<li><b>Parado no gasta cómputo</b>, pero su disco cuenta mientras exista, aunque esté parado. Y borrarlo no devuelve el disco que ya contó este mes.</li>'
           '<li>GitHub avisa por correo al llegar al 75, 90 y 100 %.</li>'
-          '<li>Deja la máquina por defecto (la más pequeña): para S2 debería bastar <i>(sin probar)</i>.</li></ul></div></div>',
+          f'<li>Deja la máquina por defecto (la más pequeña, <b>2 núcleos</b>): el bloque 4 entero funcionó en ella el {FECHA_PRUEBA}.</li></ul></div></div>',
           '| Cuenta | Horas de núcleo al mes | Disco al mes |\n|---|---|---|\n| GitHub Free (personal) | 120 | 15 GB-mes |\n| GitHub Pro | 180 | 20 GB-mes |\n'
           '| Estudiante verificado (Student Developer Pack) | 180 | 20 GB-mes |\n| Cuenta de organización o empresa | ninguna gratis | — |\n\n'
           f'*Cifras leídas en la documentación de GitHub el {FECHA}; pueden cambiar.*\n\n'
@@ -393,58 +437,84 @@ def construir_contenido():
           '- Una sesión de 4 h con el Codespace abierto todo el rato son 8 horas de núcleo (cálculo: 2 × 4), el 7 % de 120.\n'
           '- Parado no gasta cómputo, pero su disco cuenta mientras exista. Borrarlo no devuelve el disco que ya contó este mes.\n'
           '- GitHub avisa por correo al llegar al 75, 90 y 100 %. Sin método de pago, al agotar una cuota se bloquea hasta el ciclo siguiente.\n'
-          '- Deja la máquina por defecto (la más pequeña): para S2 debería bastar (sin probar).')
+          f'- Deja la máquina por defecto (la más pequeña, 2 núcleos): el bloque 4 entero funcionó en ella el {FECHA_PRUEBA}.')
 
     # ---- 6. crear el Codespace
     paso('crear', 'B · Abrir el Codespace', '1 de 8', 'Crear el Codespace del curso', 'tu navegador, con tu sesión de GitHub',
          'Se crea desde la página del repositorio, eligiendo la rama <code>develop</code>.',
          ui=[f'Abre <code>github.com/{REPO}</code> e inicia sesión con tu cuenta personal.',
              'En el desplegable de ramas elige <code>develop</code>.',
-             'Pulsa el botón verde <b>Code</b> y la pestaña <b>Codespaces</b>.',
-             'Pulsa <b>+</b> (opciones por defecto). Si quieres ver rama, configuración y máquina antes de crear: <b>⋯ → New with options</b>.',
-             'Si GitHub pregunta qué configuración usar, elige la del curso: <i>Curso ML e IA (S2: API y Docker)</i>.'],
+             'Pulsa el botón verde <b>Code</b> y la pestaña <b>Codespaces</b>: verás <b>Create codespace on develop</b>.',
+             'Mejor por <b>⋯ → New with options…</b>: comprueba la rama (<code>develop</code>), la configuración (solo hay una: <i>Curso ML e IA: de desarrollo a producción</i>), '
+             'la <b>región</b> (elige la más cercana: desde Perú, <i>US East</i>) y la máquina (<b>2-core</b>). Pulsa <b>Create codespace</b>.'],
          cmds=[dict(c='https://github.com/codespaces/new', nota='Atajo: elige repositorio y rama en esta página (también vale escribir codespace.new).')],
          terminal_titulo='Barra de direcciones del navegador',
-         esperado='Se abre una pestaña nueva con <b>VS Code en el navegador</b> y el Codespace empieza a prepararse. La primera vez puede tardar unos minutos porque construye el contenedor. '
-                  'GitHub indica antes <b>qué cuenta paga</b> el Codespace: debe ser la tuya.',
+         esperado=f'Se abre una pestaña nueva con <b>VS Code en el navegador</b>. La primera vez tarda unos <b>{round(t["crear_y_conectar_primera_vez"] / 60)} minutos</b> en construir el contenedor y conectar '
+                  f'(abajo a la izquierda pone «Abriendo remoto…»), y después unos <b>{round(t["postcreate_kind_y_entorno"] / 60)} minutos</b> más en instalar <code>kind</code> y el entorno <code>env-ia-mlops</code>. '
+                  'Al pie del menú de Codespaces, GitHub dice <b>qué cuenta paga</b>: debe ser la tuya.',
          si_falla=['No puedes crear uno o se bloquea: revisa tu uso y cuota (diapositiva «Cuánto es gratis») y que entras con tu cuenta personal.',
+                   '«Maximum running codespaces reached»: ya tienes otro encendido. Páralo en <code>github.com/codespaces</code> (⋯ → <b>Stop codespace</b>) y repite.',
                    'Pide permiso para hacer un fork: el repositorio del curso es público; acepta. Solo tienes lectura, y el fork se crea cuando haces tu primer commit.',
                    'Aparece «modo recuperación»: ve a «Si algo falla».'],
-         val='docs', hecho=True)
+         val='probado', hecho=True,
+         capturas=[[('01-pestana-codespaces', 'Code → pestaña Codespaces en la rama develop. Al pie: quién paga el uso (aquí, la cuenta del instructor; en tu caso, la tuya).')],
+                   [('02-nuevo-con-opciones', '⋯ → New with options: rama, la única configuración del curso, región y máquina de 2 núcleos.')]])
+
+    # ---- 6b. mientras se crea y el aviso de confianza
+    libre('Mientras se crea', 'B · Abrir el Codespace', 'B · Abrir el Codespace · paso 1 · lo que verás', 'Mientras se crea… y el primer aviso',
+          '<div class="shots">'
+          + captura('03-construyendo', f'Construyendo: «Abriendo remoto…» abajo a la izquierda. La primera vez, unos {round(t["crear_y_conectar_primera_vez"] / 60)} minutos.', alto=300)
+          + captura('04-confiar', 'Al conectar: «¿Confía en los autores de los archivos de esta carpeta?» → Confiar en la carpeta y continuar.', alto=300)
+          + '</div><div class="two" style="margin-top:12px"><div class="card"><p style="font-size:15.5px">No cierres la pestaña mientras se construye. Cuando conecta, abajo a la izquierda pasa a decir '
+          '<b>Codespaces: &lt;nombre&gt;</b> y aparece el Explorador con las carpetas del curso.</p></div>'
+          '<div class="card ok"><p style="font-size:15.5px">VS Code pregunta si <b>confías en los autores</b> de la carpeta. Es el repositorio del curso: pulsa <b>Confiar en la carpeta y continuar</b>. '
+          'Sin eso, la terminal no se abre (modo restringido).</p>'
+          f'<p class="small" style="margin-top:6px">{val_html("probado")}</p></div></div>',
+          f'Mientras se construye, abajo a la izquierda pone «Abriendo remoto…» (la primera vez, unos {round(t["crear_y_conectar_primera_vez"] / 60)} minutos). No cierres la pestaña. '
+          'Cuando conecta, pasa a decir «Codespaces: <nombre>» y aparece el Explorador con las carpetas del curso.\n\n'
+          'VS Code pregunta **«¿Confía en los autores de los archivos de esta carpeta?»**. Es el repositorio del curso: pulsa **Confiar en la carpeta y continuar**. '
+          'Sin eso, la terminal no se abre (modo restringido).\n\n'
+          + captura_md('03-construyendo', 'Construyendo el Codespace') + '\n\n' + captura_md('04-confiar', 'Confiar en los autores de la carpeta'))
 
     # ---- 7. qué lleva el devcontainer
     libre('Qué lleva el .devcontainer', 'B · Abrir el Codespace', 'B · Abrir el Codespace · mientras se crea', 'Qué se prepara mientras esperas',
-          '<div class="card"><table class="dens"><tr><th>En <code>.devcontainer/devcontainer.json</code></th><th>Qué consigue</th></tr>'
-          '<tr><td><code>image: mcr.microsoft.com/devcontainers/python:1-3.11-bookworm</code></td><td>Python 3.11 (el de <code>environment.yml</code>) sobre Debian «bookworm».</td></tr>'
-          '<tr><td><code>features: docker-in-docker:2</code></td><td>Un motor Docker propio dentro del Codespace: <code>docker build</code> y <code>docker run</code> funcionan sin instalar nada.</td></tr>'
-          '<tr><td><code>postCreateCommand</code></td><td><code>pip install -r 04-Proyecto-Base/requirements-dev.txt</code>: las mismas versiones que <code>env-ia-mlops</code>, con pip.</td></tr>'
-          '<tr><td><code>forwardPorts: [8080]</code></td><td>Reenvía el puerto de la API (etiqueta «API ia-mlops») para abrirla en el navegador.</td></tr>'
-          '<tr><td><code>extensions</code></td><td>Python (<code>ms-python.python</code>) y Docker (<code>ms-azuretools.vscode-docker</code>) dentro del editor.</td></tr></table></div>'
-          '<div class="two" style="margin-top:12px"><div class="card"><h3>Dos consecuencias</h3><ul class="p s">'
-          '<li>La terminal se abre en la <b>raíz del repositorio</b>, no en el proyecto: entra con <code>cd 04-Proyecto-Base</code>.</li>'
-          '<li>Tú no editas este archivo. Si falla, GitHub abre el Codespace en <b>modo recuperación</b> y te enseña el registro de creación.</li></ul></div>'
-          '<div class="card warn"><h3 style="color:var(--warn)">Sin probar</h3><p style="font-size:15px">Este archivo está en la raíz del repositorio (rama <code>develop</code>) y <b>nadie lo ha abierto todavía en un Codespace</b>. '
-          'Es la parte con más riesgo de toda la guía. Si algo no arranca, apunta el mensaje exacto del registro de creación.</p></div></div>',
-          '| En `.devcontainer/devcontainer.json` | Qué consigue |\n|---|---|\n'
-          '| `image: mcr.microsoft.com/devcontainers/python:1-3.11-bookworm` | Python 3.11 (el de `environment.yml`) sobre Debian «bookworm». |\n'
-          '| `features: docker-in-docker:2` | Un motor Docker propio dentro del Codespace: `docker build` y `docker run` funcionan sin instalar nada. |\n'
-          '| `postCreateCommand` | `pip install -r 04-Proyecto-Base/requirements-dev.txt`: las mismas versiones que `env-ia-mlops`, con pip. |\n'
-          '| `forwardPorts: [8080]` | Reenvía el puerto de la API (etiqueta «API ia-mlops»). |\n'
-          '| `extensions` | Python y Docker dentro del editor. |\n\n'
-          'La terminal se abre en la raíz del repositorio: entra con `cd 04-Proyecto-Base`. Tú no editas este archivo. Si falla, GitHub abre el Codespace en modo recuperación.\n\n'
-          '> **Sin probar.** Nadie ha abierto todavía un Codespace con este archivo. Es la parte con más riesgo de toda la guía.')
+          '<div class="cols" style="grid-template-columns:1.25fr .75fr"><div class="card"><table class="dens"><tr><th>En <code>.devcontainer/</code></th><th>Qué consigue</th></tr>'
+          '<tr><td><code>image: mcr.microsoft.com/devcontainers/miniconda:3</code></td><td>Linux con conda, como en tu equipo.</td></tr>'
+          '<tr><td><code>docker-in-docker:2</code> con <code>"moby": false</code></td><td>Un motor Docker propio dentro del Codespace: <code>docker build</code> y <code>docker run</code> sin instalar nada.</td></tr>'
+          '<tr><td><code>kubectl-helm-minikube:1</code></td><td><code>kubectl</code> (para S3).</td></tr>'
+          '<tr><td><code>postcreate.sh</code></td><td>Instala <code>kind</code> y crea <code>env-ia-mlops</code> con las versiones del curso, y ejecuta <code>verificar.sh</code>.</td></tr>'
+          '<tr><td><code>forwardPorts: [8080, 5000]</code></td><td>Reenvía la API («API ia-mlops (S2)») y MLflow («MLflow UI»).</td></tr>'
+          '<tr><td><code>extensions</code></td><td>Python, Jupyter, Docker, Kubernetes, GitHub Actions y un visor de SQLite.</td></tr></table></div>'
+          f'<div class="side"><div class="card ok"><h3>Lo que comprueba al terminar</h3><pre class="real">{esc(verificar)}</pre>'
+          f'<p class="rn">Registro de creación real ({FECHA_PRUEBA}). «hello» muestra la primera línea de <code>docker run hello-world</code>: descarga la imagen y funciona.</p></div>'
+          '<div class="card"><ul class="p s"><li>La terminal se abre en la <b>raíz del repositorio</b> y con <code>(env-ia-mlops)</code> activado: entra con <code>cd 04-Proyecto-Base</code>.</li>'
+          '<li>Tú no editas estos archivos. Si fallan, GitHub abre el Codespace en <b>modo recuperación</b>.</li></ul></div></div></div>',
+          '| En `.devcontainer/` | Qué consigue |\n|---|---|\n'
+          '| `image: mcr.microsoft.com/devcontainers/miniconda:3` | Linux con conda, como en tu equipo. |\n'
+          '| `docker-in-docker:2` con `"moby": false` | Un motor Docker propio dentro del Codespace: `docker build` y `docker run` sin instalar nada. |\n'
+          '| `kubectl-helm-minikube:1` | `kubectl` (para S3). |\n'
+          '| `postcreate.sh` | Instala `kind` y crea `env-ia-mlops` con las versiones del curso, y ejecuta `verificar.sh`. |\n'
+          '| `forwardPorts: [8080, 5000]` | Reenvía la API («API ia-mlops (S2)») y MLflow («MLflow UI»). |\n'
+          '| `extensions` | Python, Jupyter, Docker, Kubernetes, GitHub Actions y un visor de SQLite. |\n\n'
+          f'**Lo que comprueba al terminar** (registro de creación real, {FECHA_PRUEBA}):\n\n```text\n{verificar}\n```\n\n'
+          'La terminal se abre en la raíz del repositorio y con `(env-ia-mlops)` activado: entra con `cd 04-Proyecto-Base`. Tú no editas estos archivos. '
+          'Si fallan, GitHub abre el Codespace en modo recuperación.')
 
     # ---- 8. orientarse y comprobar
     paso('orientar', 'B · Abrir el Codespace', '2 de 8', 'Orientarte y comprobar Docker', 'la terminal del Codespace',
          'Cuando termine de prepararse, abre una terminal y comprueba lo mínimo antes de seguir.',
          ui=['Abre la terminal: menú <b>☰ → Terminal → Nuevo terminal</b> (<i>New Terminal</i> si está en inglés). Los comandos se ejecutan <b>en el Codespace</b>, no en tu equipo.',
-             'Junto a la terminal verás la pestaña <b>PORTS</b> (puertos): la usaremos después.'],
+             'El indicador debe empezar por <code>(env-ia-mlops)</code>, como en tu equipo.',
+             'Junto a la terminal verás la pestaña <b>Puertos</b> (<i>PORTS</i>): la usaremos después.'],
          cmds=[dict(c=CMD_ENTRAR), dict(c='python --version'), dict(c='docker version')],
-         esperado='<code>Python 3.11.x</code>. <code>docker version</code> debe mostrar dos bloques: <b>Client</b> y <b>Server</b>. Sin Server, Docker no ha arrancado.',
-         si_falla=['<code>docker: command not found</code>: la configuración no se aplicó. Paleta de comandos (<b>F1</b>) → <b>Codespaces: Rebuild Container</b>.',
+         esperado=f'<code>Python {CS["versiones"]["python"]}</code>. <code>docker version</code> debe mostrar dos bloques: <b>Client</b> y <b>Server</b> '
+                  f'(en el Codespace de prueba, Docker Engine Community {CS["versiones"]["docker"]}). Sin Server, Docker no ha arrancado.',
+         si_falla=['El indicador dice <code>(base)</code> en vez de <code>(env-ia-mlops)</code>: <code>conda activate env-ia-mlops</code>.',
+                   '<code>docker: command not found</code>: la configuración no se aplicó. Paleta de comandos (<b>F1</b>) → <b>Codespaces: Rebuild Container</b>.',
                    'Solo aparece Client o dice <code>Cannot connect to the Docker daemon</code>: repite al cabo de un minuto; si sigue, reconstruye el contenedor.',
                    'Sigue sin ir: usa el bloque 5 (Actions), que construye la imagen por ti, y <b>anota el mensaje exacto</b>.'],
-         val='docs')
+         val='probado',
+         capturas=[[('06-docker-version', 'docker version en el Codespace: Client y Server, y el indicador (env-ia-mlops) en la carpeta 04-Proyecto-Base.')]])
 
     # ---- 9. navegador o escritorio
     libre('Navegador o VS Code de escritorio', 'B · Abrir el Codespace', 'B · Abrir el Codespace', 'En el navegador o en tu VS Code: el mismo Codespace',
@@ -495,8 +565,8 @@ def construir_contenido():
           '<li>¿Cuánto ocupa la imagen?</li>'
           '<li>Si cambias una línea de <code>ia_mlops/</code> y vuelves a construir, ¿qué capas se reutilizan?</li>'
           '<li>¿Por qué el contenedor escucha en <code>0.0.0.0</code> y no en <code>127.0.0.1</code>?</li></ul></div>'
-          '<div class="card"><p class="small" style="font-size:14.5px">Es el bloque 4 de la guía de laboratorio de S2. Las salidas de las siguientes diapositivas son reales, '
-          'obtenidas ejecutando la API directamente en Linux; la construcción de la imagen se verificó en GitHub Actions.</p></div></div></div>',
+          f'<div class="card"><p class="small" style="font-size:14.5px">Es el bloque 4 de la guía de laboratorio de S2. Las diapositivas «Así se ve» son capturas del Codespace real ({FECHA_PRUEBA}); '
+          'las salidas en texto de los pasos son las de Linux (las mismas cifras).</p></div></div></div>',
           '1. **Comprobar Docker** (`docker version`): Client y Server.\n2. **Entrenar** el modelo (`python -m ia_mlops.pipeline`): la imagen necesita `models/`.\n'
           '3. **Construir la imagen** `retencion-api:local` con el Dockerfile del proyecto.\n4. **Arrancar el contenedor** y preguntarle a `/listo`.\n'
           '5. **Comparar** las predicciones del contenedor con las del paquete, joblib y MLflow.\n6. **Inspeccionar**: registros (`docker logs`) y usuario (`id -u`, no root).\n7. **Limpiar**: borrar el contenedor.\n\n'
@@ -506,24 +576,28 @@ def construir_contenido():
     paso('pipeline', 'C · Laboratorio de S2', '4 de 8', 'Entrenar el modelo en el Codespace', 'la terminal del Codespace, en 04-Proyecto-Base',
          'La imagen copia <code>models/modelo_mlflow/</code>, y esa carpeta no viaja con el repositorio: se genera. Por eso se entrena aquí antes de construir.',
          cmds=[dict(c=CMD_PIPELINE)],
-         esperado='Termina sin error y deja en <code>models/</code> el modelo (<code>modelo_mlflow/</code>, <code>modelo.joblib</code>) y <code>metadatos.json</code>. Con la muestra de 150 clientes tardó unos '
-                  f'{round(sal["pipeline"]["segundos"])} s en Linux. Estas son sus últimas líneas:',
+         esperado='Termina sin error y deja en <code>models/</code> el modelo (<code>modelo_mlflow/</code>, <code>modelo.joblib</code>) y <code>metadatos.json</code>. '
+                  f'En el Codespace tardó {t["pipeline"]} s. Últimas líneas:',
          real=[pipeline_fin],
-         real_nota='Salida real en Linux (' + S['meta']['fecha'] + '), ruta recortada (…). En tu Codespace los números deberían coincidir; si no, anótalo.',
-         si_falla=['<code>ModuleNotFoundError</code>: no terminó la instalación de dependencias del Codespace. Ejecuta <code>pip install -r requirements-dev.txt</code> y repite.',
-                   '<code>No such file or directory</code> al ejecutar el módulo: no estás en <code>04-Proyecto-Base</code> (<code>pwd</code>).'],
-         val='lab', dividir=False)
+         real_nota='Salida real en Linux (' + S['meta']['fecha'] + '), ruta recortada (…); en el Codespace, el mismo modelo. Los avisos WARNING de MLflow son normales.',
+         si_falla=['<code>ModuleNotFoundError</code>: la terminal no está en el entorno del curso. <code>conda activate env-ia-mlops</code> y repite.',
+                   '<code>No module named ia_mlops</code>: no estás en <code>04-Proyecto-Base</code> (<code>pwd</code>).'],
+         val='probado', dividir=False,
+         capturas=[[('07-pipeline', f'Final del pipeline en el Codespace: «Mejor modelo: regresion_logistica», en unos {t["pipeline"]} s.')]])
 
     # ---- 13. construir la imagen
     paso('build', 'C · Laboratorio de S2', '5 de 8', 'Construir la imagen', 'la terminal del Codespace, en 04-Proyecto-Base',
          'Docker lee el Dockerfile y crea la imagen <code>retencion-api:local</code>: Python 3.11, las dependencias fijadas, el paquete y el modelo, sin root.',
          cmds=[dict(c=CMD_BUILD), dict(c=CMD_LS)],
-         esperado='El build termina sin error y <code>docker image ls</code> lista <code>retencion-api</code> con la etiqueta <code>local</code>. '
-                  'En GitHub Actions la imagen ocupó <b>826 MB</b> en disco. La primera vez descarga la imagen base; si repites el build, las capas sin cambios salen de la caché.',
+         esperado=f'El build termina con <code>FINISHED</code> (la primera vez, {t["docker_build_primera_vez"]} s en el Codespace; si repites, las capas sin cambios salen de la caché). '
+                  f'<code>docker image ls</code> lista <code>retencion-api:local</code>: con Docker 29 las columnas son <b>DISK USAGE</b> ({CS["imagen"]["disk_usage"]}, lo que ocupa en disco, igual que en GitHub Actions) '
+                  f'y <b>CONTENT SIZE</b> ({CS["imagen"]["content_size"]}, comprimida).',
          si_falla=['<code>COPY failed … models/modelo_mlflow</code>: falta entrenar. Ejecuta antes <code>python -m ia_mlops.pipeline</code>.',
                    '<code>docker: command not found</code> o no conecta con el daemon: vuelve a «Orientarte y comprobar Docker».',
                    'Un error al descargar la imagen base: repite; si persiste, anótalo y usa el bloque 5 (Actions).'],
-         val='lab')
+         val='probado',
+         capturas=[[('08-docker-build', 'docker build en el Codespace: 14 pasos FINISHED; la instalación de dependencias (paso 4/8) es lo que más tarda.')],
+                   [('09-image-ls', f'docker image ls retencion-api:local: DISK USAGE {CS["imagen"]["disk_usage"]} · CONTENT SIZE {CS["imagen"]["content_size"]}.')]])
 
     # ---- 14. arrancar y probar
     paso('run', 'C · Laboratorio de S2', '6 de 8', 'Arrancar el contenedor y comparar', 'la terminal del Codespace, en 04-Proyecto-Base',
@@ -531,23 +605,28 @@ def construir_contenido():
          cmds=[dict(c=CMD_RUN), dict(c=CMD_LISTO, nota='Si da «Connection reset by peer» justo después del run, espera unos segundos y repite.'), dict(c=CMD_COMPARAR)],
          esperado=f'<code>curl</code> responde <code>{esc(listo)}</code>. La comparación termina con «Todos los caminos dan la misma probabilidad», y la última fila es <b>la API</b> (el contenedor):',
          real=[comparar],
-         real_nota='Salida real en Linux con la API sin contenedor. Según la versión de MLflow puede aparecer antes una línea INFO: es informativa.',
+         real_nota='Salida real en Linux con la API sin contenedor; en el Codespace, contra el contenedor, dio lo mismo (captura). Según la versión de MLflow puede aparecer antes una línea INFO: es informativa.',
          si_falla=['<code>port is already allocated</code> o <code>container name "/api" is already in use</code>: <code>docker rm -f api</code> y repite.',
                    '<code>/listo</code> da 503: lee el campo <code>detalle</code> (falta el modelo o el esquema no coincide).',
                    'La comparación dice <code>No se pudo comparar</code>: falta el modelo o la base; ejecuta el pipeline.'],
-         val='lab', dividir=True)
+         val='probado', dividir=True,
+         capturas=[[('10-run-listo', 'Justo después del run, el primer curl da «Connection reset by peer»; seis segundos después, {"estado":"listo"}.'),
+                    ('13-comparar', f'comparar contra el contenedor: los cuatro caminos coinciden (diferencia 0), en {t["comparar"]} s.')]])
 
     # ---- 15. ver la API en el navegador
     paso('puertos', 'C · Laboratorio de S2', '7 de 8 · opcional', 'Ver la API en el navegador (puertos)', 'el Codespace, panel PORTS',
          'Con <code>curl</code> no necesitas esto: <code>127.0.0.1:8080</code> ya es el Codespace. Los puertos sirven para abrir <code>/docs</code> en tu navegador.',
-         ui=['Abre el panel <b>PORTS</b>, junto a la terminal. Debe listar el <b>8080</b> con la etiqueta «API ia-mlops».',
-             'Si no aparece: <b>Add port</b> → <code>8080</code>.',
-             'Abre la dirección del puerto en el navegador (icono del globo o clic derecho → <i>Open in Browser</i>) y añade <code>/docs</code>.',
+         ui=['Abre el panel <b>Puertos</b> (<i>PORTS</i>), junto a la terminal. Con el contenedor en marcha lista el <b>8080</b> como «API ia-mlops (S2)» con un punto verde.',
+             'Si no aparece: <b>Agregar puerto</b> (<i>Add port</i>) → <code>8080</code>.',
+             'Abre la dirección reenviada (<code>https://&lt;tu-codespace&gt;-8080.app.github.dev</code>; icono del globo o clic derecho → abrir en el navegador) y añade <code>/docs</code>.',
              'Verás la página interactiva de la API: prueba <code>/salud</code>, <code>/listo</code>, <code>/modelo</code> y <code>/predecir</code>.'],
-         esperado='La página de documentación de la API. La visibilidad del puerto debe ser <b>privada</b> (compruébalo en la columna «Visibility»): solo tu cuenta de GitHub puede abrirla.',
+         esperado='La página de documentación de la API, servida <b>desde el contenedor</b>. La visibilidad del puerto debe ser <b>privada</b> (columna «Visibilidad»: <i>Private</i>): solo tu cuenta de GitHub puede abrirla. '
+                  'Cada visita aparece después en <code>docker logs api</code>.',
          si_falla=['No carga: comprueba que el contenedor sigue vivo (<code>docker ps</code>) y que el puerto es el 8080.',
                    '<b>No pongas el puerto en «Public»</b>: cualquiera con la dirección llegaría a la API, que no tiene autenticación.'],
-         val='docs')
+         val='probado',
+         capturas=[[('11-puertos', 'Panel Puertos: el 8080 «API ia-mlops (S2)» reenviado y privado; el 5000 es el de MLflow.')],
+                   [('12-api-docs', 'La dirección reenviada + /docs: la documentación interactiva de la API del contenedor.')]])
 
     # ---- 16. inspeccionar y limpiar
     paso('limpiar', 'C · Laboratorio de S2', '8 de 8', 'Inspeccionar el contenedor y limpiar', 'la terminal del Codespace',
@@ -558,7 +637,9 @@ def construir_contenido():
          si_falla=['<code>container … is not running</code>: el contenedor murió. <code>docker logs api</code> dice por qué (p. ej., sin modelo).',
                    'Si quieres repetir desde cero: <code>docker rm -f api</code> y vuelve a «Arrancar el contenedor».',
                    'Para la tarea, pega estas salidas en la plantilla de evidencias de S2.'],
-         val='lab')
+         val='probado',
+         capturas=[[('14-logs', 'docker logs api: una línea JSON por petición, con su id; aparecen también las visitas a /docs desde el navegador.')],
+                   [('15-id-rm', f'docker exec api id -u → {CS["id_u"]} (no es root); docker rm -f api → api.')]])
 
     # ---- 17. guardar el trabajo
     libre('Guardar tu trabajo', 'D · Cuidarlo', 'D · Cuidarlo', 'Guardar tu trabajo: el Codespace es temporal',
@@ -599,9 +680,22 @@ def construir_contenido():
           '3. **Bórralo.** Parado y sin usar se borra solo a los 30 días (configurable de 0 a 30; con 0 se borra en cuanto se para y pierdes lo no guardado). Al terminar una práctica: ⋯ → Delete en `github.com/codespaces`.\n\n'
           f'El disco cuenta mientras el Codespace exista, aunque esté parado, y borrarlo no devuelve el disco que ya contó este mes. *Cifras leídas en la documentación de GitHub el {FECHA}.*')
 
+    # ---- 18b. parar desde la web (capturas)
+    libre('Parar desde la web', 'D · Cuidarlo', 'D · Cuidarlo · así se ve', 'Parar (o borrar) desde github.com/codespaces',
+          '<div class="shots">'
+          + captura('16-menu-codespace', 'Menú ⋯ del Codespace: Stop codespace, Export changes to a branch, abrir en el navegador o en VS Code… (Delete está más abajo).', alto=330)
+          + captura('17-parado', '«Codespace … stopped»: ya no gasta cómputo; su disco sigue contando hasta que lo borres.', alto=330)
+          + f'</div><p class="small" style="margin-top:10px">{val_html("probado")} · Fíjate en <b>develop*</b> y «uncommitted changes»: el Codespace guarda tus cambios sin confirmar mientras exista.</p>',
+          'En `github.com/codespaces`, menú ⋯ del Codespace: **Stop codespace**, **Export changes to a branch**, abrir en el navegador o en VS Code… (Delete está más abajo). '
+          'Al pararlo aparece «Codespace … stopped»: ya no gasta cómputo, pero su disco sigue contando hasta que lo borres.\n\n'
+          + captura_md('16-menu-codespace', 'Menú del Codespace en github.com/codespaces') + '\n\n' + captura_md('17-parado', 'Codespace parado'))
+
     # ---- 19. si algo falla
     fallos = [
-        ('«This codespace is currently running in recovery mode…»', 'El contenedor no se pudo construir con la configuración.', '<b>View creation log</b> y anota el error; luego <b>F1 → Codespaces: Rebuild Container</b> (si no, <i>Full Rebuild</i>).'),
+        ('«This codespace is currently running in recovery mode…»', 'El contenedor no se pudo construir con la configuración.', '<b>View creation log</b> y anota el error; avisa al instructor. Tras corregirlo: <b>F1 → Codespaces: Rebuild Container</b>.'),
+        ('«¿Confía en los autores de los archivos de esta carpeta?»', 'VS Code abre las carpetas nuevas en modo restringido.', 'Es el repositorio del curso: <b>Confiar en la carpeta y continuar</b>.'),
+        ('El indicador dice <code>(base)</code>', 'La terminal no está en el entorno del curso.', '<code>conda activate env-ia-mlops</code>'),
+        ('«Maximum running codespaces reached»', 'Tienes otro Codespace encendido.', 'Páralo en <code>github.com/codespaces</code> (⋯ → Stop codespace).'),
         ('<code>docker: command not found</code> / <code>Cannot connect to the Docker daemon</code>', 'Docker no está disponible o no ha arrancado.', 'Repite al cabo de un minuto; <i>Rebuild Container</i>; si no, bloque 5 (Actions).'),
         ('<code>COPY failed … models/modelo_mlflow</code>', 'Falta entrenar.', '<code>python -m ia_mlops.pipeline</code> y vuelve a construir.'),
         ('<code>Connection reset by peer</code> justo tras <code>docker run</code>', 'La API aún está arrancando.', 'Espera unos segundos y repite el <code>curl</code>.'),
@@ -615,10 +709,22 @@ def construir_contenido():
           '| Lo que ves | Causa | Qué hacer |\n|---|---|---|\n' + '\n'.join(f'| {md(a)} | {md(b)} | {md(c)} |' for a, b, c in fallos) +
           '\n\nSiempre: copia el mensaje completo como texto y envíalo con el comando que ejecutaste. Nunca envíes contraseñas, tokens ni capturas con tu sesión abierta.')
 
+    # ---- 19b. el modo recuperación, visto
+    libre('Así se ve el modo recuperación', 'D · Cuidarlo', 'D · Cuidarlo · así se ve', 'Así se ve el modo recuperación',
+          '<div class="cols" style="grid-template-columns:1.2fr .8fr">'
+          + captura('05-modo-recuperacion', 'El aviso y la terminal en modo recuperación: el contenedor del curso no se construyó.', alto=420)
+          + '<div class="side"><div class="card"><p style="font-size:15.5px">Le pasó al propio curso la primera vez que se abrió (12/11/2026): la imagen base había cambiado y la '
+          'configuración de Docker ya no servía. <b>Ya está corregido.</b></p></div>'
+          '<div class="card ok"><h3>Qué haces tú</h3><ul class="p s"><li><b>View Creation Log</b> y copia las líneas con <code>ERROR</code>.</li>'
+          '<li>Envíaselas al instructor con la hora.</li><li>Mientras tanto, plan B: el bloque 5 (GitHub Actions) construye la imagen por ti.</li></ul></div></div></div>',
+          'Le pasó al propio curso la primera vez que se abrió (12/11/2026): la imagen base había cambiado y la configuración de Docker ya no servía. Ya está corregido. '
+          'Si te ocurre: **View Creation Log**, copia las líneas con `ERROR` y envíaselas al instructor; mientras tanto, el bloque 5 (GitHub Actions) construye la imagen por ti.\n\n'
+          + captura_md('05-modo-recuperacion', 'Modo recuperación'))
+
     # ---- 20. más allá y plan B
     libre('Más allá de S2 y plan B', 'E · Cierre', 'E · Cierre', 'Más allá de S2 y qué hacer si no puedes usarlo',
-          '<div class="two"><div class="card"><h3>S3: Kubernetes (pendiente)</h3><p style="font-size:16px">El programa prevé, <b>si hay tiempo</b>, un laboratorio acotado de Kubernetes en el Codespace con <code>kind</code> y <code>kubectl</code>. '
-          '<b>La configuración actual no los incluye</b>: hay que añadirlos al <code>devcontainer.json</code> y probarlos. No hay nada que preparar todavía; esta guía se ampliará.</p></div>'
+          '<div class="two"><div class="card"><h3>S3: Kubernetes (pendiente)</h3><p style="font-size:16px">El programa prevé, <b>si hay tiempo</b>, un laboratorio acotado de Kubernetes en el Codespace. '
+          f'<b>Las herramientas ya vienen</b>: <code>kind</code> {CS["versiones"]["kind"]} y <code>kubectl</code> {CS["versiones"]["kubectl"]} (comprobadas el {FECHA_PRUEBA}). El laboratorio está por escribir y probar; no hay nada que preparar todavía.</p></div>'
           '<div class="card"><h3>Si no puedes usar Codespaces</h3><ul class="p s">'
           '<li><b>GitHub Actions</b> (bloque 5 de S2): el workflow construye la imagen y prueba el contenedor. Es el plan B principal y se verificó.</li>'
           '<li><b>En pareja</b>: se comparte un Codespace y se rotan las manos.</li>'
@@ -626,27 +732,32 @@ def construir_contenido():
           '<li><b>Docker Desktop</b> en tu equipo: opcional, no se exige.</li></ul></div></div>'
           '<div class="card ok" style="margin-top:14px"><p style="font-size:16.5px">Lo importante de S2 no es el lugar donde corre Docker, sino entender <b>qué hay dentro de la imagen y por qué el contenedor se comporta igual en cualquier sitio</b>. '
           'Si el Codespace falla, no pierdes el objetivo.</p></div>',
-          '**S3 (pendiente).** El programa prevé, si hay tiempo, un laboratorio acotado de Kubernetes en el Codespace con `kind` y `kubectl`. La configuración actual no los incluye; hay que añadirlos al `devcontainer.json` y probarlos.\n\n'
+          f'**S3 (pendiente).** El programa prevé, si hay tiempo, un laboratorio acotado de Kubernetes en el Codespace. Las herramientas ya vienen: `kind` {CS["versiones"]["kind"]} y `kubectl` {CS["versiones"]["kubectl"]} (comprobadas el {FECHA_PRUEBA}). El laboratorio está por escribir y probar.\n\n'
           '**Si no puedes usar Codespaces:** GitHub Actions (bloque 5 de S2: el workflow construye la imagen y prueba el contenedor; se verificó), trabajar en pareja, Cloud Shell de Google Cloud como respaldo (por verificar) o Docker Desktop en tu equipo (opcional).')
 
     # ---- 21. verificado / sin probar
     libre('Qué está verificado', 'E · Cierre', 'E · Cierre · transparencia', 'Qué se verificó y qué no',
           '<div class="two"><div class="card ok"><h3>Verificado</h3><ul class="p s">'
+          f'<li><b>Un Codespace real del curso</b> ({FECHA_PRUEBA}, 2 núcleos, rama <code>develop</code>): creación y conexión, <code>verificar.sh</code> sin fallos, el <b>bloque 4 entero</b> '
+          f'(pipeline {t["pipeline"]} s, build {t["docker_build_primera_vez"]} s, <code>/listo</code>, comparación, logs, <code>id -u</code> = {CS["id_u"]}), el panel Puertos con <code>/docs</code>, '
+          'el diálogo de confianza, el modo recuperación y parar desde la web.</li>'
           '<li><b>GitHub Actions</b>: <code>docker build</code> con el Dockerfile (826 MB), <code>docker run</code>, <code>/listo</code>, <code>/modelo</code>, predicción, 422 al enviar <code>y</code> y usuario no root.</li>'
-          f'<li><b>Linux</b>: pipeline ({round(sal["pipeline"]["segundos"])} s con la muestra), API, <code>curl /listo</code> y la comparación entre caminos (las salidas de esta guía).</li>'
-          f'<li><b>Documentación de GitHub</b> ({FECHA}): cuotas, inactividad, retención, VS Code, puertos, fork y modo recuperación.</li></ul></div>'
+          f'<li><b>Linux</b>: pipeline ({round(sal["pipeline"]["segundos"])} s con la muestra), API, <code>curl /listo</code> y la comparación entre caminos (las salidas en texto de esta guía).</li></ul></div>'
           '<div class="card bad"><h3 style="color:var(--bad)">Sin probar</h3><ul class="p s">'
-          '<li>Abrir un Codespace con <code>.devcontainer/devcontainer.json</code> del curso, y que <code>docker-in-docker</code> arranque en él.</li>'
-          '<li>El laboratorio completo <b>dentro</b> de un Codespace (tiempos y memoria de la máquina de 2 núcleos).</li>'
-          '<li>La conexión desde VS Code de escritorio y el panel PORTS con el contenedor.</li>'
-          '<li>Cloud Shell como respaldo y <code>kind</code> / <code>kubectl</code> para S3.</li></ul></div></div>'
+          '<li>La conexión desde <b>VS Code de escritorio</b> (paso 3).</li>'
+          f'<li>Las <b>cuotas</b> y los tiempos de inactividad y retención: salen de la documentación de GitHub ({FECHA}).</li>'
+          '<li>Una cuenta de <b>estudiante</b> (región de EE. UU., cuota propia) y <b>Export changes to a branch</b>.</li>'
+          '<li>Cloud Shell como respaldo y el laboratorio de Kubernetes de S3.</li></ul></div></div>'
           '<p class="small" style="margin-top:12px">Si ves algo distinto de lo que muestra esta guía, es información valiosa: envía el comando y el mensaje exacto.</p>',
-          '**Verificado.**\n- GitHub Actions: `docker build` con el Dockerfile (826 MB), `docker run`, `/listo`, `/modelo`, predicción, 422 al enviar `y` y usuario no root.\n'
-          f'- Linux: pipeline ({round(sal["pipeline"]["segundos"])} s con la muestra), API, `curl /listo` y la comparación entre caminos (las salidas de esta guía).\n'
-          f'- Documentación de GitHub ({FECHA}): cuotas, inactividad, retención, VS Code, puertos, fork y modo recuperación.\n\n'
-          '**Sin probar.**\n- Abrir un Codespace con el `.devcontainer/devcontainer.json` del curso, y que `docker-in-docker` arranque en él.\n'
-          '- El laboratorio completo dentro de un Codespace (tiempos y memoria de la máquina de 2 núcleos).\n- La conexión desde VS Code de escritorio y el panel PORTS con el contenedor.\n'
-          '- Cloud Shell como respaldo y `kind` / `kubectl` para S3.\n\nSi ves algo distinto de lo que muestra esta guía, envía el comando y el mensaje exacto.')
+          f'**Verificado.**\n- Un Codespace real del curso ({FECHA_PRUEBA}, 2 núcleos, rama `develop`): creación y conexión, `verificar.sh` sin fallos, el bloque 4 entero '
+          f'(pipeline {t["pipeline"]} s, build {t["docker_build_primera_vez"]} s, `/listo`, comparación, logs, `id -u` = {CS["id_u"]}), el panel Puertos con `/docs`, el diálogo de confianza, '
+          'el modo recuperación y parar desde la web.\n'
+          '- GitHub Actions: `docker build` con el Dockerfile (826 MB), `docker run`, `/listo`, `/modelo`, predicción, 422 al enviar `y` y usuario no root.\n'
+          f'- Linux: pipeline ({round(sal["pipeline"]["segundos"])} s con la muestra), API, `curl /listo` y la comparación entre caminos (las salidas en texto de esta guía).\n\n'
+          '**Sin probar.**\n- La conexión desde VS Code de escritorio (paso 3).\n'
+          f'- Las cuotas y los tiempos de inactividad y retención: salen de la documentación de GitHub ({FECHA}).\n'
+          '- Una cuenta de estudiante (región de EE. UU., cuota propia) y Export changes to a branch.\n'
+          '- Cloud Shell como respaldo y el laboratorio de Kubernetes de S3.\n\nSi ves algo distinto de lo que muestra esta guía, envía el comando y el mensaje exacto.')
 
     # ---- 22. fuentes
     li = ''.join(f'<li>{esc(t)}<a href="{esc(u)}" target="_blank" rel="noopener">{esc(u)}</a></li>' for t, u in FUENTES)

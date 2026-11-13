@@ -107,7 +107,8 @@ def main():
                 problemas.append(f'copiar linea {k + 1} de «orientar» no deja el comando exacto')
         activa.locator('.cpall').click()
         todo = activa.locator('.cpall').get_attribute('data-t')
-        if pag.evaluate('navigator.clipboard.readText()') != todo or todo.count('\n') + 1 != botones.count():
+        copiado = pag.evaluate('navigator.clipboard.readText()').replace('\r\n', '\n')   # el portapapeles de Windows usa \r\n
+        if copiado != todo or todo.count('\n') + 1 != botones.count():
             problemas.append('«Copiar todo» no copia todas las lineas del paso')
         activa.locator('.hecho-btn').click()
         pag.reload()

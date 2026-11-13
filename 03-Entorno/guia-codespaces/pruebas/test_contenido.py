@@ -54,26 +54,44 @@ def test_todo_lo_copiable_es_un_comando_del_laboratorio_o_un_extra_declarado(htm
     assert not desconocidos, desconocidos
 
 
-def test_el_devcontainer_del_curso_dice_lo_que_dice_la_guia():
-    assert 'mcr.microsoft.com/devcontainers/python:1-3.11-bookworm' in DEVC
-    assert 'ghcr.io/devcontainers/features/docker-in-docker:2' in DEVC
-    assert 'pip install -r 04-Proyecto-Base/requirements-dev.txt' in DEVC
-    assert '8080' in DEVC and 'API ia-mlops' in DEVC
-    assert 'ms-python.python' in DEVC and 'ms-azuretools.vscode-docker' in DEVC
+def test_el_devcontainer_del_curso_dice_lo_que_dice_la_guia(markdown):
+    """Lo que la diapositiva «Qué se prepara mientras esperas» cuenta del devcontainer está de verdad en él."""
+    for pieza in ('mcr.microsoft.com/devcontainers/miniconda:3', 'ghcr.io/devcontainers/features/docker-in-docker:2', '"moby": false',
+                  'kubectl-helm-minikube', 'postcreate.sh', 'ms-python.python', 'ms-azuretools.vscode-docker'):
+        assert pieza in DEVC, f'{pieza} ya no está en .devcontainer/devcontainer.json: actualiza la guía'
+    assert '8080' in DEVC and 'API ia-mlops' in DEVC and '5000' in DEVC
+    for pieza in ('miniconda:3', '"moby": false', 'kubectl-helm-minikube:1', 'postcreate.sh', 'forwardPorts: [8080, 5000]'):
+        assert pieza in markdown, f'la guía no describe {pieza}'
+    post = (RAIZ / '.devcontainer' / 'postcreate.sh').read_text(encoding='utf-8')
+    assert 'kind' in post and 'env-ia-mlops' in post and 'verificar.sh' in post
 
 
-def test_la_guia_es_honesta_sobre_lo_que_no_se_ha_probado(html, markdown):
+def test_la_guia_es_honesta_sobre_lo_que_se_probo_y_lo_que_no(html, markdown):
     for texto in (html, markdown):
-        assert 'Todavía no se ha abierto ningún Codespace del curso' in texto
+        assert 'Codespace real del curso' in texto
         assert re.search(r'sin probar', texto, re.I)
     assert 'Sin probar' in html and 'Verificado' in html
+    assert 'Probado en un Codespace real · ' + G.FECHA_PRUEBA in html
+    assert 'Todavía no se ha abierto ningún Codespace' not in html + markdown, 'quedó la frase de antes de probarlo'
 
 
 def test_la_guia_no_promete_lo_que_no_es_nuestro(html, markdown):
-    """No debe afirmar que el instructor hará algo concreto, ni que kind/kubectl ya estén en el devcontainer."""
+    """No debe afirmar que el instructor hará algo concreto; si el devcontainer trae kind/kubectl, la guía lo dice con su versión."""
     for texto in (html, markdown):
         assert 'el instructor abrirá' not in texto
-    assert 'kubectl' not in DEVC and '"kind' not in DEVC, 'el devcontainer ya trae kind/kubectl: actualiza la diapositiva «Más allá de S2»'
+    cs = json.loads((AQUI / 'salidas-codespace.json').read_text(encoding='utf-8'))
+    if 'kubectl' in DEVC:
+        assert cs['versiones']['kubectl'] in markdown and cs['versiones']['kind'] in markdown
+
+
+def test_cada_captura_existe_va_embebida_y_la_version_en_texto_la_enlaza(html, markdown):
+    enlazadas = re.findall(r'\]\(\.\./guia-codespaces/capturas/([\w-]+)\.webp\)', markdown)
+    assert len(enlazadas) >= 15, enlazadas
+    for nombre in enlazadas:
+        assert (AQUI / 'capturas' / f'{nombre}.webp').exists(), nombre
+    assert html.count('src="data:image/webp;base64,') == len(enlazadas), 'cada captura del texto debe estar también en las diapositivas'
+    sobrantes = {p.stem for p in (AQUI / 'capturas').glob('*.webp')} - set(enlazadas)
+    assert not sobrantes, f'capturas sin usar: {sobrantes}'
 
 
 def test_cifras_de_cuota_y_tiempos_documentados(html):

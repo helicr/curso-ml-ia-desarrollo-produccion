@@ -271,7 +271,7 @@ class TestPdfGenerados:
     def test_s2_guia_de_codespaces_sin_controles_de_la_pagina(self):
         from pypdf import PdfReader
         paginas = PdfReader(str(pdf('S2', '02-guia-de-codespaces.pdf'))).pages
-        assert len(paginas) == 24
+        assert len(paginas) == 38          # con las diapositivas «Así se ve» del Codespace real (12/11/2026)
         todo = ' '.join(p.extract_text() or '' for p in paginas)
         for sobra in ('⧉', 'Marcar como hecho', 'Copiar todo', 'pasos marcados', 'en este navegador',
                       'C copia todo el bloque', 'file:///'):

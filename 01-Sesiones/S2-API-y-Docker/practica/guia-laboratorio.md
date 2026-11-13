@@ -161,7 +161,7 @@ Esperado: la comparación coincide también contra el **contenedor**; `docker lo
 
 **Preguntas:** ¿cuánto ocupa la imagen? ¿Qué pasa con la construcción si cambias una línea de `ia_mlops/` y vuelves a ejecutar `docker build`: qué capas se reutilizan? ¿Por qué el contenedor escucha en `0.0.0.0` y no en `127.0.0.1`?
 
-*Estado de esta práctica:* el Dockerfile y los comandos se verificaron en GitHub Actions, no en un Codespace. Si algo difiere, **anótalo con el mensaje exacto**: es información valiosa.
+*Estado de esta práctica:* el Dockerfile y los comandos se verificaron en GitHub Actions y en un Codespace real del curso (12/11/2026, máquina de 2 núcleos; capturas en la guía de Codespaces). Si algo difiere, **anótalo con el mensaje exacto**: es información valiosa.
 
 ## 5. El primer workflow (10 min)
 La plantilla es `deploy/github-actions/ci.yml`. Para probarla necesitas un repositorio **tuyo** en GitHub:
