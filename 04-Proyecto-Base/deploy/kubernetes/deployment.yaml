@@ -1,0 +1,55 @@
+# Despliegue de la API de recompra en Kubernetes (laboratorio de kind en el Codespace; ver 03-Entorno/guia-docker-kubernetes-gke/).
+#
+#   kind create cluster --name curso
+#   kind load docker-image retencion-api:local --name curso     # kind no ve las imágenes de tu Docker: hay que cargarlas
+#   kubectl apply -f deploy/kubernetes/
+#
+# Qué pide: 2 réplicas de la imagen que construiste en S2, sin root, con dos comprobaciones (probes):
+#   readiness /listo  ¿puede recibir tráfico? Si da 503 (sin modelo, contrato roto), el Service no le manda peticiones.
+#   liveness  /salud  ¿sigue vivo? Si deja de responder, Kubernetes reinicia el contenedor.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retencion-api
+  labels:
+    app: retencion-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: retencion-api
+  template:
+    metadata:
+      labels:
+        app: retencion-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: retencion-api:local
+          imagePullPolicy: IfNotPresent      # la imagen ya está en el nodo (kind load); no intentes descargarla
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CURSO_LOG_NIVEL
+              value: INFO
+          readinessProbe:
+            httpGet:
+              path: /listo
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /salud
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi

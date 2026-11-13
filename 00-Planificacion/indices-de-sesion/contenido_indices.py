@@ -134,6 +134,7 @@ SESIONES = [
             alumno('Contenedores: laboratorio «romperlo a propósito»', f'{S2}/contenedores/laboratorio-romper.md',
                    'Cinco fallos que provocas, diagnosticas y arreglas (unos 34 min; estimado).'),
             alumno('Docker y Kubernetes sin instalación local', f'{ENTORNO}/guias/docker-y-kubernetes-sin-instalacion-local.md', 'Cómo trabajar con Docker en Codespaces.'),
+            alumno('Chuleta de Docker, kubectl y GKE', f'{ENTORNO}/guia-docker-kubernetes-gke/chuleta.md', 'Los comandos de Docker de S2 y, para S3, kubectl y GKE.'),
             instructor('README de S2', f'{S2}/README.md', 'Agenda por minutos y qué está validado.'),
             instructor('Guion', f'{S2}/guion.md'),
             instructor('Contenedores: cómo se generó y cómo regenerarlo', f'{S2}/contenedores/README.md', 'Una sola fuente de comandos, salidas reales de Docker, pruebas y comprobación de diseño.'),
@@ -143,6 +144,10 @@ SESIONES = [
         id='S3', titulo='Despliegue en la nube (red neuronal opcional)', horas='4 h', carpeta=S3, estado=SOLO_README, esperados=TODOS,
         resumen='Migrar de local a GCP: Cloud Storage, BigQuery, Secret Manager, Artifact Registry y Cloud Run. Kubernetes en Codespaces si hay tiempo.',
         enlaces=[
+            deck('Docker, Kubernetes y GKE', f'{ENTORNO}/guia-docker-kubernetes-gke/index.html',
+                 'Conceptos con dibujos, práctica real con kind en el Codespace (con capturas), GKE explicado, chuleta y ejercicios.'),
+            alumno('Chuleta de Docker, kubectl y GKE', f'{ENTORNO}/guia-docker-kubernetes-gke/chuleta.md', 'Para imprimir.'),
+            alumno('Ejercicios de Kubernetes con solución', f'{ENTORNO}/guia-docker-kubernetes-gke/ejercicios.md', 'Seis ejercicios; cada uno dice si se comprobó.'),
             alumno('Guía de migración de local a GCP', f'{ENTORNO}/guias/migracion-on-premise-a-gcp.md', 'Ya escrita; es el hilo de S3.'),
             instructor('README de S3', f'{S3}/README.md'),
         ],

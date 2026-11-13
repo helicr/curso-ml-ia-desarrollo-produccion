@@ -1,0 +1,17 @@
+# Un nombre estable delante de las réplicas: reparte las peticiones entre los pods que están «listos» (readiness).
+#   En kind:  kubectl port-forward service/retencion-api 8080:80   y después  curl http://127.0.0.1:8080/listo
+#   En GKE:   type: LoadBalancer le da una IP pública (ver la guía; en este curso no se crea).
+apiVersion: v1
+kind: Service
+metadata:
+  name: retencion-api
+  labels:
+    app: retencion-api
+spec:
+  type: ClusterIP
+  selector:
+    app: retencion-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
