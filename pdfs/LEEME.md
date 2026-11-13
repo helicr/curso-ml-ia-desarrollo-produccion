@@ -86,7 +86,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
 | [`01-presentacion-s2.pdf`](S2-API-y-Docker/01-presentaciones/01-presentacion-s2.pdf) | Presentación de S2 | 21 | 3.4 MB |
-| [`02-guia-de-codespaces.pdf`](S2-API-y-Docker/01-presentaciones/02-guia-de-codespaces.pdf) | Codespaces: tu laboratorio de Docker en la nube | 24 | 2.0 MB |
+| [`02-guia-de-codespaces.pdf`](S2-API-y-Docker/01-presentaciones/02-guia-de-codespaces.pdf) | Codespaces: tu laboratorio de Docker en la nube | 38 | 5.3 MB |
 | [`03-contenedores-el-modelo-mental.pdf`](S2-API-y-Docker/01-presentaciones/03-contenedores-el-modelo-mental.pdf) | Contenedores: el modelo mental | 16 | 1.7 MB |
 | [`04-del-dockerfile-a-produccion.pdf`](S2-API-y-Docker/01-presentaciones/04-del-dockerfile-a-produccion.pdf) | Contenedores: del Dockerfile a producción | 17 | 1.7 MB |
 
