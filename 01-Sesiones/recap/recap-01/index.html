@@ -319,7 +319,7 @@ svg text{font-family:var(--sans)}
   <div class="term" style="margin-top:16px">
     <span class="p">$</span> python -m ia_mlops.pipeline <span class="c">          # los cuatro pipelines</span><br>
     <span class="p">$</span> python -m ia_mlops.pipeline <span class="c">          # otra vez: «sin cambios» (idempotencia)</span><br>
-    <span class="p">$</span> python -m pytest -q -m "not lento" <span class="c">  # 121 passed, 4 deselected</span>
+    <span class="p">$</span> python -m pytest -q -m "not lento" <span class="c">  # 127 passed, 4 deselected</span>
   </div>
   <p class="small muted" style="margin-top:12px">Idempotente: ejecutarlo dos veces deja lo mismo que una. No reentrena ni añade ejecuciones a MLflow si nada cambió.</p>
   <div class="pie"><span>Recap 01</span><span>10</span></div>
@@ -358,7 +358,7 @@ svg text{font-family:var(--sans)}
     <h3>Trae listo para S2</h3>
     <ul class="lista">
       <li><code>python -m ia_mlops.pipeline</code> ejecutado: existe <code>models/modelo_mlflow/</code></li>
-      <li><code>python -m pytest -q -m "not lento"</code> → <b>121 passed, 4 deselected</b></li>
+      <li><code>python -m pytest -q -m "not lento"</code> → <b>127 passed, 4 deselected</b></li>
       <li>Tu Codespace abierto una vez (guía de Codespaces) y la tarea de S1 entregada</li>
     </ul>
   </div>

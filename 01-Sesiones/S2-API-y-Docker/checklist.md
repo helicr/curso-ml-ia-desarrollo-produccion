@@ -2,7 +2,7 @@
 
 ## Antes de la sesión (docente)
 - [ ] Rama `develop` actualizada y proyecto base clonado en tu máquina.
-- [ ] `conda activate env-ia-mlops` y, en `04-Proyecto-Base`, `python -m ia_mlops.pipeline` y `python -m pytest -q -m "not lento"`: **121 passed, 4 deselected**.
+- [ ] `conda activate env-ia-mlops` y, en `04-Proyecto-Base`, `python -m ia_mlops.pipeline` y `python -m pytest -q -m "not lento"`: **127 passed, 4 deselected**.
 - [ ] `slides/index.html` abre sin conexión; probar las diapositivas 7, 8 (laboratorio de códigos), 11, 15, 17 y 18 (interactivas).
 - [ ] **Probar el Codespace del curso** (el `.devcontainer` no se ha abierto nunca): crear uno desde `develop`, esperar a que termine la instalación y ejecutar `docker version`, `cd 04-Proyecto-Base`, `python -m ia_mlops.pipeline` y `docker build -f deploy/docker/Dockerfile -t retencion-api:local .`. Si falla, anotar el mensaje y preparar el plan B: el workflow construye la imagen.
 - [ ] Preparar un repositorio personal de prueba y comprobar que `deploy/github-actions/ci.yml` copiado a `.github/workflows/` se ejecuta en verde (con `PROYECTO: "04-Proyecto-Base"` si es un clon del curso).
@@ -11,7 +11,7 @@
 - [ ] Probar los diez casos de `tests/datos/casos/` con `curl` (la prueba `tests/test_casos_laboratorio.py` ya lo hace con `TestClient`).
 
 ## Durante la sesión (alumnado)
-- [ ] Entorno verificado: pipeline ejecutado y `121 passed` en las pruebas rápidas; existe `models/modelo_mlflow/`.
+- [ ] Entorno verificado: pipeline ejecutado y `127 passed` en las pruebas rápidas; existe `models/modelo_mlflow/`.
 - [ ] La API arranca y `/salud`, `/listo`, `/modelo` y `/predecir` responden; el ejemplo da `0.8278889…`.
 - [ ] Los diez casos probados con el código esperado **apuntado antes**; se entiende por qué 08 y 09 dan 200 con advertencia.
 - [ ] 503 sin modelo, 503 con el contrato roto y 503 con el esquema desactualizado vistos y entendidos; `git restore` hecho.

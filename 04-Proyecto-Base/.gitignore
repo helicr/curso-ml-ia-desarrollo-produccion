@@ -26,6 +26,7 @@ mlflow.db
 mlruns/
 mlartifacts/
 reports/metricas.json
+reports/campana/
 reports/notebooks_ejecutados/
 reports/figures/*.png
 

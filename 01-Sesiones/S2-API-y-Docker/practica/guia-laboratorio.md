@@ -24,7 +24,7 @@ cd 04-Proyecto-Base
 python -m ia_mlops.pipeline
 python -m pytest -q -m "not lento"
 ```
-Esperado: `121 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
+Esperado: `127 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
 
 ## 1. Arrancar la API (25 min)
 **Terminal 1** (déjala abierta; aquí verás el registro):
@@ -184,3 +184,5 @@ El workflow no publica nada ni usa secretos. **Pregunta:** ¿qué pasos del work
 
 ## Para quien termina antes
 Empieza la tarea: [`../tarea/README.md`](../tarea/README.md). Lo más útil: reentrenar con una variable nueva y ver cómo la API lo detecta en `/listo`.
+
+**Laboratorio extra** (si sobra tiempo o el grupo lo pide): [de la ingesta a la explotación](laboratorio-extra-de-punta-a-punta.md). Recorre los pipelines uno a uno, pone el modelo en producción, saca la lista de la campaña puntuando a todos los clientes y cierra el ciclo con datos nuevos.

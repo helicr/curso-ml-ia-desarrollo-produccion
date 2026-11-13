@@ -6,7 +6,7 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `125 passed`.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `131 passed`.
 - Anotar quién no pasa y el mensaje de error (checklist). Quien falle: Codespaces o pareja. **No se detiene la sesión.**
 - Si pasan los 30 min y hay más de un tercio sin entorno: recortar teoría (diap. 11 y 16), no práctica.
 

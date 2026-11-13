@@ -2,7 +2,7 @@
 
 ## Antes de la sesión (docente)
 - [ ] Rama `develop` actualizada y proyecto base clonado en tu máquina.
-- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **125 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **121 passed, 4 deselected**.
+- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **131 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **127 passed, 4 deselected**.
 - [ ] `slides/index.html` abre sin conexión; probar las diapositivas 5, 10, 13 y 17 (interactivas).
 - [ ] Desde `04-Proyecto-Base`, `python -m ia_mlops.mlflow_ui`: elegir **Model training**, ver las ejecuciones de `retencion-90d` y la versión de `retencion-90d` en **Model registry**.
 - [ ] Confirmar la lista de quién no pasó la verificación de entorno en S0.

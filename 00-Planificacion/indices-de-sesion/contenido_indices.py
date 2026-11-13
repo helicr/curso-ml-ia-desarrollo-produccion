@@ -117,6 +117,8 @@ SESIONES = [
                  'Para empezar: S1 en cinco minutos, con diagramas, las capas interactivas y una autoevaluación.'),
             alumno('Teoría y glosario', f'{S2}/teoria/README.md'),
             alumno('Guía de laboratorio', f'{S2}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo y salidas esperadas.'),
+            alumno('Laboratorio extra: de la ingesta a la explotación', f'{S2}/practica/laboratorio-extra-de-punta-a-punta.md',
+                   'Si sobra tiempo (unos 60 min): pipelines uno a uno, modelo registrado, API, la lista de la campaña y el ciclo con datos nuevos.'),
             alumno('Tarea', f'{S2}/tarea/README.md'),
             alumno('Rúbrica', f'{S2}/tarea/rubrica.md', '20 % reproducibilidad · 40 % técnica · 40 % análisis y decisión.'),
             alumno('Plantilla de la evidencia', f'{S2}/evidencias/plantilla-api-y-contenedor.md', 'La evidencia que se entrega.'),
