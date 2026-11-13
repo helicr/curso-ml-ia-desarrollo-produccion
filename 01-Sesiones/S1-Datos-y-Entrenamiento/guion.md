@@ -6,7 +6,7 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `123 passed`.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `125 passed`.
 - Anotar quién no pasa y el mensaje de error (checklist). Quien falle: Codespaces o pareja. **No se detiene la sesión.**
 - Si pasan los 30 min y hay más de un tercio sin entorno: recortar teoría (diap. 11 y 16), no práctica.
 
@@ -47,5 +47,5 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 |---|---|
 | El cuaderno 02 falla | Falta el 01: ejecutar desde el 01 (`Run All`). |
 | Kernel sin paquetes | Seleccionar `env-ia-mlops` (esquina superior derecha). |
-| MLflow UI no abre | `mlflow ui --backend-store-uri sqlite:///models/mlflow.db` desde `04-Proyecto-Base`. |
+| MLflow UI no abre o sale vacía | Desde `04-Proyecto-Base`: `python -m ia_mlops.mlflow_ui` (con `--comprobar` dice qué hay). En la web, **Model training**. |
 | Números distintos a la diapositiva | Esperado: la muestra da valores menores que el dato completo. |

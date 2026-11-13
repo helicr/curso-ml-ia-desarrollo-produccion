@@ -24,7 +24,7 @@ cd 04-Proyecto-Base
 python -m ia_mlops.pipeline
 python -m pytest -q -m "not lento"
 ```
-Esperado: `119 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
+Esperado: `121 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
 
 ## 1. Arrancar la API (25 min)
 **Terminal 1** (déjala abierta; aquí verás el registro):

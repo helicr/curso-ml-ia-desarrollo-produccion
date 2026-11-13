@@ -615,13 +615,13 @@ master_descartes  (motivo)        master_calidad  (reglas)</div>
 </section>
 
 <section class="slide" data-part="C" data-min="5" data-title="MLflow: seguimiento"
- data-notes="MLflow registra parámetros, métricas y artefactos de cada ejecución. La huella del dato permite saber con qué datos se entrenó. Hoy solo tracking; el registro y los alias llegan en S4 y S5.">
-<p class="kick st">MLflow · tracking</p><h1 class="st">Cada ejecución deja huella</h1>
+ data-notes="MLflow registra parámetros, métricas y artefactos de cada ejecución. La huella del dato permite saber con qué datos se entrenó. El elegido además se registra como retencion-90d: cada entrenamiento crea una versión nueva. Abrir la interfaz con python -m ia_mlops.mlflow_ui desde 04-Proyecto-Base y elegir Model training (no GenAI). Los alias y el rollback llegan en S4 y S5.">
+<p class="kick st">MLflow · seguimiento y registro</p><h1 class="st">Cada ejecución deja huella</h1>
 <div class="split">
  <div class="card st"><table class="tbl"><tr><th>Ejecución</th><th class="num-r">valid</th><th class="num-r">test</th><th>huella datos</th></tr><tr><td>referencia_sin_aprender</td><td class="num-r">0.500</td><td class="num-r">0.500</td><td>3521a0421905ba28</td></tr><tr><td>regresion_logistica</td><td class="num-r">0.786</td><td class="num-r">0.796</td><td>3521a0421905ba28</td></tr><tr><td>gradient_boosting</td><td class="num-r">0.761</td><td class="num-r">0.781</td><td>3521a0421905ba28</td></tr><tr><td>MEJOR-regresion_logistica</td><td class="num-r">0.786</td><td class="num-r">0.796</td><td>3521a0421905ba28</td></tr></table></div>
  <div class="col">
-  <div class="card f"><h3>Qué se guarda</h3><ul class="list"><li><span>parámetros y métricas</span></li><li><span>modelo con <b>firma</b> y ejemplo de entrada</span></li><li><span>huella (sha256) del dato</span></li></ul></div>
-  <div class="callout f"><span class="mono">mlflow ui</span> abre la tabla anterior en el navegador. Backend: SQLite.</div>
+  <div class="card f"><h3>Qué se guarda</h3><ul class="list"><li><span>parámetros y métricas</span></li><li><span>modelo con <b>firma</b> y ejemplo de entrada</span></li><li><span>huella (sha256) del dato</span></li><li><span>el elegido, <b>registrado</b>: <span class="mono">retencion-90d</span> v1, v2…</span></li></ul></div>
+  <div class="callout f"><span class="mono">python -m ia_mlops.mlflow_ui</span> (desde <span class="mono">04-Proyecto-Base</span>) abre la tabla anterior en el navegador. En la web: <b>Model training</b>.</div>
  </div>
 </div>
 </section>

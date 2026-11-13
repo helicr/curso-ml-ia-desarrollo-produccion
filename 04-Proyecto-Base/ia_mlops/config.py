@@ -57,3 +57,7 @@ OBJETIVO = 'y'
 
 # El modelo en formato MLflow (con su FIRMA) que se guarda dentro de MODELOS. Es lo que carga la API y lo que se copia a la imagen Docker.
 CARPETA_MODELO_MLFLOW = 'modelo_mlflow'
+
+# MLflow: experimento (agrupa las ejecuciones) y nombre del modelo en el registro (cada entrenamiento crea una versión nueva).
+EXPERIMENTO_MLFLOW = 'retencion-90d'
+MODELO_REGISTRADO = 'retencion-90d'

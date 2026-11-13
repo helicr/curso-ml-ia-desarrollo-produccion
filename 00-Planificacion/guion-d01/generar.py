@@ -31,7 +31,7 @@ BLOQUES = [
      dict(mensaje="Las diapositivas 28 y 29 presentan cada caso con su pregunta, el contenido del archivo y la ruta del CSV. Aquí se revelan los dos casos: el del instructor (Online Retail II, en S1) y el de ellos (Bank Marketing, UCI, ya en el repositorio). La tarea: leer el enunciado y `bank-additional-names.txt` y comprobar la huella del archivo.",
           preguntas=[], ojo="No adelantes el entrenamiento. Recalca: `duration` no se usa como variable y las filas del CSV no se reordenan.")),
     ("S1", 0, 30, "Revisión de entorno", "S1 · 1–3",
-     "Cada persona comprueba que su entorno funciona: activar `env-ia-mlops`, ejecutar la prueba de humo y las pruebas del proyecto base (esperado: 123 passed).",
+     "Cada persona comprueba que su entorno funciona: activar `env-ia-mlops`, ejecutar la prueba de humo y las pruebas del proyecto base (esperado: 125 passed).",
      dict(mensaje="Agenda en 1 minuto (diapositiva 2). Después, a ejecutar la diapositiva 3 («Copiar comandos»).", preguntas=[],
           ojo="S0 ya hizo el diagnóstico: si casi todos pasan, reduce a 10–15 min. Anota quién no pasa y el error exacto; esas personas siguen con Codespaces o en pareja. No se detiene la sesión. Si pasados 30 min más de un tercio no tiene entorno, recorta teoría (diap. 11 y 16), no práctica.")),
     ("S1", 30, 60, "Teoría: de los datos al modelo", "S1 · 4–16",

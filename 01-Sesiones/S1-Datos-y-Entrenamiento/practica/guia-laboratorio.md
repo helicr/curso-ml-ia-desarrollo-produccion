@@ -21,7 +21,7 @@ conda activate env-ia-mlops
 cd 04-Proyecto-Base
 python -m pytest -q -m "not lento"
 ```
-Esperado: `119 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
+Esperado: `121 passed` (las 4 pruebas restantes ejecutan los cuadernos y son lentas). En VS Code abre cada `.ipynb` y elige el kernel **env-ia-mlops**.
 
 ## 1. Cuadernos 00 y 01 · operacional, RAW → MASTER (30 min)
 Abre `notebooks/00_pipeline_operacional.ipynb`: su introducción explica todo el recorrido. Ejecútalo (parámetro `FUENTE = 'muestra'`).
@@ -59,10 +59,15 @@ Ejecuta `notebooks/04_entrenamiento_y_seguimiento.ipynb`.
 **Mira:** la referencia (AUC 0,5), regresión logística y gradient boosting (con la muestra: regresión logística valid 0,698 · test 0,747; gradient boosting 0,663 · 0,735).
 Después, desde una terminal en `04-Proyecto-Base`:
 ```bash
-mlflow ui --backend-store-uri sqlite:///models/mlflow.db
+python -m ia_mlops.mlflow_ui
 ```
-Abre http://127.0.0.1:5000, entra al experimento `retencion-90d`, selecciona **dos ejecuciones** y pulsa *Compare*.
-**Anota:** la huella del dato (`huella_datos`) de ambas. ¿Coincide? Solo entonces la comparación es válida.
+Antes de abrir nada dice qué registro lee y cuántas ejecuciones y versiones tiene. Abre http://127.0.0.1:5000 y:
+1. Arriba a la izquierda, elige **Model training** (no *GenAI*).
+2. Entra al experimento `retencion-90d`, selecciona **dos ejecuciones** y pulsa *Compare*.
+   **Anota:** la huella del dato (`huella_datos`) de ambas. ¿Coincide? Solo entonces la comparación es válida.
+3. En el menú izquierdo, **Model registry** → `retencion-90d`: abre la última versión y mira de qué ejecución salió (*Source Run*) y sus etiquetas.
+
+**Por qué no `mlflow ui --backend-store-uri sqlite:///models/mlflow.db` a secas:** la ruta es relativa. Desde otra carpeta (la terminal de VS Code se abre en la raíz del repositorio), MLflow crea ahí una base **vacía** sin avisar.
 
 ## 5. Traducir a `.py` y probar (10 min)
 ```bash
@@ -80,7 +85,9 @@ python -m pytest tests/test_notebooks.py -q
 |---|---|
 | `ModuleNotFoundError` en un cuaderno | Kernel equivocado: selecciona `env-ia-mlops`. |
 | El 02 falla al leer tablas | Ejecuta primero el 01 completo. |
-| `mlflow ui` no abre | Revisa que estés en `04-Proyecto-Base` y que exista `models/mlflow.db` (lo crea el cuaderno 04). |
+| `No module named ia_mlops` al abrir MLflow | No estás en `04-Proyecto-Base`: `cd 04-Proyecto-Base` y repite. |
+| MLflow abre pero no hay ejecuciones ni modelos | `python -m ia_mlops.mlflow_ui --comprobar`: si da 0, ejecuta el cuaderno 04 con `USAR_MLFLOW = True`. Si ves *Traces* o *Prompts*, cambia a **Model training**. |
+| El puerto 5000 está ocupado | `python -m ia_mlops.mlflow_ui --port 5001` y abre http://127.0.0.1:5001. |
 | La prueba de equivalencia falla | Anota el mensaje en las evidencias; no lo ocultes. |
 
 ## Para quien termina antes
