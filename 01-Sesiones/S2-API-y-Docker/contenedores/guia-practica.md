@@ -7,7 +7,7 @@ Ejemplos sueltos, cada uno con sus comandos, lo que debes ver y lo que has apren
 ## Cómo usar esta guía
 
 - **Dónde:** en la terminal de tu Codespace (si aún no lo tienes abierto, empieza por la [guía de Codespaces](../../../03-Entorno/guia-codespaces/index.html)).
-- **Cuánto:** mínimo recomendado antes de S2, los ejemplos 1 a 6 (≈60 min); completa, los 9 (≈97 min). Son estimaciones, sin cronometrar con alumnado.
+- **Cuánto:** **obligatorio antes de S2**, los ejemplos 1 a 6 (≈60 min): el laboratorio de S2 da por sabido lo que enseñan. Recomendado, la guía completa (los 9, ≈97 min) y el laboratorio de roturas. Son estimaciones, sin cronometrar con alumnado.
 - **Cómo:** copia cada comando tal cual, compara con la salida de la guía y lee el «qué ha pasado». Al final de cada ejemplo hay **qué has aprendido** y una pregunta para pensar.
 - **Dos presentaciones acompañan esta guía:** [Contenedores: el modelo mental](modelo-mental/index.html) (ejemplos 1, 2, 3 y 7) y [Del Dockerfile a producción](del-dockerfile-a-produccion/index.html) (ejemplos 4, 5, 6, 8 y 9).
 - **Después:** el [laboratorio «romperlo a propósito»](laboratorio-romper.md) (≈34 min), para practicar el diagnóstico.

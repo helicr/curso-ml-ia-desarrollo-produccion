@@ -25,7 +25,4 @@ Se abre al empezar S2, durante la revisión del entorno (minutos 0–30 de la ag
 
 ## Qué está comprobado
 - Las 12 diapositivas sin desbordes a 1280 × 720, sin errores de JavaScript, y las capas y las preguntas responden al clic (Chrome, 13/11/2026).
-- **Sin hacer:** el PDF del recap (no está en `00-Planificacion/pdfs/contenido_pdfs.py`) y su enlace desde el índice de S2.
-
-## Nota sobre la presentación de S1
-La diapositiva 11 de S1 titula «13 variables, **5 familias**», pero muestra cuatro grupos. Este recap usa los cuatro grupos tal como aparecen allí.
+- Enlazado desde el índice de S2. **Sin hacer:** el PDF del recap (no está en `00-Planificacion/pdfs/contenido_pdfs.py`).

@@ -99,7 +99,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | [`03-tarea.pdf`](S2-API-y-Docker/02-alumno/03-tarea.pdf) | Tarea de S2 | 2 | 125 KB |
 | [`04-rubrica.pdf`](S2-API-y-Docker/02-alumno/04-rubrica.pdf) | Rúbrica de S2 | 2 | 71 KB |
 | [`05-plantilla-de-la-evidencia.pdf`](S2-API-y-Docker/02-alumno/05-plantilla-de-la-evidencia.pdf) | Plantilla de la evidencia (API y contenedor) | 2 | 83 KB |
-| [`06-checklist.pdf`](S2-API-y-Docker/02-alumno/06-checklist.pdf) | Checklist de S2 | 2 | 100 KB |
+| [`06-checklist.pdf`](S2-API-y-Docker/02-alumno/06-checklist.pdf) | Checklist de S2 | 2 | 105 KB |
 | [`07-la-api-y-el-contenedor.pdf`](S2-API-y-Docker/02-alumno/07-la-api-y-el-contenedor.pdf) | La API y el contenedor (proyecto base) | 5 | 243 KB |
 | [`08-guia-practica-de-contenedores.pdf`](S2-API-y-Docker/02-alumno/08-guia-practica-de-contenedores.pdf) | Contenedores: guía práctica con nueve ejemplos | 23 | 576 KB |
 | [`09-laboratorio-romper-a-proposito.pdf`](S2-API-y-Docker/02-alumno/09-laboratorio-romper-a-proposito.pdf) | Contenedores: laboratorio «romperlo a propósito» | 7 | 224 KB |
@@ -109,5 +109,5 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 3 | 148 KB |
+| [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 3 | 149 KB |
 | [`02-guion-s2.pdf`](S2-API-y-Docker/03-instructor/02-guion-s2.pdf) | Guion de S2 | 3 | 136 KB |

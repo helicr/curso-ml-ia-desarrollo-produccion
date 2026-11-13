@@ -20,7 +20,7 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 | 4 | 8 | Nada se pierde: 1 033 036 + 34 335 = 1 067 371. | ¿Qué haría el pipeline si no cuadra? |
 | 3 | 9 | Reglas duras, alertas e informativas. | ¿Una alerta detiene el pipeline? |
 | 8 | 10 | **Regla de oro.** Mover el deslizador y ver qué se usa. | ¿Dónde estaría la fuga si usáramos la factura roja? |
-| 3 | 11 | 13 variables, 5 familias, documentadas. | ¿Qué variable añadirías? |
+| 3 | 11 | 13 variables, 4 familias, documentadas. | ¿Qué variable añadirías? |
 | 6 | 12 | Objetivo hacia el futuro, partición temporal. Mostrar 48→35→38 %. | ¿Por qué baja la tasa? |
 | 5 | 13 | **Honestidad:** aquí la aleatoria dio *menos* AUC. La razón para la temporal es el uso real. | ¿Qué otra razón hay? |
 | 5 | 14 | Referencia, sobreajuste (0,842 en train vs 0,781 en test). | ¿Qué modelo desplegarías y por qué? |

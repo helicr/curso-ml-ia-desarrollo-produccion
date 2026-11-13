@@ -30,7 +30,7 @@ Al terminar, la persona asistente puede:
 - `practica/laboratorio-extra-de-punta-a-punta.md`: **extra** (unos 60 min, si sobra tiempo o lo pide el grupo): de la ingesta a la explotación. Los pipelines uno a uno, el modelo registrado, la API, la **lista de la campaña** (`python -m ia_mlops.explotacion`), la deriva y el ciclo con datos nuevos (versión 2). Probado de principio a fin en Windows 11 el 13/11/2026; material en `practica/extra/`.
 - `tarea/README.md` y `tarea/rubrica.md`: tarea y rúbrica (20/40/40).
 - `evidencias/plantilla-api-y-contenedor.md`: plantilla de la evidencia entregable.
-- `contenedores/`: autoestudio **antes** de S2 en el Codespace: dos presentaciones (16 y 17 diapositivas), `guia-practica.md` (nueve ejemplos; unos 60 min los seis primeros y 97 min todos, estimado) y `laboratorio-romper.md` (cinco fallos; unos 34 min, estimado). No cambia la agenda de la sesión. Ver su `README.md`.
+- `contenedores/`: autoestudio **antes** de S2 en el Codespace, **obligatorio** en su parte mínima («El modelo mental» y los ejemplos 1 a 6 de `guia-practica.md`, unos 60 min); recomendados, la segunda presentación, los nueve ejemplos (unos 97 min) y `laboratorio-romper.md` (cinco fallos; unos 34 min). Tiempos estimados. No cambia la agenda de la sesión. Ver su `README.md`.
 
 Los casos de la práctica están en `04-Proyecto-Base/tests/datos/` (`cliente_ejemplo.json`, `lote_ejemplo.json` y `casos/01…10`), y una prueba comprueba que cada uno da el código y el mensaje que dicen la guía y la presentación.
 
