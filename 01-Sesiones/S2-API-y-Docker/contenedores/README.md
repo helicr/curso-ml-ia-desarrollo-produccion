@@ -12,7 +12,7 @@ Paquete para que el alumnado entienda imagen, contenedor, puertos, volúmenes, D
 | `laboratorio-romper.md` | Cinco fallos que se provocan, se diagnostican y se arreglan | Alumnado |
 | `ejemplos/` | Archivos que usan los ejemplos (Dockerfile, `.dockerignore`, `app.py`…) | Los ejemplos |
 
-Tiempos estimados, **sin cronometrar con alumnado**: unos 60 min los ejemplos 1 a 6 (mínimo), unos 97 min los nueve y unos 34 min el laboratorio.
+**Obligatorio antes de S2** (decidido el 13/11/2026): la presentación «El modelo mental» y los ejemplos 1 a 6 de la guía, unos 60 min. Recomendado: los nueve ejemplos (unos 97 min) y el laboratorio de roturas (unos 34 min). Tiempos estimados, **sin cronometrar con alumnado**.
 
 Los PDF de las dos presentaciones, de la guía y del laboratorio están en `pdfs/S2-API-y-Docker/`.
 
