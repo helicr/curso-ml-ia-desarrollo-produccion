@@ -61,11 +61,11 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
 | [`01-teoria-y-glosario.pdf`](S1-Datos-y-Entrenamiento/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S1 | 2 | 91 KB |
-| [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 158 KB |
+| [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 183 KB |
 | [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 127 KB |
 | [`04-rubrica.pdf`](S1-Datos-y-Entrenamiento/02-alumno/04-rubrica.pdf) | Rúbrica de S1 | 1 | 55 KB |
 | [`05-plantilla-de-la-decision.pdf`](S1-Datos-y-Entrenamiento/02-alumno/05-plantilla-de-la-decision.pdf) | Plantilla de la decisión (evidencia) | 2 | 67 KB |
-| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 81 KB |
+| [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 85 KB |
 | [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 4 | 340 KB |
 | [`08-tu-caso-bank-marketing.pdf`](S1-Datos-y-Entrenamiento/02-alumno/08-tu-caso-bank-marketing.pdf) | Tu caso: Bank Marketing | 6 | 255 KB |
 | [`09-plantilla-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/09-plantilla-de-avance.pdf) | Plantilla de cada avance del caso propio | 3 | 106 KB |
@@ -75,7 +75,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 136 KB |
+| [`01-readme-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/01-readme-s1.pdf) | README de S1 | 2 | 149 KB |
 | [`02-guion-s1.pdf`](S1-Datos-y-Entrenamiento/03-instructor/02-guion-s1.pdf) | Guion de S1 | 3 | 129 KB |
 
 
@@ -95,18 +95,19 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
 | [`01-teoria-y-glosario.pdf`](S2-API-y-Docker/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S2 | 3 | 159 KB |
-| [`02-guia-de-laboratorio.pdf`](S2-API-y-Docker/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S2 | 6 | 254 KB |
+| [`02-guia-de-laboratorio.pdf`](S2-API-y-Docker/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S2 | 6 | 255 KB |
 | [`03-tarea.pdf`](S2-API-y-Docker/02-alumno/03-tarea.pdf) | Tarea de S2 | 2 | 125 KB |
 | [`04-rubrica.pdf`](S2-API-y-Docker/02-alumno/04-rubrica.pdf) | Rúbrica de S2 | 2 | 71 KB |
 | [`05-plantilla-de-la-evidencia.pdf`](S2-API-y-Docker/02-alumno/05-plantilla-de-la-evidencia.pdf) | Plantilla de la evidencia (API y contenedor) | 2 | 83 KB |
-| [`06-checklist.pdf`](S2-API-y-Docker/02-alumno/06-checklist.pdf) | Checklist de S2 | 2 | 101 KB |
+| [`06-checklist.pdf`](S2-API-y-Docker/02-alumno/06-checklist.pdf) | Checklist de S2 | 2 | 100 KB |
 | [`07-la-api-y-el-contenedor.pdf`](S2-API-y-Docker/02-alumno/07-la-api-y-el-contenedor.pdf) | La API y el contenedor (proyecto base) | 5 | 243 KB |
 | [`08-guia-practica-de-contenedores.pdf`](S2-API-y-Docker/02-alumno/08-guia-practica-de-contenedores.pdf) | Contenedores: guía práctica con nueve ejemplos | 23 | 576 KB |
 | [`09-laboratorio-romper-a-proposito.pdf`](S2-API-y-Docker/02-alumno/09-laboratorio-romper-a-proposito.pdf) | Contenedores: laboratorio «romperlo a propósito» | 7 | 224 KB |
+| [`10-laboratorio-extra-de-punta-a-punta.pdf`](S2-API-y-Docker/02-alumno/10-laboratorio-extra-de-punta-a-punta.pdf) | Laboratorio extra: de la ingesta a la explotación | 6 | 262 KB |
 
 ### Material del instructor
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 2 | 137 KB |
+| [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 3 | 148 KB |
 | [`02-guion-s2.pdf`](S2-API-y-Docker/03-instructor/02-guion-s2.pdf) | Guion de S2 | 3 | 136 KB |
