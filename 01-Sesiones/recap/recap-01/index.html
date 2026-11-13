@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recap S1 · ML e IA: de desarrollo a producción</title>
+<style>
+:root{
+  --bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;
+  --blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--opt:#b39cff;--r:16px;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+#escenario{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;padding:46px 64px 54px;display:none;flex-direction:column;
+  background:radial-gradient(1200px 600px at 85% -10%,rgba(43,179,255,.14),transparent 60%),linear-gradient(180deg,var(--bg2),var(--bg))}
+.slide.on{display:flex;animation:entra .35s ease}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kick{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px}
+h1{font-size:40px;line-height:1.12;font-weight:800;margin-bottom:18px}
+h2{font-size:22px;font-weight:700;margin-bottom:8px}
+h3{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--gold)}
+p,li{font-size:19px;line-height:1.45;color:var(--text)}
+.muted{color:var(--muted)}
+.small{font-size:15px}
+.mono,code{font-family:var(--mono);font-size:.92em}
+code{background:rgba(43,179,255,.12);padding:1px 6px;border-radius:6px}
+.card{background:rgba(10,53,96,.72);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.fill{flex:1;min-height:0}
+.callout{border-left:4px solid var(--gold);background:rgba(252,211,77,.08);padding:12px 16px;border-radius:0 12px 12px 0;font-size:18px}
+.pie{position:absolute;left:64px;right:64px;bottom:18px;display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.chip{display:inline-block;font-family:var(--mono);font-size:14px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);margin:3px 4px 3px 0;background:rgba(43,179,255,.08)}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.gold{color:var(--gold)}.blue{color:var(--blue)}
+ul.lista{list-style:none}
+ul.lista li{padding-left:26px;position:relative;margin:6px 0}
+ul.lista li::before{content:"";position:absolute;left:4px;top:11px;width:10px;height:10px;border-radius:3px;background:var(--blue)}
+.term{background:#020f1f;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-family:var(--mono);font-size:16px;line-height:1.55;color:#d7ecff}
+.term .p{color:var(--ok)}
+.term .c{color:var(--muted)}
+svg text{font-family:var(--sans)}
+/* capas clicables */
+.capas{display:flex;gap:10px;align-items:stretch}
+.capa{flex:1;border-radius:14px;border:1px solid var(--line);background:rgba(10,53,96,.75);padding:12px 12px 10px;cursor:pointer;transition:transform .15s,border-color .15s;position:relative}
+.capa:hover,.capa.sel{transform:translateY(-4px);border-color:var(--gold)}
+.capa .n{font-size:13px;color:var(--muted);font-family:var(--mono)}
+.capa .t{font-size:21px;font-weight:800;margin:2px 0 4px}
+.capa .d{font-size:14px;color:var(--muted);line-height:1.35}
+.capa:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:38%;color:var(--gold);font-weight:800;font-size:18px}
+#detalleCapa{margin-top:16px;min-height:170px}
+/* autoevaluación */
+.preg{cursor:pointer;user-select:none}
+.preg .r{display:none;margin-top:8px;color:var(--ok);font-size:16px;line-height:1.4}
+.preg.abierta .r{display:block}
+.preg .q{font-size:17px;font-weight:600}
+.preg .q::before{content:"▸ ";color:var(--gold)}
+.preg.abierta .q::before{content:"▾ "}
+/* índice y notas */
+#indice{position:fixed;inset:0;background:rgba(3,26,51,.96);display:none;z-index:20;padding:40px 60px;overflow:auto}
+#indice.on{display:block}
+#indice h2{color:var(--gold);margin-bottom:16px}
+#indice ol{columns:2;column-gap:40px}
+#indice li{font-size:18px;margin:6px 0;cursor:pointer}
+#indice li:hover{color:var(--gold)}
+#notas{position:fixed;left:0;right:0;bottom:0;background:rgba(2,15,31,.96);border-top:2px solid var(--gold);padding:14px 22px;font-size:16px;line-height:1.45;display:none;z-index:15;max-height:34vh;overflow:auto}
+#notas.on{display:block}
+#barra{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:10;transition:width .25s}
+#ayuda{position:fixed;right:14px;bottom:10px;font-size:12px;color:var(--muted);z-index:9}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media print{
+  html,body{overflow:visible;height:auto}
+  #escenario{position:static;transform:none!important;width:1280px;height:auto}
+  .slide{display:flex!important;position:relative;height:720px;page-break-after:always;animation:none}
+  #barra,#ayuda,#notas,#indice{display:none!important}
+  .preg .r{display:block}
+}
+</style>
+</head>
+<body>
+<div id="barra"></div>
+<div id="escenario">
+
+<!-- 1 -->
+<section class="slide" data-title="Portada" data-notes="Cinco minutos al empezar S2: recordar el recorrido de S1 antes de convertir el modelo en un servicio. Pregunta de arranque: ¿quién llegó a ver su modelo en MLflow?">
+  <div class="kick">Recap · antes de S2</div>
+  <h1 style="font-size:56px;margin-top:40px">S1 en 5 minutos:<br><span class="gold">de los datos al modelo</span></h1>
+  <p class="muted" style="font-size:22px;max-width:900px">Caso del instructor: <b>Online Retail II</b>. Pregunta: <i>¿volverá este cliente a comprar en los próximos 90 días?</i></p>
+  <svg viewBox="0 0 1150 150" width="1150" height="150" style="margin-top:46px" aria-label="Recorrido de S1 en seis pasos">
+    <defs><marker id="fl" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fcd34d"/></marker></defs>
+    <g font-size="18" font-weight="700" fill="#eef6ff" text-anchor="middle">
+      <g><rect x="0" y="40" width="150" height="64" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="75" y="70">Operacional</text><text x="75" y="92" font-size="13" fill="#a9c8ea" font-weight="400">retail.db</text></g>
+      <g><rect x="200" y="40" width="150" height="64" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="275" y="70">RAW</text><text x="275" y="92" font-size="13" fill="#a9c8ea" font-weight="400">copia sin tocar</text></g>
+      <g><rect x="400" y="40" width="150" height="64" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="475" y="70">MASTER</text><text x="475" y="92" font-size="13" fill="#a9c8ea" font-weight="400">limpio + calidad</text></g>
+      <g><rect x="600" y="40" width="150" height="64" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="675" y="70">FS</text><text x="675" y="92" font-size="13" fill="#a9c8ea" font-weight="400">13 variables</text></g>
+      <g><rect x="800" y="40" width="150" height="64" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="875" y="70">ML</text><text x="875" y="92" font-size="13" fill="#a9c8ea" font-weight="400">y + partición</text></g>
+      <g><rect x="1000" y="40" width="150" height="64" rx="14" fill="#123d1f" stroke="#34d399"/><text x="1075" y="70">Modelo</text><text x="1075" y="92" font-size="13" fill="#a9c8ea" font-weight="400">+ MLflow</text></g>
+    </g>
+    <g stroke="#fcd34d" stroke-width="3" marker-end="url(#fl)"><line x1="152" y1="72" x2="196" y2="72"/><line x1="352" y1="72" x2="396" y2="72"/><line x1="552" y1="72" x2="596" y2="72"/><line x1="752" y1="72" x2="796" y2="72"/><line x1="952" y1="72" x2="996" y2="72"/></g>
+  </svg>
+  <div class="pie"><span>Recap 01 · ML e IA: de desarrollo a producción</span><span>← → para avanzar · O índice · S notas · F pantalla completa</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-title="La pregunta en un dibujo" data-notes="La idea más importante de S1. Un ejemplo es un cliente EN una fecha de corte. A la izquierda del corte se calculan las variables; a la derecha, durante 90 días, se mira si compra: eso es y. Si una variable usa algo de la derecha, el modelo hace trampa (fuga de información).">
+  <div class="kick">La idea clave</div>
+  <h1>Un ejemplo = un cliente en una <span class="gold">fecha de corte</span></h1>
+  <svg viewBox="0 0 1150 300" width="1150" height="300" aria-label="Línea de tiempo: pasado para las variables, 90 días después del corte para el objetivo">
+    <rect x="40" y="110" width="640" height="70" rx="12" fill="rgba(43,179,255,.18)" stroke="#2bb3ff"/>
+    <rect x="690" y="110" width="400" height="70" rx="12" fill="rgba(52,211,153,.16)" stroke="#34d399"/>
+    <line x1="685" y1="70" x2="685" y2="225" stroke="#fcd34d" stroke-width="4"/>
+    <text x="685" y="58" text-anchor="middle" font-size="20" font-weight="800" fill="#fcd34d">fecha de corte</text>
+    <text x="360" y="152" text-anchor="middle" font-size="22" font-weight="700" fill="#eef6ff">PASADO → variables (FS)</text>
+    <text x="890" y="142" text-anchor="middle" font-size="22" font-weight="700" fill="#eef6ff">90 días → objetivo y</text>
+    <text x="890" y="166" text-anchor="middle" font-size="15" fill="#a9c8ea">y = 1 si compra en [corte, corte + 90 d)</text>
+    <g fill="#2bb3ff"><circle cx="110" cy="214" r="9"/><circle cx="230" cy="214" r="9"/><circle cx="300" cy="214" r="9"/><circle cx="470" cy="214" r="9"/><circle cx="610" cy="214" r="9"/></g>
+    <circle cx="820" cy="214" r="9" fill="#34d399"/>
+    <text x="360" y="252" text-anchor="middle" font-size="15" fill="#a9c8ea">compras anteriores: recencia, frecuencia, monto…</text>
+    <text x="820" y="252" text-anchor="middle" font-size="15" fill="#a9c8ea">¿vuelve a comprar? → sí: y = 1</text>
+    <text x="40" y="290" font-size="14" fill="#a9c8ea">tiempo →</text>
+  </svg>
+  <div class="grid2" style="margin-top:6px">
+    <div class="callout"><b>Regla de oro:</b> las variables <b>solo miran hacia atrás</b>. La prueba <code>test_fs_no_usa_informacion_del_futuro</code> borra todo lo posterior al corte y comprueba que nada cambia.</div>
+    <div class="callout">El mismo cliente aparece <b>varias veces</b>, una por corte. Datos: 5 942 clientes, 53 628 facturas válidas, 01/12/2009 – 09/12/2011.</div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>2</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide" data-title="El recorrido por capas" data-notes="Pulsad cada capa. La pregunta que hay que saber responder: ¿qué entra y qué sale de cada una? Dos bases SQLite: retail.db (el origen, solo se lee) y curso.db con prefijos raw_, master_, fs_ y ml_.">
+  <div class="kick">Arquitectura de datos · pulsa cada capa</div>
+  <h1>Cinco capas, un cuaderno por capa</h1>
+  <div class="capas" id="capas">
+    <div class="capa" data-i="0" tabindex="0"><div class="n">cuaderno 00</div><div class="t">OPERACIONAL</div><div class="d">el «sistema de ventas»: retail.db</div></div>
+    <div class="capa" data-i="1" tabindex="0"><div class="n">cuaderno 01</div><div class="t">RAW</div><div class="d">copia fiel, sin tocar</div></div>
+    <div class="capa" data-i="2" tabindex="0"><div class="n">cuaderno 01</div><div class="t">MASTER</div><div class="d">limpio, relacional, con calidad</div></div>
+    <div class="capa" data-i="3" tabindex="0"><div class="n">cuaderno 02</div><div class="t">FS</div><div class="d">variables por cliente y corte</div></div>
+    <div class="capa" data-i="4" tabindex="0"><div class="n">cuadernos 03–04</div><div class="t">ML</div><div class="d">objetivo, partición y modelo</div></div>
+  </div>
+  <div class="card" id="detalleCapa"></div>
+  <div class="pie"><span>Recap 01</span><span>3</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-title="MASTER: limpiar sin perder nada" data-notes="La conciliación es la prueba de que limpiar no es tirar: cada fila de RAW está en MASTER o en descartes, con su motivo. Las reglas duras paran el pipeline; las alertas son decisiones pendientes de alguien.">
+  <div class="kick">MASTER y calidad · dato completo</div>
+  <h1>Limpiar no es borrar: <span class="gold">todo cuadra</span></h1>
+  <svg viewBox="0 0 1150 150" width="1150" height="150" aria-label="Conciliación: RAW es igual a MASTER más descartes">
+    <text x="0" y="28" font-size="17" fill="#a9c8ea">RAW · 1 067 371 líneas</text>
+    <rect x="0" y="38" width="1150" height="36" rx="8" fill="#1a5fa3"/>
+    <text x="0" y="104" font-size="17" fill="#a9c8ea">MASTER · 1 033 036 líneas</text>
+    <rect x="0" y="112" width="1113" height="36" rx="8" fill="#34d399"/>
+    <rect x="1115" y="112" width="35" height="36" rx="6" fill="#fb7185"/>
+    <text x="1150" y="104" text-anchor="end" font-size="17" fill="#fb7185">descartes · 34 335</text>
+  </svg>
+  <p style="margin:10px 0 16px;font-size:22px;text-align:center"><b>1 033 036 + 34 335 = 1 067 371</b> <span class="ok">✓</span> &nbsp; <span class="muted small">(cada descarte lleva su motivo en <code>master_descartes</code>)</span></p>
+  <div class="grid3">
+    <div class="card"><h3>Duras · R01–R05</h3><p class="small">Conciliación, facturas sin líneas, integridad, monto, fechas. <b class="bad">Si fallan, el pipeline se detiene.</b></p></div>
+    <div class="card"><h3>Alertas · R06–R07</h3><p class="small">Con el dato completo, R07 (cancelaciones con cantidad positiva) = 1 → <b class="warn">ALERTA</b>. Con la muestra salta R06.</p></div>
+    <div class="card"><h3>Informativas · R08–R13</h3><p class="small">Miden: % sin cliente (22,76 %), % ventas válidas (97,11 %), duplicados…</p></div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>4</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-title="FS: 13 variables" data-notes="Lo que el modelo ve de cada cliente. Todas se calculan con facturas ANTERIORES al corte. Preguntad: ¿qué variable os parece más útil para saber si alguien vuelve? Suele salir la recencia.">
+  <div class="kick">FS · fs_catalogo</div>
+  <h1>Lo que el modelo ve de cada cliente: <span class="gold">13 variables</span></h1>
+  <div class="grid2 fill" style="grid-template-rows:auto auto">
+    <div class="card"><h3>Recencia y antigüedad</h3><span class="chip">recencia_dias</span><span class="chip">antiguedad_dias</span><p class="small muted" style="margin-top:6px">¿Hace cuánto compró por última vez? ¿Desde cuándo es cliente?</p></div>
+    <div class="card"><h3>Frecuencia y ritmo</h3><span class="chip">frecuencia</span><span class="chip">dias_medios_entre_compras</span><span class="chip">frecuencia_90d</span><span class="chip">frecuencia_180d</span><p class="small muted" style="margin-top:6px">¿Cuántas veces compra y con qué cadencia?</p></div>
+    <div class="card"><h3>Monto</h3><span class="chip">monto_total</span><span class="chip">ticket_medio</span><span class="chip">monto_90d</span><p class="small muted" style="margin-top:6px">¿Cuánto gasta, en total y por factura?</p></div>
+    <div class="card"><h3>Variedad y contexto</h3><span class="chip">unidades_total</span><span class="chip">productos_distintos</span><span class="chip">devoluciones</span><span class="chip">es_reino_unido</span><p class="small muted" style="margin-top:6px">¿Cuánto y qué variedad compra? ¿Devuelve? ¿Dónde está?</p></div>
+  </div>
+  <div class="callout" style="margin-top:14px">La <b>tarea de S1</b> era añadir una variable aquí, documentarla en <code>fs_catalogo</code>, reentrenar y <b>decidir con evidencia</b> si se queda.</div>
+  <div class="pie"><span>Recap 01</span><span>5</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-title="Partición temporal" data-notes="Se entrena con el pasado y se evalúa con el futuro, como se usará el modelo. Las ventanas de 90 días no se solapan entre particiones. Ojo con la lectura honesta: aquí la partición aleatoria dio MENOS AUC, no más; se elige la temporal por parecerse al uso real.">
+  <div class="kick">ML · objetivo y partición</div>
+  <h1>Entrenar con el pasado, <span class="gold">examinar con el futuro</span></h1>
+  <svg viewBox="0 0 1150 190" width="1150" height="190" aria-label="Línea de tiempo de cortes: train, valid y test">
+    <line x1="20" y1="80" x2="1130" y2="80" stroke="#1a5fa3" stroke-width="3"/>
+    <g fill="#2bb3ff"><circle cx="60" cy="80" r="10"/><circle cx="120" cy="80" r="10"/><circle cx="180" cy="80" r="10"/><circle cx="240" cy="80" r="10"/><circle cx="300" cy="80" r="10"/><circle cx="360" cy="80" r="10"/><circle cx="420" cy="80" r="10"/></g>
+    <circle cx="600" cy="80" r="12" fill="#fcd34d"/>
+    <g fill="#34d399"><circle cx="780" cy="80" r="12"/><circle cx="960" cy="80" r="12"/></g>
+    <text x="240" y="44" text-anchor="middle" font-size="20" font-weight="800" fill="#2bb3ff">train</text>
+    <text x="240" y="118" text-anchor="middle" font-size="14" fill="#a9c8ea">7 cortes mensuales · 2010-06 a 2010-12</text>
+    <text x="240" y="140" text-anchor="middle" font-size="15" fill="#eef6ff">23 760 filas · recompra 48,1 %</text>
+    <text x="600" y="44" text-anchor="middle" font-size="20" font-weight="800" fill="#fcd34d">valid</text>
+    <text x="600" y="118" text-anchor="middle" font-size="14" fill="#a9c8ea">2011-03-01</text>
+    <text x="600" y="140" text-anchor="middle" font-size="15" fill="#eef6ff">4 512 filas · 35,1 %</text>
+    <text x="870" y="44" text-anchor="middle" font-size="20" font-weight="800" fill="#34d399">test</text>
+    <text x="870" y="118" text-anchor="middle" font-size="14" fill="#a9c8ea">2011-06-01 y 2011-09-01</text>
+    <text x="870" y="140" text-anchor="middle" font-size="15" fill="#eef6ff">10 132 filas · 38,0 %</text>
+    <text x="1130" y="178" text-anchor="end" font-size="14" fill="#a9c8ea">último día del dato: 2011-12-09 · total 38 404 ejemplos (dato completo)</text>
+  </svg>
+  <div class="grid3" style="margin-top:4px">
+    <div class="card"><h3>train</h3><p class="small">Aprende.</p></div>
+    <div class="card"><h3>valid</h3><p class="small"><b>Elige</b> el modelo.</p></div>
+    <div class="card"><h3>test</h3><p class="small">Se mira <b>una sola vez</b>: el examen sorpresa.</p></div>
+  </div>
+  <p class="small muted" style="margin-top:12px">¿Y si partimos al azar? AUC 0,766 (5 semillas, rango 0,761–0,770) frente a 0,796 en temporal. Se elige la temporal porque <b>se parece al uso real</b> y deja ver que la tasa cambia (48 → 35 → 38 %).</p>
+  <div class="pie"><span>Recap 01</span><span>6</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-title="Tres modelos, una decisión" data-notes="Gráfica con el dato completo. El gradient boosting sabe mucho del pasado (0,842 en train) pero generaliza peor: sobreajuste. Gana la regresión logística. Con la muestra del curso los valores son menores (0,698 y 0,747) y es lo esperado.">
+  <div class="kick">Entrenamiento · AUC por partición (dato completo)</div>
+  <h1>El que más memoriza <span class="gold">no es el que gana</span></h1>
+  <div class="grid2 fill" style="grid-template-columns:1.25fr 1fr;align-items:center">
+    <svg viewBox="0 0 640 380" width="640" height="380" aria-label="Barras de AUC de los tres modelos en train, valid y test">
+      <line x1="60" y1="330" x2="630" y2="330" stroke="#1a5fa3"/>
+      <!-- escala: AUC 0.4 -> y=330, 0.9 -> y=30 ; 1 punto = 600 px -->
+      <line x1="60" y1="270" x2="630" y2="270" stroke="#fcd34d" stroke-dasharray="5 5" opacity=".7"/>
+      <text x="56" y="274" text-anchor="end" font-size="13" fill="#fcd34d">0,5</text>
+      <text x="56" y="334" text-anchor="end" font-size="13" fill="#a9c8ea">0,4</text>
+      <text x="56" y="154" text-anchor="end" font-size="13" fill="#a9c8ea">0,7</text>
+      <text x="56" y="34" text-anchor="end" font-size="13" fill="#a9c8ea">0,9</text>
+      <g font-size="12" fill="#eef6ff" text-anchor="middle">
+        <!-- referencia -->
+        <rect x="80" y="270" width="40" height="60" fill="#6b7c93"/><rect x="124" y="270" width="40" height="60" fill="#8fa3bd"/><rect x="168" y="270" width="40" height="60" fill="#b5c6db"/>
+        <text x="144" y="356" font-size="14">referencia</text>
+        <!-- regresión logística 0.740 / 0.786 / 0.796 -->
+        <rect x="270" y="126" width="40" height="204" fill="#1d6fb8"/><text x="290" y="120">0,740</text>
+        <rect x="314" y="98.4" width="40" height="231.6" fill="#2bb3ff"/><text x="334" y="92">0,786</text>
+        <rect x="358" y="92.4" width="40" height="237.6" fill="#7dd3fc"/><text x="378" y="86">0,796</text>
+        <text x="334" y="356" font-size="14" font-weight="700" fill="#fcd34d">regresión logística ★</text>
+        <!-- gradient boosting 0.842 / 0.761 / 0.781 -->
+        <rect x="460" y="64.8" width="40" height="265.2" fill="#b45309"/><text x="480" y="58">0,842</text>
+        <rect x="504" y="113.4" width="40" height="216.6" fill="#f59e0b"/><text x="524" y="107">0,761</text>
+        <rect x="548" y="101.4" width="40" height="228.6" fill="#fcd34d"/><text x="568" y="95">0,781</text>
+        <text x="524" y="356" font-size="14">gradient boosting</text>
+      </g>
+      <g font-size="13" fill="#a9c8ea"><rect x="90" y="10" width="14" height="14" fill="#1d6fb8"/><text x="110" y="22">train</text><rect x="170" y="10" width="14" height="14" fill="#2bb3ff"/><text x="190" y="22">valid</text><rect x="250" y="10" width="14" height="14" fill="#7dd3fc"/><text x="270" y="22">test</text></g>
+    </svg>
+    <div>
+      <div class="card" style="margin-bottom:12px"><h3>Sobreajuste</h3><p class="small">Gradient boosting: 0,842 en <b>train</b> pero 0,761 en <b>valid</b>. Ha memorizado el pasado.</p></div>
+      <div class="card" style="margin-bottom:12px"><h3>La regla</h3><p class="small">Se elige con <b>valid</b>; <b>test</b> se informa una vez. Gana la <b>regresión logística</b>, más simple y explicable.</p></div>
+      <p class="small muted">Con la <b>muestra</b> del curso (23 070 filas): regresión logística valid 0,698 · test 0,747. Valores menores, esperados.</p>
+    </div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>7</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-title="Leer el AUC sin fórmulas" data-notes="Explicación intuitiva: coge al azar un cliente que volvió y uno que no; el AUC es la probabilidad de que el modelo dé más puntuación al que volvió. 0,5 es tirar una moneda. Y la métrica que entiende negocio: de los que el modelo pone arriba, cuántos aciertan. Cifras de la muestra, en test.">
+  <div class="kick">Métricas · intuición</div>
+  <h1>¿Ordena bien a los clientes?</h1>
+  <div class="grid2 fill">
+    <div class="card">
+      <h3>AUC = un duelo entre dos clientes</h3>
+      <svg viewBox="0 0 520 210" width="520" height="210" aria-label="Duelo: el modelo debe puntuar más alto al cliente que volvió">
+        <circle cx="110" cy="80" r="44" fill="rgba(52,211,153,.2)" stroke="#34d399" stroke-width="3"/><text x="110" y="76" text-anchor="middle" font-size="16" fill="#eef6ff" font-weight="700">volvió</text><text x="110" y="98" text-anchor="middle" font-size="14" fill="#34d399">y = 1</text>
+        <circle cx="410" cy="80" r="44" fill="rgba(251,113,133,.18)" stroke="#fb7185" stroke-width="3"/><text x="410" y="76" text-anchor="middle" font-size="16" fill="#eef6ff" font-weight="700">no volvió</text><text x="410" y="98" text-anchor="middle" font-size="14" fill="#fb7185">y = 0</text>
+        <text x="260" y="88" text-anchor="middle" font-size="30" font-weight="800" fill="#fcd34d">VS</text>
+        <text x="260" y="160" text-anchor="middle" font-size="16" fill="#eef6ff">¿El modelo da más probabilidad al que volvió?</text>
+        <text x="260" y="190" text-anchor="middle" font-size="15" fill="#a9c8ea">0,5 = moneda al aire · 1 = acierta siempre</text>
+      </svg>
+    </div>
+    <div class="card">
+      <h3>Lo que entiende el negocio</h3>
+      <p class="small">«Si solo puedo llamar al <b>10 %</b> de los clientes, ¿cuántos de ellos vuelven?» (muestra, test)</p>
+      <svg viewBox="0 0 520 170" width="520" height="170" aria-label="Aciertos en el 10 por ciento mejor frente a la tasa base">
+        <text x="0" y="34" font-size="15" fill="#a9c8ea">al azar (tasa base)</text><rect x="200" y="18" width="129" height="24" rx="5" fill="#6b7c93"/><text x="336" y="36" font-size="15" fill="#eef6ff">40 %</text>
+        <text x="0" y="84" font-size="15" fill="#a9c8ea">referencia sin aprender</text><rect x="200" y="68" width="77" height="24" rx="5" fill="#8fa3bd"/><text x="284" y="86" font-size="15" fill="#eef6ff">24 %</text>
+        <text x="0" y="134" font-size="15" fill="#fcd34d" font-weight="700">regresión logística</text><rect x="200" y="118" width="282" height="24" rx="5" fill="#2bb3ff"/><text x="488" y="136" font-size="15" fill="#eef6ff" font-weight="700">88 %</text>
+      </svg>
+    </div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>8</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide" data-title="MLflow" data-notes="Novedad respecto a lo visto en clase: el modelo elegido ya queda en el REGISTRO de modelos como retencion-90d, con una versión por entrenamiento. Y la interfaz se abre con python -m ia_mlops.mlflow_ui porque el comando con ruta relativa creaba una base vacía si se lanzaba desde la raíz del repositorio. En la web, elegir Model training.">
+  <div class="kick">MLflow · el cuaderno de laboratorio</div>
+  <h1>Cada entrenamiento deja <span class="gold">huella</span></h1>
+  <svg viewBox="0 0 1150 200" width="1150" height="200" aria-label="MLflow: experimento, ejecuciones y versión en el registro de modelos">
+    <defs><marker id="fl2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fcd34d"/></marker></defs>
+    <rect x="0" y="10" width="560" height="180" rx="16" fill="rgba(10,53,96,.8)" stroke="#1a5fa3"/>
+    <text x="20" y="40" font-size="18" font-weight="800" fill="#fcd34d">Experimento · retencion-90d</text>
+    <g font-size="14" fill="#eef6ff">
+      <rect x="20" y="56" width="250" height="30" rx="8" fill="#0e4378"/><text x="32" y="76">referencia_sin_aprender</text>
+      <rect x="20" y="92" width="250" height="30" rx="8" fill="#0e4378"/><text x="32" y="112">regresion_logistica</text>
+      <rect x="20" y="128" width="250" height="30" rx="8" fill="#0e4378"/><text x="32" y="148">gradient_boosting</text>
+      <rect x="290" y="92" width="250" height="30" rx="8" fill="#123d1f" stroke="#34d399"/><text x="302" y="112" font-weight="700">MEJOR-regresion_logistica</text>
+    </g>
+    <text x="290" y="76" font-size="13" fill="#a9c8ea">ejecuciones: parámetros + métricas</text>
+    <text x="290" y="148" font-size="13" fill="#a9c8ea">+ el modelo con su firma</text>
+    <line x1="545" y1="107" x2="640" y2="107" stroke="#fcd34d" stroke-width="3" marker-end="url(#fl2)"/>
+    <rect x="650" y="34" width="500" height="146" rx="16" fill="rgba(18,61,31,.75)" stroke="#34d399"/>
+    <text x="670" y="64" font-size="18" font-weight="800" fill="#34d399">Model registry · retencion-90d</text>
+    <g font-size="15" fill="#eef6ff"><text x="670" y="96">versión 1 · 2 · 3 …  (una por entrenamiento)</text><text x="670" y="124">etiquetas: modelo · huella_datos · valid_auc</text><text x="670" y="152" fill="#a9c8ea">S4–S5: alias «produccion» y rollback</text></g>
+  </svg>
+  <div class="grid2" style="margin-top:14px">
+    <div>
+      <div class="term"><span class="c"># desde 04-Proyecto-Base, con env-ia-mlops</span><br><span class="p">$</span> python -m ia_mlops.mlflow_ui<br><span class="c">  Experimento «retencion-90d»: 48 ejecuciones · modelo registrado «retencion-90d»: 1 versiones</span></div>
+      <p class="small" style="margin-top:8px">En la web, arriba a la izquierda: <b class="gold">Model training</b> (no «GenAI»).</p>
+    </div>
+    <div class="callout small"><b>Lo que falló al preparar S1:</b> <code>mlflow ui --backend-store-uri sqlite:///models/mlflow.db</code> usa una ruta <b>relativa</b>. Desde la raíz del repositorio crea allí una base <b>vacía</b> sin avisar. El comando nuevo usa la ruta completa y te dice antes qué hay.<br><b>Antes de comparar dos ejecuciones:</b> misma <code>huella_datos</code>.</div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>9</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-title="Del cuaderno al Python" data-notes="Los cuadernos son la fuente para aprender; el paquete ia_mlops es su traducción para producción. La prueba de equivalencia exige resultados idénticos. Y el pipeline es idempotente: la segunda vez dice «sin cambios».">
+  <div class="kick">Cookiecutter Data Science</div>
+  <h1>El cuaderno enseña; <span class="gold">el paquete se ejecuta</span></h1>
+  <div class="grid3">
+    <div class="card"><h3>notebooks/</h3><p class="small">00 operacional · 01 RAW→MASTER · 02 MASTER→FS · 03 FS→ML · 04 entrenar y MLflow</p></div>
+    <div class="card"><h3>ia_mlops/</h3><p class="small">La misma lógica en módulos <code>.py</code>: ingesta RAW, MASTER, ML y entrenamiento.</p></div>
+    <div class="card"><h3>tests/</h3><p class="small">La <b>prueba de equivalencia</b> exige tablas y métricas idénticas entre cuaderno, paquete y script <code>jupytext</code>.</p></div>
+  </div>
+  <div class="term" style="margin-top:16px">
+    <span class="p">$</span> python -m ia_mlops.pipeline <span class="c">          # los cuatro pipelines</span><br>
+    <span class="p">$</span> python -m ia_mlops.pipeline <span class="c">          # otra vez: «sin cambios» (idempotencia)</span><br>
+    <span class="p">$</span> python -m pytest -q -m "not lento" <span class="c">  # 121 passed, 4 deselected</span>
+  </div>
+  <p class="small muted" style="margin-top:12px">Idempotente: ejecutarlo dos veces deja lo mismo que una. No reentrena ni añade ejecuciones a MLflow si nada cambió.</p>
+  <div class="pie"><span>Recap 01</span><span>10</span></div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-title="Autoevaluación" data-notes="Cinco minutos en parejas. Pulsar cada pregunta para ver la respuesta. Si alguna no sale, volver a la diapositiva correspondiente.">
+  <div class="kick">Autoevaluación · pulsa cada pregunta</div>
+  <h1>¿Lo tienes? Seis preguntas</h1>
+  <div class="grid2" id="preguntas">
+    <div class="card preg" tabindex="0"><div class="q">¿Qué es un ejemplo en este caso?</div><div class="r">Un cliente en una fecha de corte. El mismo cliente aparece una vez por cada corte.</div></div>
+    <div class="card preg" tabindex="0"><div class="q">¿Por qué RAW no se toca?</div><div class="r">Porque es la prueba de lo que llegó. Si limpias en RAW pierdes el linaje y la conciliación deja de ser posible.</div></div>
+    <div class="card preg" tabindex="0"><div class="q">Una variable usa una compra posterior al corte. ¿Qué pasa?</div><div class="r">Es una fuga: el modelo «ve el futuro». La prueba <code>test_fs_no_usa_informacion_del_futuro</code> falla, y eso es bueno.</div></div>
+    <div class="card preg" tabindex="0"><div class="q">¿Con qué partición se elige el modelo?</div><div class="r">Con valid. Test se mira una sola vez, al final: si eligieras con test dejaría de ser un examen sorpresa.</div></div>
+    <div class="card preg" tabindex="0"><div class="q">AUC 0,842 en train y 0,761 en valid. ¿Qué significa?</div><div class="r">Sobreajuste: el modelo memoriza el pasado y generaliza peor. Por eso ganó la regresión logística.</div></div>
+    <div class="card preg" tabindex="0"><div class="q">Abres MLflow y no ves nada. ¿Qué compruebas?</div><div class="r"><code>python -m ia_mlops.mlflow_ui --comprobar</code> desde 04-Proyecto-Base: dice qué registro lee y cuántas ejecuciones hay. Y en la web, «Model training».</div></div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>11</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-title="Puente a S2" data-notes="Lo que S2 necesita de S1: el pipeline ejecutado, las pruebas en verde y la carpeta models/modelo_mlflow con su firma. Sin ese modelo la API no tiene qué servir.">
+  <div class="kick">Lo que viene en S2</div>
+  <h1>Del modelo guardado <span class="gold">a un servicio</span></h1>
+  <svg viewBox="0 0 1150 170" width="1150" height="170" aria-label="De models/modelo_mlflow a la API, a la imagen Docker y al workflow">
+    <defs><marker id="fl3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fcd34d"/></marker></defs>
+    <g text-anchor="middle">
+      <rect x="0" y="40" width="240" height="90" rx="16" fill="#123d1f" stroke="#34d399"/><text x="120" y="78" font-size="19" font-weight="800" fill="#eef6ff">modelo_mlflow/</text><text x="120" y="104" font-size="14" fill="#a9c8ea">modelo + firma (S1)</text>
+      <rect x="300" y="40" width="240" height="90" rx="16" fill="#0a3560" stroke="#1a5fa3"/><text x="420" y="78" font-size="19" font-weight="800" fill="#eef6ff">API FastAPI</text><text x="420" y="104" font-size="14" fill="#a9c8ea">contrato · 200/422/503</text>
+      <rect x="600" y="40" width="240" height="90" rx="16" fill="#0a3560" stroke="#1a5fa3"/><text x="720" y="78" font-size="19" font-weight="800" fill="#eef6ff">imagen Docker</text><text x="720" y="104" font-size="14" fill="#a9c8ea">en el Codespace</text>
+      <rect x="900" y="40" width="250" height="90" rx="16" fill="#0a3560" stroke="#1a5fa3"/><text x="1025" y="78" font-size="19" font-weight="800" fill="#eef6ff">GitHub Actions</text><text x="1025" y="104" font-size="14" fill="#a9c8ea">primer workflow</text>
+    </g>
+    <g stroke="#fcd34d" stroke-width="3" marker-end="url(#fl3)"><line x1="244" y1="85" x2="296" y2="85"/><line x1="544" y1="85" x2="596" y2="85"/><line x1="844" y1="85" x2="896" y2="85"/></g>
+  </svg>
+  <div class="card" style="margin-top:8px">
+    <h3>Trae listo para S2</h3>
+    <ul class="lista">
+      <li><code>python -m ia_mlops.pipeline</code> ejecutado: existe <code>models/modelo_mlflow/</code></li>
+      <li><code>python -m pytest -q -m "not lento"</code> → <b>121 passed, 4 deselected</b></li>
+      <li>Tu Codespace abierto una vez (guía de Codespaces) y la tarea de S1 entregada</li>
+    </ul>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>12</span></div>
+</section>
+
+</div>
+
+<div id="indice" role="dialog" aria-label="Índice de diapositivas"><h2>Índice · Recap S1</h2><ol id="listaIndice"></ol><p class="small muted" style="margin-top:20px">Pulsa una diapositiva o O para cerrar.</p></div>
+<div id="notas" aria-live="polite"></div>
+
+<script>
+(function(){
+  'use strict';
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var actual = 0;
+  var escenario = document.getElementById('escenario');
+  var notas = document.getElementById('notas');
+  var indice = document.getElementById('indice');
+
+  var CAPAS = [
+    {t:'OPERACIONAL · retail.db', e:'El Excel de UCI (o la muestra de 150 clientes)', s:'Una base relacional que simula el sistema de ventas: clientes, productos, facturas y líneas', r:'El pipeline <b>solo la lee</b>. Se reconstruyen las 23 070 líneas de la muestra.'},
+    {t:'RAW · tablas raw_*', e:'Las tablas del operacional', s:'Cuatro tablas <code>raw_*</code> copiadas tal cual y <code>raw_carga</code> con filas y huella de cada una', r:'<b>RAW no se toca.</b> El dato real viene sucio (cancelaciones «C…», líneas sin cliente, tipos mezclados) y se deja así.'},
+    {t:'MASTER · tablas master_*', e:'RAW', s:'Clientes, productos y líneas limpias; <code>master_descartes</code> (con motivo) y <code>master_calidad</code> (13 reglas)', r:'Conciliación: <b>RAW = MASTER + descartes</b>. Las reglas duras paran el pipeline.'},
+    {t:'FS · fs_cliente_corte', e:'MASTER', s:'Una fila por cliente y corte con 13 variables, documentadas en <code>fs_catalogo</code>', r:'<b>Solo mira hacia atrás.</b> La prueba de no-fuga lo vigila.'},
+    {t:'ML · ml_dataset y el modelo', e:'FS', s:'El objetivo <code>y</code>, la partición temporal (train / valid / test) y, en el cuaderno 04, tres modelos comparados y el mejor guardado y registrado en MLflow', r:'Se elige con valid y se informa test una sola vez.'}
+  ];
+  function mostrarCapa(i){
+    var c = CAPAS[i];
+    document.querySelectorAll('.capa').forEach(function(el){ el.classList.toggle('sel', +el.dataset.i === i); });
+    document.getElementById('detalleCapa').innerHTML =
+      '<h2 class="gold">' + c.t + '</h2>' +
+      '<div class="grid3" style="margin-top:8px"><div><h3>Entra</h3><p class="small">' + c.e + '</p></div>' +
+      '<div><h3>Sale</h3><p class="small">' + c.s + '</p></div><div><h3>Regla clave</h3><p class="small">' + c.r + '</p></div></div>';
+  }
+  document.querySelectorAll('.capa').forEach(function(el){
+    el.addEventListener('click', function(){ mostrarCapa(+el.dataset.i); });
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); mostrarCapa(+el.dataset.i); } });
+  });
+  mostrarCapa(0);
+
+  document.querySelectorAll('.preg').forEach(function(el){
+    function alternar(){ el.classList.toggle('abierta'); }
+    el.addEventListener('click', alternar);
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); alternar(); } });
+  });
+
+  var lista = document.getElementById('listaIndice');
+  slides.forEach(function(s, i){
+    var li = document.createElement('li');
+    li.textContent = s.dataset.title;
+    li.addEventListener('click', function(){ ir(i); indice.classList.remove('on'); });
+    lista.appendChild(li);
+  });
+
+  function escalar(){
+    var k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    escenario.style.transform = 'translate(-50%,-50%) scale(' + k + ')';
+  }
+  function ir(i){
+    actual = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function(s, j){ s.classList.toggle('on', j === actual); });
+    document.getElementById('barra').style.width = ((actual + 1) / slides.length * 100) + '%';
+    notas.textContent = (actual + 1) + '/' + slides.length + ' · ' + (slides[actual].dataset.notes || '');
+    try { history.replaceState(null, '', '#' + (actual + 1)); } catch (e) {}
+  }
+  document.addEventListener('keydown', function(e){
+    if (e.target.closest && e.target.closest('.capa, .preg') && (e.key === 'Enter' || e.key === ' ')) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); ir(actual + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); ir(actual - 1); }
+    else if (k === 'Home') ir(0);
+    else if (k === 'End') ir(slides.length - 1);
+    else if (k === 'o' || k === 'O') indice.classList.toggle('on');
+    else if (k === 's' || k === 'S') notas.classList.toggle('on');
+    else if (k === 'f' || k === 'F') {
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen && document.exitFullscreen(); }
+    }
+    else if (k === 'Escape') { indice.classList.remove('on'); }
+  });
+  window.addEventListener('resize', escalar);
+  escalar();
+  var h = parseInt((location.hash || '').slice(1), 10);
+  ir(isNaN(h) ? 0 : h - 1);
+})();
+</script>
+</body>
+</html>
