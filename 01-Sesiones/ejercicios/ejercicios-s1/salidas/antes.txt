@@ -1,0 +1,41 @@
+[operacional] creando retail.db (todavia no existe); es la simulacion del sistema de ventas, no un pipeline
+  OPERACIONAL: clientes               150 filas
+  OPERACIONAL: productos            3,080 filas
+  OPERACIONAL: facturas             1,430 filas
+  OPERACIONAL: lineas_factura      23,070 filas
+[pipeline_ingesta_raw] ejecutando (huella de entrada a3e0551c3461)
+  RAW: raw_clientes               150 filas
+  RAW: raw_productos            3,080 filas
+  RAW: raw_facturas             1,430 filas
+  RAW: raw_lineas_factura      23,070 filas
+  (0.2 s)
+[pipeline_ingesta_master] ejecutando (huella de entrada d31efa33ae66)
+  MASTER: master_clientes           150 filas
+  MASTER: master_productos        3,077 filas
+  MASTER: master_facturas         1,430 filas
+  MASTER: master_lineas          22,117 filas
+  MASTER: master_descartes          953 filas
+  MASTER: calidad: 13 reglas, 1 alertas
+  (0.3 s)
+[pipeline_ml] ejecutando (huella de entrada 16577f644dbe)
+  FS: corte 2010-06-01: 69 clientes
+  FS: corte 2010-07-01: 80 clientes
+  FS: corte 2010-08-01: 84 clientes
+  FS: corte 2010-09-01: 88 clientes
+  FS: corte 2010-10-01: 93 clientes
+  FS: corte 2010-11-01: 103 clientes
+  FS: corte 2010-12-01: 109 clientes
+  FS: corte 2011-03-01: 114 clientes
+  FS: corte 2011-06-01: 119 clientes
+  FS: corte 2011-09-01: 131 clientes
+  ML: train     626 filas | tasa de recompra 50.8 %
+  ML: valid     114 filas | tasa de recompra 45.6 %
+  ML: test      250 filas | tasa de recompra 40.4 %
+  (0.3 s)
+[pipeline_train] ejecutando (huella de entrada 7108eeb2fa32)
+  referencia_sin_aprender    AUC valid 0.500 | test 0.500 | precision media test 0.404
+  regresion_logistica        AUC valid 0.698 | test 0.747 | precision media test 0.659
+  gradient_boosting          AUC valid 0.663 | test 0.735 | precision media test 0.648
+  Mejor modelo: regresion_logistica. Guardado en …\models\modelo.joblib
+  Registrado en MLflow como «retencion-90d», version 1. Para verlo: python -m ia_mlops.mlflow_ui
+  (23.1 s)

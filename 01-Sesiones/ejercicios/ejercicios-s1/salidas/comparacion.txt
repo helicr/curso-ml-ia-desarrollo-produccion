@@ -1,0 +1,24 @@
+      tags.mlflow.runName           params.modelo params.huella_datos params.n_variables  metrics.train_auc  metrics.valid_auc  metrics.test_auc  metrics.test_precision_media  metrics.test_aciertos_en_el_10_mejor
+  referencia_sin_aprender referencia_sin_aprender    35a94deb4e04ab4a                 13             0.5000             0.5000            0.5000                        0.4040                                  0.24
+      regresion_logistica     regresion_logistica    35a94deb4e04ab4a                 13             0.8033             0.6982            0.7471                        0.6589                                  0.88
+        gradient_boosting       gradient_boosting    35a94deb4e04ab4a                 13             1.0000             0.6628            0.7354                        0.6477                                  0.76
+MEJOR-regresion_logistica     regresion_logistica    35a94deb4e04ab4a               None             0.8033             0.6982            0.7471                        0.6589                                  0.88
+  referencia_sin_aprender referencia_sin_aprender    2befaf80246b5f98                 14             0.5000             0.5000            0.5000                        0.4040                                  0.24
+      regresion_logistica     regresion_logistica    2befaf80246b5f98                 14             0.8029             0.6991            0.7477                        0.6594                                  0.88
+        gradient_boosting       gradient_boosting    2befaf80246b5f98                 14             1.0000             0.6647            0.7313                        0.6406                                  0.76
+MEJOR-regresion_logistica     regresion_logistica    2befaf80246b5f98               None             0.8029             0.6991            0.7477                        0.6594                                  0.88
+version 2 run 658ca839 {'modelo': 'regresion_logistica', 'huella_datos': '2befaf80246b5f98', 'valid_auc': '0.6991'}
+version 1 run ad525b88 {'modelo': 'regresion_logistica', 'huella_datos': '35a94deb4e04ab4a', 'valid_auc': '0.6982'}
+
+ratio_devoluciones por partición:
+           count   mean    std  min  25%  50%    75%  max
+particion                                                
+test       250.0  0.140  0.249  0.0  0.0  0.0  0.193  1.0
+train      626.0  0.177  0.318  0.0  0.0  0.0  0.250  2.0
+valid      114.0  0.136  0.245  0.0  0.0  0.0  0.167  1.0
+
+clientes-corte con ratio > 0: 0.362
+correlación con devoluciones (train): 0.495
+tasa de recompra train según ratio>0: {False: 0.351, True: 0.79}
+
+fs_catalogo: [('ratio_devoluciones', 'Devoluciones por cada factura con venta antes del corte', 'devoluciones / frecuencia', 'devoluciones por factura')] · total variables en catálogo: 14

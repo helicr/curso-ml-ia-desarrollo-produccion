@@ -1,0 +1,105 @@
+diff --git a/04-Proyecto-Base/ia_mlops/config.py b/04-Proyecto-Base/ia_mlops/config.py
+index d72a6ef..46d77ba 100644
+--- a/04-Proyecto-Base/ia_mlops/config.py
++++ b/04-Proyecto-Base/ia_mlops/config.py
+@@ -51,7 +51,7 @@ CORTES = {
+ FEATURES = [
+     'recencia_dias', 'frecuencia', 'monto_total', 'ticket_medio', 'unidades_total', 'productos_distintos',
+     'antiguedad_dias', 'frecuencia_90d', 'monto_90d', 'frecuencia_180d', 'dias_medios_entre_compras',
+-    'devoluciones', 'es_reino_unido',
++    'devoluciones', 'es_reino_unido', 'ratio_devoluciones',
+ ]
+ OBJETIVO = 'y'
+ 
+diff --git a/04-Proyecto-Base/notebooks/04_entrenamiento_y_seguimiento.ipynb b/04-Proyecto-Base/notebooks/04_entrenamiento_y_seguimiento.ipynb
+index ae57954..b4905c0 100644
+--- a/04-Proyecto-Base/notebooks/04_entrenamiento_y_seguimiento.ipynb
++++ b/04-Proyecto-Base/notebooks/04_entrenamiento_y_seguimiento.ipynb
+@@ -55,7 +55,7 @@
+     "OBJETIVO = 'y'\n",
+     "FEATURES = ['recencia_dias', 'frecuencia', 'monto_total', 'ticket_medio', 'unidades_total', 'productos_distintos',\n",
+     "            'antiguedad_dias', 'frecuencia_90d', 'monto_90d', 'frecuencia_180d', 'dias_medios_entre_compras',\n",
+-    "            'devoluciones', 'es_reino_unido']\n",
++    "            'devoluciones', 'es_reino_unido', 'ratio_devoluciones']\n",
+     "VENTANA_OBJETIVO_DIAS = 90\n",
+     "CORTES = {\n",
+     "    'train': ['2010-06-01', '2010-07-01', '2010-08-01', '2010-09-01', '2010-10-01', '2010-11-01', '2010-12-01'],\n",
+diff --git a/04-Proyecto-Base/sql/fs/01_crear_fs.sql b/04-Proyecto-Base/sql/fs/01_crear_fs.sql
+index f79c6aa..605593e 100644
+--- a/04-Proyecto-Base/sql/fs/01_crear_fs.sql
++++ b/04-Proyecto-Base/sql/fs/01_crear_fs.sql
+@@ -27,7 +27,8 @@ INSERT INTO fs_catalogo (feature, descripcion, formula, unidad) VALUES
+  ('frecuencia_180d',          'Facturas en los 180 dias previos al corte',                  'count(factura) con fecha >= corte - 180 dias',        'facturas'),
+  ('dias_medios_entre_compras','Intervalo medio entre compras (NULL si solo hay una)',       '(ultima - primera) / (frecuencia - 1)',               'dias'),
+  ('devoluciones',             'Facturas de cancelacion antes del corte',                    'count(distinct factura) con es_cancelacion = 1',      'facturas'),
+- ('es_reino_unido',           'El cliente es del Reino Unido (1) o de otro pais (0) antes del corte', 'pais mas frecuente antes del corte = ''United Kingdom''', 'indicador');
++ ('es_reino_unido',           'El cliente es del Reino Unido (1) o de otro pais (0) antes del corte', 'pais mas frecuente antes del corte = ''United Kingdom''', 'indicador'),
++ ('ratio_devoluciones',       'Devoluciones por cada factura con venta antes del corte',    'devoluciones / frecuencia',                           'devoluciones por factura');
+ 
+ CREATE TABLE fs_cliente_corte (
+     cliente_id                INTEGER NOT NULL REFERENCES master_clientes (cliente_id),
+@@ -45,6 +46,7 @@ CREATE TABLE fs_cliente_corte (
+     dias_medios_entre_compras REAL,
+     devoluciones              INTEGER,
+     es_reino_unido            INTEGER,
++    ratio_devoluciones        REAL,
+     PRIMARY KEY (cliente_id, fecha_corte)
+ );
+ CREATE INDEX ix_fs_corte ON fs_cliente_corte (fecha_corte);
+diff --git a/04-Proyecto-Base/sql/fs/02_poblar_fs.sql b/04-Proyecto-Base/sql/fs/02_poblar_fs.sql
+index 3ae1c99..802337e 100644
+--- a/04-Proyecto-Base/sql/fs/02_poblar_fs.sql
++++ b/04-Proyecto-Base/sql/fs/02_poblar_fs.sql
+@@ -49,7 +49,7 @@ pais AS (
+ INSERT INTO fs_cliente_corte (
+     cliente_id, fecha_corte, recencia_dias, frecuencia, monto_total, ticket_medio, unidades_total,
+     productos_distintos, antiguedad_dias, frecuencia_90d, monto_90d, frecuencia_180d,
+-    dias_medios_entre_compras, devoluciones, es_reino_unido
++    dias_medios_entre_compras, devoluciones, es_reino_unido, ratio_devoluciones
+ )
+ SELECT p.cliente_id,
+        :corte,
+@@ -66,7 +66,9 @@ SELECT p.cliente_id,
+        CASE WHEN p.frecuencia > 1
+             THEN ROUND((julianday(p.ultima) - julianday(p.primera)) / (p.frecuencia - 1), 1) END,
+        COALESCE(d.devoluciones, 0),
+-       CASE WHEN pa.pais = 'United Kingdom' THEN 1 ELSE 0 END
++       CASE WHEN pa.pais = 'United Kingdom' THEN 1 ELSE 0 END,
++       -- ratio_devoluciones: cancelaciones por cada factura con venta, ambas antes del corte (frecuencia >= 1: sin division por cero)
++       ROUND(COALESCE(d.devoluciones, 0) * 1.0 / p.frecuencia, 4)
+ FROM por_cliente p
+ JOIN productos pr        ON pr.cliente_id = p.cliente_id
+ JOIN pais pa             ON pa.cliente_id = p.cliente_id
+diff --git a/04-Proyecto-Base/sql/ml/01_crear_ml.sql b/04-Proyecto-Base/sql/ml/01_crear_ml.sql
+index 35c9555..e2d8097 100644
+--- a/04-Proyecto-Base/sql/ml/01_crear_ml.sql
++++ b/04-Proyecto-Base/sql/ml/01_crear_ml.sql
+@@ -31,6 +31,7 @@ CREATE TABLE ml_dataset (
+     dias_medios_entre_compras REAL,
+     devoluciones              INTEGER,
+     es_reino_unido            INTEGER,
++    ratio_devoluciones        REAL,
+     PRIMARY KEY (cliente_id, fecha_corte)
+ );
+ CREATE INDEX ix_ml_particion ON ml_dataset (particion);
+diff --git a/04-Proyecto-Base/sql/ml/02_poblar_ml.sql b/04-Proyecto-Base/sql/ml/02_poblar_ml.sql
+index 11e6532..fecdf4f 100644
+--- a/04-Proyecto-Base/sql/ml/02_poblar_ml.sql
++++ b/04-Proyecto-Base/sql/ml/02_poblar_ml.sql
+@@ -4,7 +4,7 @@ INSERT INTO ml_dataset (
+     cliente_id, fecha_corte, particion, y,
+     recencia_dias, frecuencia, monto_total, ticket_medio, unidades_total, productos_distintos,
+     antiguedad_dias, frecuencia_90d, monto_90d, frecuencia_180d, dias_medios_entre_compras,
+-    devoluciones, es_reino_unido
++    devoluciones, es_reino_unido, ratio_devoluciones
+ )
+ SELECT fs.cliente_id, fs.fecha_corte, p.particion,
+        CASE WHEN EXISTS (
+@@ -18,6 +18,6 @@ SELECT fs.cliente_id, fs.fecha_corte, p.particion,
+        ) THEN 1 ELSE 0 END AS y,
+        fs.recencia_dias, fs.frecuencia, fs.monto_total, fs.ticket_medio, fs.unidades_total, fs.productos_distintos,
+        fs.antiguedad_dias, fs.frecuencia_90d, fs.monto_90d, fs.frecuencia_180d, fs.dias_medios_entre_compras,
+-       fs.devoluciones, fs.es_reino_unido
++       fs.devoluciones, fs.es_reino_unido, fs.ratio_devoluciones
+ FROM fs_cliente_corte fs
+ JOIN ml_particiones p ON p.fecha_corte = fs.fecha_corte;

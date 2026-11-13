@@ -1,0 +1,28 @@
+# Resumen de: python -m pytest -q   (con ratio_devoluciones, 13/11/2026, Windows 11)
+# Todos los fallos son de la API: su contrato tiene 13 variables y el modelo 14. Mensaje de /listo:
+#   El esquema de la API no coincide con la firma del modelo. Faltan en la API: ['ratio_devoluciones']. Sobran en la API: []
+
+=========================== short test summary info ===========================
+FAILED tests/test_api.py::test_salud_y_listo - assert {'detalle': '...9a19372...
+FAILED tests/test_api.py::test_modelo_informa_de_los_datos_con_que_se_entreno
+FAILED tests/test_api.py::test_predice_una_probabilidad - assert 503 == 200
+FAILED tests/test_api.py::test_paridad_api_paquete_joblib_y_mlflow_con_filas_reales
+FAILED tests/test_api.py::test_el_lote_mantiene_el_orden - KeyError: 'predicc...
+FAILED tests/test_api.py::test_un_cliente_con_una_sola_factura_llega_con_dias_medios_nulo_y_se_avisa
+FAILED tests/test_api.py::test_dias_medios_puede_omitirse_si_hay_una_sola_factura
+FAILED tests/test_api.py::test_avisa_de_un_valor_valido_que_el_entrenamiento_no_vio
+FAILED tests/test_api.py::test_lote_vacio_o_demasiado_grande_se_rechaza - Ass...
+FAILED tests/test_api.py::test_el_esquema_de_la_api_coincide_con_la_firma_del_modelo
+FAILED tests/test_api.py::test_todas_las_filas_reales_de_fs_cumplen_el_contrato
+FAILED tests/test_api.py::test_si_el_esquema_de_la_api_no_tiene_las_variables_del_modelo_no_esta_listo
+FAILED tests/test_api.py::test_un_error_inesperado_devuelve_500_sin_detalles_internos
+FAILED tests/test_api.py::test_el_log_sale_por_stdout_en_json_y_no_contiene_datos_del_cliente
+FAILED tests/test_api.py::test_con_uvicorn_de_verdad_las_lineas_json_llegan_a_stdout
+FAILED tests/test_casos_laboratorio.py::test_cada_caso_da_el_codigo_y_el_mensaje_de_la_guia[01_correcto.json-200-"probabilidad"]
+FAILED tests/test_casos_laboratorio.py::test_cada_caso_da_el_codigo_y_el_mensaje_de_la_guia[08_ticket_medio_enorme.json-200-fuera del rango visto al entrenar]
+FAILED tests/test_casos_laboratorio.py::test_cada_caso_da_el_codigo_y_el_mensaje_de_la_guia[09_una_sola_factura.json-200-no informado]
+FAILED tests/test_casos_laboratorio.py::test_el_lote_de_ejemplo_da_dos_predicciones_en_orden_y_la_segunda_avisa
+FAILED tests/test_comparar.py::test_con_la_api_real_en_otro_proceso_tambien_coincide
+FAILED tests/test_explotacion.py::test_por_la_api_da_exactamente_lo_mismo_que_en_local
+FAILED tests/test_imagen.py::test_la_imagen_simulada_arranca_solo_con_lo_que_el_dockerfile_copia
+22 failed, 109 passed in 534.77s (0:08:54)
