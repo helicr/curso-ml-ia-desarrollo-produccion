@@ -60,6 +60,15 @@ svg text{font-family:var(--sans)}
 .preg .q{font-size:17px;font-weight:600}
 .preg .q::before{content:"▸ ";color:var(--gold)}
 .preg.abierta .q::before{content:"▾ "}
+/* pasos numerados (diapositivas de MLflow) */
+ol.pasos{list-style:none;counter-reset:paso}
+ol.pasos li{counter-increment:paso;position:relative;padding-left:40px;margin:0 0 9px;font-size:17px;line-height:1.35}
+ol.pasos li::before{content:counter(paso);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#031a33;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center}
+.term.pre{white-space:pre;font-size:14px;line-height:1.5;padding:10px 14px}
+table.t{border-collapse:collapse;width:100%;font-size:15px}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{color:var(--gold);font-weight:700}
 /* índice y notas */
 #indice{position:fixed;inset:0;background:rgba(3,26,51,.96);display:none;z-index:20;padding:40px 60px;overflow:auto}
 #indice.on{display:block}
@@ -326,6 +335,142 @@ svg text{font-family:var(--sans)}
 </section>
 
 <!-- 11 -->
+<section class="slide" data-title="MLflow: cómo arrancarlo" data-notes="En directo, desde la terminal de VS Code: primero cd 04-Proyecto-Base (ahí estuvo el fallo de S1). --comprobar antes de abrir. La base no se crea con un comando aparte: la crea el primer entrenamiento con MLflow, al abrirla por primera vez (get_experiment_by_name en train.py). Guía completa: mlflow-paso-a-paso.md.">
+  <div class="kick">MLflow · paso a paso</div>
+  <h1>Arrancar MLflow <span class="gold">sin abrir una base vacía</span></h1>
+  <div class="grid2 fill" style="grid-template-columns:1.08fr 1fr;align-items:start">
+    <ol class="pasos">
+      <li><code>conda activate env-ia-mlops</code> <span class="muted small">(Anaconda Prompt o terminal de VS Code; en el Codespace ya viene)</span></li>
+      <li><code>cd 04-Proyecto-Base</code> <span class="muted small">· la terminal de VS Code y la del Codespace abren en la raíz</span></li>
+      <li><code>python -m ia_mlops.mlflow_ui --comprobar</code> <span class="muted small">· qué base lee y qué hay</span></li>
+      <li>Si dice «No existe todavía»: <code>python -m ia_mlops.pipeline</code></li>
+      <li><code>python -m ia_mlops.mlflow_ui</code> → <b>127.0.0.1:5000</b> <span class="muted small">(Codespace: panel Puertos, 5000)</span></li>
+      <li>Arriba a la izquierda: <b class="gold">Model training</b> <span class="muted small">(abre en «GenAI»)</span></li>
+      <li><b>Experiments</b> → <code>retencion-90d</code> → <b>Runs</b> · <b>Model registry</b> → <code>retencion-90d</code></li>
+    </ol>
+    <div>
+      <div class="card" style="padding:12px 16px">
+        <h3>¿Quién crea <code>models/mlflow.db</code>?</h3>
+        <p class="small" style="margin-bottom:6px">Ningún comando aparte: <b>el primer entrenamiento con MLflow</b> (<code>train.py</code>, líneas 136–139, o el cuaderno 04 con <code>USAR_MLFLOW = True</code>).</p>
+        <ul class="lista">
+          <li class="small"><code>set_tracking_uri</code>: solo apunta, con la ruta completa</li>
+          <li class="small"><code>get_experiment_by_name</code>: <b>crea mlflow.db</b> y sus tablas (+ <code>Default</code>)</li>
+          <li class="small"><code>create_experiment</code>: añade <code>retencion-90d</code></li>
+          <li class="small"><code>log_model</code>: aparece <code>mlartifacts/</code> y la versión 1</li>
+        </ul>
+      </div>
+      <div class="term" style="margin-top:12px;font-size:14px"><span class="p">$</span> python -m ia_mlops.mlflow_ui --comprobar<br><span class="c">Registro de MLflow: …\04-Proyecto-Base\models\mlflow.db<br>&nbsp;&nbsp;Experimento «retencion-90d»: 4 ejecuciones · modelo<br>&nbsp;&nbsp;registrado «retencion-90d»: 1 versiones</span></div>
+      <p class="small muted" style="margin-top:8px">Parar: <b>Ctrl+C</b>. Puerto ocupado: <code>--port 5001</code>. Salida real tras un entrenamiento, 13/11/2026.</p>
+    </div>
+  </div>
+  <div class="pie"><span>Recap 01</span><span>11</span></div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-title="Por qué no se refrescaba" data-notes="No era un problema de refresco: la interfaz leía otra base. En el equipo del profesor sigue la prueba: models/mlflow.db en la raíz del repositorio, del 11/11, con 0 ejecuciones y solo el experimento Default. La del proyecto tenía 48. La interfaz lee la base en cada consulta: en la prueba del 13/11 las ejecuciones nuevas aparecieron solas en menos de 15 s; si no, F5.">
+  <div class="kick">Lo que pasó en S1</div>
+  <h1>No era el refresco: <span class="gold">leía otra base</span></h1>
+  <svg viewBox="0 0 1150 170" width="1150" height="170" aria-label="La ruta relativa lleva a una base vacía en la raíz; el entrenamiento escribe en la base de 04-Proyecto-Base">
+    <rect x="0" y="10" width="540" height="150" rx="16" fill="rgba(251,113,133,.10)" stroke="#fb7185"/>
+    <text x="20" y="40" font-size="17" font-weight="800" fill="#fb7185">mlflow ui --backend-store-uri sqlite:///models/mlflow.db</text>
+    <text x="20" y="68" font-size="15" fill="#a9c8ea">lanzado desde la raíz del repositorio (terminal de VS Code)</text>
+    <text x="20" y="102" font-size="18" font-weight="700" fill="#eef6ff">&lt;raíz&gt;/models/mlflow.db</text>
+    <text x="20" y="130" font-size="15" fill="#eef6ff">creada sin avisar · <tspan fill="#fb7185" font-weight="700">0 ejecuciones</tspan> · solo «Default»</text>
+    <text x="575" y="92" text-anchor="middle" font-size="26" font-weight="800" fill="#fcd34d">≠</text>
+    <rect x="610" y="10" width="540" height="150" rx="16" fill="rgba(52,211,153,.10)" stroke="#34d399"/>
+    <text x="630" y="40" font-size="17" font-weight="800" fill="#34d399">python -m ia_mlops.mlflow_ui</text>
+    <text x="630" y="68" font-size="15" fill="#a9c8ea">ruta completa: la misma en la que escribe train.py</text>
+    <text x="630" y="102" font-size="18" font-weight="700" fill="#eef6ff">04-Proyecto-Base/models/mlflow.db</text>
+    <text x="630" y="130" font-size="15" fill="#eef6ff"><tspan fill="#34d399" font-weight="700">48 ejecuciones</tspan> · 1 versión de retencion-90d</text>
+  </svg>
+  <div class="grid3" style="margin-top:12px">
+    <div class="card"><h3>1 · Ruta relativa</h3><p class="small"><code>models/…</code> se busca desde la carpeta de la terminal. Si no existe, MLflow la <b>crea vacía</b> y arranca igual.</p></div>
+    <div class="card"><h3>2 · Modo GenAI</h3><p class="small">MLflow 3.18 abre con <i>Traces</i>, <i>Prompts</i>, <i>AI Registry</i>… Hay que pulsar <b>Model training</b>.</p></div>
+    <div class="card"><h3>3 · Registro vacío</h3><p class="small">Entonces nada registraba el modelo. Ahora <code>train.py</code> y el cuaderno 04 crean una versión de <code>retencion-90d</code> por entrenamiento.</p></div>
+  </div>
+  <div class="callout small" style="margin-top:14px"><b>¿Y refrescar?</b> La interfaz no guarda copia: <b>lee la base en cada consulta</b>. Prueba del 13/11/2026: con <i>Runs</i> abierta, se entrenó en otra terminal y las 4 ejecuciones nuevas aparecieron solas en menos de 15 s. Si no aparecen: <b>F5</b>. Y si el pipeline dijo «sin cambios», <b>no entrenó</b> (idempotencia): <code>--forzar</code>.</div>
+  <div class="pie"><span>Recap 01</span><span>12</span></div>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-title="Añadir modelos" data-notes="Todo el código recorre el diccionario de modelos(): una entrada nueva se entrena, se mide y se registra como las demás. Dos modelos de árboles: bosque aleatorio (en paralelo) y un árbol de profundidad 4 (explicable). Imputación dentro del Pipeline, como en la regresión logística. No hace falta --forzar: la huella de entrada incluye el código de train.py. Al acabar, git restore: las pruebas exigen que gane regresión logística o gradient boosting.">
+  <div class="kick">Práctica · añadir dos modelos</div>
+  <h1>Una entrada más en <code style="font-size:.85em">modelos()</code></h1>
+  <div class="term pre"><span class="c"># ia_mlops/modeling/train.py · función modelos() · después de 'gradient_boosting' (el cuaderno 04 tiene la misma celda)</span>
+'bosque_aleatorio': Pipeline([('imputar', SimpleImputer(strategy='median')),
+                              ('modelo', RandomForestClassifier(n_estimators=300, min_samples_leaf=5, random_state=0))]),
+'arbol_decision':   Pipeline([('imputar', SimpleImputer(strategy='median')),
+                              ('modelo', DecisionTreeClassifier(max_depth=4, min_samples_leaf=20, random_state=0))]),</div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card" style="padding:12px 16px">
+      <h3>¿Hace falta <code>--forzar</code>? No</h3>
+      <p class="small">La huella de entrada de <code>pipeline_train</code> incluye <b>el código de train.py</b>. Lo editas → otra huella → entrena solo.</p>
+      <div class="term" style="margin-top:8px;font-size:13px;line-height:1.45"><span class="p">$</span> python -m ia_mlops.pipeline_train <span class="c">(26,5 s)</span><br><span class="c">[pipeline_train] ejecutando (huella de entrada 2e2ec74b00bf)</span><br><span class="p">$</span> python -m ia_mlops.pipeline_train<br><span class="c">[pipeline_train] sin cambios: … (2e2ec74b00bf)</span></div>
+    </div>
+    <div class="card" style="padding:12px 16px">
+      <h3>Nulos y deshacer</h3>
+      <p class="small"><code>dias_medios_entre_compras</code> es nula si solo hubo una compra (241 de 626 filas de train): <b>imputar dentro del Pipeline</b>, como la regresión logística.</p>
+      <div class="term" style="margin-top:8px;font-size:13px;line-height:1.45"><span class="p">$</span> git restore ia_mlops/modeling/train.py<br><span class="p">$</span> python -m ia_mlops.pipeline_train <span class="c">(19,7 s)</span><br><span class="c">… regresion_logistica … version 3</span></div>
+      <p class="small muted" style="margin-top:6px">Las pruebas esperan los tres modelos originales: con el cambio, 4 fallan.</p>
+    </div>
+  </div>
+  <div class="callout small" style="margin-top:14px"><b>En el cuaderno 04</b>, el mismo cambio en su celda de modelos <b>y</b> los dos nombres nuevos en <code>COLOR_MODELO</code> (celda de gráficas). Si no, se para con <code>KeyError: 'bosque_aleatorio'</code>. El cuaderno no tiene huella: cada ejecución entrena y añade ejecuciones a MLflow.</div>
+  <div class="pie"><span>Recap 01</span><span>13</span></div>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-title="Comparar cinco modelos" data-notes="Resultados reales con la muestra del curso (13/11/2026). Gana el bosque aleatorio con valid por 0,005. Con 114 filas de valid esa diferencia no se distingue del azar: bootstrap de 2000 remuestreos, intervalo del 95 % de -0,043 a +0,049. Buena discusión: la regla automática elige el bosque; un equipo prudente se quedaría con el modelo simple. Todas con la misma huella_datos. El registro guarda la historia: v1 regresión, v2 bosque, v3 regresión tras deshacer.">
+  <div class="kick">Práctica · resultados reales (muestra del curso)</div>
+  <h1>Gana el bosque… <span class="gold">por 0,005</span></h1>
+  <div class="grid2 fill" style="grid-template-columns:1.2fr 1fr;align-items:start">
+    <svg viewBox="0 0 680 380" width="680" height="380" aria-label="AUC en train, valid y test de los cinco modelos">
+      <line x1="60" y1="330" x2="675" y2="330" stroke="#1a5fa3"/>
+      <!-- escala: AUC 0.4 -> y=330, 1.0 -> y=30 ; 1 punto = 500 px -->
+      <line x1="60" y1="280" x2="675" y2="280" stroke="#fcd34d" stroke-dasharray="5 5" opacity=".7"/>
+      <line x1="60" y1="180" x2="675" y2="180" stroke="#1a5fa3" stroke-dasharray="2 6" opacity=".7"/>
+      <line x1="60" y1="80" x2="675" y2="80" stroke="#1a5fa3" stroke-dasharray="2 6" opacity=".7"/>
+      <text x="56" y="284" text-anchor="end" font-size="13" fill="#fcd34d">0,5</text>
+      <text x="56" y="334" text-anchor="end" font-size="13" fill="#a9c8ea">0,4</text>
+      <text x="56" y="184" text-anchor="end" font-size="13" fill="#a9c8ea">0,7</text>
+      <text x="56" y="84" text-anchor="end" font-size="13" fill="#a9c8ea">0,9</text>
+      <g font-size="10.5" fill="#eef6ff" text-anchor="middle">
+        <!-- referencia 0.500 / 0.500 / 0.500 -->
+        <rect x="70" y="280" width="30" height="50" fill="#6b7c93"/><rect x="102" y="280" width="30" height="50" fill="#8fa3bd"/><rect x="134" y="280" width="30" height="50" fill="#b5c6db"/>
+        <text x="117" y="274">0,500</text>
+        <!-- regresión logística 0.803 / 0.698 / 0.747 -->
+        <rect x="194" y="128.5" width="30" height="201.5" fill="#1d6fb8"/><text x="209" y="123">0,803</text>
+        <rect x="226" y="181" width="30" height="149" fill="#2bb3ff"/><text x="241" y="175">0,698</text>
+        <rect x="258" y="156.5" width="30" height="173.5" fill="#7dd3fc"/><text x="273" y="151">0,747</text>
+        <!-- gradient boosting 1.000 / 0.663 / 0.735 -->
+        <rect x="318" y="30" width="30" height="300" fill="#1d6fb8"/><text x="333" y="25">1,000</text>
+        <rect x="350" y="198.5" width="30" height="131.5" fill="#2bb3ff"/><text x="365" y="193">0,663</text>
+        <rect x="382" y="162.5" width="30" height="167.5" fill="#7dd3fc"/><text x="397" y="157">0,735</text>
+        <!-- bosque aleatorio 0.976 / 0.703 / 0.783 -->
+        <rect x="442" y="42" width="30" height="288" fill="#1d6fb8"/><text x="457" y="37">0,976</text>
+        <rect x="474" y="178.5" width="30" height="151.5" fill="#2bb3ff" stroke="#fcd34d" stroke-width="2"/><text x="489" y="173" fill="#fcd34d" font-weight="700">0,703</text>
+        <rect x="506" y="138.5" width="30" height="191.5" fill="#7dd3fc"/><text x="521" y="133">0,783</text>
+        <!-- árbol de decisión 0.835 / 0.668 / 0.701 -->
+        <rect x="566" y="112.5" width="30" height="217.5" fill="#1d6fb8"/><text x="581" y="107">0,835</text>
+        <rect x="598" y="196" width="30" height="134" fill="#2bb3ff"/><text x="613" y="190">0,668</text>
+        <rect x="630" y="179.5" width="30" height="150.5" fill="#7dd3fc"/><text x="645" y="174">0,701</text>
+      </g>
+      <g font-size="13" text-anchor="middle" fill="#eef6ff">
+        <text x="117" y="350">referencia</text><text x="241" y="350">reg. logística</text><text x="365" y="350">grad. boosting</text>
+        <text x="489" y="350" fill="#fcd34d" font-weight="700">bosque ★</text><text x="613" y="350">árbol (prof. 4)</text>
+      </g>
+      <g font-size="11" text-anchor="middle" fill="#a9c8ea"><text x="489" y="368">nuevo</text><text x="613" y="368">nuevo</text></g>
+      <g font-size="13" fill="#a9c8ea"><rect x="80" y="8" width="14" height="14" fill="#1d6fb8"/><text x="100" y="20">train</text><rect x="150" y="8" width="14" height="14" fill="#2bb3ff"/><text x="170" y="20">valid</text><rect x="220" y="8" width="14" height="14" fill="#7dd3fc"/><text x="240" y="20">test</text></g>
+    </svg>
+    <div>
+      <div class="card" style="margin-bottom:10px;padding:12px 16px"><h3>Se elige con valid</h3><p class="small">Bosque 0,703 frente a regresión 0,698. Valid tiene <b>114 filas</b>: remuestreando 2 000 veces, la diferencia va de <b>−0,043 a +0,049</b> (95 %). No se distingue del azar.</p></div>
+      <div class="card" style="margin-bottom:10px;padding:12px 16px"><h3>Sobreajuste</h3><p class="small">train − valid: bosque 0,273 · gradient boosting 0,337 · árbol 0,167 · regresión 0,105.</p></div>
+      <div class="card" style="padding:12px 16px"><h3>Justo y con historia</h3><p class="small">Todas con <code>huella_datos</code> <code>35a94deb4e04ab4a</code>. Registro: <b>v1</b> regresión · <b>v2</b> bosque · <b>v3</b> regresión (tras deshacer).</p></div>
+    </div>
+  </div>
+  <div class="pie"><span>Recap 01 · Windows 11, 13/11/2026, carpeta temporal</span><span>14</span></div>
+</section>
+
+<!-- 15 -->
 <section class="slide" data-title="Autoevaluación" data-notes="Cinco minutos en parejas. Pulsar cada pregunta para ver la respuesta. Si alguna no sale, volver a la diapositiva correspondiente.">
   <div class="kick">Autoevaluación · pulsa cada pregunta</div>
   <h1>¿Lo tienes? Seis preguntas</h1>
@@ -337,10 +482,10 @@ svg text{font-family:var(--sans)}
     <div class="card preg" tabindex="0"><div class="q">AUC 0,842 en train y 0,761 en valid. ¿Qué significa?</div><div class="r">Sobreajuste: el modelo memoriza el pasado y generaliza peor. Por eso ganó la regresión logística.</div></div>
     <div class="card preg" tabindex="0"><div class="q">Abres MLflow y no ves nada. ¿Qué compruebas?</div><div class="r"><code>python -m ia_mlops.mlflow_ui --comprobar</code> desde 04-Proyecto-Base: dice qué registro lee y cuántas ejecuciones hay. Y en la web, «Model training».</div></div>
   </div>
-  <div class="pie"><span>Recap 01</span><span>11</span></div>
+  <div class="pie"><span>Recap 01</span><span>15</span></div>
 </section>
 
-<!-- 12 -->
+<!-- 16 -->
 <section class="slide" data-title="Puente a S2" data-notes="Lo que S2 necesita de S1: el pipeline ejecutado, las pruebas en verde y la carpeta models/modelo_mlflow con su firma. Sin ese modelo la API no tiene qué servir.">
   <div class="kick">Lo que viene en S2</div>
   <h1>Del modelo guardado <span class="gold">a un servicio</span></h1>
@@ -362,7 +507,7 @@ svg text{font-family:var(--sans)}
       <li>Tu Codespace abierto una vez (guía de Codespaces) y la tarea de S1 entregada</li>
     </ul>
   </div>
-  <div class="pie"><span>Recap 01</span><span>12</span></div>
+  <div class="pie"><span>Recap 01</span><span>16</span></div>
 </section>
 
 </div>
