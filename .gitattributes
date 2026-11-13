@@ -13,3 +13,6 @@
 
 # PDF: binarios, sin conversion de saltos de linea
 *.pdf binary
+
+# Parches (git apply): sin conversion de saltos de linea, o fallan al clonar en Windows
+*.patch -text

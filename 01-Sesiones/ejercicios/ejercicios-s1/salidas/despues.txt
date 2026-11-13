@@ -1,0 +1,26 @@
+[pipeline_ingesta_raw] sin cambios: la entrada es la misma que en la ultima ejecucion (a3e0551c3461). Usa --forzar para rehacerlo.
+  (0.1 s)
+[pipeline_ingesta_master] sin cambios: la entrada es la misma que en la ultima ejecucion (d31efa33ae66). Usa --forzar para rehacerlo.
+  (0.0 s)
+[pipeline_ml] ejecutando (huella de entrada d278a74b9437)
+  FS: corte 2010-06-01: 69 clientes
+  FS: corte 2010-07-01: 80 clientes
+  FS: corte 2010-08-01: 84 clientes
+  FS: corte 2010-09-01: 88 clientes
+  FS: corte 2010-10-01: 93 clientes
+  FS: corte 2010-11-01: 103 clientes
+  FS: corte 2010-12-01: 109 clientes
+  FS: corte 2011-03-01: 114 clientes
+  FS: corte 2011-06-01: 119 clientes
+  FS: corte 2011-09-01: 131 clientes
+  ML: train     626 filas | tasa de recompra 50.8 %
+  ML: valid     114 filas | tasa de recompra 45.6 %
+  ML: test      250 filas | tasa de recompra 40.4 %
+  (0.6 s)
+[pipeline_train] ejecutando (huella de entrada 1d00448ff637)
+  referencia_sin_aprender    AUC valid 0.500 | test 0.500 | precision media test 0.404
+  regresion_logistica        AUC valid 0.699 | test 0.748 | precision media test 0.659
+  gradient_boosting          AUC valid 0.665 | test 0.731 | precision media test 0.641
+  Mejor modelo: regresion_logistica. Guardado en …\models\modelo.joblib
+  Registrado en MLflow como «retencion-90d», version 2. Para verlo: python -m ia_mlops.mlflow_ui
+  (28.1 s)
