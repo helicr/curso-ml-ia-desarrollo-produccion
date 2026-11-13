@@ -116,7 +116,7 @@ def test_las_presentaciones_con_volver_enlazan_al_indice_de_su_sesion(i, s):
 
 
 def test_los_numeros_de_diapositivas_son_los_reales():
-    cuentas = {'S0': {31, 27}, 'S1': {20, 12}, 'S2': {21, 12, 38, 16, 17}}   # S2: presentación, recap 01, guía de Codespaces, contenedores 1 y 2
+    cuentas = {'S0': {31, 27}, 'S1': {20, 12}, 'S2': {21, 16, 38, 17}}   # S2: presentación (21), recap 01 (16), guía de Codespaces (38), contenedores 1 (16) y 2 (17)
     for i, s in SESIONES:
         if s['id'] not in cuentas:
             continue
@@ -158,8 +158,8 @@ def test_el_nombre_prohibido_no_aparece_en_las_fuentes_ni_en_nombres_de_archivo(
 
 
 def test_cada_sesion_de_01_sesiones_tiene_su_indice_en_contenido():
-    # «recap» no es una sesión: son los repasos que se abren al empezar la siguiente (se enlazan desde su índice)
-    carpetas = {f'01-Sesiones/{p.name}' for p in (RAIZ / '01-Sesiones').iterdir() if p.is_dir() and p.name != 'recap'}
+    # «recap» y «ejercicios» no son sesiones: repasos y tareas resueltas (se enlazan desde el índice de su sesión)
+    carpetas = {f'01-Sesiones/{p.name}' for p in (RAIZ / '01-Sesiones').iterdir() if p.is_dir() and p.name not in ('recap', 'ejercicios')}
     assert carpetas == {s['carpeta'] for s in C.SESIONES}, 'hay una carpeta de sesión sin índice (o un índice sin carpeta)'
 
 

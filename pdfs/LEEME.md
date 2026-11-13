@@ -62,7 +62,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 |---|---|---|---|
 | [`01-teoria-y-glosario.pdf`](S1-Datos-y-Entrenamiento/02-alumno/01-teoria-y-glosario.pdf) | Teoría y glosario de S1 | 2 | 91 KB |
 | [`02-guia-de-laboratorio.pdf`](S1-Datos-y-Entrenamiento/02-alumno/02-guia-de-laboratorio.pdf) | Guía de laboratorio de S1 | 3 | 183 KB |
-| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 127 KB |
+| [`03-tarea.pdf`](S1-Datos-y-Entrenamiento/02-alumno/03-tarea.pdf) | Tarea de S1 | 2 | 132 KB |
 | [`04-rubrica.pdf`](S1-Datos-y-Entrenamiento/02-alumno/04-rubrica.pdf) | Rúbrica de S1 | 1 | 55 KB |
 | [`05-plantilla-de-la-decision.pdf`](S1-Datos-y-Entrenamiento/02-alumno/05-plantilla-de-la-decision.pdf) | Plantilla de la decisión (evidencia) | 2 | 67 KB |
 | [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 85 KB |

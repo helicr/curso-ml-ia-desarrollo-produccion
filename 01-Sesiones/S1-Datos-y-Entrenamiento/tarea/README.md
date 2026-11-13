@@ -35,7 +35,8 @@ Con la muestra, añadir `monto_180d` dio regresión logística valid 0,691 · te
 Tu variable puede comportarse distinto. Lo evaluado es el razonamiento, no que mejore.
 
 ## Evidencia mínima
-- Salida de `python -m pytest -q` (sin reglas rotas).
+- Salida de `python -m pytest tests -k futuro -q` (debe pasar: es la prueba de que no hay fuga) y de `python -m pytest -q`.
+  **Aviso (13/11/2026):** desde que el proyecto incluye la API de S2, al añadir una variable **fallan las pruebas de la API** (unas 22: `test_api.py`, los casos del laboratorio, `comparar` con la API, la explotación y la imagen). Es lo esperado: la API comprueba que su contrato tenga las mismas variables que el modelo y, si no, `/listo` responde 503 con «Faltan en la API: […]». Hacer entrar la variable en la API es la tarea de S2. Entrega la salida y explícala; las pruebas de datos, entrenamiento y cuadernos sí deben pasar.
 - Captura **o** exportación de la comparación de MLflow con ambas ejecuciones.
 - `evidencias/plantilla-decision.md` completada.
 - Scripts `.py` traducidos.
