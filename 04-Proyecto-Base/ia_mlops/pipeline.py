@@ -1,60 +1,74 @@
-"""Pipeline completo en Python: raw -> master -> fs -> ml -> entrenar.
+"""Orquestador: ejecuta, en orden, los pipelines que se le pidan. No tiene logica de datos propia.
 
-Es la version en .py de los cuadernos 01 a 04 (que son los pipelines originales).
+Los pipelines son INDEPENDIENTES: cada uno se puede ejecutar solo, comprueba que existe su entrada y es IDEMPOTENTE
+(si su entrada no cambio, no hace nada). Este modulo es solo una comodidad para lanzarlos seguidos; en S4 los lanzara
+GitHub Actions, cada uno como un paso (o en su propio horario).
 
-Uso:
-    python -m ia_mlops.pipeline                          # usa la muestra incluida (rapido)
-    python -m ia_mlops.pipeline --fuente completo        # usa el Excel original (descargalo antes)
-    python -m ia_mlops.pipeline --etapas fs ml           # solo algunas etapas (las anteriores deben existir)
-    python -m ia_mlops.pipeline --sin-mlflow             # entrena sin registrar en MLflow
+    pipeline_ingesta_raw     retail.db (operacional) -> RAW
+    pipeline_ingesta_master  RAW -> MASTER (+ reglas de calidad)
+    pipeline_ml              MASTER -> FS -> ML
+    pipeline_train           ML -> modelo, metricas y MLflow
 
-El ORDEN importa: FS va antes que ML porque ML se construye a partir de las variables de FS.
+La base operacional NO es un pipeline: simula el sistema de origen (python -m ia_mlops.operacional). Por comodidad,
+este orquestador la crea con la muestra si todavia no existe (por ejemplo, en un clon recien hecho, en el CI o en un
+Codespace), y la vuelve a crear desde la fuente pedida con --fuente. Los pipelines sueltos nunca la crean: si falta, lo dicen.
+
+Uso (desde 04-Proyecto-Base):
+    python -m ia_mlops.pipeline                                   # los cuatro, en orden (los que no cambian, no hacen nada)
+    python -m ia_mlops.pipeline --fuente completo                 # rehace el operacional con el Excel completo y lo que dependa de el
+    python -m ia_mlops.pipeline --solo pipeline_ml pipeline_train # solo algunos
+    python -m ia_mlops.pipeline --forzar                          # rehace todos aunque no haya cambios
+    python -m ia_mlops.pipeline --sin-mlflow
 """
 import argparse
 import time
+from pathlib import Path
 
-from . import config, db
-from .dataset import cargar_raw, construir_master
-from .features import construir_fs
-from .modeling.ml_dataset import construir_ml
-from .modeling.train import entrenar
+from . import config, control, operacional, pipeline_ingesta_master, pipeline_ingesta_raw, pipeline_ml, pipeline_train
 
-ETAPAS = ['raw', 'master', 'fs', 'ml', 'entrenar']
+PIPELINES = {
+    'pipeline_ingesta_raw': lambda a: pipeline_ingesta_raw.ejecutar(a['ruta_db'], a['ruta_operacional'], a['forzar'], a['verbose']),
+    'pipeline_ingesta_master': lambda a: pipeline_ingesta_master.ejecutar(a['ruta_db'], a['forzar'], a['verbose']),
+    'pipeline_ml': lambda a: pipeline_ml.ejecutar(a['ruta_db'], a['forzar'], a['verbose']),
+    'pipeline_train': lambda a: pipeline_train.ejecutar(a['ruta_db'], a['forzar'], a['usar_mlflow'], a['verbose']),
+}
 
 
-def ejecutar(fuente='muestra', etapas=None, usar_mlflow=True, ruta_db=None, verbose=True):
-    etapas = etapas or ETAPAS
-    desconocidas = [e for e in etapas if e not in ETAPAS]
-    if desconocidas:
-        raise ValueError(f'Etapas desconocidas: {desconocidas}. Validas: {ETAPAS}')
-    con = db.conectar(ruta_db)
-    try:
-        for etapa in ETAPAS:
-            if etapa not in etapas:
-                continue
+def preparar_operacional(fuente, ruta_operacional, verbose):
+    """Crea la base operacional si no existe (con la muestra) o si se pide otra fuente explicitamente."""
+    ruta = Path(ruta_operacional or config.DB_OPERACIONAL)
+    if fuente is None and ruta.exists():
+        return
+    if verbose:
+        motivo = f'se pide la fuente «{fuente}»' if fuente else 'todavia no existe'
+        print(f'[operacional] creando {ruta.name} ({motivo}); es la simulacion del sistema de ventas, no un pipeline')
+    operacional.crear_operacional(fuente or 'muestra', ruta, verbose)
+
+
+def ejecutar(pipelines=None, ruta_db=None, ruta_operacional=None, forzar=False, usar_mlflow=True, verbose=True, fuente=None):
+    """Ejecuta los pipelines pedidos (todos por defecto) en su orden natural y devuelve el resultado de cada uno."""
+    pedidos = pipelines or list(PIPELINES)
+    desconocidos = [p for p in pedidos if p not in PIPELINES]
+    if desconocidos:
+        raise ValueError(f'Pipelines desconocidos: {desconocidos}. Validos: {list(PIPELINES)}')
+    if 'pipeline_ingesta_raw' in pedidos:
+        preparar_operacional(fuente, ruta_operacional, verbose)
+    args = dict(ruta_db=ruta_db, ruta_operacional=ruta_operacional, forzar=forzar, usar_mlflow=usar_mlflow, verbose=verbose)
+    resultados = []
+    for nombre in PIPELINES:              # siempre en el orden natural, aunque se pidan desordenados
+        if nombre in pedidos:
             t0 = time.time()
-            if verbose:
-                print(f'[{etapa}]')
-            if etapa == 'raw':
-                cargar_raw(fuente, con, verbose)
-            elif etapa == 'master':
-                construir_master(con, verbose)
-            elif etapa == 'fs':
-                construir_fs(con, verbose=verbose)
-            elif etapa == 'ml':
-                construir_ml(con, verbose)
-            elif etapa == 'entrenar':
-                entrenar(con, usar_mlflow, verbose)
+            resultados.append(PIPELINES[nombre](args))
             if verbose:
                 print(f'  ({time.time() - t0:.1f} s)')
-    finally:
-        con.close()
+    return resultados
 
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument('--fuente', choices=list(config.FUENTES), default='muestra')
-    ap.add_argument('--etapas', nargs='+', choices=ETAPAS)
+    ap.add_argument('--solo', nargs='+', choices=list(PIPELINES), help='solo estos pipelines')
+    ap.add_argument('--fuente', choices=list(config.FUENTES), help='vuelve a crear la base operacional desde esta fuente antes de ingerir')
+    ap.add_argument('--forzar', action='store_true', help='rehace aunque la entrada no haya cambiado')
     ap.add_argument('--sin-mlflow', action='store_true')
     a = ap.parse_args()
-    ejecutar(a.fuente, a.etapas, usar_mlflow=not a.sin_mlflow)
+    control.desde_terminal(ejecutar, pipelines=a.solo, forzar=a.forzar, usar_mlflow=not a.sin_mlflow, fuente=a.fuente)

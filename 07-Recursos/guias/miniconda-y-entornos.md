@@ -107,7 +107,8 @@ Alternativas: aceptar los términos de Anaconda (revisa si tu organización nece
 conda activate env-ia-mlops
 cd 04-Proyecto-Base
 pip install -e .
-python -m ia_mlops.pipeline
+python -m ia_mlops.operacional     # una vez: simula la base de ventas (data/external/retail.db)
+python -m ia_mlops.pipeline        # los cuatro pipelines; los que no tienen cambios no hacen nada
 python -m pytest -q
 ```
 Los cuadernos usan el kernel `env-ia-mlops`: se elige en VS Code (ver `vscode.md`). Si no aparece:

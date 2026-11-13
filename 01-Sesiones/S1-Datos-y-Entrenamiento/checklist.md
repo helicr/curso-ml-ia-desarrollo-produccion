@@ -2,18 +2,19 @@
 
 ## Antes de la sesión (docente)
 - [ ] Rama `develop` actualizada y proyecto base clonado en tu máquina.
-- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **34 passed**.
+- [ ] `conda activate env-ia-mlops` y `python -m pytest -q` en `04-Proyecto-Base`: **131 passed** (completas). Las rápidas, `python -m pytest -q -m "not lento"` (las de la guía de laboratorio), dan **127 passed, 4 deselected**.
 - [ ] `slides/index.html` abre sin conexión; probar las diapositivas 5, 10, 13 y 17 (interactivas).
-- [ ] Probar `mlflow ui` con el backend SQLite y verificar que se ven las ejecuciones.
+- [ ] Desde `04-Proyecto-Base`, `python -m ia_mlops.mlflow_ui`: elegir **Model training**, ver las ejecuciones de `retencion-90d` y la versión de `retencion-90d` en **Model registry**.
 - [ ] Confirmar la lista de quién no pasó la verificación de entorno en S0.
 - [ ] Crear el formulario de Google de entregas (nombre, avance o tarea de S1, enlace a la rama o carpeta comprimida, «qué no pude ejecutar») con la hoja de respuestas en hora de Lima, y tener el enlace listo para dar en S1.
 
 ## Durante la sesión (alumnado)
 - [ ] Entorno verificado (`prueba_de_humo.py` y `pytest` en verde).
+- [ ] Cuaderno 00 ejecutado: `retail.db` creada, claves foráneas sin errores y las 23 070 líneas reconstruidas.
 - [ ] Cuaderno 01 ejecutado: conciliación `raw = master + descartes` cuadra y `master_calidad` sin reglas duras fallidas.
 - [ ] Cuaderno 02 ejecutado: prueba de no-fuga en verde (`pytest tests -k futuro`).
 - [ ] Cuaderno 03 ejecutado: tasa de recompra por partición revisada.
-- [ ] Cuaderno 04 ejecutado: tres ejecuciones visibles en MLflow UI.
+- [ ] Cuaderno 04 ejecutado: ejecuciones visibles en MLflow UI (modo **Model training**) y el modelo `retencion-90d` con su versión en **Model registry**.
 - [ ] Traducción a `.py` (`jupytext`) y `python -m ia_mlops.pipeline` ejecutados.
 - [ ] Tarea entendida (variable nueva) y plantilla de evidencia descargada.
 - [ ] Leída la hoja de mi caso propio ([Bank Marketing](../../02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md)) y comprobada la huella de mi copia del CSV. Es otro trabajo distinto de la tarea de arriba.

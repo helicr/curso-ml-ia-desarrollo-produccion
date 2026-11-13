@@ -1,4 +1,4 @@
-# Caso transversal: retención de clientes con Online Retail II
+# Caso transversal: retención de clientes con Online Retail II (caso del instructor; el de los alumnos es Bank Marketing)
 
 **Decisión del 09/11/2026:** el caso del instructor es **Online Retail II** (UCI, CC BY 4.0). Es didáctico y comprensible: una tienda online, clientes que compran
 y vuelven, y una pregunta que cualquiera entiende.
@@ -10,7 +10,7 @@ Por qué este caso: tiene dimensión temporal (permite una partición sin fuga),
 Todo el detalle está en `04-Proyecto-Base/` (README, `docs/modelo-de-datos.md`, cuadernos y paquete `ia_mlops`).
 
 ## Cómo se trabaja
-El docente demuestra el caso con los **cuatro cuadernos-pipeline**; el asistente reproduce y adapta **otro de estructura similar** (la tarea).
+El docente demuestra el caso con los **cinco cuadernos-pipeline** (00 a 04; el 00 simula la base operacional de la que se ingiere); el asistente reproduce y adapta **otro de estructura similar** (la tarea).
 Cada avance presenta: resultado, ejecución, pruebas, una decisión, dificultades y pasos reproducibles.
 
 ## Entregas

@@ -4,12 +4,14 @@
 
 > **No confundas las dos cosas.** Esta tarea es un ejercicio de S1 sobre el caso **Online Retail II** (añadir una variable). Tu **caso propio, Bank Marketing**, es otro trabajo: se avanza de S1 a S5 y se entrega por avances. Léelo entero antes de S1 en [«Tu caso: Bank Marketing»](../../../02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md). El avance 1 (RAW → MASTER → FS → ML y entrenamiento, como cuadernos) se presenta en S2 y se entrega a la misma hora que esta tarea; las fechas de los cuatro avances están en el apartado 9 de la hoja.
 
+> **No confundir con el avance en S2.** Esta tarea es sobre el caso del instructor (Online Retail II). Aparte, cada alumno presenta en S2 el avance de **su** caso, Bank Marketing (`02-Proyecto-Transversal/enunciado/README.md`).
+
 ## Qué se pide
 Añadir **una variable nueva** a la capa FS del caso Online Retail II, reconstruir ML, reentrenar y **decidir con evidencia** si la variable se queda.
 
 1. **Diseña** la variable. Debe usar solo datos anteriores al corte. Ejemplos: `monto_180d` (gasto en los 180 días previos), `ratio_devoluciones` (devoluciones/frecuencia), `dias_desde_ultima_devolucion`.
 2. **Impleméntala** (ver «Dónde se toca» abajo) y documéntala en `fs_catalogo` (descripción, fórmula, unidad).
-3. **Reconstruye** FS y ML y reentrena (`python -m ia_mlops.pipeline`).
+3. **Reconstruye** FS y ML y reentrena: `python -m ia_mlops.pipeline_ml` y `python -m ia_mlops.pipeline_train` (o `python -m ia_mlops.pipeline`, que solo rehace lo que cambió: RAW y MASTER dirán «sin cambios»).
 4. **Compara dos ejecuciones** en MLflow (antes y después). Comprueba que la huella del dato cambió (los datos son otros) y que las demás condiciones son iguales.
 5. **Decide** y escribe la decisión en `evidencias/plantilla-decision.md`: ¿se queda la variable? ¿por qué? Una decisión de «no» bien argumentada vale tanto como una de «sí».
 6. **Entrega la traducción a `.py`** de los cuadernos que modificaste (`jupytext`) y la salida de las pruebas.

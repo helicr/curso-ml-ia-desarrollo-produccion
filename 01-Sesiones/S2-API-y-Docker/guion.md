@@ -5,7 +5,7 @@ Lo que se dice en el aula debe separar lo **comprobado** (pruebas, Linux, GitHub
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `cd 04-Proyecto-Base`, `python -m ia_mlops.pipeline` y `python -m pytest -q -m "not lento"`. Esperado: `108 passed, 4 deselected`. Sin `models/modelo_mlflow/` la API no tiene qué servir.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `cd 04-Proyecto-Base`, `python -m ia_mlops.pipeline` y `python -m pytest -q -m "not lento"`. Esperado: `127 passed, 4 deselected`. Sin `models/modelo_mlflow/` la API no tiene qué servir.
 - En el Codespace: `docker version` debe mostrar **Client** y **Server**. Anotar quién no lo consigue y el mensaje.
 - Hoy se parte de `develop` limpio, **no** de la rama de la tarea de S1: la variable nueva vuelve a entrar en la tarea de S2.
 - Quien falle: pareja. El CI construirá la imagen por esa persona. **No se detiene la sesión.**

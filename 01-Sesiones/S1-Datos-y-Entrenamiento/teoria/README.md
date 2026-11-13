@@ -8,7 +8,8 @@ Online Retail II (UCI, CC BY 4.0): 1 067 371 líneas de factura de una tienda on
 ## 2. Las capas
 | Capa | Qué es | Regla |
 |---|---|---|
-| RAW | El dato como llegó + linaje (`_id`, `_hoja`, `_fila`) | No se edita |
+| OPERACIONAL | `retail.db`: el sistema de ventas simulado, normalizado (clientes, productos, facturas, líneas) | El pipeline lo lee, nunca escribe en él |
+| RAW | Copia fiel de cada tabla del operacional + linaje (`_carga_id`, clave de origen) y huella en `raw_carga` | No se edita |
 | MASTER | Dato depurado y relacional (clientes, productos, facturas, líneas) | Todo lo descartado queda en `master_descartes` con su motivo; `raw = master + descartes` |
 | FS | Variables por cliente y corte (`fs_cliente_corte`) + `fs_catalogo` | Solo datos **anteriores** al corte |
 | ML | Variables + objetivo `y` + partición | Ventanas de objetivo que no se solapan |
@@ -38,6 +39,8 @@ Los cuadernos son el pipeline; `ia_mlops` es su traducción y se prueba que dan 
 - **AUC:** probabilidad de que un cliente que recompra tenga mayor puntuación que uno que no. 0,5 = azar.
 - **Corte:** fecha desde la que se predice.
 - **Huella de datos:** sha256 del dataset de entrenamiento.
+- **Ingesta:** copia de los datos del sistema de origen a RAW.
 - **Linaje:** camino que permite volver a la fila original.
+- **Sistema operacional (OLTP):** la base con la que funciona el negocio; el pipeline la lee y no escribe en ella.
 - **Fuga:** uso de información que no existiría al predecir.
 - **Sobreajuste:** buen resultado en train, peor en datos nuevos.

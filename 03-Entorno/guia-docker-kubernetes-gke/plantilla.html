@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docker, Kubernetes y GKE · ML e IA: de desarrollo a producción</title>
+<style>
+:root{
+  --bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;
+  --blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--k8s:#7aa2ff;--r:16px;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+#escenario{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;padding:40px 60px 50px;display:none;flex-direction:column;
+  background:radial-gradient(1100px 600px at 88% -10%,rgba(122,162,255,.16),transparent 60%),linear-gradient(180deg,var(--bg2),var(--bg))}
+.slide.on{display:flex;animation:entra .3s ease}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--blue),var(--k8s),var(--gold))}
+.kick{font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:6px;display:flex;gap:12px;align-items:center}
+h1{font-size:36px;line-height:1.12;font-weight:800;margin-bottom:14px}
+h3{font-size:16px;font-weight:700;margin-bottom:6px;color:var(--gold);letter-spacing:.03em}
+p,li{font-size:17px;line-height:1.42}
+.muted{color:var(--muted)} .small{font-size:14px;line-height:1.4} .tiny{font-size:12.5px;line-height:1.35}
+code{font-family:var(--mono);font-size:.9em;background:rgba(43,179,255,.13);padding:1px 6px;border-radius:6px}
+.card{background:rgba(10,53,96,.74);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.card.ok{border-color:rgba(52,211,153,.6)} .card.bad{border-color:rgba(251,113,133,.6)} .card.warn{border-color:rgba(251,191,36,.6)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g21{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+.tag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.tag.ok{background:var(--ok);color:#032b1c;border-color:var(--ok)} .tag.doc{color:var(--warn);border-color:var(--warn)}
+ul.l{list-style:none} ul.l li{padding-left:20px;position:relative;margin:5px 0;font-size:16px}
+ul.l li::before{content:"";position:absolute;left:2px;top:10px;width:9px;height:9px;border-radius:3px;background:var(--blue)}
+ul.l.s li{font-size:14.5px;margin:3px 0}
+pre.cmd{position:relative;background:#020f1f;border:1px solid var(--line);border-radius:12px;padding:10px 46px 10px 14px;font-family:var(--mono);font-size:14.5px;line-height:1.5;color:#e2f1ff;white-space:pre-wrap;overflow-wrap:anywhere}
+pre.cmd .c{color:var(--muted)}
+pre.cmd button{position:absolute;top:7px;right:7px;width:30px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font-size:14px}
+pre.cmd button:hover{background:var(--blue);color:#04213f}
+figure.shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fafafa}
+figure.shot img{display:block;width:100%;height:auto}
+.shotw{margin-top:10px}
+.shotw img{max-height:340px;width:auto;max-width:100%;margin:0 auto}
+figure.shot figcaption{font-size:12.5px;color:var(--muted);background:#02101f;padding:5px 10px;border-top:1px solid var(--line)}
+table.t{width:100%;border-collapse:collapse;font-size:14.5px}
+table.t th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);text-align:left;padding:6px 8px;border-bottom:2px solid var(--line)}
+table.t td{padding:6px 8px;border-bottom:1px solid rgba(26,95,163,.45);vertical-align:top;line-height:1.32}
+table.t td code{font-size:12.5px}
+.pie{position:absolute;left:60px;right:60px;bottom:16px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+svg text{font-family:var(--sans)}
+.paso{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--k8s);color:#071a3d;font-weight:900;font-size:15px;margin-right:4px}
+#indice{position:fixed;inset:0;background:rgba(3,26,51,.97);display:none;z-index:20;padding:34px 54px;overflow:auto}
+#indice.on{display:block} #indice h2{color:var(--gold);margin-bottom:14px}
+#indice ol{columns:3;column-gap:34px} #indice li{font-size:15.5px;margin:5px 0;cursor:pointer} #indice li:hover{color:var(--gold)}
+#notas{position:fixed;left:0;right:0;bottom:0;background:rgba(2,15,31,.97);border-top:2px solid var(--gold);padding:12px 22px;font-size:15.5px;line-height:1.45;display:none;z-index:15;max-height:34vh;overflow:auto}
+#notas.on{display:block}
+#barra{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:10;transition:width .25s}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media print{html,body{overflow:visible;height:auto}#escenario{position:static;transform:none!important;width:1280px;height:auto}
+.slide{display:flex!important;position:relative;height:720px;page-break-after:always;animation:none}#barra,#notas,#indice{display:none!important}pre.cmd button{display:none}}
+</style>
+</head>
+<body>
+<div id="barra"></div>
+<div id="escenario">
+
+<!-- ============================================================ A · CONCEPTOS -->
+<section class="slide" data-title="Portada" data-notes="Guía de herramientas para S2 (Docker) y S3 (Kubernetes y GKE). Lo práctico de Kubernetes se hace con kind en el Codespace del curso, gratis; GKE se explica y no se crea ningún clúster.">
+  <div class="kick">Guía de herramientas · S2 y S3</div>
+  <h1 style="font-size:54px;margin-top:26px">Docker, Kubernetes y GKE<br><span style="color:var(--gold)">de tu imagen a un servicio que se cura solo</span></h1>
+  <p class="muted" style="font-size:21px;max-width:1000px">Conceptos con dibujos, una práctica real con <b>kind</b> en el Codespace del curso (con capturas), cómo sería en <b>GKE</b>, una chuleta de comandos y ejercicios.</p>
+  <div class="g3" style="margin-top:28px">
+    <div class="card"><h3>A · Conceptos</h3><p class="small">Imagen, contenedor, pod, Deployment, Service, probes. Qué es declarativo.</p></div>
+    <div class="card ok"><h3>B · Práctica con kind</h3><p class="small">Desplegar la API de S2 en un clúster local, romperlo y arreglarlo. <span class="tag ok">Probado 13/11/2026</span></p></div>
+    <div class="card warn"><h3>C · GKE</h3><p class="small">Lo mismo en Google Cloud: qué cambia y qué cuesta. <span class="tag doc">Documentación · sin ejecutar</span></p></div>
+  </div>
+  <p class="small muted" style="margin-top:18px">← → avanzar · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa · <b>⧉</b> copia un bloque de comandos</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>Inicio</span></div>
+</section>
+
+<section class="slide" data-title="El mapa completo" data-notes="Todo el recorrido en un dibujo. S2 llega hasta el contenedor; S3 lo lleva a un orquestador. kind y GKE hablan la misma API de Kubernetes: lo que aprendes en kind sirve en GKE.">
+  <div class="kick">A · Conceptos</div>
+  <h1>De tu código a un servicio en la nube</h1>
+  <svg viewBox="0 0 1160 330" width="1160" height="330" aria-label="Del código a la imagen, al registro y a Kubernetes en kind o GKE">
+    <defs><marker id="m1" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker></defs>
+    <g text-anchor="middle" font-size="16" fill="#eef6ff">
+      <rect x="0" y="110" width="170" height="96" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="85" y="148" font-weight="800" font-size="18">Tu código</text><text x="85" y="172" font-size="13" fill="#a9c8ea">ia_mlops + models/</text><text x="85" y="191" font-size="13" fill="#a9c8ea">+ Dockerfile</text>
+      <rect x="230" y="110" width="170" height="96" rx="14" fill="#0c3b6a" stroke="#2bb3ff"/><text x="315" y="148" font-weight="800" font-size="18">Imagen</text><text x="315" y="172" font-size="13" fill="#a9c8ea">retencion-api:local</text><text x="315" y="191" font-size="13" fill="#a9c8ea">826 MB · capas</text>
+      <rect x="460" y="110" width="190" height="96" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="555" y="148" font-weight="800" font-size="18">Registro</text><text x="555" y="172" font-size="13" fill="#a9c8ea">Artifact Registry (GCP)</text><text x="555" y="191" font-size="13" fill="#a9c8ea">en kind: kind load</text>
+      <rect x="720" y="14" width="430" height="140" rx="16" fill="rgba(52,211,153,.12)" stroke="#34d399"/><text x="935" y="44" font-weight="800" font-size="18" fill="#34d399">kind · en el Codespace</text>
+      <text x="935" y="70" font-size="13.5" fill="#eef6ff">un clúster de Kubernetes dentro de Docker</text><text x="935" y="92" font-size="13.5" fill="#eef6ff">gratis · se borra en 25 s · para aprender</text><text x="935" y="128" font-size="13" fill="#a9c8ea">Práctica B, con capturas reales</text>
+      <rect x="720" y="172" width="430" height="140" rx="16" fill="rgba(251,191,36,.1)" stroke="#fbbf24"/><text x="935" y="202" font-weight="800" font-size="18" fill="#fbbf24">GKE · en Google Cloud</text>
+      <text x="935" y="228" font-size="13.5" fill="#eef6ff">el mismo Kubernetes, gestionado por Google</text><text x="935" y="250" font-size="13.5" fill="#eef6ff">IP pública · escala · cuesta dinero</text><text x="935" y="286" font-size="13" fill="#a9c8ea">Bloque C: explicado, sin ejecutar</text>
+    </g>
+    <g stroke="#fcd34d" stroke-width="3" fill="none" marker-end="url(#m1)"><line x1="172" y1="158" x2="226" y2="158"/><line x1="402" y1="158" x2="456" y2="158"/><path d="M652 140 C 690 120, 690 90, 716 86"/><path d="M652 176 C 690 196, 690 236, 716 240"/></g>
+    <g font-size="13" fill="#fcd34d" text-anchor="middle"><text x="199" y="148">build</text><text x="429" y="148">push</text></g>
+    <text x="0" y="250" font-size="14" fill="#a9c8ea">S2: llegas hasta aquí → <tspan fill="#2bb3ff" font-weight="700">imagen y contenedor</tspan></text>
+    <text x="0" y="276" font-size="14" fill="#a9c8ea">S3: lo pones a funcionar como servicio → <tspan fill="#7aa2ff" font-weight="700">Kubernetes</tspan></text>
+  </svg>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Docker en un dibujo" data-notes="Repaso de S2. Imagen = receta horneada (no cambia); contenedor = una ejecución de esa receta (tiene estado y se puede borrar). Las capas explican la caché: si no cambias requirements, el pip install no se repite.">
+  <div class="kick">A · Conceptos · Docker</div>
+  <h1>Imagen = molde · contenedor = una pieza hecha con él</h1>
+  <svg viewBox="0 0 1160 270" width="1160" height="270" aria-label="Dockerfile, build, imagen por capas, run y varios contenedores">
+    <defs><marker id="m2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker></defs>
+    <rect x="0" y="40" width="220" height="190" rx="14" fill="#0a3560" stroke="#1a5fa3"/>
+    <text x="16" y="70" font-size="17" font-weight="800" fill="#fcd34d">Dockerfile</text>
+    <g font-family="ui-monospace,Consolas,monospace" font-size="12.5" fill="#d7ecff"><text x="16" y="98">FROM python:3.11-slim</text><text x="16" y="120">COPY requirements…</text><text x="16" y="142">RUN pip install …</text><text x="16" y="164">COPY ia_mlops/ models/</text><text x="16" y="186">USER 10001</text><text x="16" y="208">CMD uvicorn …</text></g>
+    <line x1="224" y1="135" x2="300" y2="135" stroke="#fcd34d" stroke-width="3" marker-end="url(#m2)"/><text x="262" y="125" font-size="13" fill="#fcd34d" text-anchor="middle">build</text>
+    <g><rect x="310" y="190" width="250" height="32" rx="6" fill="#1d4f86"/><text x="322" y="211" font-size="13" fill="#eef6ff">capa 1 · python:3.11-slim (base)</text>
+      <rect x="310" y="154" width="250" height="32" rx="6" fill="#22609f"/><text x="322" y="175" font-size="13" fill="#eef6ff">capa 2 · dependencias (pip install)</text>
+      <rect x="310" y="118" width="250" height="32" rx="6" fill="#2a74bb"/><text x="322" y="139" font-size="13" fill="#eef6ff">capa 3 · código y modelo</text>
+      <rect x="310" y="82" width="250" height="32" rx="6" fill="#3488d4"/><text x="322" y="103" font-size="13" fill="#04213f">capa 4 · usuario 10001 · CMD</text>
+      <text x="435" y="62" font-size="17" font-weight="800" fill="#2bb3ff" text-anchor="middle">Imagen (solo lectura)</text></g>
+    <line x1="564" y1="135" x2="640" y2="135" stroke="#fcd34d" stroke-width="3" marker-end="url(#m2)"/><text x="602" y="125" font-size="13" fill="#fcd34d" text-anchor="middle">run</text>
+    <g font-size="14" fill="#eef6ff"><rect x="650" y="40" width="230" height="58" rx="12" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="666" y="66" font-weight="700">contenedor «api»</text><text x="666" y="86" font-size="12.5" fill="#a9c8ea">-p 8080:8080 · en marcha</text>
+      <rect x="650" y="108" width="230" height="58" rx="12" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="666" y="134" font-weight="700">otro contenedor</text><text x="666" y="154" font-size="12.5" fill="#a9c8ea">misma imagen, otro estado</text>
+      <rect x="650" y="176" width="230" height="58" rx="12" fill="rgba(251,113,133,.12)" stroke="#fb7185"/><text x="666" y="202" font-weight="700">contenedor borrado</text><text x="666" y="222" font-size="12.5" fill="#a9c8ea">lo que escribió dentro, perdido</text></g>
+    <g font-size="14" fill="#eef6ff"><rect x="930" y="40" width="230" height="194" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="946" y="68" font-weight="800" fill="#fcd34d">Tres ideas</text>
+      <text x="946" y="98">1. La imagen no cambia.</text><text x="946" y="124">2. Del mismo molde salen</text><text x="962" y="144">muchos contenedores.</text><text x="946" y="172">3. La caché reusa las</text><text x="962" y="192">capas que no cambian.</text></g>
+  </svg>
+  <p class="small muted">Lo práctico de Docker está en el autoestudio de S2: <code>01-Sesiones/S2-API-y-Docker/contenedores/</code> (dos presentaciones, nueve ejemplos y cinco roturas) y en el bloque 4 de la guía de laboratorio.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Chuleta de Docker" data-notes="Los comandos que se usan en el curso. Todos se ejecutaron en el Codespace en el bloque 4 de S2, salvo push, que es de S3.">
+  <div class="kick">A · Chuleta · Docker</div>
+  <h1>Docker: los comandos que usarás</h1>
+  <div class="g2">
+    <table class="t"><tr><th>Para</th><th>Comando</th></tr>
+      <tr><td>Construir la imagen</td><td><code>docker build -f deploy/docker/Dockerfile -t retencion-api:local .</code></td></tr>
+      <tr><td>Ver imágenes</td><td><code>docker image ls</code></td></tr>
+      <tr><td>Arrancar en segundo plano</td><td><code>docker run -d --name api -p 8080:8080 retencion-api:local</code></td></tr>
+      <tr><td>Ver contenedores</td><td><code>docker ps</code> · <code>docker ps -a</code> (también los parados)</td></tr>
+      <tr><td>Leer su salida</td><td><code>docker logs api</code> · <code>docker logs -f api</code></td></tr>
+      <tr><td>Entrar / ejecutar dentro</td><td><code>docker exec api id -u</code> · <code>docker exec -it api sh</code></td></tr>
+    </table>
+    <table class="t"><tr><th>Para</th><th>Comando</th></tr>
+      <tr><td>Parar / borrar</td><td><code>docker stop api</code> · <code>docker rm -f api</code></td></tr>
+      <tr><td>Por qué falla al arrancar</td><td><code>docker ps -a</code> (estado <i>Exited</i>) y <code>docker logs api</code></td></tr>
+      <tr><td>Etiquetar para un registro</td><td><code>docker tag retencion-api:local LOCATION-docker.pkg.dev/PROYECTO/REPO/retencion-api:v1</code></td></tr>
+      <tr><td>Subir al registro (S3)</td><td><code>docker push LOCATION-docker.pkg.dev/PROYECTO/REPO/retencion-api:v1</code></td></tr>
+      <tr><td>Espacio en disco</td><td><code>docker system df</code> · limpiar: <code>docker system prune</code></td></tr>
+      <tr><td>Versión (cliente y motor)</td><td><code>docker version</code></td></tr>
+    </table>
+  </div>
+  <p class="small muted" style="margin-top:12px">Con Docker 29, <code>docker image ls</code> muestra <b>DISK USAGE</b> (826 MB, lo que ocupa) y <b>CONTENT SIZE</b> (183 MB, comprimida). La chuleta completa, para imprimir: <code>chuleta.md</code>.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Chuleta</span></div>
+</section>
+
+<section class="slide" data-title="Por qué Kubernetes" data-notes="Docker ejecuta un contenedor. En producción necesitas que alguien vigile: si se cae, levantarlo; si hay más carga, más copias; al actualizar, no cortar el servicio. Eso es un orquestador.">
+  <div class="kick">A · Conceptos · Kubernetes</div>
+  <h1>Con <code style="font-size:.9em">docker run</code> tienes un contenedor.<br>En producción necesitas <span style="color:var(--gold)">a alguien que lo vigile</span></h1>
+  <div class="g3">
+    <div class="card bad"><h3>Se cae</h3><p class="small">El proceso muere a las 3 de la madrugada. Con Docker solo, sigue caído hasta que alguien lo vea.</p><p class="small" style="margin-top:8px;color:var(--ok)"><b>Kubernetes</b>: crea otro pod en segundos (paso 6 de la práctica).</p></div>
+    <div class="card warn"><h3>Llega más carga</h3><p class="small">Una campaña dispara las peticiones. Un contenedor no da abasto.</p><p class="small" style="margin-top:8px;color:var(--ok)"><b>Kubernetes</b>: <code>replicas: 3</code> y el Service reparte (paso 7).</p></div>
+    <div class="card"><h3>Hay que actualizar</h3><p class="small">Nuevo modelo. Parar el viejo y arrancar el nuevo deja un hueco, y si el nuevo falla, todo cae.</p><p class="small" style="margin-top:8px;color:var(--ok)"><b>Kubernetes</b>: sustituye poco a poco; si el nuevo no está listo, el viejo sigue sirviendo (pasos 8 y 9).</p></div>
+  </div>
+  <div class="card ok" style="margin-top:16px"><p style="font-size:17px">Kubernetes es un <b>orquestador</b>: le dices <b>qué quieres</b> («2 copias de esta imagen, sin root, que respondan en /listo») y él se encarga de que <b>siga siendo así</b>.</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Las piezas de Kubernetes" data-notes="Vocabulario mínimo. Clúster > nodos > pods > contenedores. Tú no creas pods a mano: creas un Deployment, que crea un ReplicaSet, que mantiene los pods. El Service da una dirección estable delante.">
+  <div class="kick">A · Conceptos · Kubernetes</div>
+  <h1>Las piezas, de fuera hacia dentro</h1>
+  <svg viewBox="0 0 1160 360" width="1160" height="360" aria-label="Clúster con un nodo, Deployment, ReplicaSet, dos pods y un Service">
+    <defs><marker id="m3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker></defs>
+    <rect x="0" y="0" width="760" height="350" rx="18" fill="rgba(122,162,255,.07)" stroke="#7aa2ff" stroke-dasharray="6 5"/>
+    <text x="18" y="28" font-size="16" font-weight="800" fill="#7aa2ff">Clúster «curso» (kind)</text>
+    <rect x="18" y="44" width="724" height="290" rx="14" fill="rgba(10,53,96,.6)" stroke="#1a5fa3"/>
+    <text x="34" y="70" font-size="15" font-weight="700" fill="#eef6ff">Nodo · curso-control-plane <tspan fill="#a9c8ea" font-weight="400">(una «máquina»; en GKE hay varias)</tspan></text>
+    <rect x="34" y="88" width="210" height="54" rx="10" fill="#0e4378" stroke="#fcd34d"/><text x="139" y="112" text-anchor="middle" font-size="15" font-weight="800" fill="#fcd34d">Deployment</text><text x="139" y="131" text-anchor="middle" font-size="12" fill="#a9c8ea">quiero 2 réplicas de esta imagen</text>
+    <line x1="246" y1="115" x2="300" y2="115" stroke="#fcd34d" stroke-width="2.5" marker-end="url(#m3)"/>
+    <rect x="304" y="88" width="190" height="54" rx="10" fill="#0e4378" stroke="#1a5fa3"/><text x="399" y="112" text-anchor="middle" font-size="15" font-weight="800" fill="#eef6ff">ReplicaSet</text><text x="399" y="131" text-anchor="middle" font-size="12" fill="#a9c8ea">cuenta y repone pods</text>
+    <g><rect x="64" y="182" width="300" height="130" rx="12" fill="rgba(52,211,153,.12)" stroke="#34d399"/><text x="80" y="206" font-size="15" font-weight="800" fill="#34d399">Pod  retencion-api-…-h662c</text>
+      <rect x="80" y="220" width="268" height="44" rx="8" fill="#0a3560" stroke="#2bb3ff"/><text x="94" y="247" font-size="13.5" fill="#eef6ff">contenedor «api» · imagen retencion-api:local</text>
+      <text x="80" y="292" font-size="12.5" fill="#a9c8ea">IP propia 10.244.0.5 · readiness /listo · liveness /salud</text></g>
+    <g><rect x="400" y="182" width="300" height="130" rx="12" fill="rgba(52,211,153,.12)" stroke="#34d399"/><text x="416" y="206" font-size="15" font-weight="800" fill="#34d399">Pod  retencion-api-…-hqlvm</text>
+      <rect x="416" y="220" width="268" height="44" rx="8" fill="#0a3560" stroke="#2bb3ff"/><text x="430" y="247" font-size="13.5" fill="#eef6ff">contenedor «api» · misma imagen</text>
+      <text x="416" y="292" font-size="12.5" fill="#a9c8ea">IP propia 10.244.0.6 · si muere, se crea otro</text></g>
+    <path d="M399 144 C 399 160, 214 160, 214 178" stroke="#a9c8ea" stroke-width="2" fill="none" marker-end="url(#m3)"/><path d="M399 144 C 399 160, 550 160, 550 178" stroke="#a9c8ea" stroke-width="2" fill="none" marker-end="url(#m3)"/>
+    <rect x="820" y="150" width="330" height="120" rx="14" fill="#0c3b6a" stroke="#7aa2ff"/><text x="985" y="182" text-anchor="middle" font-size="17" font-weight="800" fill="#7aa2ff">Service  retencion-api</text>
+    <text x="985" y="208" text-anchor="middle" font-size="13" fill="#eef6ff">nombre e IP estables · puerto 80 → 8080</text><text x="985" y="230" text-anchor="middle" font-size="13" fill="#eef6ff">reparte entre los pods <tspan font-weight="700">listos</tspan></text><text x="985" y="254" text-anchor="middle" font-size="12" fill="#a9c8ea">(los pods van y vienen; el Service se queda)</text>
+    <path d="M818 220 C 760 240, 720 250, 704 250" stroke="#7aa2ff" stroke-width="2.5" fill="none" marker-end="url(#m3)"/>
+    <path d="M818 245 C 780 350, 260 352, 214 318" stroke="#7aa2ff" stroke-width="2.5" fill="none" marker-end="url(#m3)"/>
+    <text x="985" y="310" text-anchor="middle" font-size="13" fill="#a9c8ea">tú → kubectl port-forward → Service</text>
+  </svg>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Declarativo" data-notes="La idea que más cuesta. No das órdenes paso a paso; describes el estado que quieres en YAML y Kubernetes compara sin parar lo que hay con lo que pides, y corrige. Por eso borrar un pod no sirve para apagar nada: el ReplicaSet lo repone.">
+  <div class="kick">A · Conceptos · la idea clave</div>
+  <h1>Tú describes el estado deseado; Kubernetes lo mantiene</h1>
+  <div class="g21">
+    <svg viewBox="0 0 640 330" width="640" height="330" aria-label="Bucle de control: estado deseado, estado real, comparar y corregir">
+      <defs><marker id="m4" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker></defs>
+      <rect x="10" y="20" width="250" height="100" rx="14" fill="#0e4378" stroke="#fcd34d"/><text x="135" y="54" text-anchor="middle" font-size="17" font-weight="800" fill="#fcd34d">Estado deseado</text><text x="135" y="80" text-anchor="middle" font-size="13.5" fill="#eef6ff">deployment.yaml</text><text x="135" y="101" text-anchor="middle" font-size="13" fill="#a9c8ea">replicas: 2</text>
+      <rect x="380" y="20" width="250" height="100" rx="14" fill="rgba(52,211,153,.12)" stroke="#34d399"/><text x="505" y="54" text-anchor="middle" font-size="17" font-weight="800" fill="#34d399">Estado real</text><text x="505" y="80" text-anchor="middle" font-size="13.5" fill="#eef6ff">lo que corre ahora</text><text x="505" y="101" text-anchor="middle" font-size="13" fill="#a9c8ea">1 pod (borraste otro)</text>
+      <circle cx="320" cy="235" r="72" fill="rgba(122,162,255,.12)" stroke="#7aa2ff" stroke-width="2"/><text x="320" y="228" text-anchor="middle" font-size="16" font-weight="800" fill="#7aa2ff">comparar</text><text x="320" y="250" text-anchor="middle" font-size="13" fill="#eef6ff">2 ≠ 1 → crear 1</text>
+      <path d="M140 122 C 140 200, 200 235, 246 235" stroke="#fcd34d" stroke-width="2.5" fill="none" marker-end="url(#m4)"/>
+      <path d="M505 122 C 505 200, 440 235, 394 235" stroke="#fcd34d" stroke-width="2.5" fill="none" marker-end="url(#m4)"/>
+      <path d="M380 190 C 430 150, 470 140, 480 124" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#m4)" stroke-dasharray="5 4"/>
+      <text x="470" y="176" font-size="13" fill="#34d399">corrige</text><text x="320" y="324" text-anchor="middle" font-size="13" fill="#a9c8ea">esto se repite sin parar (bucle de control)</text>
+    </svg>
+    <div>
+      <div class="card"><h3>Imperativo (órdenes)</h3><p class="small"><code>kubectl scale --replicas=3</code>, <code>kubectl set image …</code>, <code>kubectl delete pod …</code>: cambian lo que hay <b>ahora</b>, pero el YAML no se entera.</p></div>
+      <div class="card ok" style="margin-top:12px"><h3>Declarativo (lo que se hace en serio)</h3><p class="small">Cambias el YAML, lo guardas en Git y <code>kubectl apply -f deploy/kubernetes/</code>. El YAML es la verdad: en el paso 7 verás que <code>apply</code> deshace el <code>scale</code> manual.</p></div>
+    </div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Nuestro deployment.yaml" data-notes="El archivo real del proyecto, recortado. Leedlo en voz alta de arriba abajo. Lo que hay que saber reconocer: replicas, selector y labels (cómo se encuentran Deployment, pods y Service), image con imagePullPolicy, runAsNonRoot, las dos probes y los recursos.">
+  <div class="kick">A · Conceptos · el archivo real</div>
+  <h1><code style="font-size:.85em">04-Proyecto-Base/deploy/kubernetes/deployment.yaml</code></h1>
+  <div class="g21">
+<pre class="cmd" style="font-size:13px;line-height:1.42">apiVersion: apps/v1
+kind: Deployment
+metadata: { name: retencion-api, labels: { app: retencion-api } }
+spec:
+  replicas: 2                                         <span class="c"># (1)</span>
+  selector: { matchLabels: { app: retencion-api } }   <span class="c"># (2)</span>
+  template:
+    metadata: { labels: { app: retencion-api } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }   <span class="c"># (3)</span>
+      containers:
+        - name: api
+          image: retencion-api:local
+          imagePullPolicy: IfNotPresent                 <span class="c"># (4)</span>
+          ports: [ { containerPort: 8080 } ]
+          readinessProbe: { httpGet: { path: /listo, port: 8080 } }   <span class="c"># (5)</span>
+          livenessProbe:  { httpGet: { path: /salud, port: 8080 } }   <span class="c"># (6)</span>
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }      <span class="c"># (7)</span>
+            limits:   { memory: 1Gi }</pre>
+    <div>
+      <ul class="l s">
+        <li><b>(1)</b> Kubernetes mantiene <b>2 pods</b> siempre.</li>
+        <li><b>(2)</b> Deployment, pods y Service se encuentran por la <b>etiqueta</b> <code>app: retencion-api</code>.</li>
+        <li><b>(3)</b> Igual que el <code>USER 10001</code> del Dockerfile; si la imagen intentara ser root, no arrancaría.</li>
+        <li><b>(4)</b> En kind la imagen se carga con <code>kind load</code>; no hay que descargarla.</li>
+        <li><b>(5)</b> <b>readiness</b>: ¿puede recibir tráfico? Mientras <code>/listo</code> no dé 200, el Service no le manda peticiones.</li>
+        <li><b>(6)</b> <b>liveness</b>: ¿sigue vivo? Si <code>/salud</code> deja de responder, se reinicia el contenedor.</li>
+        <li><b>(7)</b> Recursos: lo que reserva (requests) y el techo de memoria (limits).</li>
+      </ul>
+      <p class="tiny muted" style="margin-top:8px">Versión recortada (las llaves son YAML válido). El archivo completo lleva además los tiempos de las probes y una variable de entorno.</p>
+    </div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Readiness y liveness" data-notes="Las dos probes usan los endpoints que hicimos en S2. Readiness falla → el pod sigue vivo pero sin tráfico (lo veréis en el paso 10). Liveness falla → reinicio. Confundirlas es un error típico: si /listo fuera la liveness, un modelo ausente reiniciaría el pod en bucle.">
+  <div class="kick">A · Conceptos · las comprobaciones</div>
+  <h1>Las dos preguntas que Kubernetes hace sin parar</h1>
+  <div class="g2">
+    <div class="card"><h3>Readiness · <code>/listo</code></h3><p class="small">«¿Puedes atender peticiones?» Si responde 503 (sin modelo, contrato roto) o falla, el pod <b>sigue vivo</b> pero <b>sale del Service</b>: no recibe tráfico hasta que vuelva a estar listo.</p>
+      <p class="small" style="margin-top:8px">Se ve como <code>Running 0/1</code> y en <code>kubectl get endpoints</code> falta su IP.</p></div>
+    <div class="card"><h3>Liveness · <code>/salud</code></h3><p class="small">«¿Sigues vivo?» Si deja de responder, Kubernetes <b>reinicia el contenedor</b> (sube <code>RESTARTS</code>). Si se reinicia una y otra vez: <code>CrashLoopBackOff</code>.</p>
+      <p class="small" style="margin-top:8px">Por eso <code>/salud</code> no mira el modelo: solo que el proceso responde.</p></div>
+  </div>
+  <svg viewBox="0 0 1160 150" width="1160" height="150" style="margin-top:14px" aria-label="El Service manda tráfico solo a los pods listos">
+    <defs><marker id="m5" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#34d399"/></marker></defs>
+    <rect x="0" y="45" width="230" height="60" rx="12" fill="#0c3b6a" stroke="#7aa2ff"/><text x="115" y="82" text-anchor="middle" font-size="16" font-weight="800" fill="#7aa2ff">Service</text>
+    <g font-size="14" fill="#eef6ff"><rect x="420" y="0" width="260" height="44" rx="10" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="436" y="27">pod A · 1/1 listo</text>
+      <rect x="420" y="54" width="260" height="44" rx="10" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="436" y="81">pod B · 1/1 listo</text>
+      <rect x="420" y="108" width="260" height="42" rx="10" fill="rgba(251,191,36,.1)" stroke="#fbbf24"/><text x="436" y="134">pod C · 0/1 · readiness falla</text></g>
+    <g stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#m5)"><path d="M232 66 C 320 40, 360 22, 416 22"/><path d="M232 76 L 416 76"/></g>
+    <line x1="232" y1="90" x2="400" y2="128" stroke="#fb7185" stroke-width="2" stroke-dasharray="5 5"/><text x="300" y="132" font-size="13" fill="#fb7185">sin tráfico</text>
+    <text x="720" y="70" font-size="14" fill="#a9c8ea">Endpoints del Service = solo las IP de A y B.</text><text x="720" y="96" font-size="14" fill="#a9c8ea">Captura real en el paso 10.</text>
+  </svg>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="kind frente a GKE" data-notes="Misma API, mismos YAML (casi), mismo kubectl. Cambian dónde vive la imagen, cómo entra el tráfico y quién paga.">
+  <div class="kick">A · Conceptos · local o en la nube</div>
+  <h1>kind y GKE hablan el mismo Kubernetes</h1>
+  <table class="t"><tr><th style="width:22%">Aspecto</th><th>kind (Codespace)</th><th>GKE (Google Cloud)</th></tr>
+    <tr><td>Qué es</td><td>Kubernetes dentro de contenedores Docker, en una máquina</td><td>Kubernetes gestionado por Google; los nodos son máquinas virtuales</td></tr>
+    <tr><td>Crear</td><td><code>kind create cluster --name curso</code> (1 min 4 s)</td><td><code>gcloud container clusters create-auto NOMBRE --location=REGIÓN</code></td></tr>
+    <tr><td>Conectar kubectl</td><td>automático (contexto <code>kind-curso</code>)</td><td><code>gcloud container clusters get-credentials NOMBRE --location REGIÓN</code></td></tr>
+    <tr><td>La imagen</td><td><code>kind load docker-image retencion-api:local</code></td><td><code>docker push</code> a <b>Artifact Registry</b> y en el YAML la ruta completa</td></tr>
+    <tr><td>Entrar desde fuera</td><td><code>kubectl port-forward</code></td><td>Service <code>type: LoadBalancer</code> → IP pública</td></tr>
+    <tr><td>Desplegar</td><td colspan="2" style="text-align:center"><b>igual:</b> <code>kubectl apply -f deploy/kubernetes/</code> · <code>kubectl get pods</code> · <code>logs</code> · <code>rollout undo</code></td></tr>
+    <tr><td>Coste</td><td>0 € (cuota del Codespace)</td><td>se paga por uso mientras exista: <b>bórralo al terminar</b></td></tr>
+  </table>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<!-- ============================================================ B · PRÁCTICA -->
+<section class="slide" data-title="Práctica: antes de empezar" data-notes="Requisito: el bloque 4 de S2 hecho en el Codespace, es decir, la imagen retencion-api:local construida. La práctica entera son unos 15 minutos de reloj; se ejecutó el 13/11/2026 en el Codespace del curso (2 núcleos).">
+  <div class="kick">B · Práctica con kind <span class="tag ok">Probado en el Codespace · 13/11/2026</span></div>
+  <h1>Antes de empezar</h1>
+  <div class="g2">
+    <div class="card"><h3>Necesitas</h3><ul class="l s">
+      <li>El <b>Codespace del curso</b> abierto (guía de Codespaces). Trae <code>kind</code> v0.27.0 y <code>kubectl</code> v1.37.2.</li>
+      <li>La imagen construida (bloque 4 de S2): <code>docker image ls retencion-api</code> debe listar <code>retencion-api:local</code>.</li>
+      <li>La terminal en <code>04-Proyecto-Base</code> con <code>(env-ia-mlops)</code>.</li></ul></div>
+    <div class="card"><h3>Lo que tardó (Codespace de 2 núcleos)</h3><table class="t">
+      <tr><td>Crear el clúster</td><td>1 min 4 s</td></tr><tr><td>Cargar la imagen en el clúster</td><td>42 s</td></tr>
+      <tr><td>Desplegar 2 pods hasta «listos»</td><td>unos 10 s</td></tr><tr><td>Borrar el clúster</td><td>25 s</td></tr></table></div>
+  </div>
+<pre class="cmd" style="margin-top:14px">cd /workspaces/curso-ml-ia-desarrollo-produccion/04-Proyecto-Base
+docker image ls retencion-api
+kind version
+kubectl version --client</pre>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Práctica</span></div>
+</section>
+
+<section class="slide" data-title="Paso 1 · Crear el clúster" data-notes="kind descarga una imagen de nodo (kindest/node) y arranca un contenedor que hace de máquina. Al terminar deja kubectl apuntando al clúster (contexto kind-curso).">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">1</span> Crear el clúster</h1>
+<pre class="cmd">kind create cluster --name curso</pre>
+  <div class="shotw"><!--CAPTURA k01-crear-cluster|kind create cluster: imagen de nodo, plano de control, red (CNI) y almacenamiento; 1 min 4 s.--></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 1</span></div>
+</section>
+
+<section class="slide" data-title="Paso 1 · Ver el nodo" data-notes="Un clúster de un solo nodo: hace a la vez de plano de control y de máquina de trabajo. En GKE hay varios nodos y el plano de control lo gestiona Google.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">1</span> …y comprobar que está listo</h1>
+<pre class="cmd">kubectl cluster-info --context kind-curso
+kubectl get nodes</pre>
+  <div class="shotw"><!--CAPTURA k02-nodos|Un nodo, curso-control-plane, Ready, Kubernetes v1.32.2.--></div>
+  <p class="small" style="margin-top:12px">Un clúster de un solo nodo: hace a la vez de «jefe» (plano de control) y de máquina de trabajo. En GKE hay varios nodos y el plano de control lo gestiona Google.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 1</span></div>
+</section>
+
+<section class="slide" data-title="Paso 2 · Cargar la imagen" data-notes="Error clásico: el clúster no ve las imágenes de tu Docker, porque el nodo de kind es otro contenedor con su propio almacén. Hay que copiarla. En GKE el equivalente es subirla a Artifact Registry.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">2</span> Darle la imagen al clúster</h1>
+<pre class="cmd">kind load docker-image retencion-api:local --name curso</pre>
+  <div class="shotw"><!--CAPTURA k03-cargar-imagen|«not yet present on node … loading…»: copia la imagen (826 MB) al nodo; 42 s.--></div>
+  <div class="card warn" style="margin-top:14px"><p class="small"><b>Por qué hace falta:</b> el nodo de kind es <b>otro contenedor</b>, con su propio almacén de imágenes. Si te saltas este paso, los pods se quedan en <code>ErrImagePull</code>: intentan descargar <code>docker.io/library/retencion-api:local</code>, que no existe. En GKE esto se hace subiendo la imagen a <b>Artifact Registry</b>.</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 2</span></div>
+</section>
+
+<section class="slide" data-title="Paso 3 · Desplegar" data-notes="apply crea lo que describe la carpeta. Primero salen 0/2 y ContainerCreating; rollout status espera a que estén listos. Fijaos en la cadena de nombres: deployment, replicaset (con un sufijo) y pods (con otro).">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">3</span> Desplegar</h1>
+<pre class="cmd">kubectl apply -f deploy/kubernetes/
+kubectl get deployments,replicasets,pods,services</pre>
+  <div class="shotw"><!--CAPTURA k04-apply|Recién aplicado: Deployment 0/2, un ReplicaSet y dos pods en ContainerCreating; el Service ya existe.--></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 3</span></div>
+</section>
+
+<section class="slide" data-title="Paso 3 · Esperar a que esté listo" data-notes="rollout status espera a que todos los pods pasen la readiness. Cada pod tiene su IP dentro del clúster; nadie de fuera la usa directamente, para eso está el Service.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">3</span> …y esperar a que esté listo</h1>
+<pre class="cmd">kubectl rollout status deployment/retencion-api --timeout=180s
+kubectl get pods -o wide</pre>
+  <div class="shotw"><!--CAPTURA k05-rollout|«successfully rolled out»: los dos pods Running 1/1, cada uno con su IP (10.244.0.5 y .6), en unos 10 s.--></div>
+  <p class="small" style="margin-top:12px">Fíjate en la cadena de nombres: <code>retencion-api</code> (Deployment) → <code>retencion-api-76b885ddb9</code> (ReplicaSet) → <code>retencion-api-76b885ddb9-h662c</code> (pod). <b>READY 1/1</b> significa que su readiness (<code>/listo</code>) ya responde 200.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 3</span></div>
+</section>
+
+<section class="slide" data-title="Paso 4 · Mirar qué pasa" data-notes="Los eventos cuentan la historia: Scheduled, Pulled (ya presente), Created, Started. Los logs muestran nuestras líneas JSON y las llamadas de las probes a /listo y /salud cada pocos segundos.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">4</span> Mirar dentro: los eventos</h1>
+<pre class="cmd">kubectl get events --sort-by=.lastTimestamp | tail -14</pre>
+  <div class="shotw"><!--CAPTURA k06-eventos|Eventos: Scheduled → Pulled («already present on machine») → Created → Started, y el ReplicaSet creando los dos pods.--></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 4</span></div>
+</section>
+
+<section class="slide" data-title="Paso 4 · Los registros" data-notes="kubectl logs con deployment/… elige uno de los pods. Además de nuestras líneas JSON, se ven las llamadas de las probes: Kubernetes pregunta a /listo y a /salud cada pocos segundos.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">4</span> …y los registros de la API</h1>
+<pre class="cmd">kubectl logs deployment/retencion-api --tail=6</pre>
+  <div class="shotw"><!--CAPTURA k07-logs|Registros de un pod: las probes llaman a /listo y /salud cada pocos segundos (200), con nuestras líneas JSON.--></div>
+  <p class="small" style="margin-top:12px">Para un pod concreto: <code>kubectl describe pod NOMBRE</code> (al final, <i>Events</i>) y <code>kubectl logs NOMBRE</code>. Si el pod se reinició, <code>kubectl logs NOMBRE --previous</code> enseña lo que dijo antes de morir.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 4</span></div>
+</section>
+
+<section class="slide" data-title="Paso 5 · Hablar con la API" data-notes="port-forward abre un túnel desde el Codespace al Service. Con él, los mismos comandos de S2 funcionan contra Kubernetes: /listo, /modelo y comparar, que da los cuatro caminos iguales.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">5</span> Hablar con la API a través del Service</h1>
+<pre class="cmd">kubectl port-forward service/retencion-api 8080:80 &gt; /tmp/pf.log 2&gt;&amp;1 &amp;
+curl -s http://127.0.0.1:8080/listo
+curl -s http://127.0.0.1:8080/modelo
+python -m ia_mlops.modeling.comparar --url http://127.0.0.1:8080</pre>
+  <div class="shotw"><!--CAPTURA k08-port-forward|A través de Kubernetes: {"estado":"listo"}, la ficha del modelo y comparar con los cuatro caminos iguales (diferencia 0).--></div>
+  <p class="small muted" style="margin-top:8px">El <code>&amp;</code> deja el túnel en segundo plano; <code>kill %1</code> lo cierra. El Service escucha en el 80 y entrega en el 8080 del contenedor.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 5</span></div>
+</section>
+
+<section class="slide" data-title="Paso 6 · Se cura solo" data-notes="Borráis un pod y en 3 segundos hay otro con otro nombre (9srx6). Es el bucle de control: el ReplicaSet quiere 2. Aviso: si el port-forward iba por ese pod, se corta (lo vimos en la prueba); hay que relanzarlo.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">6</span> Borra un pod: Kubernetes pone otro</h1>
+<pre class="cmd">kubectl get pods
+P=$(kubectl get pods -l app=retencion-api -o name | head -1)
+kubectl delete $P
+kubectl get pods</pre>
+  <div class="shotw"><!--CAPTURA k09-autocuracion|Se borra …-h662c y a los 3 s ya existe …-9srx6 (0/1, arrancando): siempre 2.--></div>
+  <div class="card warn" style="margin-top:12px"><p class="small"><b>Ojo con el port-forward:</b> <code>kubectl port-forward service/…</code> se engancha a <b>un solo pod</b>. Si borras ese, el túnel muere (en la prueba: <code>Exit 1</code>) y hay que volver a lanzarlo. En GKE, con un LoadBalancer, esto no pasa.</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 6</span></div>
+</section>
+
+<section class="slide" data-title="Paso 7 · Escalar" data-notes="scale es imperativo: funciona, pero el YAML sigue diciendo 2. Al volver a aplicar el YAML, Kubernetes vuelve a 2. Moraleja: el YAML en Git es la fuente de verdad.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">7</span> Escalar a tres réplicas</h1>
+<pre class="cmd">kubectl scale deployment/retencion-api --replicas=3
+kubectl get pods</pre>
+  <div class="shotw"><!--CAPTURA k10-escalar|Con scale: tres pods Running 1/1; el Service ya reparte entre los tres.--></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 7</span></div>
+</section>
+
+<section class="slide" data-title="Paso 7 · Quién manda" data-notes="scale es imperativo: funciona, pero el YAML sigue diciendo 2. Al volver a aplicar el YAML, Kubernetes vuelve a 2. Moraleja: el YAML en Git es la fuente de verdad. (En la prueba este apply se hizo después del paso 9; el resultado es el mismo.)">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">7</span> …y ver quién manda: el YAML</h1>
+<pre class="cmd">kubectl apply -f deploy/kubernetes/      <span class="c"># el YAML dice replicas: 2</span>
+kubectl get deployment retencion-api
+kubectl get pods</pre>
+  <div class="shotw"><!--CAPTURA k14-apply-declarativo|Tras apply: «configured» y vuelve a 2/2. El cambio manual (scale) se pierde: el YAML manda.--></div>
+  <p class="small" style="margin-top:12px">Para escalar de verdad, cambia <code>replicas:</code> en el YAML, guárdalo en Git y aplica (ejercicio 2).</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 7</span></div>
+</section>
+
+<section class="slide" data-title="Paso 8 · Una actualización rota" data-notes="Simulamos un despliegue con una imagen que no existe. El pod nuevo se queda en ImagePullBackOff, pero los antiguos siguen sirviendo: /listo responde. Es la actualización progresiva (rolling update) protegiéndonos.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">8</span> Despliega una imagen que no existe</h1>
+<pre class="cmd">kubectl set image deployment/retencion-api api=retencion-api:no-existe
+kubectl get pods</pre>
+  <div class="shotw"><!--CAPTURA k11-rotura|El pod nuevo (…-f4zjr) en ImagePullBackOff; los tres antiguos siguen Running. (El «Exit 1» es el port-forward del paso 6.)--></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 8</span></div>
+</section>
+
+<section class="slide" data-title="Paso 8 · Y sigue sirviendo" data-notes="La actualización progresiva no quita los pods viejos hasta que los nuevos están listos. Como el nuevo nunca llega a estarlo, el servicio sigue funcionando con los antiguos. El evento explica el fallo.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">8</span> …y el servicio sigue funcionando</h1>
+<pre class="cmd">kubectl port-forward service/retencion-api 8080:80 &gt; /tmp/pf.log 2&gt;&amp;1 &amp;
+curl -s http://127.0.0.1:8080/listo
+kubectl get events --field-selector reason=Failed | tail -4</pre>
+  <div class="shotw"><!--CAPTURA k12-sigue-sirviendo|{"estado":"listo"}: los pods antiguos atienden. El evento dice por qué falla el nuevo: pull access denied … retencion-api:no-existe.--></div>
+  <p class="small" style="margin-top:12px">Es la <b>actualización progresiva</b> (<i>rolling update</i>): los pods viejos no se quitan hasta que los nuevos están listos.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 8</span></div>
+</section>
+
+<section class="slide" data-title="Paso 9 · Deshacer" data-notes="rollout undo vuelve a la revisión anterior; el pod roto pasa a Terminating. El aviso de la primera línea es importante: undo no toca el YAML ni la anotación de apply; en un equipo de verdad se corrige el YAML y se vuelve a aplicar.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">9</span> Volver a la versión que funcionaba</h1>
+<pre class="cmd">kubectl rollout undo deployment/retencion-api
+kubectl rollout status deployment/retencion-api
+kubectl get pods
+kubectl rollout history deployment/retencion-api</pre>
+  <div class="shotw"><!--CAPTURA k13-undo|«rolled back»: el pod roto Terminating, los buenos Running; historial con las revisiones 2 y 3.--></div>
+  <p class="small" style="margin-top:10px"><b>Lee el aviso de la primera línea:</b> <code>undo</code> no actualiza la anotación de <code>kubectl apply</code>. En la práctica, <b>arregla el YAML y vuelve a aplicarlo</b>: <code>undo</code> es el botón de emergencia; el YAML en Git, la solución.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 9</span></div>
+</section>
+
+<section class="slide" data-title="Paso 10 · Readiness rota" data-notes="Cambiamos la ruta de la readiness a una que da 404. El pod nuevo está Running pero 0/1: nunca recibe tráfico, y Endpoints solo tiene las IP de los dos buenos. El evento lo dice claro: Readiness probe failed, statuscode 404.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">10</span> Un pod vivo que nunca está «listo»</h1>
+<pre class="cmd">kubectl patch deployment retencion-api --type=json -p='[{"op":"replace","path":"/spec/template/spec/containers/0/readinessProbe/httpGet/path","value":"/no-existe"}]'
+kubectl get pods
+kubectl get endpoints retencion-api
+kubectl get events --field-selector reason=Unhealthy | tail -3</pre>
+  <div class="shotw"><!--CAPTURA k15-readiness-rota|Pod nuevo Running pero 0/1; ENDPOINTS solo tiene las IP de los dos pods buenos; «Readiness probe failed: … statuscode: 404».--></div>
+  <p class="small muted" style="margin-top:8px">Para arreglarlo: <code>kubectl apply -f deploy/kubernetes/</code> (vuelve a <code>/listo</code>) o <code>kubectl rollout undo deployment/retencion-api</code>.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 10</span></div>
+</section>
+
+<section class="slide" data-title="Paso 11 · Limpiar" data-notes="Borrar los recursos y el clúster entero. En kind no cuesta dinero pero ocupa memoria del Codespace. En GKE, este paso es el que evita la factura.">
+  <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
+  <h1><span class="paso">11</span> Limpiar</h1>
+<pre class="cmd">kill %1
+kubectl delete -f deploy/kubernetes/
+kind delete cluster --name curso
+kind get clusters</pre>
+  <div class="shotw"><!--CAPTURA k16-limpiar|Recursos borrados, túnel terminado, clúster borrado en 25 s: «No kind clusters found».--></div>
+  <p class="small muted" style="margin-top:8px">Después, para el Codespace (guía de Codespaces). En GKE: <code>gcloud container clusters delete NOMBRE --location REGIÓN</code>.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 11</span></div>
+</section>
+
+<section class="slide" data-title="Si algo falla" data-notes="Los estados que más salen y qué mirar. Regla general: get pods para ver el estado, describe pod para los eventos, logs para lo que dice la aplicación.">
+  <div class="kick">B · Práctica · diagnóstico</div>
+  <h1>Si algo falla: estado → causa → qué hacer</h1>
+  <table class="t">
+    <tr><th>Lo que ves</th><th>Causa probable</th><th>Qué hacer</th></tr>
+    <tr><td><code>ErrImagePull</code> / <code>ImagePullBackOff</code></td><td>La imagen no está en el nodo o el nombre está mal</td><td><code>kind load docker-image …</code>; revisa <code>image:</code>. En GKE: ruta de Artifact Registry y permisos</td></tr>
+    <tr><td><code>Running 0/1</code> mucho rato</td><td>La readiness falla: <code>/listo</code> da 503 o la ruta no existe</td><td><code>kubectl describe pod …</code> (Events) y <code>kubectl logs …</code>; prueba <code>/listo</code> a mano</td></tr>
+    <tr><td><code>CrashLoopBackOff</code></td><td>El proceso termina al arrancar (sin modelo, error de Python) o la liveness lo mata</td><td><code>kubectl logs POD --previous</code> enseña la salida del intento anterior</td></tr>
+    <tr><td><code>OOMKilled</code> en <code>describe</code></td><td>Superó <code>limits.memory</code></td><td>Sube el límite o reduce el consumo</td></tr>
+    <tr><td><code>Pending</code></td><td>No cabe en ningún nodo (pide demasiada CPU o memoria)</td><td><code>kubectl describe pod …</code>: «Insufficient cpu/memory»</td></tr>
+    <tr><td><code>curl</code> no responde tras borrar un pod</td><td>El <code>port-forward</code> iba por ese pod y se cortó</td><td>Vuelve a lanzar <code>kubectl port-forward service/retencion-api 8080:80 &amp;</code></td></tr>
+    <tr><td><code>The connection to the server … was refused</code></td><td>No hay clúster o kubectl apunta a otro</td><td><code>kind get clusters</code> · <code>kubectl config current-context</code></td></tr>
+  </table>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Diagnóstico</span></div>
+</section>
+
+<!-- ============================================================ C · GKE -->
+<section class="slide" data-title="GKE en un dibujo" data-notes="Lo que cambia al pasar a la nube: la imagen vive en Artifact Registry, Google gestiona el plano de control y, en Autopilot, también los nodos; el tráfico entra por un balanceador con IP pública. Nada de esto se crea en el curso.">
+  <div class="kick">C · GKE <span class="tag doc">Documentación de Google · sin ejecutar</span></div>
+  <h1>Lo mismo, en Google Cloud</h1>
+  <svg viewBox="0 0 1160 330" width="1160" height="330" aria-label="GKE: Artifact Registry, clúster Autopilot con pods y un balanceador con IP pública">
+    <defs><marker id="m6" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker></defs>
+    <rect x="0" y="120" width="190" height="90" rx="14" fill="#0a3560" stroke="#1a5fa3"/><text x="95" y="156" text-anchor="middle" font-size="16" font-weight="800" fill="#eef6ff">Tu equipo / CI</text><text x="95" y="180" text-anchor="middle" font-size="12.5" fill="#a9c8ea">docker push · kubectl apply</text>
+    <rect x="250" y="20" width="230" height="90" rx="14" fill="#0c3b6a" stroke="#2bb3ff"/><text x="365" y="56" text-anchor="middle" font-size="16" font-weight="800" fill="#2bb3ff">Artifact Registry</text><text x="365" y="80" text-anchor="middle" font-size="12" fill="#a9c8ea">REGIÓN-docker.pkg.dev/PROYECTO/</text><text x="365" y="96" text-anchor="middle" font-size="12" fill="#a9c8ea">REPO/retencion-api:v1</text>
+    <rect x="540" y="10" width="420" height="310" rx="18" fill="rgba(251,191,36,.07)" stroke="#fbbf24" stroke-dasharray="6 5"/><text x="560" y="38" font-size="16" font-weight="800" fill="#fbbf24">Clúster GKE (Autopilot)</text>
+    <text x="560" y="60" font-size="12.5" fill="#a9c8ea">Google gestiona el plano de control y los nodos</text>
+    <g font-size="13" fill="#eef6ff"><rect x="560" y="80" width="180" height="56" rx="10" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="574" y="104">pod · retencion-api</text><text x="574" y="124" font-size="11.5" fill="#a9c8ea">nodo 1</text>
+      <rect x="760" y="80" width="180" height="56" rx="10" fill="rgba(52,211,153,.14)" stroke="#34d399"/><text x="774" y="104">pod · retencion-api</text><text x="774" y="124" font-size="11.5" fill="#a9c8ea">nodo 2</text>
+      <rect x="560" y="160" width="380" height="60" rx="12" fill="#0c3b6a" stroke="#7aa2ff"/><text x="750" y="186" text-anchor="middle" font-weight="800" fill="#7aa2ff">Service type: LoadBalancer</text><text x="750" y="206" text-anchor="middle" font-size="12" fill="#a9c8ea">Google crea un balanceador con IP pública</text>
+      <rect x="560" y="240" width="380" height="60" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="750" y="266" text-anchor="middle" font-weight="700">IAM · cuentas de servicio</text><text x="750" y="286" text-anchor="middle" font-size="12" fill="#a9c8ea">quién puede desplegar · qué puede leer el pod</text></g>
+    <rect x="1000" y="160" width="160" height="60" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="1080" y="186" text-anchor="middle" font-size="14" font-weight="800" fill="#eef6ff">Usuarios</text><text x="1080" y="206" text-anchor="middle" font-size="12" fill="#a9c8ea">http://IP-PÚBLICA/</text>
+    <g stroke="#fcd34d" stroke-width="2.5" fill="none" marker-end="url(#m6)"><path d="M192 150 C 220 120, 230 80, 246 70"/><path d="M482 70 C 520 70, 540 90, 556 100"/><path d="M192 180 C 360 200, 470 200, 556 192"/><path d="M998 190 L 944 190"/></g>
+    <text x="210" y="120" font-size="12" fill="#fcd34d">push</text><text x="360" y="216" font-size="12" fill="#fcd34d">kubectl apply</text>
+  </svg>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>C · GKE</span></div>
+</section>
+
+<section class="slide" data-title="De kind a GKE: los comandos" data-notes="Los comandos son los de la documentación oficial de Google (consultada el 13/11/2026). No se han ejecutado en este curso. Fijaos en --location, que es el nombre actual de la opción.">
+  <div class="kick">C · GKE <span class="tag doc">Comandos de la documentación · sin ejecutar</span></div>
+  <h1>De kind a GKE: qué comandos cambian</h1>
+  <div class="g2">
+<pre class="cmd" style="font-size:13px"><span class="c"># 1. Repositorio de imágenes y permisos de Docker</span>
+gcloud artifacts repositories create curso-repo --repository-format=docker --location=us-central1 --description="Imágenes del curso"
+gcloud auth configure-docker us-central1-docker.pkg.dev
+
+<span class="c"># 2. Subir la imagen (en vez de kind load)</span>
+docker tag retencion-api:local us-central1-docker.pkg.dev/PROYECTO/curso-repo/retencion-api:v1
+docker push us-central1-docker.pkg.dev/PROYECTO/curso-repo/retencion-api:v1</pre>
+<pre class="cmd" style="font-size:13px"><span class="c"># 3. Clúster Autopilot y kubectl apuntando a él</span>
+gcloud container clusters create-auto curso-gke --location=us-central1
+gcloud container clusters get-credentials curso-gke --location us-central1
+
+<span class="c"># 4. Desplegar: mismos YAML, cambiando image: por la ruta</span>
+<span class="c">#    de Artifact Registry y el Service a type: LoadBalancer</span>
+kubectl apply -f deploy/kubernetes/
+kubectl get service retencion-api      <span class="c"># EXTERNAL-IP</span>
+
+<span class="c"># 5. Borrar (¡imprescindible!)</span>
+gcloud container clusters delete curso-gke --location us-central1
+gcloud artifacts repositories delete curso-repo --location=us-central1</pre>
+  </div>
+  <p class="small muted" style="margin-top:10px">Sustituye <code>PROYECTO</code> por el id de tu proyecto. En el YAML, <code>imagePullPolicy: IfNotPresent</code> puede quedarse; lo que cambia es <code>image:</code>. Fuentes al final.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>C · GKE</span></div>
+</section>
+
+<section class="slide" data-title="GKE: coste y cuidado" data-notes="No damos cifras de precio: cambian y dependen de la región y del modo. Lo que sí: un clúster cuesta mientras existe, el balanceador también, y una IP pública expone la API, que no tiene autenticación.">
+  <div class="kick">C · GKE <span class="tag doc">Antes de crear nada</span></div>
+  <h1>Antes de crear un clúster de verdad</h1>
+  <div class="g3">
+    <div class="card warn"><h3>Cuesta mientras exista</h3><p class="small">Autopilot cobra por los recursos que piden los pods; Standard, por los nodos. El <b>balanceador</b> también se paga. Calcúlalo antes en la calculadora de Google Cloud y pon una <b>alerta de presupuesto</b>.</p></div>
+    <div class="card bad"><h3>IP pública = API expuesta</h3><p class="small">Nuestra API <b>no tiene autenticación</b>. Con <code>type: LoadBalancer</code> cualquiera con la IP puede llamarla. Para el curso, Cloud Run (S3) con acceso restringido es más sencillo.</p></div>
+    <div class="card"><h3>Permisos mínimos</h3><p class="small">Para empujar imágenes y desplegar hacen falta roles de Artifact Registry y de GKE. Desde GitHub Actions, sin claves en el repositorio: Workload Identity Federation (S4).</p></div>
+  </div>
+  <div class="card ok" style="margin-top:14px"><p style="font-size:16.5px"><b>En este curso no se crea ningún clúster de GKE.</b> Todo lo de Kubernetes se practica con kind, que habla la misma API: lo que aprendes con <code>kubectl</code> vale tal cual.</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>C · GKE</span></div>
+</section>
+
+<!-- ============================================================ D · EJERCICIOS Y CHULETA -->
+<section class="slide" data-title="Ejercicios" data-notes="Seis ejercicios, de menos a más. Las soluciones, con lo que debe salir, están en ejercicios.md. Se hacen en el mismo clúster de la práctica (rehaced los pasos 1 a 3 si lo borrasteis).">
+  <div class="kick">D · Ejercicios · soluciones en <code>ejercicios.md</code></div>
+  <h1>Ahora tú: seis ejercicios</h1>
+  <div class="g2">
+    <div class="card"><h3>1 · Leer</h3><p class="small">¿Qué nodo e IP tiene cada pod? ¿Qué etiqueta une el Service con los pods? (<code>get pods -o wide</code>, <code>describe service</code>)</p></div>
+    <div class="card"><h3>2 · Escalar de forma declarativa</h3><p class="small">Pasa a 3 réplicas <b>editando el YAML</b>, aplica y comprueba. ¿Qué diferencia hay con <code>kubectl scale</code>?</p></div>
+    <div class="card"><h3>3 · Olvidar <code>kind load</code></h3><p class="small">Construye <code>retencion-api:v2</code>, cambia el YAML a esa etiqueta y aplica <b>sin</b> cargarla. ¿Qué estado ves y qué dice el evento? Arréglalo.</p></div>
+    <div class="card"><h3>4 · Sin modelo</h3><p class="small">Despliega la imagen de S2 <i>sin</i> modelo (o una ruta de modelo errónea por variable de entorno). ¿El pod está vivo? ¿Está listo? ¿Por qué esa diferencia es la que queremos?</p></div>
+    <div class="card"><h3>5 · Límite de memoria</h3><p class="small">Baja <code>limits.memory</code> a <code>64Mi</code> y aplica. ¿Qué pasa? Busca la palabra clave en <code>describe pod</code>.</p></div>
+    <div class="card"><h3>6 · Llevarlo a GKE (en papel)</h3><p class="small">Escribe los cambios del YAML y la lista de comandos para desplegarlo en GKE. ¿Qué borrarías al acabar y en qué orden?</p></div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>D · Ejercicios</span></div>
+</section>
+
+<section class="slide" data-title="Chuleta de kubectl y kind" data-notes="Una página para tener abierta. La versión imprimible, con Docker incluido, es chuleta.md.">
+  <div class="kick">D · Chuleta</div>
+  <h1>kubectl y kind en una página</h1>
+  <div class="g3">
+    <table class="t"><tr><th>Ver</th></tr>
+      <tr><td><code>kubectl get pods [-o wide] [-w]</code></td></tr><tr><td><code>kubectl get deploy,rs,svc,endpoints</code></td></tr>
+      <tr><td><code>kubectl describe pod NOMBRE</code></td></tr><tr><td><code>kubectl logs POD [--previous] [-f]</code></td></tr>
+      <tr><td><code>kubectl logs deployment/retencion-api</code></td></tr><tr><td><code>kubectl get events --sort-by=.lastTimestamp</code></td></tr>
+      <tr><td><code>kubectl config current-context</code></td></tr></table>
+    <table class="t"><tr><th>Cambiar</th></tr>
+      <tr><td><code>kubectl apply -f deploy/kubernetes/</code></td></tr><tr><td><code>kubectl delete -f deploy/kubernetes/</code></td></tr>
+      <tr><td><code>kubectl scale deployment/X --replicas=N</code></td></tr><tr><td><code>kubectl set image deployment/X api=IMAGEN</code></td></tr>
+      <tr><td><code>kubectl rollout status deployment/X</code></td></tr><tr><td><code>kubectl rollout undo deployment/X</code></td></tr>
+      <tr><td><code>kubectl rollout history deployment/X</code></td></tr></table>
+    <table class="t"><tr><th>Entrar y kind</th></tr>
+      <tr><td><code>kubectl port-forward service/X 8080:80 &amp;</code></td></tr><tr><td><code>kubectl exec -it POD -- sh</code></td></tr>
+      <tr><td><code>kind create cluster --name curso</code></td></tr><tr><td><code>kind load docker-image IMAGEN --name curso</code></td></tr>
+      <tr><td><code>kind get clusters</code></td></tr><tr><td><code>kind delete cluster --name curso</code></td></tr>
+      <tr><td><code>kubectl explain deployment.spec</code> (ayuda)</td></tr></table>
+  </div>
+  <p class="small muted" style="margin-top:12px">Abreviaturas que verás: <code>po</code> = pods, <code>deploy</code> = deployments, <code>rs</code> = replicasets, <code>svc</code> = services, <code>ep</code> = endpoints.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>D · Chuleta</span></div>
+</section>
+
+<section class="slide" data-title="Qué se probó y fuentes" data-notes="Transparencia: la práctica de kind se ejecutó entera en el Codespace del curso; GKE y Artifact Registry no. Fuentes oficiales consultadas el 13/11/2026.">
+  <div class="kick">Cierre · transparencia</div>
+  <h1>Qué se probó y qué no</h1>
+  <div class="g2">
+    <div class="card ok"><h3>Probado · Codespace del curso, 13/11/2026</h3><ul class="l s">
+      <li>kind v0.27.0 (nodo Kubernetes v1.32.2) y kubectl v1.37.2, máquina de 2 núcleos.</li>
+      <li>Los pasos 1 a 11 con los manifiestos de <code>04-Proyecto-Base/deploy/kubernetes/</code> y la imagen del bloque 4 de S2: todas las capturas son de esa ejecución.</li>
+      <li>Los comandos de Docker de la chuleta: bloque 4 de S2 (12/11/2026), salvo <code>push</code>.</li></ul></div>
+    <div class="card bad"><h3>Sin ejecutar</h3><ul class="l s">
+      <li><b>GKE y Artifact Registry</b>: los comandos salen de la documentación oficial; no se ha creado nada en Google Cloud.</li>
+      <li>Los ejercicios 3 a 6 (sus soluciones dicen qué se espera según la documentación de Kubernetes).</li>
+      <li><code>docker push</code>, el Service <code>LoadBalancer</code> y los permisos de IAM.</li></ul></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Fuentes (consultadas el 13/11/2026)</h3><ul class="l s">
+    <li>GKE · desplegar una aplicación en un clúster: <code>docs.cloud.google.com/kubernetes-engine/docs/deploy-app-cluster</code></li>
+    <li>Artifact Registry · guardar imágenes Docker: <code>docs.cloud.google.com/artifact-registry/docs/docker/store-docker-container-images</code></li>
+    <li>kind: <code>kind.sigs.k8s.io</code> · Kubernetes, conceptos y probes: <code>kubernetes.io/docs</code></li></ul></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>Cierre</span></div>
+</section>
+
+</div>
+<div id="indice" role="dialog" aria-label="Índice"><h2>Índice · Docker, Kubernetes y GKE</h2><ol id="listaIndice"></ol></div>
+<div id="notas" aria-live="polite"></div>
+<script>
+(function(){
+  'use strict';
+  var slides=[].slice.call(document.querySelectorAll('.slide')), actual=0;
+  var esc=document.getElementById('escenario'), notas=document.getElementById('notas'), indice=document.getElementById('indice');
+  [].forEach.call(document.querySelectorAll('pre.cmd'),function(pre){
+    var b=document.createElement('button'); b.type='button'; b.textContent='⧉'; b.title='Copiar estos comandos'; b.setAttribute('aria-label','Copiar estos comandos');
+    b.addEventListener('click',function(ev){ ev.stopPropagation();
+      var t=pre.cloneNode(true); [].forEach.call(t.querySelectorAll('button,.c'),function(n){n.remove()});
+      var texto=t.textContent.split('\n').map(function(l){return l.replace(/\s+$/,'')}).filter(function(l){return l.length}).join('\n');
+      var ok=function(){b.textContent='✓';setTimeout(function(){b.textContent='⧉'},1200)};
+      if(navigator.clipboard){navigator.clipboard.writeText(texto).then(ok,function(){b.textContent='!'})}else{b.textContent='!'} });
+    pre.appendChild(b);
+  });
+  var lista=document.getElementById('listaIndice');
+  slides.forEach(function(s,i){var li=document.createElement('li');li.textContent=s.dataset.title;li.addEventListener('click',function(){ir(i);indice.classList.remove('on')});lista.appendChild(li)});
+  function escalar(){var k=Math.min(innerWidth/1280,innerHeight/720);esc.style.transform='translate(-50%,-50%) scale('+k+')'}
+  function ir(i){actual=Math.max(0,Math.min(slides.length-1,i));slides.forEach(function(s,j){s.classList.toggle('on',j===actual)});
+    document.getElementById('barra').style.width=((actual+1)/slides.length*100)+'%';
+    notas.textContent=(actual+1)+'/'+slides.length+' · '+(slides[actual].dataset.notes||'');
+    try{history.replaceState(null,'','#'+(actual+1))}catch(e){}}
+  document.addEventListener('keydown',function(e){if(e.ctrlKey||e.metaKey||e.altKey)return;var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '){e.preventDefault();ir(actual+1)}
+    else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();ir(actual-1)}
+    else if(k==='Home')ir(0);else if(k==='End')ir(slides.length-1);
+    else if(k==='o'||k==='O')indice.classList.toggle('on');else if(k==='s'||k==='S')notas.classList.toggle('on');
+    else if(k==='f'||k==='F'){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}else{document.exitFullscreen&&document.exitFullscreen()}}
+    else if(k==='Escape')indice.classList.remove('on')});
+  addEventListener('resize',escalar);escalar();
+  var h=parseInt((location.hash||'').slice(1),10);ir(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

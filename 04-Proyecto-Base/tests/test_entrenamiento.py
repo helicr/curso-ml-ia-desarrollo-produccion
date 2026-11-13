@@ -41,6 +41,32 @@ def test_entrena_registrando_en_mlflow(con, salidas_tmp):
     assert r['mejor'] in ' '.join(runs['tags.mlflow.runName'].astype(str))
 
 
+def test_el_mejor_modelo_queda_en_el_registro_con_una_version_por_entrenamiento(con, salidas_tmp):
+    import mlflow
+    r1 = train.entrenar(con, usar_mlflow=True, verbose=False)
+    r2 = train.entrenar(con, usar_mlflow=True, verbose=False)
+    assert (r1['version_registrada'], r2['version_registrada']) == (1, 2)
+    cliente = mlflow.MlflowClient(tracking_uri='sqlite:///' + (salidas_tmp / 'models' / 'mlflow.db').as_posix())
+    v = cliente.get_model_version(config.MODELO_REGISTRADO, '2')
+    assert v.tags['modelo'] == r2['mejor'] and len(v.tags['huella_datos']) == 16 and float(v.tags['valid_auc']) > 0.5
+    ejecucion = cliente.get_run(v.run_id)
+    assert ejecucion.info.run_name == f"MEJOR-{r2['mejor']}"     # la versión apunta a la ejecución que la creó
+
+
+def test_mlflow_ui_usa_la_ruta_absoluta_del_proyecto_y_detecta_el_registro_vacio(con, salidas_tmp, monkeypatch, capsys):
+    from ia_mlops import mlflow_ui
+    monkeypatch.setattr(mlflow_ui, 'BASE', salidas_tmp / 'models' / 'mlflow.db')
+    assert mlflow_ui.main(['--comprobar']) == 1                 # aún no hay registro: lo dice y no abre nada
+    assert 'Entrena primero' in capsys.readouterr().out
+    train.entrenar(con, usar_mlflow=True, verbose=False)
+    assert mlflow_ui.main(['--comprobar']) == 0
+    assert '4 ejecuciones' in capsys.readouterr().out and mlflow_ui.resumen() == (4, 1)
+    orden = mlflow_ui.comando(5001)
+    destino = orden[orden.index('--backend-store-uri') + 1]
+    assert destino.startswith('sqlite:///') and (salidas_tmp / 'models' / 'mlflow.db').resolve().as_posix() in destino
+    assert orden[-2:] == ['--port', '5001']
+
+
 def test_predice_una_probabilidad_para_un_cliente(con, salidas_tmp):
     train.entrenar(con, usar_mlflow=False, verbose=False)
     predict._CACHE.clear()

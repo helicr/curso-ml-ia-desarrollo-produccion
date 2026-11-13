@@ -24,7 +24,7 @@ cd 04-Proyecto-Base
 python -m ia_mlops.pipeline
 python -m pytest -q -m "not lento"
 ```
-Esperado: `108 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
+Esperado: `127 passed, 4 deselected`. Comprueba que existen `models/modelo_mlflow/` y `models/metadatos.json`: sin ellos la API no tiene qué servir.
 
 ## 1. Arrancar la API (25 min)
 **Terminal 1** (déjala abierta; aquí verás el registro):
@@ -161,7 +161,7 @@ Esperado: la comparación coincide también contra el **contenedor**; `docker lo
 
 **Preguntas:** ¿cuánto ocupa la imagen? ¿Qué pasa con la construcción si cambias una línea de `ia_mlops/` y vuelves a ejecutar `docker build`: qué capas se reutilizan? ¿Por qué el contenedor escucha en `0.0.0.0` y no en `127.0.0.1`?
 
-*Estado de esta práctica:* el Dockerfile y los comandos se verificaron en GitHub Actions, no en un Codespace. Si algo difiere, **anótalo con el mensaje exacto**: es información valiosa.
+*Estado de esta práctica:* el Dockerfile y los comandos se verificaron en GitHub Actions y en un Codespace real del curso (12/11/2026, máquina de 2 núcleos; capturas en la guía de Codespaces). Si algo difiere, **anótalo con el mensaje exacto**: es información valiosa.
 
 ## 5. El primer workflow (10 min)
 La plantilla es `deploy/github-actions/ci.yml`. Para probarla necesitas un repositorio **tuyo** en GitHub:
@@ -184,3 +184,5 @@ El workflow no publica nada ni usa secretos. **Pregunta:** ¿qué pasos del work
 
 ## Para quien termina antes
 Empieza la tarea: [`../tarea/README.md`](../tarea/README.md). Lo más útil: reentrenar con una variable nueva y ver cómo la API lo detecta en `/listo`.
+
+**Laboratorio extra** (si sobra tiempo o el grupo lo pide): [de la ingesta a la explotación](laboratorio-extra-de-punta-a-punta.md). Recorre los pipelines uno a uno, pone el modelo en producción, saca la lista de la campaña puntuando a todos los clientes y cierra el ciclo con datos nuevos.

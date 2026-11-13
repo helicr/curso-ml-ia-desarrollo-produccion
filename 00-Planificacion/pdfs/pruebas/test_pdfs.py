@@ -242,8 +242,8 @@ class TestPdfGenerados:
 
     def test_s0_diapositivas_en_orden(self):
         ruta = pdf('S0', '01-presentacion-principal.pdf')
-        for n in (1, 14, 29):
-            assert f'{n} / 29' in texto_pagina(ruta, n).replace('  ', ' ')
+        for n in (1, 14, 31):
+            assert f'{n} / 31' in texto_pagina(ruta, n).replace('  ', ' ')
 
     def test_presentacion_de_instalacion_sin_botones_de_copiar(self):
         ruta = pdf('S0', '02-tu-equipo-listo-para-s1.pdf')
@@ -271,7 +271,7 @@ class TestPdfGenerados:
     def test_s2_guia_de_codespaces_sin_controles_de_la_pagina(self):
         from pypdf import PdfReader
         paginas = PdfReader(str(pdf('S2', '02-guia-de-codespaces.pdf'))).pages
-        assert len(paginas) == 24
+        assert len(paginas) == 38          # con las diapositivas «Así se ve» del Codespace real (12/11/2026)
         todo = ' '.join(p.extract_text() or '' for p in paginas)
         for sobra in ('⧉', 'Marcar como hecho', 'Copiar todo', 'pasos marcados', 'en este navegador',
                       'C copia todo el bloque', 'file:///'):
@@ -284,7 +284,7 @@ class TestPdfGenerados:
     def test_s2_conserva_las_cifras_reales_de_la_practica(self):
         from pypdf import PdfReader
         todo = ' '.join(p.extract_text() or '' for p in PdfReader(str(pdf('S2', '01-presentacion-s2.pdf'))).pages)
-        assert '0.8278889191932133' in todo.replace(' ', '') and '108 passed' in todo
+        assert '0.8278889191932133' in todo.replace(' ', '') and '127 passed' in todo   # la diapositiva 3 de S2
 
     @pytest.mark.parametrize('archivo,paginas', [('03-contenedores-el-modelo-mental.pdf', 16), ('04-del-dockerfile-a-produccion.pdf', 17)])
     def test_s2_presentaciones_de_contenedores_sin_controles_y_con_lo_no_probado(self, archivo, paginas):
@@ -310,7 +310,9 @@ class TestPdfGenerados:
         assert 'Exited (137)' in modelo and 'Failed to connect' in modelo and 'Connection reset by peer' in modelo
         assert '52.44MB' in produccion and '178B' in produccion and 'CACHED' in produccion and 'USER 10001' in produccion
         guia, lab = texto('08-guia-practica-de-contenedores.pdf'), texto('09-laboratorio-romper-a-proposito.pdf')
-        assert 'docker run --rm' in guia and 'docker build --progress=plain' in guia and 'Exited (137)' in guia
+        # pypdf extrae los bloques de código sin espacios entre palabras («dockerrun--rm»): se compara sin espacios
+        compacta = guia.replace(' ', '')
+        assert 'dockerrun--rm' in compacta and 'dockerbuild--progress=plain' in compacta and 'Exited (137)' in guia
         for n in range(1, 6):
             assert f'Rotura {n}' in lab, n
         assert 'Todavía no se han ejecutado en un Codespace' in guia and 'Todavía no se han ejecutado en un Codespace' in lab

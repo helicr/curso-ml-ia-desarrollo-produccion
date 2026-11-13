@@ -1,10 +1,12 @@
 # Guion del docente · S1 (240 min)
 
+**Presentación:** `01-Sesiones/S1-Datos-y-Entrenamiento/slides/index.html`
+
 Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ritmo y qué comprobar.
 
 ## 0:00–0:30 · Revisión de entorno (diap. 1–3)
 - Abrir, comprobar audio. Mostrar agenda (diap. 2) en 1 minuto.
-- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `34 passed`.
+- Diap. 3: cada persona ejecuta `conda activate env-ia-mlops`, `python ../03-Entorno/conda/prueba_de_humo.py` y `python -m pytest -q` dentro de `04-Proyecto-Base`. Esperado: `131 passed`.
 - Anotar quién no pasa y el mensaje de error (checklist). Quien falle: Codespaces o pareja. **No se detiene la sesión.**
 - Si pasan los 30 min y hay más de un tercio sin entorno: recortar teoría (diap. 11 y 16), no práctica.
 
@@ -12,9 +14,9 @@ Las diapositivas tienen notas del ponente (tecla **S**). Este guion añade el ri
 | Min | Diap. | Mensaje clave | Pregunta a la audiencia |
 |---|---|---|---|
 | 3 | 4 | Una pregunta de negocio, no de estadística. | ¿Quién decide a quién se le escribe? |
-| 6 | 5 | Cuatro capas, cada una regenerable. Clic en cada capa. | ¿Por qué FS va antes que ML? |
+| 6 | 5 | El operacional (la fuente, solo se lee) y cuatro capas, cada una regenerable. Clic en cada capa. | ¿Por qué FS va antes que ML? |
 | 4 | 6 | El dato real viene sucio; los contadores justifican MASTER. | ¿Cuál de estos problemas rompería un promedio? |
-| 4 | 7 | El linaje permite volver al Excel. | ¿Qué pasa si limpiamos sobre RAW? |
+| 4 | 7 | RAW copia el sistema operacional (`retail.db`); el linaje (`linea_id`, `_carga_id`) permite volver a la línea de origen. | ¿Qué pasa si limpiamos sobre RAW? |
 | 4 | 8 | Nada se pierde: 1 033 036 + 34 335 = 1 067 371. | ¿Qué haría el pipeline si no cuadra? |
 | 3 | 9 | Reglas duras, alertas e informativas. | ¿Una alerta detiene el pipeline? |
 | 8 | 10 | **Regla de oro.** Mover el deslizador y ver qué se usa. | ¿Dónde estaría la fuga si usáramos la factura roja? |
@@ -32,6 +34,7 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 
 ## 3:45–4:00 · Entrega y cierre (diap. 18–20)
 - Tarea y rúbrica (diap. 18), errores frecuentes (19), avance de S2 (20).
+- Recordar los **dos entregables**: (1) la tarea de la variable nueva, sobre Online Retail II; (2) el **avance en S2** sobre su caso, Bank Marketing: RAW → MASTER → FS → ML, entrenamiento y métricas, como cuadernos (ver `02-Proyecto-Transversal/enunciado/README.md`). Recordar: `duration` se excluye y las filas de `bank-additional-full.csv` no se reordenan.
 - Recordar: evidencia = decisión escrita + comparación de dos ejecuciones + traducción a `.py`.
 - **Caso propio (Bank Marketing), ≈5 min dentro de estos 15. Propuesta, sin decidir** (punto 23 de `00-Planificacion/decisiones-y-pendientes.md`): con «Tu caso de S1 a S5» (`slides/caso-propio/`, diap. 2, 3, 6 y 10). Decir que **es otro trabajo distinto de la tarea**, que se entrega por avances (el 1 se presenta en S2) y que lo leen enteros en casa (`02-Proyecto-Transversal/alumno/tu-caso-bank-marketing.md`). Los 5 minutos salen de la diap. 18, porque la tarea ya está escrita en `tarea/README.md`: el reloj de la presentación cuenta 5 min en la diap. 18 y 10 en la 20 (cierre más caso propio), así que el total sigue en 240.
 - Decir las fechas: sesiones los miércoles y viernes de 10:00 a 14:00 (hora de Perú); cada avance se entrega **a las 10:00 del día de la sesión en que se presenta** (avance 1 y tarea de S1: miércoles 18 de noviembre; 2: viernes 20; 3: miércoles 25; 4: viernes 27). Los avances 2 y 4 solo tienen dos días desde la sesión anterior: avisar.
@@ -44,5 +47,5 @@ Ritmo: 10 preparar · 30 cuaderno 01 · 25 cuaderno 02 · **10 pausa** · 25 cua
 |---|---|
 | El cuaderno 02 falla | Falta el 01: ejecutar desde el 01 (`Run All`). |
 | Kernel sin paquetes | Seleccionar `env-ia-mlops` (esquina superior derecha). |
-| MLflow UI no abre | `mlflow ui --backend-store-uri sqlite:///models/mlflow.db` desde `04-Proyecto-Base`. |
+| MLflow UI no abre o sale vacía | Desde `04-Proyecto-Base`: `python -m ia_mlops.mlflow_ui` (con `--comprobar` dice qué hay). En la web, **Model training**. |
 | Números distintos a la diapositiva | Esperado: la muestra da valores menores que el dato completo. |

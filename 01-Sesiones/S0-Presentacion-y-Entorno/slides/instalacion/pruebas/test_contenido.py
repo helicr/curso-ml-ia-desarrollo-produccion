@@ -82,8 +82,8 @@ def test_las_salidas_reales_no_contienen_rutas_ni_usuario_del_equipo_de_captura(
 
 def test_lo_que_prometen_los_textos_coincide_con_las_salidas_reales():
     assert 'HUMO OK' in SALIDAS['humo']['salida'].splitlines()[-1]
-    assert re.search(r'\b30 passed, 4 deselected\b', SALIDAS['pytest_rapido']['salida'])
-    assert re.search(r'\b34 passed\b', SALIDAS['pytest_total']['salida'])
+    assert re.search(r'\b127 passed, 4 deselected\b', SALIDAS['pytest_rapido']['salida'])
+    assert re.search(r'\b131 passed\b', SALIDAS['pytest_total']['salida'])
     assert 'LISTO PARA S1' in SALIDAS['verificar']['salida']
     assert '(41188, 21)' in SALIDAS['csv']['salida']
     assert SALIDAS['sqlite']['salida'].strip().endswith('(1,)')
@@ -91,7 +91,7 @@ def test_lo_que_prometen_los_textos_coincide_con_las_salidas_reales():
     assert C.ENTORNO in SALIDAS['py_exe']['salida']
     assert 'Uvicorn running on http://127.0.0.1:5000' in SALIDAS['mlflow_ui']['salida']
     ui = ' '.join(C.PASOS[[p['id'] for p in C.PASOS].index('E2')]['esperado'].split())
-    assert '30 passed, 4 deselected' in ui and '34 passed' in ui
+    assert '127 passed, 4 deselected' in ui and '131 passed' in ui
 
 
 def test_el_verificador_capturado_no_tiene_fallas_ni_avisos():
@@ -102,7 +102,7 @@ def test_el_verificador_capturado_no_tiene_fallas_ni_avisos():
 
 def test_la_fecha_de_las_salidas_es_la_del_contenido():
     meta = json.loads((AQUI / 'salidas-reales.json').read_text(encoding='utf-8'))['meta']
-    d, m, a = C.FECHA.split('/')
+    d, m, a = C.FECHA_SALIDAS.split('/')
     assert meta['fecha'] == f'{a}-{m}-{d}'
 
 

@@ -17,4 +17,6 @@ Migrar el caso propio a GCP y desplegar el servicio. Documentar inventario, vali
 ## Evidencia
 Avance en S4: datos migrados y validados, servicio desplegado y registros.
 
-Guía: `03-Entorno/guias/migracion-on-premise-a-gcp.md`. Laboratorio y materiales: pendientes de implementación y validación.
+Guía: `03-Entorno/guias/migracion-on-premise-a-gcp.md`. Laboratorio y materiales: pendientes de implementación y validación,
+salvo el **laboratorio de Kubernetes**: `03-Entorno/guia-docker-kubernetes-gke/` (kind en el Codespace, probado el 13/11/2026, con
+capturas, chuleta y ejercicios; GKE explicado, sin ejecutar) y los manifiestos `04-Proyecto-Base/deploy/kubernetes/`.

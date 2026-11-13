@@ -5,8 +5,9 @@ núcleo = ML clásico a producción; IA generativa y relacionado = opcional; Doc
 orquestación con GitHub Actions. No es una copia visual exacta de los HTML exploratorios anteriores.
 
 No incluye el PDF original ni las versiones anteriores alternativas.
-S0, S1 y S2 están completas (presentaciones, documentos, laboratorio, tarea, rúbrica, proyecto base y entorno) y validadas en Linux; nada se ha probado en Windows real.
-S3–S5 solo tienen README. El Codespace del curso (`.devcontainer/`) está escrito pero **sin probar**; de los workflows de GitHub Actions solo hay la plantilla de CI de S2 (verificada) y la validación de Windows (sin ejecutar); los de publicación y despliegue no están implementados.
+S0, S1 y S2 están completas (presentaciones, documentos, laboratorio, tarea, rúbrica, proyecto base y entorno) y validadas en Linux. El proyecto base de S1 (base operacional, cinco cuadernos y cuatro pipelines) se validó además en Windows el 11/11/2026; la instalación limpia en Windows sigue sin probarse.
+S3–S5 solo tienen README. El Codespace del curso (`.devcontainer/`: Miniconda con `env-ia-mlops`, Docker en Docker, kubectl, kind y `verificar.sh`) está escrito pero **sin probar**; falta confirmar la versión de `kind` (`KIND_VERSION` en `postcreate.sh`). De los workflows de GitHub Actions solo hay la plantilla de CI de S2 (verificada) y las validaciones de Windows y del Codespace (sin ejecutar); los de publicación y despliegue no están implementados.
+El día 1 (S0 + S1, 6 horas) tiene guion de alumno y de profesor: `01-Sesiones/D01-Guion-Alumno.html` y `D01-Guion-Profesor.html` (se generan con `00-Planificacion/guion-d01/generar.py`).
 Los scripts `instalar_entorno.*` instalan programas con winget y nunca se ejecutaron en Windows real.
 
 La presentación principal (`slides/index.html`) se rehízo el 08/11/2026 (26 diapositivas; el 09/11/2026 pasó a 29, ver más abajo): diapositivas interactivas en un solo archivo
@@ -22,7 +23,8 @@ El 09/11/2026 se añadieron tres diapositivas a la Parte B para explicar, antes 
 la 15 (matriz herramienta × sesión, con «para qué sirve» y la guía de uso de cada una), la 16 (qué estrena cada sesión y qué debe estar listo antes) y la 18
 (una guía de uso por herramienta). La Parte B sigue sumando 70 min. Comprobado en Chrome sin conexión: 29 diapositivas recorridas con →, sin errores de
 consola ni peticiones externas, barra de tiempo con salto correcto e impresión a PDF de 29 páginas. Las comprobaciones de arriba (PDF de 26 páginas, 22 interacciones)
-corresponden a la versión de 26 diapositivas. Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
+corresponden a la versión de 26 diapositivas. El 11/11/2026 se añadieron dos diapositivas de cierre (28 y 29) que presentan los dos casos: Online Retail II (el que desarrolla el instructor) y Bank Marketing (la tarea de los alumnos), con qué se hará, qué hay en cada archivo y dónde está el CSV. La presentación pasó a 31 diapositivas; el cierre sigue sumando 10 min (3 + 3 + 3 + 1). Revisadas en Edge, sin desbordes ni errores de consola.
+Las marcas de la matriz siguen `00-Planificacion/programa.md` y son orientativas; no se ha revisado la presentación en un proyector.
 
 `slides/anexos/index.html` es la presentación de consulta con los anexos A–F (React y ECharts, licencias en `slides/anexos/licencias/`).
 El 10/11/2026 se le quitaron las 26 diapositivas de la edición anterior, que la presentación principal ya sustituye: quedan el separador y los seis anexos (7 diapositivas).
@@ -54,6 +56,33 @@ pero `pdftoppm` avisa de «Bad bounding box»; no afecta a la lectura). Comproba
 (tamaño, número de páginas = diapositivas, sin `file:///`, sin palabras internas) y 120 pruebas automáticas en `00-Planificacion/pdfs/pruebas/` (se ejecutan con un Python que tenga `pypdf`, no con `env-ia-mlops`). No se abrieron en
 otros visores que Chrome y poppler (no en Acrobat ni en el visor de Windows) y no se ha comprobado la impresión en papel. Excluidos a propósito: la guía interactiva
 de Windows (`03-Entorno/guia-instalacion/`, ya cubierta por «Preparación paso a paso» y «Tu equipo listo para S1»), los anexos de consulta y `verificar_s1.py`.
+
+El 11/11/2026 el proyecto base (`04-Proyecto-Base/`) pasó a ingerir desde una **base operacional simulada**: el cuaderno nuevo `00_pipeline_operacional.ipynb`
+(y `ia_mlops/operacional.py`) deriva del archivo de UCI `data/external/retail.db` (clientes, productos, facturas, lineas_factura), y RAW es ahora la copia fiel
+de esas cuatro tablas (`raw_*` + `raw_carga` con huella por tabla). La regla R06 pasó a ser «facturas con líneas en fechas distintas» (alerta: 1 en la muestra, 83 en el completo).
+Comprobado con la muestra y con el dato completo (1 067 371 líneas): MASTER, FS y ML son idénticos a los de antes, RAW reconstruye cada línea original y la muestra regenerada
+conserva su sha256; 38 pruebas pasan (incluida la equivalencia cuaderno = paquete = jupytext). Los cinco cuadernos y los módulos `.py` llevan más teoría (capas, fuga, partición,
+métricas, MLflow) y el 00 una introducción con diagramas (`docs/img/`, generados con `generar_diagramas.py`). Se actualizaron las diapositivas 7 y el mapa de capas de S1,
+la guía de laboratorio, la teoría, el guion y `07-Recursos/guias/sqlite.md`.
+También el 11/11/2026: se corrigió una fuga en `es_reino_unido` (usaba `master_clientes.pais`, que resume toda la historia del cliente; ahora es el país más frecuente
+**antes del corte**). No cambia ningún valor de FS (13 clientes con varios países, 0 filas afectadas), y la prueba de fuga ahora borra también `master_clientes`.
+Se actualizaron los recuentos de pruebas en S0 y S1 (34 rápidas y 38 completas; salidas recapturadas en Windows en `salidas-reales.json`), las diapositivas de S1
+(capa OPERACIONAL, cinco cuadernos, linaje) y la de capas de S0, y se regeneraron las diapositivas de instalación, la guía rápida de S0, los guiones D01, los índices de sesión
+y **los 19 PDF de S0 y S1** (con Edge y el `pandoc` de `pypandoc`; `--comprobar` correcto y 75 pruebas del generador en verde). El generador de PDF ahora incrusta las imágenes
+locales de los Markdown (el `README` del proyecto base lleva el diagrama del recorrido).
+Después, el cuaderno 03 recibió un diagrama de train/valid/test (`docs/img/particiones.png`), cómo se cargan las particiones y la trayectoria de un cliente;
+y el 04, un diagrama de MLflow (`docs/img/mlflow.png`), lectura del registro con `search_runs`, gráficas (AUC por partición, ROC, aciertos por decil, probabilidades
+por clase; en `reports/figures/`), recuperación del modelo desde MLflow (predice igual) y una guía paso a paso de `mlflow ui`. `docs/de-notebook-a-python.md`
+documenta el mapa cuaderno → módulo, los comandos de Windows y la reproducibilidad: dos ejecuciones del paquete desde cero y la traducción jupytext dieron
+tablas, métricas y huella idénticas.
+Finalmente, el paquete se dividió en **cuatro pipelines independientes e idempotentes**: `pipeline_ingesta_raw`, `pipeline_ingesta_master`, `pipeline_ml`
+(FS + ML) y `pipeline_train` (`ia_mlops/control.py`: cada uno comprueba su entrada y, si su huella de entrada —datos + código + configuración— no cambió,
+no hace nada; `--forzar` lo rehace; registro en `control_pipelines`). `pipeline.py` queda como orquestador sin lógica; la base operacional es un paso aparte
+(`python -m ia_mlops.operacional`). Repetir el entrenamiento ya no duplica ejecuciones en MLflow. 44 pruebas en verde (40 rápidas), con 6 nuevas de
+independencia e idempotencia; recuentos y salidas reales actualizados en S0 y S1 y PDF regenerados. También se corrigió `generar_indices.py`, que en Windows
+escribía enlaces con «\», y su prueba del número de diapositivas de S0 (31).
+
+Los datos de la tarea están en `02-Proyecto-Transversal/datos/` (Bank Marketing, caso de los alumnos; Default of Credit Card Clients, referencia), con `SHA256SUMS` y atribución CC BY 4.0. Falta el script de descarga y la base de referencia (RAW → MASTER → FS → ML) de la tarea.
 
 Las cifras y tarifas externas (McKinsey, FinOps, Stack Overflow, Cloud Run) no se han reverificado
 tras el ajuste: revisarlas antes de impartir. Las salidas de las demos de terminal son ilustrativas, no capturas reales.

@@ -22,6 +22,7 @@ Cómo se hace cada tipo:
  - Documento (Markdown): pandoc (GFM) → HTML con el estilo de `estilo-documento.css` → A4 con pie de página.
 """
 import argparse
+import base64
 import html
 import io
 import os
@@ -325,11 +326,31 @@ def enlaces_al_repositorio(cuerpo, origen):
     return re.sub(r'<a href="([^"]*)"', cambiar, cuerpo)
 
 
+def imagenes_incrustadas(cuerpo, origen):
+    """Las imagenes locales (rutas relativas al Markdown) se incrustan como data: URI: el documento se carga sin ruta base
+    y en el PDF no puede quedar ninguna ruta file:///."""
+    base = PurePosixPath(origen).parent
+    tipos = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.gif': 'image/gif'}
+
+    def cambiar(m):
+        src = html.unescape(m.group(2))
+        if re.match(r'^(https?:|data:)', src, re.I):
+            return m.group(0)
+        ruta = RAIZ / os.path.normpath((base / unquote(src)).as_posix())
+        tipo = tipos.get(ruta.suffix.lower())
+        if not tipo or not ruta.is_file():
+            raise FileNotFoundError(f'{origen}: no se encuentra la imagen {src}')
+        return f'{m.group(1)}data:{tipo};base64,{base64.b64encode(ruta.read_bytes()).decode()}{m.group(3)}'
+
+    return re.sub(r'(<img\b[^>]*\bsrc=")([^"]+)(")', cambiar, cuerpo)
+
+
 def pagina_documento(sesion, e):
     texto = (RAIZ / e['origen']).read_text(encoding='utf-8')
     cuerpo = pandoc_html(texto)
     cuerpo = resaltar(cuerpo)
     cuerpo = enlaces_al_repositorio(cuerpo, e['origen'])
+    cuerpo = imagenes_incrustadas(cuerpo, e['origen'])
     css = (AQUI / 'estilo-documento.css').read_text(encoding='utf-8') + '\n' + estilo_resaltado()
     grupo = C.GRUPOS[e['grupo']][0]
     cabecera = (f'<div class="cabecera"><div class="curso">{esc(C.CURSO)} · {esc(C.INSTITUCION)}</div>'

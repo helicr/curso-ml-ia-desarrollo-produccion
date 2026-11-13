@@ -27,9 +27,10 @@ El cliente `sqlite3` del entorno se comprobó en Linux; en Windows debería qued
 conda activate env-ia-mlops
 cd 04-Proyecto-Base
 pip install -e .
+python -m ia_mlops.operacional
 python -m ia_mlops.pipeline
 ```
-Después tendrás `data\processed\curso.db`. Borrarla y volver a ejecutar el pipeline la deja como nueva.
+Después tendrás `data\external\retail.db` (el operacional) y `data\processed\curso.db` (las capas). Borrarlas y volver a ejecutar las deja como nuevas.
 
 ### Comprobación de S0 (checklist 7)
 En cualquiera de los cuatro sitios, la consulta debe devolver una fila con un `1`:
@@ -111,7 +112,7 @@ Los comandos que empiezan por **punto** son del cliente (no llevan `;`); las sen
 
 Consultas sin entrar en el cliente, útiles en scripts:
 ```text
-sqlite3 -header -column data/processed/curso.db "SELECT COUNT(*) AS filas FROM raw_online_retail_ii;"
+sqlite3 -header -column data/processed/curso.db "SELECT COUNT(*) AS filas FROM raw_lineas_factura;"
 sqlite3 -header -csv data/processed/curso.db "SELECT * FROM ml_particiones;" > particiones.csv
 ```
 **Windows:** CMD y PowerShell no entienden `sqlite3 mi.db < crear.sql` igual que Linux (PowerShell no admite `<`). Entra con `sqlite3 mi.db` y usa `.read crear.sql`.
@@ -138,11 +139,13 @@ mi.close()
 ```
 El proyecto ya trae utilidades en `ia_mlops/db.py` (`conectar`, `ejecutar_script`, `escalar`) y la ruta de la base en `ia_mlops/config.py` (`CURSO_DB` la cambia).
 
-## Las tablas del caso (`curso.db`)
-Prefijos por capa. Detalle y diagrama en `04-Proyecto-Base/docs/modelo-de-datos.md`.
+## Las tablas del caso
+Dos bases: `data/external/retail.db` (el sistema operacional simulado, la fuente) y `data/processed/curso.db` (las capas, con prefijo por capa).
+Detalle y diagramas en `04-Proyecto-Base/docs/modelo-de-datos.md`.
 | Capa | Tablas |
 |---|---|
-| RAW | `raw_online_retail_ii`, `raw_carga` |
+| OPERACIONAL (`retail.db`) | `clientes`, `productos`, `facturas`, `lineas_factura`, `origen_simulacion` |
+| RAW | `raw_clientes`, `raw_productos`, `raw_facturas`, `raw_lineas_factura`, `raw_carga` |
 | MASTER | `master_clientes`, `master_productos`, `master_facturas`, `master_lineas`, `master_descartes`, `master_calidad` |
 | FS | `fs_cliente_corte`, `fs_catalogo` |
 | ML | `ml_dataset`, `ml_particiones` |
@@ -152,7 +155,7 @@ Prefijos por capa. Detalle y diagrama en `04-Proyecto-Base/docs/modelo-de-datos.
 ### Consultas para probar (con la muestra)
 ```sql
 -- ¿Cuánto hay en cada capa?
-SELECT COUNT(*) FROM raw_online_retail_ii;      -- 23 070
+SELECT COUNT(*) FROM raw_lineas_factura;        -- 23 070
 SELECT COUNT(*) FROM master_lineas;             -- 22 117
 SELECT COUNT(*) FROM master_descartes;          --    953   (23 070 = 22 117 + 953)
 
@@ -173,7 +176,7 @@ GROUP BY f.cliente_id ORDER BY gasto DESC LIMIT 3;
 -- ¿Qué variables existen y qué significan?
 SELECT * FROM fs_catalogo;
 ```
-Con el dato **completo** (`python -m ia_mlops.pipeline --fuente completo`) las cifras son otras: es esperado.
+Con el dato **completo** (`python -m ia_mlops.operacional --fuente completo` y después `python -m ia_mlops.pipeline`) las cifras son otras: es esperado.
 
 ## Errores frecuentes
 | Mensaje o síntoma | Causa y solución |

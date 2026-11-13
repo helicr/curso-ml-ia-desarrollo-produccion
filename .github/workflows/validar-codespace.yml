@@ -1,0 +1,14 @@
+name: Validar Codespace del curso
+# Construye el devcontainer y ejecuta su verificación. Sirve para probar el Codespace sin abrir uno a mano.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ['.devcontainer/**', '03-Entorno/conda/environment.yml']
+jobs:
+  devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: devcontainers/ci@v0.3
+        with:
+          runCmd: bash .devcontainer/verificar.sh

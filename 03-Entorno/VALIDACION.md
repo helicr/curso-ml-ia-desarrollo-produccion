@@ -75,12 +75,27 @@ Todo lo de esta tabla se ejecutó de verdad; las salidas que muestran las diapos
 5. **Sin resolver:** `pip check` en el entorno recién creado avisa de que `databricks-sdk 0.73.0` (dependencia de `mlflow`) pide `protobuf<7` y hay `protobuf 7.35.1`. No afecta a las pruebas ni a MLflow en S1; si se quiere evitar el aviso, habría que fijar `protobuf` en `environment.yml` y repetir esta validación.
 6. **Aviso para S3 y S4:** `duckdb` y `sqlglot` no están en `environment.yml`; el caso de referencia los pide en su propio `requirements-dev.txt` (simulación de BigQuery en las pruebas).
 
+## Primera prueba en un Windows real (10/11/2026, equipo corporativo)
+Hallazgos de la primera ejecución de la guía en un equipo real (Windows 11 corporativo, con MKS Toolkit y varias copias de Git en el `PATH`):
+- `winget --version` → v1.29.380; `winget install --id Git.Git -e` instaló Git 2.56.0.4 (descarga, hash y permiso de administrador correctos).
+- **Quedó activo otro Git:** justo después, `git --version` seguía diciendo 2.47.1. Hay varias copias en el `PATH` (la del propio equipo va antes) y la terminal abierta no ve la nueva. Comprobar con `where git` y abrir una terminal nueva.
+- **`git config --global` falla** con `could not lock config file M:C:/Users/<usuario>/OneDrive - …/.gitconfig: Invalid argument`: la variable `HOME` está mal formada (`M:C:/…`, la deja MKS Toolkit). Solución sin tocar `HOME`: `setx GIT_CONFIG_GLOBAL "%USERPROFILE%\.gitconfig"` y abrir una terminal nueva (vale desde Git 2.32). Pendiente de confirmar en ese equipo y de añadir a «Si falla» de la guía.
+
+## Codespace del curso (12/11/2026, Codespace real)
+Primer Codespace abierto con `.devcontainer/devcontainer.json` (cuenta del instructor, rama `develop`, máquina de 2 núcleos, 8 GB, 32 GB). **Arrancó en modo recuperación** y después falló la instalación del entorno. Cuatro problemas, los cuatro corregidos y comprobados en el mismo Codespace:
+1. **La imagen `miniconda:3` pasó a Debian 13 («trixie»)** y la *feature* `docker-in-docker` no puede instalar Moby (su valor por defecto): `(!) The 'moby' option is not supported on debian 'trixie'`. Arreglo: `"moby": false` (instala Docker CE).
+2. **conda 26.7 ya no acepta `-c` ni `--override-channels` en `conda env create`** (`unrecognized arguments`), y la imagen trae `defaults` como canal.
+3. **Resolver los 480 paquetes de `environment.yml` supera la memoria** de la máquina de 2 núcleos: el sistema termina el proceso (SIGTERM, código 143) hacia los 7 GB de 7,9; también con `--dry-run` y solo con conda-forge. Por grupos se resuelve (unos 3,9 GB); todo junto, no. En la validación del 09/11 la máquina tenía 15 GB. Arreglo: `03-Entorno/conda/env-ia-mlops-linux-64.txt`, la lista **explícita** de paquetes para linux-64 (generada con `generar_bloqueo_linux.py`, que resuelve en cualquier equipo), y `conda create --file`: **108 s y 4,3 GB**, sin resolver. Una prueba vigila que la lista coincide con `environment.yml`.
+4. **La extensión de Python escribía `conda activate base`** en cada terminal nueva y la dejaba fuera de `env-ia-mlops`. Arreglo: `"python.terminal.activateEnvironment": false` (activa `.bashrc`).
+
+Resultado tras los arreglos: `postcreate.sh` en unos 2 minutos y `verificar.sh` con 0 fallos (docker 29.9.3 · kind v0.27.0 · kubectl v1.37.2 · Python 3.11.18). **El bloque 4 de S2 completo:** pipeline 31 s, `docker build` 78 s, imagen de 826 MB (con Docker 29, columna DISK USAGE; CONTENT SIZE 183 MB), `/listo` tras un primer `Connection reset by peer`, `comparar` con los cuatro caminos iguales contra el contenedor, `docker logs` en JSON e `id -u` = 10001; el puerto 8080 reenviado y privado, con `/docs` en el navegador. Capturas y tiempos: `03-Entorno/guia-codespaces/` (`capturas/`, `salidas-codespace.json`).
+
 ## Lo que NO se validó
 - **Windows real**, Windows PowerShell 5.1 y el `winget` real: los identificadores de paquete (`Git.Git`, `Anaconda.Miniconda3`, `DBBrowserForSQLite.DBBrowserForSQLite`,
   `Google.CloudSDK`, `Microsoft.VisualStudioCode`) y los de las extensiones de VS Code son de memoria.
 - La creación del entorno en Windows: solo se comprobó que **resuelve** (`--dry-run`), no que se instale ni funcione.
 - macOS: no resuelve con estas versiones (no es objetivo del curso).
 - Limitaciones de Wine: su `where.exe` no funciona, su `&&` falla y su `set /p` lee toda la entrada de una vez; se usaron sustitutos para probar la lógica.
-- Codespace del curso, `kind` y `kubectl`: pendientes.
+- Codespace del curso con una cuenta de **estudiante** (región, cuota) y la conexión desde VS Code de escritorio; el laboratorio de Kubernetes con `kind` y `kubectl` (las herramientas sí están).
 - De las diapositivas «Tu equipo listo para S1»: `winget`, «Anaconda Prompt», `code`, `Get-FileHash` y los clics en VS Code y en el navegador (Windows real); los tiempos son de Linux con buena conexión.
 - Google Cloud (autenticación, BigQuery, Cloud Run): no se probó contra la nube real.

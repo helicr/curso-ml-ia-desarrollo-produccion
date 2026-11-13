@@ -300,6 +300,12 @@ SESIONES = [
                 'archivo': '09-laboratorio-romper-a-proposito.pdf',
             },
             {
+                'origen': '01-Sesiones/S2-API-y-Docker/practica/laboratorio-extra-de-punta-a-punta.md',
+                'tipo': 'documento', 'grupo': 'alumno',
+                'titulo': 'Laboratorio extra: de la ingesta a la explotación',
+                'archivo': '10-laboratorio-extra-de-punta-a-punta.pdf',
+            },
+            {
                 'origen': '01-Sesiones/S2-API-y-Docker/README.md',
                 'tipo': 'documento', 'grupo': 'instructor',
                 'titulo': 'README de S2',

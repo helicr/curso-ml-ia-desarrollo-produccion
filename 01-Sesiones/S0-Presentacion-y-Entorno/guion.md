@@ -1,5 +1,8 @@
 # Guion S0 (120 min)
 
+**Presentación:** `01-Sesiones/S0-Presentacion-y-Entorno/slides/index.html`  
+**Equipo listo para S1 (copiar y pegar):** `01-Sesiones/S0-Presentacion-y-Entorno/slides/instalacion/index.html`
+
 Referencia: las diapositivas (notas del ponente con la tecla S). Tiempos tomados de la propia presentación.
 Cada diapositiva muestra su tiempo previsto en el índice (tecla O) y la barra inferior indica el minuto acumulado.
 
@@ -51,7 +54,12 @@ La slide 26 es opcional: dedicarle 1 min (hasta 2 si sobra tiempo). El diagnóst
 Los datos de las slides 15 y 16 están en el propio `index.html` (constantes `SOFT` y `SW_SES`); las marcas siguen `00-Planificacion/programa.md` y son orientativas.
 
 ## Cierre · 10 min
-Slides 28–29: completar diagnóstico, comunicar bloqueos, leer el caso cuando se publique, no improvisar el entorno.
+| Slide | Tema | Min |
+|---|---|---|
+| 28 | **Caso 1 · Online Retail II**, el que desarrollamos: qué haremos, qué hay en el archivo y dónde está (`04-Proyecto-Base/data/raw/muestra_online_retail_ii.csv`) | 3 |
+| 29 | **Caso 2 · Bank Marketing**, el de la tarea: qué harán, qué hay en el archivo y dónde está (`02-Proyecto-Transversal/datos/bank-marketing/bank-additional-full.csv`) | 3 |
+| 30 | Antes de S1: completar el diagnóstico, comunicar bloqueos, leer el caso de Bank Marketing (enunciado en `02-Proyecto-Transversal/`), no improvisar el entorno | 3 |
+| 31 | Nos vemos en S1 | 1 |
 
 ## Consulta (fuera del cómputo)
 `slides/anexos/index.html`: anexos A–F (estadísticas, herramientas, calculadora de coste de Cloud Run y fuentes), solo de consulta.
@@ -62,7 +70,7 @@ No se presentan en clase ni suman a las dos horas; la sesión se imparte con `sl
 
 ## Antes de impartir
 - Fusionar `develop` en `main` (hoy `main` está casi vacía). Mientras tanto, la slide 19, la guía interactiva y la guía rápida ya indican `git clone --branch develop`; tras fusionar bastará `git clone` a secas.
-- `environment.yml` ya está publicado (probado en Linux; en Windows, sin probar) y las slides 20 y 27 lo reflejan. Falta publicar el Codespace del curso, o ajustar las slides 23, 25 y 27, que lo marcan como pendiente.
+- `environment.yml` ya está publicado (probado en Linux; en Windows, sin probar) y las slides 20 y 27 lo reflejan. El Codespace del curso ya está escrito (`.devcontainer/`, con `verificar.sh`) y las slides 23, 25 y 27 lo reflejan, pero **no se ha probado en un Codespace real**: ejecuta antes el workflow «Validar Codespace del curso» (Actions) o ábrelo una vez.
 - Revisar precios y cifras externas (sección de fuentes).
 - Enviar la guía interactiva `03-Entorno/guia-instalacion/index.html` (solo Windows) antes de S0, para que la Parte B sea de comprobación y no de instalación.
 - Material de copiar y pegar para dejar el equipo listo para S1 (instalación en orden, creación del entorno, pruebas y verificador): `slides/instalacion/index.html` y `practica/guia-rapida-entorno-s0-s1.md`. Es el soporte para quien no llegue con el entorno hecho; la slide 20 de la presentación principal remite a él.

@@ -4,25 +4,28 @@
 --   3. Separar el modelo en clientes, productos, facturas y lineas.
 --   4. Marcar que lineas son ventas validas (no cancelaciones, cantidad y precio positivos, producto real).
 -- Todo lo descartado queda en master_descartes con su motivo: nada desaparece sin dejar rastro.
+-- La unidad de trabajo es la LINEA de RAW (raw_lineas_factura) con los datos de su cabecera (raw_facturas).
+-- MASTER no usa raw_clientes ni raw_productos: recalcula clientes y productos desde las lineas con sus propias reglas.
 
 DROP TABLE IF EXISTS temp.tmp_raw_limpio;
 CREATE TEMP TABLE tmp_raw_limpio AS
 SELECT
-    _id                                                AS raw_id,
-    TRIM(Invoice)                                      AS factura_id,
-    UPPER(TRIM(StockCode))                             AS codigo_producto,
-    NULLIF(UPPER(TRIM(Description)), '')               AS descripcion,
-    Quantity                                           AS cantidad,
-    InvoiceDate                                        AS fecha_hora,
-    Price                                              AS precio_unitario,
-    CAST(Customer_ID AS INTEGER)                       AS cliente_id,
-    TRIM(Country)                                      AS pais,
+    l.linea_id                                         AS raw_id,
+    TRIM(l.factura_id)                                 AS factura_id,
+    UPPER(TRIM(l.codigo_producto))                     AS codigo_producto,
+    NULLIF(UPPER(TRIM(l.descripcion)), '')             AS descripcion,
+    l.cantidad                                         AS cantidad,
+    l.registrada_en                                    AS fecha_hora,
+    l.precio_unitario                                  AS precio_unitario,
+    CAST(f.cliente_id AS INTEGER)                      AS cliente_id,
+    TRIM(f.pais)                                       AS pais,
     ROW_NUMBER() OVER (
-        PARTITION BY TRIM(Invoice), UPPER(TRIM(StockCode)), IFNULL(UPPER(TRIM(Description)), ''),
-                     Quantity, InvoiceDate, Price, IFNULL(Customer_ID, -1), TRIM(Country)
-        ORDER BY _id
+        PARTITION BY TRIM(l.factura_id), UPPER(TRIM(l.codigo_producto)), IFNULL(UPPER(TRIM(l.descripcion)), ''),
+                     l.cantidad, l.registrada_en, l.precio_unitario, IFNULL(f.cliente_id, -1), TRIM(f.pais)
+        ORDER BY l.linea_id
     )                                                  AS rn
-FROM raw_online_retail_ii;
+FROM raw_lineas_factura l
+LEFT JOIN raw_facturas f ON f.factura_id = l.factura_id;
 
 INSERT INTO master_descartes (raw_id, motivo)
 SELECT raw_id, 'duplicado_exacto' FROM temp.tmp_raw_limpio WHERE rn > 1;
@@ -65,7 +68,7 @@ FROM (
     FROM temp.tmp_raw_ok GROUP BY codigo_producto, descripcion
 ) WHERE rn = 1;
 
--- Facturas: una por numero. Si una factura trajera datos contradictorios, la regla de calidad R06 lo avisa.
+-- Facturas: una por numero, con la fecha de su primera linea. La regla de calidad R06 avisa de las facturas cuyas lineas tienen fechas distintas.
 INSERT INTO master_facturas (factura_id, cliente_id, fecha_factura, pais, es_cancelacion)
 SELECT factura_id, MAX(cliente_id), MIN(fecha_hora), MIN(pais),
        CASE WHEN factura_id LIKE 'C%' THEN 1 ELSE 0 END

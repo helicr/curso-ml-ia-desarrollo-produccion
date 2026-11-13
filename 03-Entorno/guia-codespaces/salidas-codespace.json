@@ -1,0 +1,33 @@
+{
+ "meta": {
+  "fecha": "2026-11-12",
+  "maquina": "2-core · 8GB RAM · 32GB",
+  "rama": "develop",
+  "region": "Europe West (la que propuso GitHub desde España)",
+  "como": "Codespace real del curso abierto con la cuenta del instructor; tiempos medidos desde fuera del navegador y salidas leídas en la terminal y en /workspaces/.codespaces/.persistedshare/creation.log. Las capturas están en capturas/.",
+  "nota": "Primero falló (modo de recuperación) con el devcontainer anterior; estos datos son tras los arreglos del commit «Codespace del curso: arreglos tras abrirlo por primera vez»."
+ },
+ "tiempos_segundos": {
+  "crear_y_conectar_primera_vez": 180,
+  "reconstruir_contenedor": 120,
+  "postcreate_kind_y_entorno": 112,
+  "crear_env_ia_mlops_desde_la_lista": 108,
+  "pipeline": 31,
+  "docker_build_primera_vez": 78,
+  "comparar": 12
+ },
+ "verificar_sh": [
+  "[OK   ] docker       cliente 29.9.3 · servidor 29.9.3",
+  "[OK   ] hello        Unable to find image 'hello-world:latest' locally",
+  "[OK   ] kind         kind v0.27.0 go1.23.6 linux/amd64",
+  "[OK   ] kubectl      Client Version: v1.37.2",
+  "[OK   ] python       Python 3.11.18",
+  "Fallos: 0"
+ ],
+ "versiones": {"docker": "29.9.3", "kind": "v0.27.0", "kubectl": "v1.37.2", "python": "3.11.18"},
+ "imagen": {"disk_usage": "826MB", "content_size": "183MB"},
+ "id_u": "10001",
+ "primer_curl_listo": "curl: (56) Recv failure: Connection reset by peer",
+ "segundo_curl_listo": "{\"estado\":\"listo\"}",
+ "memoria_pico_mb": {"conda_env_create_resolviendo": 7121, "conda_create_desde_la_lista": 4353, "total_maquina": 7941}
+}

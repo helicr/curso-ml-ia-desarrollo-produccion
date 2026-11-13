@@ -1,7 +1,8 @@
 # Valida en un Windows real (runner de GitHub) lo que en el desarrollo solo se pudo probar en Linux.
 # Ejecutar: pestaña Actions -> "Validar entorno en Windows" -> Run workflow.
 #
-# ESTADO: escrito el 09/11/2026 y NO ejecutado todavia (el repositorio aun no esta subido con este archivo).
+# ESTADO: se ejecuta en cada push que toque 03-Entorno/. Hasta el 13/11/2026 fallaba siempre en windows-2022 por el paso
+# «Informacion del runner» (where winget sin winget dejaba ERRORLEVEL 1); windows-latest pasaba.
 # Revisa el resultado de cada paso y actualiza 03-Entorno/VALIDACION.md y las etiquetas de la guia.
 name: Validar entorno en Windows
 
@@ -38,6 +39,8 @@ jobs:
           ver
           echo winget:
           where winget || echo winget NO esta disponible en este runner
+          rem echo no reinicia ERRORLEVEL: sin esto el paso falla en los runners sin winget (windows-2022). Es solo informativo.
+          exit /b 0
 
       - name: Scripts en modo verificar - CMD
         shell: cmd

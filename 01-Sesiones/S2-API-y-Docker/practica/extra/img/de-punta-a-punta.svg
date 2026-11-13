@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" width="1200" height="470" font-family="system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif" role="img" aria-label="De la ingesta a la explotación: pipelines, modelo, servicio, explotación y ciclo con datos nuevos">
+  <defs>
+    <marker id="f" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#fcd34d"/></marker>
+    <marker id="g" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#34d399"/></marker>
+  </defs>
+  <rect width="1200" height="470" rx="18" fill="#031a33"/>
+  <text x="30" y="40" font-size="22" font-weight="800" fill="#eef6ff">De la ingesta a la explotación · laboratorio extra de S2</text>
+
+  <!-- fila 1: pipelines -->
+  <text x="130" y="82" font-size="13" font-weight="700" fill="#fcd34d" letter-spacing="1.5">1 · DATOS (los cuatro pipelines, uno a uno)</text>
+  <g font-size="14" fill="#eef6ff" text-anchor="middle">
+    <rect x="30" y="92" width="150" height="62" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="105" y="120" font-weight="800">Operacional</text><text x="105" y="140" font-size="12" fill="#a9c8ea">retail.db (el origen)</text>
+    <rect x="220" y="92" width="150" height="62" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="295" y="120" font-weight="800">RAW</text><text x="295" y="140" font-size="12" fill="#a9c8ea">ingesta_raw</text>
+    <rect x="410" y="92" width="150" height="62" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="485" y="120" font-weight="800">MASTER</text><text x="485" y="140" font-size="12" fill="#a9c8ea">ingesta_master + calidad</text>
+    <rect x="600" y="92" width="150" height="62" rx="12" fill="#0a3560" stroke="#1a5fa3"/><text x="675" y="120" font-weight="800">FS → ML</text><text x="675" y="140" font-size="12" fill="#a9c8ea">pipeline_ml</text>
+    <rect x="790" y="92" width="170" height="62" rx="12" fill="#123d1f" stroke="#34d399"/><text x="875" y="120" font-weight="800">Modelo</text><text x="875" y="140" font-size="12" fill="#a9c8ea">pipeline_train + MLflow</text>
+  </g>
+  <g stroke="#fcd34d" stroke-width="3" marker-end="url(#f)"><line x1="182" y1="123" x2="216" y2="123"/><line x1="372" y1="123" x2="406" y2="123"/><line x1="562" y1="123" x2="596" y2="123"/><line x1="752" y1="123" x2="786" y2="123"/></g>
+  <text x="1000" y="112" font-size="13" fill="#a9c8ea">control_pipelines:</text><text x="1000" y="130" font-size="13" fill="#a9c8ea">si la entrada no cambia,</text><text x="1000" y="148" font-size="13" fill="#a9c8ea">«sin cambios»</text>
+
+  <!-- fila 2: producción y explotación -->
+  <text x="30" y="200" font-size="13" font-weight="700" fill="#fcd34d" letter-spacing="1.5">2 · SERVIR Y EXPLOTAR</text>
+  <g font-size="14" fill="#eef6ff" text-anchor="middle">
+    <rect x="30" y="212" width="250" height="78" rx="12" fill="#0c3b6a" stroke="#2bb3ff"/><text x="155" y="242" font-weight="800">Servicio</text><text x="155" y="262" font-size="12" fill="#a9c8ea">API (uvicorn) o contenedor</text><text x="155" y="279" font-size="12" fill="#a9c8ea">/listo · /modelo · /predecir/lote</text>
+    <rect x="340" y="212" width="290" height="78" rx="12" fill="#0c3b6a" stroke="#2bb3ff"/><text x="485" y="242" font-weight="800">Explotación por lotes</text><text x="485" y="262" font-size="12" fill="#a9c8ea">corte de hoy · las 13 variables (SQL de FS)</text><text x="485" y="279" font-size="12" fill="#a9c8ea">todos los clientes, en lotes de 1000</text>
+    <rect x="690" y="212" width="270" height="78" rx="12" fill="#123d1f" stroke="#34d399"/><text x="825" y="242" font-weight="800">Lista de la campaña</text><text x="825" y="262" font-size="12" fill="#a9c8ea">reports/campana/campana_CORTE.csv</text><text x="825" y="279" font-size="12" fill="#a9c8ea">el 10 % con más probabilidad · deciles</text>
+  </g>
+  <g stroke="#fcd34d" stroke-width="3" marker-end="url(#f)"><line x1="282" y1="251" x2="336" y2="251"/><line x1="632" y1="251" x2="686" y2="251"/></g>
+  <path d="M875 156 L 875 176 L 262 176 L 262 206" stroke="#fcd34d" stroke-width="3" fill="none" marker-end="url(#f)"/>
+  <text x="560" y="170" font-size="12" fill="#fcd34d">models/modelo_mlflow + metadatos.json</text>
+  <text x="1000" y="236" font-size="13" fill="#a9c8ea">.json: corte, modelo,</text><text x="1000" y="254" font-size="13" fill="#a9c8ea">huella, origen</text><text x="1000" y="272" font-size="13" fill="#a9c8ea">(trazabilidad)</text>
+
+  <!-- fila 3: vigilar y ciclo -->
+  <text x="30" y="336" font-size="13" font-weight="700" fill="#fcd34d" letter-spacing="1.5">3 · VIGILAR Y CERRAR EL CICLO</text>
+  <g font-size="14" fill="#eef6ff" text-anchor="middle">
+    <rect x="30" y="348" width="300" height="88" rx="12" fill="rgba(251,191,36,.10)" stroke="#fbbf24"/><text x="180" y="378" font-weight="800">Vigilar</text><text x="180" y="398" font-size="12" fill="#a9c8ea">advertencias: valores que el modelo no vio</text><text x="180" y="415" font-size="12" fill="#a9c8ea">registros con id de petición</text>
+    <rect x="390" y="348" width="320" height="88" rx="12" fill="rgba(251,191,36,.10)" stroke="#fbbf24"/><text x="550" y="378" font-weight="800">Llegan datos nuevos</text><text x="550" y="398" font-size="12" fill="#a9c8ea">pipeline --fuente completo: cambia la entrada</text><text x="550" y="415" font-size="12" fill="#a9c8ea">→ se rehacen las capas → versión 2 en MLflow</text>
+    <rect x="770" y="348" width="400" height="88" rx="12" fill="#123d1f" stroke="#34d399"/><text x="970" y="378" font-weight="800">Redesplegar y comparar</text><text x="970" y="398" font-size="12" fill="#a9c8ea">reiniciar la API (o reconstruir la imagen)</text><text x="970" y="415" font-size="12" fill="#a9c8ea">nueva campaña --comparar-con la anterior</text>
+  </g>
+  <g stroke="#fcd34d" stroke-width="3" marker-end="url(#f)"><line x1="332" y1="392" x2="386" y2="392"/><line x1="712" y1="392" x2="766" y2="392"/></g>
+  <path d="M1172 380 L 1186 380 L 1186 58 L 105 58 L 105 88" stroke="#34d399" stroke-width="2.5" fill="none" stroke-dasharray="6 5" marker-end="url(#g)"/>
+  <text x="700" y="52" font-size="12" fill="#34d399">los datos nuevos entran por el origen: el ciclo vuelve a empezar</text>
+</svg>

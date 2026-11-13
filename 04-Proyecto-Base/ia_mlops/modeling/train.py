@@ -2,12 +2,39 @@
 
 Es la traduccion a Python de  notebooks/04_entrenamiento_y_seguimiento.ipynb.
 
-Lee ml_dataset, entrena tres modelos (referencia sin aprendizaje, regresion logistica y gradient boosting), elige el mejor
-segun la VALIDACION (AUC), lo evalua en test y guarda:
-  models/modelo.joblib       el modelo completo (preprocesamiento + clasificador)
+METODO
+    1. Cada modelo se entrena con train.  2. Se comparan con valid y se elige el de mayor AUC.
+    3. El elegido se mide en test UNA vez (test no se usa para elegir: dejaria de ser un examen sorpresa).
+
+MODELOS
+    referencia_sin_aprender  da a todos la tasa base de train (AUC 0,5): el minimo que hay que superar.
+    regresion_logistica      suma ponderada de variables -> probabilidad. Va en un Pipeline con imputar (mediana),
+                             log1p (comprime variables asimetricas) y escalar: el preprocesamiento viaja DENTRO del modelo,
+                             asi la API aplica exactamente el mismo.
+    gradient_boosting        muchos arboles pequenos en secuencia; cada uno corrige los errores de los anteriores.
+
+METRICAS (evaluar)
+    auc                      probabilidad de puntuar mas alto a un cliente que si compro que a uno que no (0,5 azar, 1 perfecto).
+    precision_media          calidad del orden mirando los positivos; se compara con tasa_base.
+    aciertos_en_el_10_mejor  de los clientes con el 10 % de probabilidades mas altas, cuantos compraron de verdad.
+
+MLFLOW: el cuaderno de laboratorio del proyecto
+    experimento   agrupa todos los intentos de un mismo problema: 'retencion-90d'.
+    ejecucion     (run) un entrenamiento concreto: una por modelo, mas 'MEJOR-<modelo>' para el elegido.
+    parametros    lo que se decide ANTES de entrenar (modelo, ventana, n_variables, huella_datos).
+    metricas      lo que se mide DESPUES, con el prefijo de la particion (valid_auc, test_auc...).
+    artefactos    archivos de la ejecucion: el modelo del mejor, con su firma (columnas de entrada y salida).
+    registro      (Model Registry) el modelo elegido se registra como 'retencion-90d': cada entrenamiento crea una VERSION nueva
+                  (1, 2, 3...) enlazada a su ejecucion. En S4 y S5 se le ponen alias (p. ej. 'produccion') y se hace rollback.
+    Donde se guarda: models/mlflow.db (backend store: experimentos, ejecuciones, parametros, metricas y registro; es el
+    tracking URI 'sqlite:///models/mlflow.db') y models/mlartifacts/ (artifact store: los archivos). Para verlo en el navegador:
+        python -m ia_mlops.mlflow_ui        (desde 04-Proyecto-Base; --port 5001 si el 5000 esta ocupado)
+
+SALIDAS
+  models/modelo.joblib       el modelo completo (preprocesamiento + clasificador), el que carga predict.py
   models/modelo_mlflow/      el mismo modelo en formato MLflow, con su FIRMA (el contrato de entrada que usa la API de S2)
-  models/metadatos.json      variables, particiones, huella de los datos, versiones de librerias
-  models/mlflow.db           seguimiento de MLflow (y models/mlartifacts/ con los modelos registrados)
+  models/metadatos.json      variables, particiones, huella de los datos, rangos de train, versiones de librerias (para reproducir)
+  models/mlflow.db          seguimiento de MLflow (y models/mlartifacts/ con los modelos registrados)
   reports/metricas.json      metricas de todos los modelos
 
 Uso:  python -m ia_mlops.modeling.train
@@ -35,6 +62,7 @@ from .. import config, db
 
 
 def cargar_datos(con):
+    """Lee ml_dataset y lo separa por particion (sin mezclar filas entre particiones). Devuelve (partes, tabla completa)."""
     df = pd.read_sql('SELECT * FROM ml_dataset', con)
     return {p: df[df['particion'] == p].reset_index(drop=True) for p in ('train', 'valid', 'test')}, df
 
@@ -46,6 +74,7 @@ def huella_datos(df):
 
 
 def modelos():
+    """Los tres modelos a comparar, sin entrenar. El preprocesamiento de la regresion logistica va dentro de su Pipeline."""
     log1p = FunctionTransformer(np.log1p, feature_names_out='one-to-one')
     return {
         'referencia_sin_aprender': DummyClassifier(strategy='prior'),
@@ -56,6 +85,7 @@ def modelos():
 
 
 def evaluar(modelo, X, y):
+    """Metricas de un modelo ya entrenado sobre una particion (ver METRICAS en la cabecera del modulo)."""
     prob = modelo.predict_proba(X)[:, 1]
     corte = max(1, int(round(len(y) * 0.10)))
     top = np.argsort(-prob)[:corte]
@@ -87,6 +117,7 @@ def rangos_de_entrenamiento(X):
 
 
 def entrenar(con=None, usar_mlflow=True, verbose=True):
+    """Entrena y compara los modelos, registra cada uno como ejecucion de MLflow y guarda el mejor con sus metadatos."""
     cierre = con is None
     con = con or db.conectar()
     partes, df = cargar_datos(con)
@@ -96,13 +127,14 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
         if len(partes[k]) == 0 or y[k].nunique() < 2:
             raise RuntimeError(f'La particion {k} esta vacia o tiene una sola clase: revisa los cortes de config.py.')
 
+    # MLflow: donde escribir (tracking URI) y en que experimento. El experimento se crea la primera vez con su carpeta de artefactos.
     mlflow = None
     if usar_mlflow:
         import mlflow
         import mlflow.sklearn
         config.MODELOS.mkdir(parents=True, exist_ok=True)
         mlflow.set_tracking_uri('sqlite:///' + (config.MODELOS / 'mlflow.db').as_posix())
-        nombre = 'retencion-90d'
+        nombre = config.EXPERIMENTO_MLFLOW
         if mlflow.get_experiment_by_name(nombre) is None:
             mlflow.create_experiment(nombre, artifact_location=(config.MODELOS / 'mlartifacts').resolve().as_uri())
         mlflow.set_experiment(nombre)
@@ -115,7 +147,7 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
         if verbose:
             print(f'  {nombre_modelo:26s} AUC valid {metricas["valid"]["auc"]:.3f} | test {metricas["test"]["auc"]:.3f}'
                   f' | precision media test {metricas["test"]["precision_media"]:.3f}')
-        if mlflow:
+        if mlflow:   # una ejecucion por modelo: parametros (lo decidido) y metricas (lo medido)
             with mlflow.start_run(run_name=nombre_modelo):
                 mlflow.log_param('modelo', nombre_modelo)
                 mlflow.log_param('ventana_objetivo_dias', config.VENTANA_OBJETIVO_DIAS)
@@ -125,10 +157,12 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
                     for k, v in m.items():
                         mlflow.log_metric(f'{p}_{k}', v)
 
+    # Se elige con VALID (nunca con test). La referencia solo sirve de minimo.
     mejor = max((n for n in resultados if n != 'referencia_sin_aprender'), key=lambda n: resultados[n]['valid']['auc'])
     modelo = ajustados[mejor]
 
-    if mlflow:
+    version_registrada = None
+    if mlflow:   # el elegido se guarda con el modelo como artefacto, su firma y un ejemplo de entrada, y se REGISTRA
         with mlflow.start_run(run_name=f'MEJOR-{mejor}'):
             mlflow.log_param('modelo', mejor)
             mlflow.log_param('huella_datos', huella_datos(df))
@@ -137,8 +171,15 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
                     mlflow.log_metric(f'{p}_{k}', v)
             firma = mlflow.models.infer_signature(X['train'].head(200), modelo.predict_proba(X['train'].head(200))[:, 1])
             # cloudpickle evita la verificacion de tipos de skops que MLflow 3 aplica a los arboles de scikit-learn.
-            mlflow.sklearn.log_model(modelo, name='modelo', signature=firma, serialization_format='cloudpickle',
-                                     input_example=X['train'].head(3))
+            # registered_model_name: ademas de guardarlo en la ejecucion, crea una version nueva en el registro de modelos.
+            info = mlflow.sklearn.log_model(modelo, name='modelo', signature=firma, serialization_format='cloudpickle',
+                                            input_example=X['train'].head(3), registered_model_name=config.MODELO_REGISTRADO)
+        version_registrada = int(info.registered_model_version)
+        cliente = mlflow.MlflowClient()
+        # etiquetas de la version: con que datos y con que resultado se eligio (se ven en la pestaña del modelo registrado)
+        for clave, valor in (('modelo', mejor), ('huella_datos', huella_datos(df)),
+                             ('valid_auc', f"{resultados[mejor]['valid']['auc']:.4f}")):
+            cliente.set_model_version_tag(config.MODELO_REGISTRADO, str(version_registrada), clave, valor)
 
     config.MODELOS.mkdir(parents=True, exist_ok=True)
     config.REPORTES.mkdir(parents=True, exist_ok=True)
@@ -161,9 +202,12 @@ def entrenar(con=None, usar_mlflow=True, verbose=True):
     (config.REPORTES / 'metricas.json').write_text(json.dumps({'mejor': mejor, 'modelos': resultados}, indent=2), encoding='utf-8')
     if verbose:
         print(f'  Mejor modelo: {mejor}. Guardado en {config.MODELOS / "modelo.joblib"}')
+        if version_registrada:
+            print(f'  Registrado en MLflow como «{config.MODELO_REGISTRADO}», version {version_registrada}.'
+                  ' Para verlo: python -m ia_mlops.mlflow_ui')
     if cierre:
         con.close()
-    return {'mejor': mejor, 'metricas': resultados, 'metadatos': metadatos}
+    return {'mejor': mejor, 'metricas': resultados, 'metadatos': metadatos, 'version_registrada': version_registrada}
 
 
 if __name__ == '__main__':

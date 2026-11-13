@@ -1,7 +1,7 @@
 """Los cuadernos SON los pipelines; el paquete ia_mlops es su traduccion a .py.
 Estas pruebas exigen que ambos produzcan EXACTAMENTE las mismas tablas y las mismas metricas.
 
-Son lentas (ejecutan los cuatro cuadernos): pytest -m lento   |   para omitirlas: pytest -m "not lento"
+Son lentas (ejecutan los cinco cuadernos): pytest -m lento   |   para omitirlas: pytest -m "not lento"
 """
 import json
 import os
@@ -18,12 +18,11 @@ from ia_mlops.modeling import train
 papermill = pytest.importorskip('papermill')
 pytestmark = pytest.mark.lento
 
-CUADERNOS = ['01_pipeline_raw_a_master', '02_pipeline_master_a_fs', '03_pipeline_fs_a_ml', '04_entrenamiento_y_seguimiento']
-TABLAS = [
-    ('raw_online_retail_ii', None), ('master_clientes', None), ('master_productos', None), ('master_facturas', None),
-    ('master_lineas', None), ('master_descartes', None), ('fs_catalogo', None), ('fs_cliente_corte', None),
-    ('ml_particiones', None), ('ml_dataset', None),
-]
+CUADERNOS = ['00_pipeline_operacional', '01_pipeline_raw_a_master', '02_pipeline_master_a_fs', '03_pipeline_fs_a_ml',
+             '04_entrenamiento_y_seguimiento']
+TABLAS_OPERACIONALES = ['clientes', 'productos', 'facturas', 'lineas_factura']
+TABLAS = ['raw_clientes', 'raw_productos', 'raw_facturas', 'raw_lineas_factura', 'master_clientes', 'master_productos',
+          'master_facturas', 'master_lineas', 'master_descartes', 'fs_catalogo', 'fs_cliente_corte', 'ml_particiones', 'ml_dataset']
 
 
 def _tabla(con, nombre):
@@ -31,31 +30,35 @@ def _tabla(con, nombre):
     return df.sort_values(list(df.columns)).reset_index(drop=True)
 
 
-def _comparar_bases(ruta_a, ruta_b):
+def _comparar(ruta_a, ruta_b, tablas, sin_fecha):
+    """Compara tablas enteras; las de sin_fecha, sin su columna de marca de tiempo."""
     a, b = db.conectar(ruta_a), db.conectar(ruta_b)
     try:
-        for nombre, _ in TABLAS:
+        for nombre in tablas:
             pd.testing.assert_frame_equal(_tabla(a, nombre), _tabla(b, nombre), obj=nombre)
-        # La calidad se compara sin la marca de tiempo; la carga, sin la fecha de carga.
-        pd.testing.assert_frame_equal(_tabla(a, 'master_calidad').drop(columns='evaluado_en'),
-                                      _tabla(b, 'master_calidad').drop(columns='evaluado_en'), obj='master_calidad')
-        pd.testing.assert_frame_equal(_tabla(a, 'raw_carga').drop(columns='cargado_en'),
-                                      _tabla(b, 'raw_carga').drop(columns='cargado_en'), obj='raw_carga')
+        for nombre, columna in sin_fecha.items():
+            pd.testing.assert_frame_equal(_tabla(a, nombre).drop(columns=columna), _tabla(b, nombre).drop(columns=columna), obj=nombre)
     finally:
         a.close(); b.close()
 
 
+def _comparar_bases(carpeta_a, carpeta_b):
+    """Compara la base operacional (retail.db) y la analitica (curso.db) de dos corridas."""
+    _comparar(carpeta_a[0], carpeta_b[0], TABLAS_OPERACIONALES, {'origen_simulacion': 'creada_en'})
+    _comparar(carpeta_a[1], carpeta_b[1], TABLAS, {'master_calidad': 'evaluado_en', 'raw_carga': 'extraido_en'})
+
+
 @pytest.fixture(scope='module')
 def corrida_cuadernos(tmp_path_factory):
-    """Ejecuta los cuatro cuadernos en orden con papermill, sobre carpetas temporales."""
+    """Ejecuta los cinco cuadernos en orden con papermill, sobre carpetas temporales."""
     base = tmp_path_factory.mktemp('cuadernos')
     os.environ['CURSO_SIN_PANTALLA'] = '1'
     raiz = config.RAIZ
     for nombre in CUADERNOS:
-        parametros = {'RUTA_DB': str(base / 'curso.db'), 'RUTA_MODELOS': str(base / 'models'), 'RUTA_REPORTES': str(base / 'reports')}
-        if nombre.startswith('01'):
-            parametros['FUENTE'] = 'muestra'
-        declarados = {'01_pipeline_raw_a_master': {'FUENTE', 'RUTA_DB'}, '02_pipeline_master_a_fs': {'RUTA_DB', 'RUTA_REPORTES'},
+        parametros = {'FUENTE': 'muestra', 'RUTA_OPERACIONAL': str(base / 'retail.db'), 'RUTA_DB': str(base / 'curso.db'),
+                      'RUTA_MODELOS': str(base / 'models'), 'RUTA_REPORTES': str(base / 'reports')}
+        declarados = {'00_pipeline_operacional': {'FUENTE', 'RUTA_OPERACIONAL'}, '01_pipeline_raw_a_master': {'RUTA_OPERACIONAL', 'RUTA_DB'},
+                      '02_pipeline_master_a_fs': {'RUTA_DB', 'RUTA_REPORTES'},
                       '03_pipeline_fs_a_ml': {'RUTA_DB', 'RUTA_REPORTES'}, '04_entrenamiento_y_seguimiento': {'RUTA_DB', 'RUTA_MODELOS', 'RUTA_REPORTES'}}[nombre]
         papermill.execute_notebook(str(raiz / 'notebooks' / f'{nombre}.ipynb'), str(base / f'{nombre}.ipynb'),
                                    parameters={k: v for k, v in parametros.items() if k in declarados},
@@ -63,8 +66,8 @@ def corrida_cuadernos(tmp_path_factory):
     return base
 
 
-def test_los_cuadernos_producen_las_mismas_tablas_que_el_paquete(corrida_cuadernos, ruta_db):
-    _comparar_bases(ruta_db, corrida_cuadernos / 'curso.db')
+def test_los_cuadernos_producen_las_mismas_tablas_que_el_paquete(corrida_cuadernos, ruta_operacional, ruta_db):
+    _comparar_bases((ruta_operacional, ruta_db), (corrida_cuadernos / 'retail.db', corrida_cuadernos / 'curso.db'))
 
 
 def test_los_cuadernos_producen_las_mismas_metricas_que_el_paquete(corrida_cuadernos, ruta_db, salidas_tmp):
@@ -95,13 +98,14 @@ def test_los_cuadernos_traducidos_a_py_con_jupytext_tambien_producen_lo_mismo(co
     for nombre in CUADERNOS:
         subprocess.run([sys.executable, '-m', 'jupytext', '--to', 'py:percent', str(config.RAIZ / 'notebooks' / f'{nombre}.ipynb'),
                         '-o', str(scripts / f'{nombre}.py')], check=True, capture_output=True)
-    entorno = {**os.environ, 'CURSO_DB': str(tmp_path / 'curso.db'), 'CURSO_MODELOS': str(tmp_path / 'models'),
+    entorno = {**os.environ, 'CURSO_DB_OPERACIONAL': str(tmp_path / 'retail.db'), 'CURSO_DB': str(tmp_path / 'curso.db'),
+               'CURSO_MODELOS': str(tmp_path / 'models'),
                'CURSO_REPORTES': str(tmp_path / 'reports'), 'CURSO_SIN_PANTALLA': '1', 'MPLBACKEND': 'Agg', 'PYTHONWARNINGS': 'ignore'}
     for nombre in CUADERNOS:
         r = subprocess.run([sys.executable, str(scripts / f'{nombre}.py')], cwd=str(config.RAIZ / 'notebooks'), env=entorno,
                            capture_output=True, text=True)
         assert r.returncode == 0, f'{nombre}.py fallo:\n{r.stderr[-1500:]}'
-    _comparar_bases(corrida_cuadernos / 'curso.db', tmp_path / 'curso.db')
+    _comparar_bases((corrida_cuadernos / 'retail.db', corrida_cuadernos / 'curso.db'), (tmp_path / 'retail.db', tmp_path / 'curso.db'))
     a = json.loads((corrida_cuadernos / 'reports' / 'metricas.json').read_text(encoding='utf-8'))
     b = json.loads((tmp_path / 'reports' / 'metricas.json').read_text(encoding='utf-8'))
     assert a['mejor'] == b['mejor']

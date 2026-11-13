@@ -1,12 +1,26 @@
-"""Capas RAW y MASTER: descargar, cargar y depurar el dataset.
+"""Fuente, RAW y MASTER: descargar el archivo, ingerir la base operacional en RAW y depurarla en MASTER.
 
-Es la traduccion a Python de los cuadernos  notebooks/01_pipeline_raw_a_master.ipynb.
+Es la traduccion a Python de los cuadernos 00_pipeline_operacional.ipynb (lectura del archivo) y
+01_pipeline_raw_a_master.ipynb. La base operacional se construye con ia_mlops/operacional.py.
+
+RAW (dato crudo)
+    Copia FIEL de cada tabla del operacional (clientes -> raw_clientes, ...). No corrige ni valida nada: por eso sus tablas
+    no tienen claves. La ingesta es una carga completa: borra RAW y lo vuelve a copiar. Linaje: cada fila conserva su clave
+    de origen y _carga_id, que apunta a raw_carga (tabla copiada, filas, huella sha256 del contenido y momento de la carga).
+    Si la huella no cambia entre dos cargas, el origen no ha cambiado.
+
+MASTER (dato maestro)
+    Dato depurado y relacional, regenerable desde RAW (sql/master/). Recorta y pone en mayusculas, descarta duplicados y
+    nulos obligatorios CON SU MOTIVO (master_descartes) y marca cada linea como venta valida o no. Despues evalua las reglas
+    de calidad de calidad.py; si falla una regla dura, se detiene.
+
+Por que dos capas: las reglas de limpieza cambian; con RAW intacto, MASTER se rehace sin volver a pedir los datos al origen.
 
 Uso desde la terminal (en la carpeta del proyecto):
     python -m ia_mlops.dataset descargar            # baja el Excel original de UCI y verifica su huella
-    python -m ia_mlops.dataset raw --fuente muestra # carga RAW
+    python -m ia_mlops.dataset raw                  # ingiere la base operacional retail.db en RAW
     python -m ia_mlops.dataset master               # construye MASTER y evalua la calidad
-    python -m ia_mlops.dataset muestra              # regenera la muestra del repositorio (necesita la fuente completa en RAW)
+    python -m ia_mlops.dataset muestra              # regenera la muestra del repositorio (necesita el Excel completo)
 
 Licencia del dato: CC BY 4.0.  Cita: Chen, D. (2012). Online Retail II [Dataset]. UCI. https://doi.org/10.24432/C5CG6D
 """
@@ -23,6 +37,7 @@ import pandas as pd
 from . import calidad, config, db
 
 COLUMNAS = ['Invoice', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'Price', 'Customer ID', 'Country']
+TABLAS_OPERACIONALES = ['clientes', 'productos', 'facturas', 'lineas_factura']
 
 
 # --------------------------------------------------------------------------------------------------- utilidades
@@ -61,7 +76,7 @@ def _fecha_iso(valor):
     return pd.Timestamp(valor).strftime('%Y-%m-%d %H:%M:%S')
 
 
-# --------------------------------------------------------------------------------------------------- descarga
+# --------------------------------------------------------------------------------------------------- fuente
 def descargar(forzar=False):
     """Descarga el zip de UCI, verifica su sha256 y extrae el Excel a data/raw/online_retail_ii/."""
     destino = config.FUENTES['completo'].parent
@@ -84,7 +99,6 @@ def descargar(forzar=False):
     return xlsx
 
 
-# --------------------------------------------------------------------------------------------------- RAW
 def leer_fuente(fuente):
     """Devuelve (ruta, [(nombre_de_hoja, DataFrame)]) con las columnas originales."""
     ruta = Path(config.FUENTES[fuente])
@@ -97,34 +111,57 @@ def leer_fuente(fuente):
     return ruta, list(pd.read_excel(ruta, sheet_name=None, dtype=object).items())
 
 
-def cargar_raw(fuente='muestra', con=None, verbose=True):
-    """Crea las tablas RAW y guarda cada fila TAL COMO VIENE, con su linaje (_hoja, _fila) y la huella del archivo."""
-    cierre = con is None
-    con = con or db.conectar()
-    db.ejecutar_script(con, config.SQL / 'raw' / '01_crear_raw.sql')
+def leer_lineas(fuente):
+    """Lee el archivo y devuelve (ruta, lineas): una tupla por fila, en el orden del archivo, con tipos coherentes.
+    Orden de la tupla: linea_id, factura_id, codigo_producto, descripcion, cantidad, registrada_en, precio_unitario, cliente_id, pais."""
     ruta, hojas = leer_fuente(fuente)
-    total = 0
+    lineas = []
     for nombre, df in hojas:
         faltan = [c for c in COLUMNAS if c not in df.columns]
         if faltan:
             raise ValueError(f'A la hoja {nombre!r} le faltan las columnas {faltan}')
-        filas = (
-            (nombre, i + 2,  # +2: la fila 1 es el encabezado y las filas se cuentan desde 1
-             _texto(r[0]), _texto(r[1]), _texto(r[2]), _numero(r[3], entero=True), _fecha_iso(r[4]),
-             _numero(r[5]), _numero(r[6]), _texto(r[7]))
-            for i, r in enumerate(df[COLUMNAS].itertuples(index=False, name=None))
-        )
-        con.executemany(
-            'INSERT INTO raw_online_retail_ii (_hoja, _fila, Invoice, StockCode, Description, Quantity, InvoiceDate, Price, Customer_ID, Country) '
-            'VALUES (?,?,?,?,?,?,?,?,?,?)', filas)
-        total += len(df)
-        if verbose:
-            print(f'  RAW: hoja {nombre!r}: {len(df):,} filas')
-    con.execute('INSERT INTO raw_carga (fuente, archivo, sha256, filas, cargado_en) VALUES (?,?,?,?,?)',
-                (fuente, ruta.name, sha256_archivo(ruta), total, datetime.now().isoformat(timespec='seconds')))
-    con.commit()
-    if verbose:
-        print(f'  RAW: {total:,} filas cargadas desde {ruta.name}')
+        for r in df[COLUMNAS].itertuples(index=False, name=None):
+            lineas.append((len(lineas) + 1, _texto(r[0]), _texto(r[1]), _texto(r[2]), _numero(r[3], entero=True),
+                           _fecha_iso(r[4]), _numero(r[5]), _numero(r[6], entero=True), _texto(r[7])))
+    return ruta, lineas
+
+
+# --------------------------------------------------------------------------------------------------- RAW
+def huella_tabla(con, tabla):
+    """(filas, sha256) del contenido de una tabla, recorrida en su orden de insercion."""
+    h, n = hashlib.sha256(), 0
+    for fila in con.execute(f'SELECT * FROM {tabla} ORDER BY rowid'):
+        h.update(repr(fila).encode('utf-8'))
+        n += 1
+    return n, h.hexdigest()
+
+
+def cargar_raw(con=None, ruta_operacional=None, verbose=True):
+    """Ingesta: copia cada tabla de la base operacional en su tabla RAW, TAL COMO ESTA, y registra la carga en raw_carga."""
+    ruta_operacional = Path(ruta_operacional or config.DB_OPERACIONAL)
+    if not ruta_operacional.exists():
+        raise FileNotFoundError(f'No existe la base operacional {ruta_operacional}. Creala con: python -m ia_mlops.operacional')
+    cierre = con is None
+    con = con or db.conectar()
+    db.ejecutar_script(con, config.SQL / 'raw' / '01_crear_raw.sql')
+    con.execute('ATTACH DATABASE ? AS retail', (str(ruta_operacional),))
+    try:
+        ahora = datetime.now().isoformat(timespec='seconds')
+        total = 0
+        for tabla in TABLAS_OPERACIONALES:
+            filas, huella = huella_tabla(con, f'retail.{tabla}')
+            carga = con.execute('INSERT INTO raw_carga (origen, tabla, filas, sha256, extraido_en) VALUES (?,?,?,?,?)',
+                                ('retail', tabla, filas, huella, ahora)).lastrowid
+            con.execute(f'INSERT INTO raw_{tabla} SELECT t.*, ? FROM retail.{tabla} AS t ORDER BY t.rowid', (carga,))
+            total += filas
+            if verbose:
+                print(f'  RAW: raw_{tabla:15s} {filas:>10,} filas')
+        con.commit()
+    except Exception:
+        con.rollback()   # una ingesta a medias no se queda en RAW
+        raise
+    finally:
+        con.execute('DETACH DATABASE retail')
     if cierre:
         con.close()
     return total
@@ -150,34 +187,33 @@ def construir_master(con=None, verbose=True):
 
 # --------------------------------------------------------------------------------------------------- muestra
 def crear_muestra(clientes=150, lineas_sin_cliente=300, semilla=42, salida=None):
-    """Crea la muestra del repositorio a partir del dataset COMPLETO ya cargado en RAW (semilla fija, reproducible)."""
-    salida = Path(salida or config.DATA_RAW / 'muestra_online_retail_ii.csv')
-    con = db.conectar()
-    ids = pd.read_sql('SELECT DISTINCT CAST(Customer_ID AS INTEGER) AS c FROM raw_online_retail_ii '
-                      'WHERE Customer_ID IS NOT NULL ORDER BY 1', con)['c']
-    elegidos = ids.sample(clientes, random_state=semilla).tolist()
-    marcas = ','.join('?' * len(elegidos))
-    con_cliente = pd.read_sql(f'SELECT * FROM raw_online_retail_ii WHERE CAST(Customer_ID AS INTEGER) IN ({marcas})', con, params=elegidos)
-    sin_cliente = pd.read_sql('SELECT * FROM raw_online_retail_ii WHERE Customer_ID IS NULL', con).sample(lineas_sin_cliente, random_state=semilla)
-    df = pd.concat([con_cliente, sin_cliente]).sort_values('_id').rename(columns={'Customer_ID': 'Customer ID'})[COLUMNAS]
-    df.to_csv(salida, index=False)
-    con.close()
-    print(f'Muestra: {len(df):,} filas -> {salida} ({salida.stat().st_size / 1e6:.2f} MB)')
-    return df
+    """Crea la muestra del repositorio a partir del Excel COMPLETO (semilla fija, reproducible)."""
+    salida = Path(salida or config.FUENTES['muestra'])
+    _, lineas = leer_lineas('completo')
+    df = pd.DataFrame(lineas, columns=['_id'] + COLUMNAS)
+    df['Customer ID'] = df['Customer ID'].astype(float)   # el original guarda el cliente como decimal (14748.0)
+    ids = pd.Series(sorted(df['Customer ID'].dropna().astype(int).unique()))
+    elegidos = set(ids.sample(clientes, random_state=semilla))
+    con_cliente = df[df['Customer ID'].isin(elegidos)]
+    sin_cliente = df[df['Customer ID'].isna()].sample(lineas_sin_cliente, random_state=semilla)
+    muestra = pd.concat([con_cliente, sin_cliente]).sort_values('_id')[COLUMNAS]
+    muestra.to_csv(salida, index=False)
+    print(f'Muestra: {len(muestra):,} filas -> {salida} ({salida.stat().st_size / 1e6:.2f} MB)')
+    return muestra
 
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest='orden', required=True)
     p = sub.add_parser('descargar'); p.add_argument('--forzar', action='store_true')
-    p = sub.add_parser('raw'); p.add_argument('--fuente', choices=list(config.FUENTES), default='muestra')
+    sub.add_parser('raw')
     sub.add_parser('master')
     p = sub.add_parser('muestra'); p.add_argument('--clientes', type=int, default=150); p.add_argument('--semilla', type=int, default=42)
     a = ap.parse_args()
     if a.orden == 'descargar':
         descargar(a.forzar)
     elif a.orden == 'raw':
-        cargar_raw(a.fuente)
+        cargar_raw()
     elif a.orden == 'master':
         construir_master()
     else:

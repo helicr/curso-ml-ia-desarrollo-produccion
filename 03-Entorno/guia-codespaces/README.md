@@ -13,15 +13,18 @@ Diapositivas (y su versión en texto) sobre GitHub Codespaces: qué es, cómo ab
 | `pruebas/test_contenido.py` | 12 pruebas: los comandos coinciden con la guía de laboratorio, la configuración descrita coincide con el `devcontainer.json`, las salidas son las capturadas, no queda ninguna palabra interna, la guía no promete lo que no es nuestro y declara lo que no se ha probado, y lo generado está al día. |
 
 ## Qué está verificado y qué no
-- **Verificado en Linux y en GitHub Actions:** los comandos del bloque 4 y sus salidas (el tamaño de imagen, 826 MB, se midió en Actions).
-- **Según la documentación de GitHub (consultada el 10/11/2026), sin probar en un Codespace:** cuotas, tiempos de inactividad y retención, los pasos de la interfaz (crear, PORTS, Export changes to a branch, Rebuild Container) y la conexión desde VS Code de escritorio con la extensión `GitHub.codespaces`.
-- **Sin probar:** que el `.devcontainer/devcontainer.json` del curso arranque de verdad (Python 3.11 + docker-in-docker + `pip install`). **No se ha abierto ningún Codespace del curso.** Cada diapositiva de paso lo indica en su etiqueta.
+- **Verificado en un Codespace real del curso (12/11/2026, 2 núcleos, rama `develop`):** creación y conexión, `verificar.sh` sin fallos (Docker 29.9.3, kind v0.27.0, kubectl v1.37.2, Python 3.11.18), el bloque 4 entero, el panel Puertos con `/docs`, el diálogo de confianza, el modo recuperación y parar desde la web. Las **capturas** (`capturas/*.webp`, embebidas en `index.html`) y los **tiempos** (`salidas-codespace.json`) salen de esa prueba. La primera vez el Codespace arrancó en modo recuperación: los arreglos están en `.devcontainer/` (ver `03-Entorno/VALIDACION.md`, «Codespace del curso»).
+- **Verificado en Linux y en GitHub Actions:** los comandos del bloque 4 y sus salidas en texto (`salidas-reales.json`).
+- **Según la documentación de GitHub (consultada el 10/11/2026), sin probar:** cuotas, tiempos de inactividad y retención, Export changes to a branch y la conexión desde VS Code de escritorio con la extensión `GitHub.codespaces`. Cada diapositiva lo indica en su etiqueta.
 - Las cuotas cambian: revisarlas antes de impartir.
 
+## Capturas
+`capturas/` tiene 17 recortes en WebP de las pantallas del Codespace de prueba (cuenta del instructor). Se embeben en `index.html` al generar y la versión en texto las enlaza. Una prueba comprueba que cada captura citada existe, está embebida y que no sobra ninguna.
+
 ## Antes de la clase
-1. Abrir un Codespace de la rama `develop` con una cuenta personal y ejecutar el bloque 4 completo (`docker version`, `docker build`, `docker run`, `comparar`).
+1. Con una cuenta de **estudiante**, abrir un Codespace de la rama `develop` y comprobar la región y la cuota (no se ha probado con esa cuenta).
 2. Si algo difiere de la guía, corregir `generar.py` (y `.devcontainer/`) y regenerar.
-3. Para S3: añadir `kind` y `kubectl` al `devcontainer.json` y ampliar la guía.
+3. Para S3: escribir y probar el laboratorio de Kubernetes con `kind` y `kubectl` (ya instalados) y ampliar la guía.
 
 ## Pruebas
 ```text

@@ -1,0 +1,303 @@
+{
+ "meta": {
+  "fecha": "2026-11-13",
+  "sistema": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.18",
+  "nota": "Carpeta temporal con CURSO_*; API con uvicorn (sin contenedor)."
+ },
+ "salidas": {
+  "operacional": {
+   "comando": "python -m ia_mlops.operacional",
+   "codigo": 0,
+   "segundos": 1.1,
+   "salida": [
+    "  OPERACIONAL: clientes               150 filas",
+    "  OPERACIONAL: productos            3,080 filas",
+    "  OPERACIONAL: facturas             1,430 filas",
+    "  OPERACIONAL: lineas_factura      23,070 filas"
+   ]
+  },
+  "pipeline_ingesta_raw": {
+   "comando": "python -m ia_mlops.pipeline_ingesta_raw",
+   "codigo": 0,
+   "segundos": 1.0,
+   "salida": [
+    "[pipeline_ingesta_raw] ejecutando (huella de entrada a3e0551c3461)",
+    "  RAW: raw_clientes               150 filas",
+    "  RAW: raw_productos            3,080 filas",
+    "  RAW: raw_facturas             1,430 filas",
+    "  RAW: raw_lineas_factura      23,070 filas"
+   ]
+  },
+  "pipeline_ingesta_master": {
+   "comando": "python -m ia_mlops.pipeline_ingesta_master",
+   "codigo": 0,
+   "segundos": 1.1,
+   "salida": [
+    "[pipeline_ingesta_master] ejecutando (huella de entrada d31efa33ae66)",
+    "  MASTER: master_clientes           150 filas",
+    "  MASTER: master_productos        3,077 filas",
+    "  MASTER: master_facturas         1,430 filas",
+    "  MASTER: master_lineas          22,117 filas",
+    "  MASTER: master_descartes          953 filas",
+    "  MASTER: calidad: 13 reglas, 1 alertas"
+   ]
+  },
+  "pipeline_ml": {
+   "comando": "python -m ia_mlops.pipeline_ml",
+   "codigo": 0,
+   "segundos": 0.4,
+   "salida": [
+    "[pipeline_ml] ejecutando (huella de entrada 16577f644dbe)",
+    "  FS: corte 2010-06-01: 69 clientes",
+    "  FS: corte 2010-07-01: 80 clientes",
+    "  FS: corte 2010-08-01: 84 clientes",
+    "  FS: corte 2010-09-01: 88 clientes",
+    "  FS: corte 2010-10-01: 93 clientes",
+    "  FS: corte 2010-11-01: 103 clientes",
+    "  FS: corte 2010-12-01: 109 clientes",
+    "  FS: corte 2011-03-01: 114 clientes",
+    "  FS: corte 2011-06-01: 119 clientes",
+    "  FS: corte 2011-09-01: 131 clientes",
+    "  ML: train     626 filas | tasa de recompra 50.8 %",
+    "  ML: valid     114 filas | tasa de recompra 45.6 %",
+    "  ML: test      250 filas | tasa de recompra 40.4 %"
+   ]
+  },
+  "pipeline_train": {
+   "comando": "python -m ia_mlops.pipeline_train",
+   "codigo": 0,
+   "segundos": 18.6,
+   "salida": [
+    "[pipeline_train] ejecutando (huella de entrada 7108eeb2fa32)",
+    "  referencia_sin_aprender    AUC valid 0.500 | test 0.500 | precision media test 0.404",
+    "  regresion_logistica        AUC valid 0.698 | test 0.747 | precision media test 0.659",
+    "  gradient_boosting          AUC valid 0.663 | test 0.735 | precision media test 0.648",
+    "  Mejor modelo: regresion_logistica. Guardado en …\\models\\modelo.joblib",
+    "  Registrado en MLflow como «retencion-90d», version 1. Para verlo: python -m ia_mlops.mlflow_ui"
+   ]
+  },
+  "pipeline_otra_vez": {
+   "comando": "python -m ia_mlops.pipeline",
+   "codigo": 0,
+   "segundos": 2.4,
+   "salida": [
+    "[pipeline_ingesta_raw] sin cambios: la entrada es la misma que en la ultima ejecucion (a3e0551c3461). Usa --forzar para rehacerlo.",
+    "  (0.1 s)",
+    "[pipeline_ingesta_master] sin cambios: la entrada es la misma que en la ultima ejecucion (d31efa33ae66). Usa --forzar para rehacerlo.",
+    "  (0.0 s)",
+    "[pipeline_ml] sin cambios: la entrada es la misma que en la ultima ejecucion (16577f644dbe). Usa --forzar para rehacerlo.",
+    "  (0.0 s)",
+    "[pipeline_train] sin cambios: la entrada es la misma que en la ultima ejecucion (7108eeb2fa32). Usa --forzar para rehacerlo.",
+    "  (0.0 s)"
+   ]
+  },
+  "control_tras_muestra": [
+   [
+    "pipeline_ingesta_raw",
+    "a3e0551c3461",
+    "2026-11-13T07:59:47"
+   ],
+   [
+    "pipeline_ingesta_master",
+    "d31efa33ae66",
+    "2026-11-13T07:59:48"
+   ],
+   [
+    "pipeline_ml",
+    "16577f644dbe",
+    "2026-11-13T07:59:49"
+   ],
+   [
+    "pipeline_train",
+    "7108eeb2fa32",
+    "2026-11-13T08:00:07"
+   ]
+  ],
+  "mlflow_v1": {
+   "comando": "python -m ia_mlops.mlflow_ui --comprobar",
+   "codigo": 0,
+   "segundos": 0.1,
+   "salida": [
+    "Registro de MLflow: …\\models\\mlflow.db",
+    "  Experimento «retencion-90d»: 4 ejecuciones · modelo registrado «retencion-90d»: 1 versiones"
+   ]
+  },
+  "listo_v1": {
+   "estado": "listo"
+  },
+  "modelo_v1": {
+   "modelo": "regresion_logistica",
+   "huella_datos": "35a94deb4e04ab4a",
+   "entrenado_en": "2026-11-13T08:00:07",
+   "filas": {
+    "train": 626,
+    "valid": 114,
+    "test": 250
+   }
+  },
+  "explotacion_api_v1": {
+   "comando": "python -m ia_mlops.explotacion --url http://127.0.0.1:8090",
+   "codigo": 0,
+   "segundos": 1.0,
+   "salida": [
+    "Corte de explotación: 2011-12-10 · modelo regresion_logistica (huella 35a94deb4e04ab4a, entrenado 2026-11-13T08:00:07)",
+    "Origen de las predicciones: http://127.0.0.1:8090",
+    "Clientes puntuados: 148 · probabilidad media 0.486",
+    "Campaña: 15 clientes (el 10% con más probabilidad), probabilidad media 0.964, mínima 0.917",
+    "Clientes con advertencias (valores que el modelo no vio al entrenar): 132",
+    "Probabilidad media por decil: 1: 0.96 · 2: 0.86 · 3: 0.73 · 4: 0.60 · 5: 0.47 · 6: 0.35 · 7: 0.29 · 8: 0.23 · 9: 0.18 · 10: 0.15",
+    "Los 10 primeros:",
+    " puesto  cliente_id probabilidad  decil  n_advertencias",
+    "      1       13599        0.998      1               1",
+    "      2       17243        0.997      1               3",
+    "      3       12523        0.992      1               1",
+    "      4       13488        0.985      1               2",
+    "      5       18225        0.984      1               1",
+    "      6       14456        0.983      1               1",
+    "      7       13093        0.981      1               5",
+    "      8       16550        0.974      1               1",
+    "      9       17663        0.971      1               1",
+    "     10       14533        0.958      1               1",
+    "Guardado en: …\\reports\\campana\\campana_2011-12-10.csv y …\\reports\\campana\\campana_2011-12-10.json"
+   ]
+  },
+  "explotacion_local_v1": {
+   "comando": "python -m ia_mlops.explotacion --top 5",
+   "codigo": 0,
+   "segundos": 4.1,
+   "salida": [
+    "Corte de explotación: 2011-12-10 · modelo regresion_logistica (huella 35a94deb4e04ab4a, entrenado 2026-11-13T08:00:07)",
+    "Origen de las predicciones: modelo local (models/)",
+    "Clientes puntuados: 148 · probabilidad media 0.486",
+    "Campaña: 15 clientes (el 10% con más probabilidad), probabilidad media 0.964, mínima 0.917",
+    "Clientes con advertencias (valores que el modelo no vio al entrenar): 132",
+    "Probabilidad media por decil: 1: 0.96 · 2: 0.86 · 3: 0.73 · 4: 0.60 · 5: 0.47 · 6: 0.35 · 7: 0.29 · 8: 0.23 · 9: 0.18 · 10: 0.15",
+    "Los 5 primeros:",
+    " puesto  cliente_id probabilidad  decil  n_advertencias",
+    "      1       13599        0.998      1               1",
+    "      2       17243        0.997      1               3",
+    "      3       12523        0.992      1               1",
+    "      4       13488        0.985      1               2",
+    "      5       18225        0.984      1               1",
+    "Guardado en: …\\reports\\campana\\campana_2011-12-10.csv y …\\reports\\campana\\campana_2011-12-10.json"
+   ]
+  },
+  "datos_nuevos": {
+   "comando": "python -m ia_mlops.pipeline --fuente completo",
+   "codigo": 0,
+   "segundos": 141.9,
+   "salida": [
+    "[operacional] creando retail.db (se pide la fuente «completo»); es la simulacion del sistema de ventas, no un pipeline",
+    "  OPERACIONAL: clientes             5,942 filas",
+    "  OPERACIONAL: productos            5,305 filas",
+    "  OPERACIONAL: facturas            53,628 filas",
+    "  OPERACIONAL: lineas_factura   1,067,371 filas",
+    "[pipeline_ingesta_raw] ejecutando (huella de entrada 3ca6961812e2)",
+    "  RAW: raw_clientes             5,942 filas",
+    "  RAW: raw_productos            5,305 filas",
+    "  RAW: raw_facturas            53,628 filas",
+    "  RAW: raw_lineas_factura   1,067,371 filas",
+    "  (6.0 s)",
+    "[pipeline_ingesta_master] ejecutando (huella de entrada 334856df16b5)",
+    "  MASTER: master_clientes         5,942 filas",
+    "  MASTER: master_productos        5,131 filas",
+    "  MASTER: master_facturas        53,628 filas",
+    "  MASTER: master_lineas       1,033,036 filas",
+    "  MASTER: master_descartes       34,335 filas",
+    "  MASTER: calidad: 13 reglas, 2 alertas",
+    "  (17.3 s)",
+    "[pipeline_ml] ejecutando (huella de entrada 962e9788f7f6)",
+    "  FS: corte 2010-06-01: 2,684 clientes",
+    "  FS: corte 2010-07-01: 2,951 clientes",
+    "  FS: corte 2010-08-01: 3,136 clientes",
+    "  FS: corte 2010-09-01: 3,299 clientes",
+    "  FS: corte 2010-10-01: 3,538 clientes",
+    "  FS: corte 2010-11-01: 3,913 clientes",
+    "  FS: corte 2010-12-01: 4,239 clientes",
+    "  FS: corte 2011-03-01: 4,512 clientes",
+    "  FS: corte 2011-06-01: 4,908 clientes",
+    "  FS: corte 2011-09-01: 5,224 clientes",
+    "  ML: train  23,760 filas | tasa de recompra 48.1 %",
+    "  ML: valid   4,512 filas | tasa de recompra 35.1 %",
+    "  ML: test   10,132 filas | tasa de recompra 38.0 %",
+    "  (16.8 s)",
+    "[pipeline_train] ejecutando (huella de entrada f28e1397331e)",
+    "  referencia_sin_aprender    AUC valid 0.500 | test 0.500 | precision media test 0.380",
+    "  regresion_logistica        AUC valid 0.786 | test 0.796 | precision media test 0.735",
+    "  gradient_boosting          AUC valid 0.761 | test 0.781 | precision media test 0.718",
+    "  Mejor modelo: regresion_logistica. Guardado en …\\models\\modelo.joblib",
+    "  Registrado en MLflow como «retencion-90d», version 2. Para verlo: python -m ia_mlops.mlflow_ui",
+    "  (19.1 s)"
+   ]
+  },
+  "control_tras_completo": [
+   [
+    "pipeline_ingesta_raw",
+    "3ca6961812e2",
+    "2026-11-13T08:01:47"
+   ],
+   [
+    "pipeline_ingesta_master",
+    "334856df16b5",
+    "2026-11-13T08:02:04"
+   ],
+   [
+    "pipeline_ml",
+    "962e9788f7f6",
+    "2026-11-13T08:02:21"
+   ],
+   [
+    "pipeline_train",
+    "f28e1397331e",
+    "2026-11-13T08:02:40"
+   ]
+  ],
+  "mlflow_v2": {
+   "comando": "python -m ia_mlops.mlflow_ui --comprobar",
+   "codigo": 0,
+   "segundos": 0.2,
+   "salida": [
+    "Registro de MLflow: …\\models\\mlflow.db",
+    "  Experimento «retencion-90d»: 8 ejecuciones · modelo registrado «retencion-90d»: 2 versiones"
+   ]
+  },
+  "modelo_v2": {
+   "modelo": "regresion_logistica",
+   "huella_datos": "3521a0421905ba28",
+   "entrenado_en": "2026-11-13T08:02:40",
+   "filas": {
+    "train": 23760,
+    "valid": 4512,
+    "test": 10132
+   }
+  },
+  "explotacion_api_v2": {
+   "comando": "python -m ia_mlops.explotacion --url http://127.0.0.1:8090 --comparar-con …\\campana_2011-12-10_v1.csv",
+   "codigo": 0,
+   "segundos": 3.5,
+   "salida": [
+    "Corte de explotación: 2011-12-10 · modelo regresion_logistica (huella 3521a0421905ba28, entrenado 2026-11-13T08:02:40)",
+    "Origen de las predicciones: http://127.0.0.1:8090",
+    "Clientes puntuados: 5852 · probabilidad media 0.491",
+    "Campaña: 586 clientes (el 10% con más probabilidad), probabilidad media 0.915, mínima 0.848",
+    "Clientes con advertencias (valores que el modelo no vio al entrenar): 5020",
+    "Probabilidad media por decil: 1: 0.92 · 2: 0.79 · 3: 0.68 · 4: 0.58 · 5: 0.50 · 6: 0.42 · 7: 0.35 · 8: 0.29 · 9: 0.22 · 10: 0.17",
+    "Los 10 primeros:",
+    " puesto  cliente_id probabilidad  decil  n_advertencias",
+    "      1       14911        1.000      1               6",
+    "      2       12748        0.999      1               4",
+    "      3       17841        0.999      1               4",
+    "      4       15311        0.998      1               2",
+    "      5       14646        0.998      1               3",
+    "      6       13089        0.998      1               2",
+    "      7       18102        0.998      1               3",
+    "      8       14156        0.997      1               1",
+    "      9       14606        0.997      1               3",
+    "     10       13408        0.995      1               1",
+    "Frente a …\\campana_2011-12-10_v1.csv: 13 clientes en ambas campañas, 573 nuevos, 2 que salen.",
+    "Guardado en: …\\reports\\campana\\campana_2011-12-10.csv y …\\reports\\campana\\campana_2011-12-10.json"
+   ]
+  }
+ }
+}

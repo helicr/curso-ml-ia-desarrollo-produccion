@@ -2,8 +2,17 @@
 
 Es la traduccion a Python de  notebooks/03_pipeline_fs_a_ml.ipynb.
 
+OBJETIVO (y)
+    y = 1 si el cliente compra al menos una vez en la ventana [corte, corte + VENTANA_OBJETIVO_DIAS); 0 si no.
+    Es lo unico que mira el FUTURO del corte, y es correcto: es la respuesta que el modelo debe anticipar.
+
+PARTICION TEMPORAL (config.CORTES)
+    train  el modelo aprende       valid  se comparan modelos y se elige       test  se mide el elegido, una sola vez
+    Es por TIEMPO, nunca aleatoria: en produccion se entrena con el pasado y se predice el futuro. Las ventanas del objetivo
+    no se solapan entre particiones (el ultimo corte de train + 90 dias = el corte de valid).
+
 Antes de construir comprueba que la ventana del objetivo de cada corte cabe en los datos disponibles: si la ventana se sale
-del ultimo dia con datos, el objetivo estaria incompleto y sesgado.
+del ultimo dia con datos, el objetivo estaria incompleto y sesgado (muchos «no compro» solo por falta de datos).
 
 Uso:  python -m ia_mlops.modeling.ml_dataset
 """
@@ -15,6 +24,7 @@ class VentanaIncompletaError(RuntimeError):
 
 
 def construir_ml(con=None, verbose=True):
+    """Registra los cortes en ml_particiones (comprobando que su ventana cabe) y llena ml_dataset con sql/ml/02_poblar_ml.sql."""
     cierre = con is None
     con = con or db.conectar()
     db.ejecutar_script(con, config.SQL / 'ml' / '01_crear_ml.sql')

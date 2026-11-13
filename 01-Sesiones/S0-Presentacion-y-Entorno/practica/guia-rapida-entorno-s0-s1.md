@@ -82,7 +82,7 @@ mkdir C:\cursos
 **Debe salir:** `git version 2.x…` Los demás comandos no imprimen nada si salen bien.
 
 ```text
-git version 2.43.0
+git version 2.47.3
 ```
 
 _Salida real en Linux; en Windows dirá algo como `2.x.windows.1`._
@@ -136,7 +136,7 @@ conda env list
 **Debe salir:** Una versión de conda y una lista con al menos el entorno `base`. **No instales nada en `base`.**
 
 ```text
-conda 26.9.4
+conda 26.7.3
 ```
 
 _Salida real en Linux; tu versión puede ser otra._
@@ -289,7 +289,7 @@ python 3.11.18
   ok    jupytext                 1.19.6
   ok    nbclient                 0.11.0
   sqlite: tablas ['fs_cliente', 'master_ventas', 'ml_dataset', 'raw_ventas']
-  mlflow: ejecucion 485900f4 | auc 0.701
+  mlflow: ejecucion b2bda262 | auc 0.701
   api: respuesta {'clase': 0}
   api: entrada invalida rechazada (422)
 HUMO OK
@@ -335,35 +335,38 @@ _Validación: El cuaderno se ejecutó con `jupyter nbconvert` en Linux (NOTEBOOK
 
 ### E2 · Pruebas del proyecto base
 
-**Bloque E (Pruebas para S1) · Terminal:** Anaconda Prompt con (env-ia-mlops) activo, en la carpeta del repositorio · **Validación:** Probado en Linux
+**Bloque E (Pruebas para S1) · Terminal:** Anaconda Prompt con (env-ia-mlops) activo, en la carpeta del repositorio · **Validación:** Probado en Linux y en Windows
 
 `04-Proyecto-Base` es el proyecto con el que se trabaja en S1. Sus pruebas confirman que el entorno hace lo que el curso espera. No hace falta instalar el paquete con `pip` para S1.
 
 ```text
 cd 04-Proyecto-Base
 python -m pytest -q -m "not lento"
-# opcional: incluye ejecutar los 4 cuadernos (más lento)
+# opcional: incluye ejecutar los 5 cuadernos (más lento)
 python -m pytest -q
 ```
 
-**Debe salir:** Rápidas: **30 passed, 4 deselected**. Completas: **34 passed**. Cualquier `failed` o `error` hay que contarlo al instructor.
+**Debe salir:** Rápidas: **127 passed, 4 deselected**. Completas: **131 passed**. Cualquier `failed` o `error` hay que contarlo al instructor.
 
 ```text
-..............................                                           [100%]
-30 passed, 4 deselected in 10.73s
-..................................                                       [100%]
-34 passed in 47.60s
+........................................................................ [ 56%]
+.......................................................                  [100%]
+127 passed, 4 deselected in 83.71s (0:01:23)
+........................................................................ [ 54%]
+...........................................................              [100%]
+131 passed in 134.24s (0:02:14)
 ```
 
-_Salida real en Linux. Los segundos dependen de tu equipo._
+_Salida real en Windows (11/11/2026). Los segundos dependen de tu equipo._
 
 **Si falla:**
 
-- Solo ves puntos y no la línea «30 passed»: tu copia es anterior al 09/11/2026. Actualiza con `git pull`.
+- Solo ves puntos y no la línea «127 passed»: tu copia es anterior al 13/11/2026. Actualiza con `git pull`.
+- Sale **30**, **34**, **40** o **108 passed**: tu copia es anterior al 11/11/2026 (antes de juntar la base operacional, los pipelines y la API de S2). Actualiza con `git pull`.
 - `ModuleNotFoundError`: entorno equivocado. Mira que el prompt empiece por (env-ia-mlops).
 - Si falla alguna prueba, copia la salida completa y envíala; no la edites.
 
-_Validación: Ejecutado en un entorno recién creado desde environment.yml, sin instalar nada más._
+_Validación: Ejecutado en Linux en un entorno recién creado desde environment.yml (09/11/2026) y en Windows 11 con la base operacional y los pipelines ya incluidos (11/11/2026), sin instalar nada más; recapturado en el Codespace del curso (13/11/2026)._
 
 ### E3 · SQLite
 
@@ -424,7 +427,7 @@ mlflow ui --backend-store-uri sqlite:///models/mlflow.db
 INFO:     Uvicorn running on http://127.0.0.1:5000 (Press CTRL+C to quit)
 ```
 
-_Salida real en Linux: tardó 12 s en responder._
+_Salida real en Linux: tardó 21 s en responder._
 
 **Si falla:**
 
@@ -481,30 +484,30 @@ python 03-Entorno\conda\verificar_s1.py --con-pruebas --informe
 **Debe salir:** Todas las líneas en **OK** y la última: **LISTO PARA S1**. **AVISO** = revísalo, no bloquea. **FALLA** = arréglalo antes de S1 (la propia línea dice cómo).
 
 ```text
-Verificacion para S1 - 2026-11-09 20:52 - Linux 6.18.44-fc-v310 - Python 3.11.18
+Verificacion para S1 - 2026-11-13 07:42 - Linux 6.8.0-1070-azure - Python 3.11.18
 Entorno: env-ia-mlops   Repositorio: curso-ml-ia-desarrollo-produccion
 
   [OK   ] python                     3.11.18
   [OK   ] entorno                    env-ia-mlops
   [OK   ] paquetes                   23 paquetes con la version fijada en environment.yml
-  [OK   ] importaciones              12 librerias clave se importan (2.8 s)
+  [OK   ] importaciones              12 librerias clave se importan (3.1 s)
   [OK   ] sqlite                     version 3.54.1; consultas con funciones de ventana correctas
   [OK   ] mlflow                     version 3.18.0; guarda y lee una ejecucion en SQLite
   [OK   ] kernel                     kernel «env-ia-mlops» registrado
-  [OK   ] git                        git version 2.43.0
+  [OK   ] git                        git version 2.47.3
   [OK   ] git: identidad             nombre y correo configurados (no se muestran)
   [OK   ] repositorio                material del curso completo en la carpeta clonada
   [OK   ] dato Bank Marketing        huella correcta; 41188 filas de datos (+ encabezado)
-  [OK   ] disco                      24 GB libres
+  [OK   ] disco                      42 GB libres
   [OK   ] puerto 5000                libre para «mlflow ui»
-  [OK   ] pruebas del proyecto base  30 passed, 4 deselected in 8.62s (11 s)
+  [OK   ] pruebas del proyecto base  127 passed, 4 deselected in 82.81s (0:01:22) (86 s)
 
 Resultado: LISTO PARA S1  (14 OK, 0 AVISO, 0 FALLA)
 
 Informe guardado en verificacion-s1.txt (en la carpeta actual). Enviaselo al instructor si algo no se resuelve.
 ```
 
-_Salida real en Linux. El informe no incluye tu nombre de usuario ni tu correo de Git._
+_Salida real en Linux (la línea de pruebas, recapturada en Windows el 11/11/2026). El informe no incluye tu nombre de usuario ni tu correo de Git._
 
 **Si falla:**
 
@@ -545,7 +548,7 @@ gcloud auth list
 | `CondaValueError: prefix already exists` | El entorno ya existe. | `conda env update -f 03-Entorno\conda\environment.yml --prune`, o bórralo y créalo. |
 | `ModuleNotFoundError` | Entorno o kernel equivocado. | El prompt debe empezar por (env-ia-mlops). En un cuaderno, elige ese kernel. |
 | Faltan carpetas del curso | Clonaste `main`. | `git fetch origin` y `git switch develop`. |
-| pytest solo muestra puntos | Copia anterior al 09/11/2026. | `git pull`. Debe verse «30 passed». |
+| pytest solo muestra puntos | Copia anterior al 13/11/2026. | `git pull`. Debe verse «127 passed». |
 | «la huella no coincide» | El CSV de Bank Marketing se modificó. | `git restore` de ese archivo; no lo guardes con Excel. |
 | `mlflow ui` no abre | Puerto 5000 ocupado o servidor aún arrancando. | `--port 5001`; espera 20 s y refresca. |
 
@@ -560,7 +563,7 @@ Envía al instructor: (1) el comando que ejecutaste y en qué terminal; (2) el m
 - [ ] `conda --version` responde en Anaconda Prompt _(A3)_
 - [ ] `conda activate env-ia-mlops` y la prueba de humo termina en **HUMO OK** _(D1 · D2)_
 - [ ] El cuaderno de prueba imprime **NOTEBOOK OK** con el kernel env-ia-mlops _(E1)_
-- [ ] `pytest` del proyecto base: **30 passed** (y 34 con las lentas) _(E2)_
+- [ ] `pytest` del proyecto base: **127 passed** (y 131 con las lentas) _(E2)_
 - [ ] SQLite, MLflow UI y el dato de Bank Marketing responden _(E3 · E4 · E5)_
 - [ ] `verificar_s1.py` termina en **LISTO PARA S1** _(E6)_
 
@@ -583,7 +586,7 @@ Más detalle: `07-Recursos/guias/` (Miniconda, Git y ramas, VS Code, SQLite) y l
 
 ## Qué se probó y qué no
 
-**Probado el 09/11/2026 en Linux (kernel 6.18.44-fc-v310), en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, versiones instaladas frente a las fijadas, 30 pruebas rápidas y 34 completas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). Las salidas que ves arriba son las reales de esa ejecución (`slides/instalacion/salidas-reales.json`).
+**Probado el 09/11/2026 en Linux, en un entorno creado desde cero con `environment.yml`:** creación del entorno, `HUMO OK`, versiones instaladas frente a las fijadas, pruebas del proyecto base, SQLite, MLflow UI, lectura del CSV de Bank Marketing, registro del kernel, ejecución del cuaderno de prueba y `git clone --branch develop` contra GitHub (clon superficial). **Recapturado el 13/11/2026 en el Codespace del curso** (kernel 6.8.0-1070-azure, 2 núcleos), con la base operacional, los pipelines, la API de S2 y la explotación: todas las salidas que ves arriba (`slides/instalacion/salidas-reales.json`) son de esa recaptura, salvo la creación del entorno, que es la del 09/11/2026. Allí las pruebas dan 127 rápidas y 131 completas.
 
 **Sin probar:**
 
