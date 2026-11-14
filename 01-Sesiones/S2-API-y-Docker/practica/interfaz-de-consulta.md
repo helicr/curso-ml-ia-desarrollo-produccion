@@ -2,7 +2,7 @@
 
 **Duración:** unos 60 minutos, después del bloque 4 (la imagen de la API en el Codespace). **Requisito:** `python -m ia_mlops.pipeline` ejecutado; deja `models/modelo_mlflow/` y la base `data/processed/curso.db`.
 
-**En clase se proyecta la presentación** [**Del ordenador al servicio**](../del-ordenador-al-servicio/index.html) (27 diapositivas, unos 60 min): cada orden se copia con ⧉ en tu Codespace y las salidas que muestra son reales.
+**En clase se proyecta la presentación** [**Del ordenador al servicio**](../del-ordenador-al-servicio/index.html) (36 diapositivas, unos 78 min): cada orden se copia con ⧉ en tu Codespace, las salidas son reales y nueve diapositivas «Así se ve en tu Codespace» enseñan la pantalla real de cada paso.
 **La explicación completa en texto**, desde lo básico, está en la [guía](../../../04-Proyecto-Base/docs/del-ordenador-al-servicio.md). Esta hoja es el recorrido: qué hacer, en qué orden y qué preguntarse. Cada paso remite al apartado de la guía.
 
 ## La idea en un minuto
@@ -87,4 +87,4 @@ En el Codespace del curso, en la terminal, desde `04-Proyecto-Base`. La imagen d
 - **En local:** `tests/test_interfaz.py` y `tests/test_imagen_interfaz.py`. La parte A se probó a mano en Windows el 14/11/2026.
 - **Sin Docker:** el contenedor de la interfaz se simuló en Windows (base de solo lectura y variables de entorno del Dockerfile) contra la API real.
 - **Con Docker real:** la parte B entera, Compose y las roturas, **en verde en GitHub Actions** el 14/11/2026 (workflow `validar-dos-contenedores.yml`). La guía cita sus salidas reales: la imagen de la interfaz ocupa 423 MB y la de la API 826 MB.
-- **Sin probar a mano en un Codespace.** Es el mismo Docker, pero no se ha recorrido con el navegador ni con la pestaña *Puertos*.
+- **Recorrido a mano en un Codespace real del curso** el 14/11/2026, con la pestaña *Puertos* y la página: son las capturas de la presentación. En un Codespace nuevo, antes de la parte A: `python -m ia_mlops.operacional` y `python -m ia_mlops.pipeline`.

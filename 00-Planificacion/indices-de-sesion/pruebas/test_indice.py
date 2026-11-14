@@ -116,7 +116,7 @@ def test_las_presentaciones_con_volver_enlazan_al_indice_de_su_sesion(i, s):
 
 
 def test_los_numeros_de_diapositivas_son_los_reales():
-    cuentas = {'S0': {31, 27}, 'S1': {20, 12}, 'S2': {22, 16, 38, 17, 27}}   # S2: presentación (22, con la del laboratorio «exponer el servicio»), recap 01 (16), guía de Codespaces (38), contenedores 1 (16) y 2 (17), del ordenador al servicio (27)
+    cuentas = {'S0': {31, 27}, 'S1': {20, 12}, 'S2': {22, 16, 38, 17, 36}}   # S2: presentación (22, con la del laboratorio «exponer el servicio»), recap 01 (16), guía de Codespaces (38), contenedores 1 (16) y 2 (17), del ordenador al servicio (36, con 9 capturas del Codespace)
     for i, s in SESIONES:
         if s['id'] not in cuentas:
             continue

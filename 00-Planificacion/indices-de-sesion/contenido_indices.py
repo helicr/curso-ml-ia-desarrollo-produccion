@@ -122,7 +122,7 @@ SESIONES = [
             deck('Laboratorio: exponer el servicio (del ordenador al servicio)', f'{S2}/del-ordenador-al-servicio/index.html',
                  'Las diapositivas del laboratorio de exponer el modelo (bloque 6 de la práctica; se abre también desde la diapositiva 19 de la presentación de S2). '
                  'Pros y contras de llevar un modelo a producción, la arquitectura de la exposición, de dos procesos en tu portátil a dos contenedores '
-                 '(red, puertos, volumen de solo lectura, Compose) y el mapa a producción. Órdenes para copiar y salidas reales.', volver=True),
+                 '(red, puertos, volumen de solo lectura, Compose) y el mapa a producción. Órdenes para copiar, salidas reales y capturas de cada paso en un Codespace real.', volver=True),
             alumno('Interfaz de consulta: del ordenador al servicio', f'{S2}/practica/interfaz-de-consulta.md',
                    'Unos 60 min: ids de cliente → probabilidad y recomendación, primero en tu ordenador y después en dos contenedores (API e interfaz) en el Codespace.'),
             alumno('Del ordenador al servicio (guía completa)', '04-Proyecto-Base/docs/del-ordenador-al-servicio.md',

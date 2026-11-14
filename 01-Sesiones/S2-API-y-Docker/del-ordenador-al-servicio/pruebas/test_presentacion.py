@@ -35,14 +35,30 @@ def test_esta_al_dia_con_el_generador(html):
 
 def test_cada_diapositiva_tiene_titulo_parte_minutos_y_notas(html):
     s = secciones(html)
-    assert len(s) == 27
+    assert len(s) == 36                    # 27 de contenido + 9 «Así se ve en tu Codespace»
     total = 0
     for attrs, _ in s:
         assert re.search(r'data-part="[ABCD]"', attrs) and re.search(r'data-title="[^"]+"', attrs), attrs[:80]
         notas = re.search(r'data-notes="([^"]*)"', attrs).group(1)
         assert len(notas) > 80, f'notas del ponente demasiado cortas: {attrs[:80]}'
         total += int(re.search(r'data-min="(\d+)"', attrs).group(1))
-    assert 55 <= total <= 65, total        # la práctica de S2 dice «unos 60 minutos»
+    assert 70 <= total <= 85, total        # el guion y la práctica dicen «unos 78 minutos»
+
+
+def test_las_capturas_del_codespace_existen_y_no_sobra_ninguna(html):
+    citadas = set(re.findall(r'src="img/([^"]+)"', html))
+    en_disco = {p.name for p in (AQUI / 'img').iterdir() if p.is_file()}
+    assert citadas == en_disco, f'citadas sin archivo: {citadas - en_disco}; archivos sin usar: {en_disco - citadas}'
+    capturas = [c for c in citadas if c.startswith('cs-')]
+    assert len(capturas) == 14
+    # cada diapositiva «Así se ve en tu Codespace» lleva al menos una captura y su rótulo de captura real
+    for attrs, cuerpo in secciones(html):
+        if 'Así se ve en tu Codespace' in cuerpo:
+            assert 'src="img/cs-' in cuerpo and 'Captura real' in cuerpo, attrs[:80]
+    assert html.count('Así se ve en tu Codespace') == 9
+    # y cada captura se abre a tamaño completo
+    for c in capturas:
+        assert f'<a class="capa" href="img/{c}"' in html, c
 
 
 def test_las_salidas_reales_son_las_que_cita_la_guia():

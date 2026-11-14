@@ -72,6 +72,27 @@ def real(clave, fuente=REAL_GHA, clase=''):
     return f'<div class="realbox {clase}"><div class="rk">{esc(fuente)}</div><pre>{esc(SALIDAS[clave])}</pre></div>'
 
 
+CODESPACE = 'Codespace real del curso · rama develop · 14/11/2026'
+
+
+def img(archivo, alt, alto=None, clase=''):
+    estilo = f' style="max-height:{alto}px"' if alto else ''
+    # al pulsarla se abre a tamaño completo en otra pestaña (las letras del terminal son pequeñas)
+    return (f'<a class="capa" href="img/{archivo}" target="_blank" rel="noopener" title="Ver a tamaño completo">'
+            f'<img class="capimg {clase}" src="img/{archivo}" alt="{esc(alt)}"{estilo}></a>')
+
+
+def mira(items):
+    """Lista «Qué mirar» de una captura."""
+    return '<div class="card f mini2 mira"><h3>Qué mirar</h3>' + lista(items) + '</div>'
+
+
+def captura(parte, minutos, titulo, paso, h1, cuerpo, notas):
+    """Diapositiva «Así se ve en tu Codespace»: captura real de un paso, sus órdenes y qué mirar."""
+    slide(parte, minutos, titulo, f'Así se ve en tu Codespace · {paso}', h1,
+          f'<p class="small st" style="margin:-14px 0 10px"><span class="tag ok">Captura real</span> {esc(CODESPACE)}</p>' + cuerpo, notas)
+
+
 def lista(items):
     return '<ul class="list">' + ''.join(f'<li><span>{md(i)}</span></li>' for i in items) + '</ul>'
 
@@ -270,7 +291,7 @@ def construir():
  <p class="sub st">La API y la interfaz, paso a paso: de dos procesos en tu portátil a dos contenedores que se hablan, y lo que falta para producción.</p>
  <div class="chips st"><span class="tag core">6 escalones</span><span class="tag">unos 60 min</span><span class="tag">Codespace</span><span class="tag ok">Probado con Docker real</span></div>
  <div class="card st" style="margin-top:22px"><h3>Cómo seguirla</h3><p class="small">Cada orden lleva <b>⧉</b> para copiarla en la terminal de tu Codespace, de una en una. <b>← →</b> avanzan · <b>O</b> índice · <b>F</b> pantalla completa.
- Las salidas que ves son <b>reales</b> (GitHub Actions y Windows, {FECHA}). Todo está explicado en texto en <span class="mono">04-Proyecto-Base/docs/del-ordenador-al-servicio.md</span>.</p></div>
+ Las salidas que ves son <b>reales</b> (GitHub Actions y Windows) y las capturas, de un <b>Codespace real del curso</b> ({FECHA}). Todo está explicado en texto en <span class="mono">04-Proyecto-Base/docs/del-ordenador-al-servicio.md</span>.</p></div>
 </div><div class="hero st">{svg_escalones()}</div></div>''',
           'Esta presentación responde a lo que preguntó el grupo: ya tenemos el modelo en una API, pero ¿dónde llama el usuario?, ¿cómo pone un id o una lista y recibe una recomendación?, ¿qué diferencia hay entre tenerlo en mi ordenador y tenerlo como servicio? Vamos en seis escalones; cada uno añade una sola idea y se puede ejecutar. Que cada persona tenga el Codespace abierto con la imagen de la API del bloque 4.')
 
@@ -359,6 +380,22 @@ def construir():
 </div>''',
           'Tres ideas que vuelven en cada escalón. La tabla del centro es la clave del paso a contenedores: el código no cambia, cambia la configuración. Y vivo frente a listo: la interfaz puede estar viva sin poder atender porque la API se cayó; reiniciarla no arregla nada.')
 
+    t0 = term('Terminal del Codespace · solo la primera vez', [
+        'cd 04-Proyecto-Base',
+        'python -m ia_mlops.operacional',
+        'python -m ia_mlops.pipeline',
+        "docker version --format 'Docker {{.Server.Version}}'"])
+    captura('B', 2, 'Codespace: preparar', 'antes de empezar', 'Prepara el Codespace: datos, modelo y Docker', f'''
+<div class="split" style="grid-template-columns:1.05fr .95fr;gap:18px">
+ <div class="capcol st">{img('cs-01-pipeline.webp', 'Final del pipeline en el Codespace: modelo registrado como versión 1 de retencion-90d', 300)}{img('cs-02-docker.webp', 'docker version: Docker 29.9.3 en el Codespace')}</div>
+ <div class="capcol">{t0}{mira([
+        'Un Codespace **nuevo** no trae `retail.db`: sin `operacional`, el pipeline no tiene de dónde leer.',
+        'El pipeline acaba con **«Mejor modelo: regresion_logistica»** y **«version 1»** en MLflow.',
+        'Los avisos `UserWarning` y `WARNING mlflow` son de MLflow: no son errores.',
+        '`docker version` responde: el Docker del Codespace está listo.'])}</div>
+</div>''',
+            'Captura real del Codespace del curso, recién creado desde la rama develop. Lo primero que se nota en un Codespace nuevo: la base operacional retail.db no está en el repositorio, hay que crearla con operacional desde la muestra. Después el pipeline entrena y registra el modelo. Que nadie se asuste por los avisos de MLflow. Si docker version no responde, el Codespace se abrió sin el devcontainer: crear otro desde develop.')
+
     t1 = term('Dos terminales · con conda activate env-ia-mlops · desde 04-Proyecto-Base', [
         '# terminal 1: la API del modelo',
         'python -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080',
@@ -375,6 +412,15 @@ def construir():
  </div></div>''',
           'Que todos lo arranquen. En el Codespace también funciona así, con el entorno conda. La segunda terminal imprime «Interfaz en http://127.0.0.1:8090». /listo debe decir datos ok y la URL de la API. Si alguien tiene el 8080 ocupado por el contenedor del bloque 4, que lo pare antes con docker rm -f.')
 
+    captura('B', 2, 'Codespace: tres terminales', 'escalón 1', 'Tres terminales: API, interfaz y comprobación', f'''
+<div class="st">{img('cs-03-tres-terminales.webp', 'Tres terminales divididos: la API, la interfaz y los curl a /salud y /listo', 290)}</div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card f mini2"><h3>1 · Izquierda: la API</h3><p class="small"><span class="mono">Uvicorn running on http://127.0.0.1:8080</span> y la línea JSON <span class="mono">modelo_cargado</span>.</p></div>
+ <div class="card f mini2"><h3>2 · Centro: la interfaz</h3><p class="small">Divide el terminal con <b>Ctrl+Shift+5</b> (o el icono ◫). Sale <span class="mono">Interfaz en http://127.0.0.1:8090</span>.</p></div>
+ <div class="card f mini2"><h3>3 · Derecha: comprobar</h3><p class="small">Otra división para los <span class="mono">curl</span>: <span class="mono">/salud</span> y <span class="mono">/listo</span> en 200, y en el centro se ve cada petición.</p></div>
+</div>''',
+            'Captura real. Así queda el escalón 1 en el Codespace: tres terminales divididos. Enseñe el atajo Ctrl+Shift+5 o el icono de dividir del panel. Fíjense en que cada petición deja una línea en el terminal de quien la recibe: la interfaz registra el GET /salud y /listo, y la API el GET /listo que le hace la interfaz.')
+
     slide('B', 3, 'La interfaz en acción', 'Escalón 1 · práctica', 'La interfaz: ids → probabilidad → recomendación', '''
 <div class="split" style="grid-template-columns:1.25fr .75fr;gap:18px">
  <div class="card st" style="padding:8px;overflow:hidden"><img src="img/interfaz-consulta.png" alt="La interfaz con cuatro clientes: tres tramos y uno sin predicción" style="width:100%;height:440px;object-fit:cover;object-position:top;border-radius:10px"></div>
@@ -387,6 +433,17 @@ def construir():
   <div class="card f mini2"><h3>Para pensar</h3><p class="small">Casi todos salen <b>⚠ Revisar</b>: <span class="mono">antiguedad_dias=738</span> fuera de lo visto al entrenar <span class="mono">[1, 364]</span>. El modelo se entrenó con cortes de 2010. <b>Así se ve un modelo que nadie vigila</b> (deriva, S5).</p></div>
  </div></div>''',
           'Abra http://127.0.0.1:8090. La captura es real, de la interfaz con la muestra. Recorra la tabla: puesto y decil son entre los 148 clientes del corte; el tramo y la recomendación salen de la regla de negocio. El aviso «revisar» enlaza con la diapositiva de pros y contras: sin vigilancia, un modelo se queda viejo sin que nadie lo note. La pregunta de los tramos: ¿a quién va el incentivo, al medio o al de más probabilidad como en el laboratorio extra? Depende del objetivo de negocio.')
+
+    captura('B', 2, 'Codespace: Puertos y la página', 'escalón 1', 'Abrir la página: pestaña Puertos → 8090', f'''
+<div class="split" style="grid-template-columns:.95fr 1.05fr;gap:18px">
+ <div class="capcol">{img('cs-04-puertos.webp', 'Pestaña Puertos: API ia-mlops (8080) e Interfaz de consulta (8090), privados')}{mira([
+        'La pestaña **Puertos** lista el **8080** (API) y el **8090** («Interfaz de consulta (S2)»), con su proceso.',
+        'Visibilidad **Private**: solo tu cuenta de GitHub puede abrir esa dirección.',
+        'Pulsa la **dirección reenviada** del 8090 (o el icono del globo) y se abre la página.',
+        'Abajo: «predicciones: **http://127.0.0.1:8080**» — en el escalón 1 la interfaz llama a la API por `127.0.0.1`.'])}</div>
+ <div class="st">{img('cs-05-interfaz-local.webp', 'La interfaz abierta desde el puerto reenviado del Codespace, con el botón Ejemplo', 430)}</div>
+</div>''',
+            'Captura real del Codespace. GitHub reenvía los puertos del Codespace a una dirección https privada: solo la ve quien tiene la sesión de GitHub de esa cuenta. Aquí se pulsó Ejemplo y Predecir. Haga notar la línea de debajo del formulario: las predicciones vienen de http://127.0.0.1:8080, porque las dos piezas son procesos en la misma máquina. En el escalón 4 esa línea cambiará.')
 
     slide('B', 2, 'Por qué no se puede sacar', 'Escalón 1 · conclusión', '«En mi máquina funciona»… y solo ahí', '''
 <div class="split" style="grid-template-columns:1.2fr .8fr">
@@ -465,6 +522,18 @@ def construir():
  </div></div>''',
           'Que construyan la imagen. La primera vez descarga paquetes: un par de minutos. Las salidas de la derecha son las del workflow real. Fuera de ia_mlops solo hay tres archivos: ni modelo ni datos. Y el import de sklearn falla, como debe: esta imagen no ejecuta el modelo.')
 
+    captura('C', 2, 'Codespace: construir las imágenes', 'escalón 3', 'Construir las dos imágenes y mirar dentro', f'''
+<div class="split" style="grid-template-columns:1.15fr .85fr;gap:18px">
+ <div class="capcol st">{img('cs-06-build.webp', 'docker build de la interfaz: 7 pasos, FINISHED')}{img('cs-07-imagenes.webp', 'docker image ls: 826 MB la API y 423 MB la interfaz; dentro de /app solo tres archivos; import sklearn falla')}</div>
+ {mira([
+        'Antes, sin parar: **Ctrl+C** en la API y en la interfaz del escalón 1 (liberan el 8080 y el 8090).',
+        'El build de la interfaz tiene **7 pasos**: el más largo es `pip install -c requirements-api.lock …` (unos 18 s).',
+        '`docker image ls`: **826 MB** la API, **423 MB** la interfaz. Igual que en GitHub Actions.',
+        'Dentro de `/app`, fuera del código, solo **tres archivos**: ni modelo ni datos.',
+        '`import sklearn` termina en **`ModuleNotFoundError`**: es lo que queremos.'])}
+</div>''',
+            'Captura real. Si la imagen de la API no está del bloque 4, construirla también: docker build -f deploy/docker/Dockerfile -t retencion-api:local . La primera vez tarda un par de minutos por pip. Compare los tamaños con los del workflow de GitHub Actions: son los mismos. El ModuleNotFoundError se busca a propósito: la interfaz no ejecuta el modelo.')
+
     slide('C', 2, 'Escalón 4: el diagrama', 'Escalón 4 · el servicio', 'Dos contenedores que se hablan', f'''
 <div class="card st" style="padding:12px 14px">{svg_dos_contenedores()}</div>
 <div class="grid3" style="margin-top:12px">
@@ -498,6 +567,15 @@ def construir():
  </div></div>''',
           'Dicte despacio, de una en una. El error más común aquí es lanzar la interfaz antes de que la API esté sana: no pasa nada, /listo dará 503 unos segundos. /listo debe mostrar «modelo»: «http://api:8080»; eso prueba que llegó por nombre. Lea con el grupo la columna PORTS de docker ps.')
 
+    captura('C', 2, 'Codespace: dos contenedores', 'escalón 4', 'Red, API y interfaz: los dos sanos', f'''
+<div class="st">{img('cs-08-dos-contenedores.webp', 'docker run de la API y de la interfaz; docker ps con los dos healthy; /listo con modelo http://api:8080')}</div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card f mini2"><h3>Tres líneas largas</h3><p class="small">Son los identificadores de lo que se acaba de crear: la red y los dos contenedores.</p></div>
+ <div class="card f mini2"><h3>PORTS</h3><p class="small">La interfaz, <span class="mono">0.0.0.0:8090->8090/tcp</span>: publicada. La API, solo <span class="mono">8080/tcp</span>: sin puerta al equipo.</p></div>
+ <div class="card f mini2"><h3>/listo</h3><p class="small"><span class="mono">"modelo":"http://api:8080"</span>: la interfaz llegó a la API <b>por su nombre</b>, dentro de la red.</p></div>
+</div>''',
+            'Captura real. En la captura las órdenes se encadenaron con && y dos esperas (sleep) para que la API estuviera sana antes de arrancar la interfaz; en clase se lanzan de una en una mirando docker ps. Lea con el grupo la columna PORTS: es la diferencia entre publicar y no publicar.')
+
     t5 = term('Terminal del Codespace', ['curl -X POST http://127.0.0.1:8090/recomendar -H "Content-Type: application/json" -d \'{"cliente_ids": [13599, 18108, 13306, 99999]}\''])
     slide('C', 2, 'El mismo resultado', 'Escalón 4 · comprobación', 'Mismos números, otro sitio', f'''
 <div class="split" style="grid-template-columns:1fr 1fr;gap:18px">
@@ -513,6 +591,17 @@ def construir():
  </div></div>''',
           'Compare con lo que vieron en el escalón 1. Si los números no coinciden, algo está mal: otra base o otro modelo. En el Codespace la página se abre desde la pestaña Puertos; GitHub la reenvía de forma privada, solo para la cuenta de cada persona.')
 
+    captura('C', 2, 'Codespace: el resultado', 'escalón 4', 'La misma respuesta, ahora desde los contenedores', f'''
+<div class="split" style="grid-template-columns:1.05fr .95fr;gap:18px">
+ <div class="st">{img('cs-10-interfaz-contenedor.webp', 'La interfaz servida por el contenedor: predicciones desde http://api:8080', 430)}</div>
+ <div class="capcol">{img('cs-09-recomendar.webp', 'curl a /recomendar resumido: 13599 alta, 18108 media, 13306 baja, 99999 no existe')}{mira([
+        'Por `curl`: **13599** 0,9977 `alta` · **18108** 0,4159 `media` · **13306** 0,128 `baja` · **99999** no existe.',
+        'Son **los mismos números** que en el escalón 1 y que en Windows.',
+        'En la página (pestaña Puertos → 8090, recarga con F5): «predicciones: **http://api:8080**».',
+        'Lo único que cambió es **dónde corren** las piezas.'])}</div>
+</div>''',
+            'Captura real. Para la captura la salida de curl se resumió con un python de una línea; en clase basta el curl de la diapositiva anterior. Lo importante es la línea de la página: antes decía http://127.0.0.1:8080 y ahora http://api:8080. Misma imagen, mismo código, otra configuración.')
+
     t6 = term('Pruébalo', [
         'docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local',
         'curl http://127.0.0.1:8091/listo',
@@ -525,12 +614,31 @@ def construir():
 </div>''',
           'El error que más se repite al pasar de procesos a contenedores. En el escalón 1 la API estaba en 127.0.0.1 porque las dos piezas compartían equipo. En un contenedor, 127.0.0.1 es el propio contenedor y allí no escucha nadie en el 8080. El 503 de /listo lo dice sin adivinar: Connection refused.')
 
+    captura('C', 1, 'Codespace: el error de 127.0.0.1', 'escalón 4', 'El 503 de `127.0.0.1`, en tu pantalla', f'''
+<div class="st">{img('cs-11-error-127.webp', 'interfaz-mal: /listo da 503 Connection refused porque 127.0.0.1 es el propio contenedor')}</div>
+<div class="grid2" style="margin-top:14px;gap:14px">
+ {mira(['La primera línea es el id del contenedor `interfaz-mal`.',
+        '**`[Errno 111] Connection refused`**: dentro de `interfaz-mal` nadie escucha en el 8080.',
+        'La última línea, `interfaz-mal`, es `docker rm -f` confirmando que lo borró.'])}
+ <div class="callout f" style="font-size:18px">Arreglo: dejar <span class="mono">CURSO_URL_API</span> en <span class="mono">http://api:8080</span> (el valor por defecto de la imagen) y que las dos piezas estén en la misma red.</div>
+</div>''',
+            'Captura real, el mismo mensaje que en GitHub Actions. Si alguien en el aula se encuentra este 503 en su proyecto, ya sabe leerlo: la URL apunta a localhost dentro de un contenedor.')
+
     slide('C', 4, 'Romper a propósito', 'Escalón 4 · laboratorio', 'Romper a propósito: ¿qué esperas?', '''
 <div class="split" style="grid-template-columns:.8fr 1.2fr;gap:18px">
  <div class="col" id="rbtns" style="gap:7px"></div>
  <div class="card" id="rdet" style="min-height:440px"></div>
 </div>''',
           'Que cada persona apunte lo que espera antes de pulsar. Las salidas son las del workflow real. La de «parar la API» es la más rica: el motivo no es connection refused sino name resolution, porque al parar el contenedor su nombre desaparece de la red. Vivo no es listo: /salud sigue en 200. Al terminar: docker rm -f api interfaz y docker network rm retencion.', enter='romper')
+
+    captura('C', 2, 'Codespace: las roturas', 'escalón 4', 'Las cinco roturas, una detrás de otra', f'''
+<div class="st">{img('cs-12-romper.webp', 'Las cinco roturas en el Codespace: solo lectura, API sin publicar, por nombre sí, usuario 10001, API parada')}</div>
+<div class="grid2" style="margin-top:12px;gap:14px">
+ {mira(['**1** `Read-only file system` · **2** `Could not connect to server` · **3** `{"estado":"listo"}`.',
+        '**4** `10001`: el usuario sin privilegios · **5** `/salud` `{"estado":"ok"}` pero `/listo` 503.'])}
+ <div class="card f mini2"><h3>Ojo: el motivo cambia según el sistema</h3><p class="small">Con la API parada, en el Codespace sale <span class="mono">[Errno -2] Name or service not known</span>; en GitHub Actions salió <span class="mono">[Errno -3] Temporary failure in name resolution</span>. Dicen lo mismo: <b>el nombre «api» ya no existe en la red</b>.</p></div>
+</div>''',
+            'Captura real: las cinco pruebas de la diapositiva anterior en una sola ejecución, con un rótulo antes de cada una. La quinta es la que más enseña: el texto del error depende del sistema, pero en los dos casos es un fallo de resolución de nombre. Después de esto: docker rm -f api interfaz y docker network rm retencion.')
 
     t7 = term('Terminal del Codespace · desde 04-Proyecto-Base', [
         'docker rm -f api interfaz; docker network rm retencion',
@@ -546,7 +654,7 @@ def construir():
   <p class="small f">La interfaz arrancó <b>6 s después</b>: Compose esperó a que la API estuviera sana (<span class="mono">depends_on: service_healthy</span>).</p>
  </div>
  <div class="card f">''' + tabla(['A mano', 'En compose.yaml'], [
-        ['`docker network create retencion`', 'automática (`name: retencion`)'],
+        ['`docker network create retencion`', 'automática: `retencion_default` (proyecto + `_default`)'],
         ['`--name api`', '`services: api:`'],
         ['`docker build -f …`', '`build: {context, dockerfile}`'],
         ['`-p 8090:8090`', '`ports: ["8090:8090"]`'],
@@ -556,6 +664,17 @@ def construir():
   <p class="small" style="margin-top:8px">Compose sirve para <b>un equipo</b>. Para muchos, lo hacen plataformas como Cloud Run o Kubernetes (S3 y S4).</p></div>
 </div>''',
           'Cuatro órdenes largas con banderas no se repiten igual cada vez: Compose las escribe una vez y además documenta. Abra deploy/docker/compose.yaml y lea la tabla con el archivo al lado. Las rutas del archivo se resuelven desde deploy/docker, por eso el contexto es ../..')
+
+    captura('C', 2, 'Codespace: Compose', 'escalón 5', 'Compose: arriba, sano y abajo', f'''
+<div class="split" style="grid-template-columns:1.2fr .8fr;gap:18px">
+ <div class="capcol st">{img('cs-13-compose-up.webp', 'docker compose up: imágenes construidas, red retencion_default, contenedores Healthy, ps y /listo')}{img('cs-14-compose-down.webp', 'docker compose logs y down: contenedores y red eliminados')}</div>
+ {mira(['`up --build -d --wait`: **Built**, red **`retencion_default`** creada y los dos contenedores **Healthy**.',
+        'La red la nombra Compose: proyecto `retencion` + `_default`.',
+        '`ps`: los mismos puertos que a mano; `/listo` con `http://api:8080`.',
+        '`logs`: cada línea lleva delante su servicio (`api-1`, `interfaz-1`).',
+        '`down`: quita contenedores y red. **Las imágenes y los datos se quedan.**'])}
+</div>''',
+            'Captura real. --wait hace que up no termine hasta que los servicios están sanos: útil en scripts y en el CI. Señale el nombre de la red, retencion_default: Compose la crea y la borra solo. Y la última frase: down no borra imágenes ni datos, por eso el siguiente up es inmediato.')
 
     # ---------------------------------------------------------------- D · Producción
     slide('D', 3, '¿Ya es producción?', 'Escalón 6 · honestidad', 'Ya tienes el artefacto. El Codespace **no** es producción', '''
@@ -613,8 +732,8 @@ def construir():
         'Al acabar: `docker compose -f deploy/docker/compose.yaml down`',
         'S3: esta imagen, en **Cloud Run**']) + '''</div>
 </div>
-<p class="small" style="margin-top:10px">Probado con Docker real en GitHub Actions (''' + FECHA + '''). Aún sin recorrer a mano en un Codespace: anota lo que te salga distinto.</p>''',
-          'Cierre recordando la pregunta inicial: dónde y cómo llama el usuario al modelo. Respuesta: a una interfaz que conoce los datos, que llama a una API que conoce el modelo, cada una en su contenedor. Pida que anoten cualquier diferencia que vean en su Codespace: el material se probó en GitHub Actions y todavía no se ha recorrido a mano en un Codespace.')
+<p class="small" style="margin-top:10px">Probado con Docker real en GitHub Actions y recorrido entero en un Codespace del curso (''' + FECHA + '''). Si algo te sale distinto, anótalo.</p>''',
+          'Cierre recordando la pregunta inicial: dónde y cómo llama el usuario al modelo. Respuesta: a una interfaz que conoce los datos, que llama a una API que conoce el modelo, cada una en su contenedor. Pida que anoten cualquier diferencia que vean en su Codespace: el material se probó en GitHub Actions y se recorrió entero en un Codespace del curso el 14/11/2026, con las capturas que han visto.')
 
 
 # =====================================================================================================================================
@@ -635,7 +754,7 @@ ROTURAS = [
     ('La API desde el equipo', 'curl http://127.0.0.1:8080/salud', 'no conecta', 'api_equipo', 'Sin -p no hay puerta.'),
     ('La API desde la interfaz', "docker exec interfaz python -c \"import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())\"", '200', 'api_interfaz', 'Dentro de la red, por nombre, sí.'),
     ('Interfaz sin volumen', 'docker run -d --name sin-datos --network retencion -p 8092:8090 retencion-interfaz:local\ncurl http://127.0.0.1:8092/listo', '503', 'sin_volumen', 'Los datos no están en la imagen: hay que montarlos.'),
-    ('Parar la API', 'docker stop api\ncurl http://127.0.0.1:8090/salud     # 200\ncurl http://127.0.0.1:8090/listo', '503', 'api_parada', 'Vivo no es listo. Y el motivo: al parar el contenedor, el nombre «api» desaparece de la red.'),
+    ('Parar la API', 'docker stop api\ncurl http://127.0.0.1:8090/salud     # 200\ncurl http://127.0.0.1:8090/listo', '503', 'api_parada', 'Vivo no es listo. Y el motivo: al parar el contenedor, el nombre «api» desaparece de la red (en el Codespace el texto es «[Errno -2] Name or service not known»).'),
 ]
 
 
@@ -685,6 +804,11 @@ CSS_EXTRA = r"""
 .rbtn small{display:block;color:var(--muted);font-size:13px}
 #rdet pre.pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
 .reveal{margin-top:10px}
+.capimg{display:block;max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.35);background:#1e1e1e}
+.capcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.capa{display:block;cursor:zoom-in}.capa:hover .capimg{border-color:var(--blue)}
+.mira .list li{font-size:15.5px;line-height:1.35}
+.mira h3{color:var(--gold)}
 .arq svg{display:block;width:100%;max-height:462px}
 .arq.pq svg{max-height:240px}
 .htxt2[text-anchor="start"],.htxt3[text-anchor="start"]{text-anchor:start}

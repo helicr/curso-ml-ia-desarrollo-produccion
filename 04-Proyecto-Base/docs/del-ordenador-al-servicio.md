@@ -354,7 +354,7 @@ La interfaz arrancó **6 segundos después** que la API. Es `depends_on: conditi
 
 | A mano (escalón 4) | En `compose.yaml` |
 |---|---|
-| `docker network create retencion` | Automático: una red por proyecto (`name: retencion`). |
+| `docker network create retencion` | Automático: Compose crea una red por proyecto, `retencion_default` (el `name: retencion` del archivo más `_default`). |
 | `--name api` | El nombre del servicio (`services: api:`). |
 | `docker build -f deploy/docker/Dockerfile …` | `build: {context: ../.., dockerfile: deploy/docker/Dockerfile}` |
 | `-p 8090:8090` | `ports: ["8090:8090"]` |
@@ -436,4 +436,5 @@ Porque no ejecuta el modelo: le pide la probabilidad a la API por HTTP. Lleva me
   - y `/salud` y `/listo`.
 - **Simulado en Windows sin Docker** (14/11/2026): `/app` y `/datos` copiados aparte, la base marcada de solo lectura y las variables de entorno del Dockerfile, contra la API real. El resultado: las mismas probabilidades, el 503 al parar la API y la base intacta.
 - **Con Docker real:** el workflow `.github/workflows/validar-dos-contenedores.yml` ejecuta los escalones 3, 4 y 5 y todas las roturas del apartado 7. **En verde en GitHub Actions** (ubuntu-latest, 14/11/2026, dos ejecuciones). Las salidas reales de esta guía son las de esa ejecución: el workflow las publica como anotaciones en la página de la ejecución.
-- **Sin probar:** en un Codespace a mano, y en Docker Desktop (Windows o Mac).
+- **Recorrido a mano en un Codespace real del curso** (14/11/2026, recién creado desde `develop`): los escalones 1 a 5 y las roturas, con la pestaña *Puertos* y la página. Las capturas están en la presentación `01-Sesiones/S2-API-y-Docker/del-ordenador-al-servicio/`. Dos diferencias con GitHub Actions: en un Codespace nuevo hay que crear antes la base operacional (`python -m ia_mlops.operacional`), y con la API parada el motivo es `[Errno -2] Name or service not known` en lugar de `[Errno -3] Temporary failure in name resolution` (dicen lo mismo: el nombre `api` ya no existe en la red). La red que crea Compose se llama `retencion_default`.
+- **Sin probar:** Docker Desktop (Windows o Mac).
