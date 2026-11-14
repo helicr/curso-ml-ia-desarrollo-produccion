@@ -85,5 +85,5 @@ En el Codespace del curso, en la terminal, desde `04-Proyecto-Base`. La imagen d
 ## Qué se probó
 - **En local:** `tests/test_interfaz.py` y `tests/test_imagen_interfaz.py`. La parte A se probó a mano en Windows el 14/11/2026.
 - **Sin Docker:** el contenedor de la interfaz se simuló en Windows (base de solo lectura y variables de entorno del Dockerfile) contra la API real.
-- **Con Docker real:** el workflow `validar-dos-contenedores.yml` cubre la parte B y las roturas. **Pendiente de su primera ejecución.**
-- **Sin probar a mano en un Codespace.**
+- **Con Docker real:** la parte B entera, Compose y las roturas, **en verde en GitHub Actions** el 14/11/2026 (workflow `validar-dos-contenedores.yml`). La guía cita sus salidas reales: la imagen de la interfaz ocupa 423 MB y la de la API 826 MB.
+- **Sin probar a mano en un Codespace.** Es el mismo Docker, pero no se ha recorrido con el navegador ni con la pestaña *Puertos*.

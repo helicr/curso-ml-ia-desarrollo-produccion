@@ -191,7 +191,16 @@ docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
 docker image ls 'retencion-*'                                                    # compara el tamaño de las dos imágenes
 docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*"'
 ```
-La última orden debería mostrar solo `requirements-api.lock`, `requirements-interfaz.txt` y `sql/fs/02_poblar_fs.sql`: **ni modelo ni datos**. Anota el tamaño de las dos imágenes. Al no llevar scikit-learn, scipy ni mlflow, la de la interfaz debería ser más pequeña.
+Salida real (GitHub Actions, 14/11/2026):
+```text
+retencion-interfaz:local  423MB
+retencion-api:local  826MB
+
+/app/requirements-api.lock
+/app/requirements-interfaz.txt
+/app/sql/fs/02_poblar_fs.sql
+```
+Fuera de `ia_mlops/` solo hay tres archivos: **ni modelo ni datos**. La imagen de la interfaz ocupa **la mitad** que la de la API porque no lleva scikit-learn, scipy ni mlflow. Compruébalo: `docker run --rm --entrypoint python retencion-interfaz:local -c "import sklearn"` termina con `ModuleNotFoundError: No module named 'sklearn'`.
 
 ---
 
@@ -220,7 +229,7 @@ docker run -d --name api --network retencion retencion-api:local
 - **No lleva `-p`, a propósito.** Desde el equipo no se llega a la API; solo la interfaz, dentro de la red, puede llamarla. Es el principio de **exponer lo mínimo**: la persona usa la interfaz y nadie necesita hablar con la API directamente.
 - **`-d`** (*detached*) la deja corriendo en segundo plano.
 
-Espera a que esté sana: `docker ps` muestra `(health: starting)` y, tras la primera comprobación (unos 30 segundos), `(healthy)`.
+Espera a que esté sana: `docker ps` muestra `(health: starting)` mientras carga el modelo y después `(healthy)`. En GitHub Actions tardó unos segundos.
 
 ### 6.3 La interfaz, con su puerto y sus datos
 ```text
@@ -238,14 +247,36 @@ curl http://127.0.0.1:8090/listo
 curl -X POST http://127.0.0.1:8090/recomendar -H "Content-Type: application/json" -d '{"cliente_ids": [13599, 18108, 13306, 99999]}'
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
-**`/listo`** debe responder con `"modelo":"http://api:8080"`: la interfaz llegó a la API **por su nombre**. **`/recomendar`** devuelve los mismos números que en el escalón 1 (13599 → 0,9977 `alta`; 18108 → 0,4159 `media`; 13306 → 0,128 `baja`; 99999 sin predicción), porque el modelo y los datos son los mismos y solo ha cambiado dónde corren. Abre la página: en el Codespace, desde la pestaña **Puertos**, el 8090.
+Salida real (GitHub Actions, 14/11/2026; `/recomendar` resumido):
+```text
+{"estado":"listo","datos":"ok","modelo":"http://api:8080"}
+
+origen http://api:8080 | corte 2011-12-10
+13599 0.9977 alta puesto 1
+18108 0.4159 media puesto 75
+13306 0.128 baja puesto 148
+99999 no existe en MASTER
+
+NAMES      STATUS                   PORTS
+interfaz   Up 6 seconds (healthy)   0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+api        Up 6 seconds (healthy)   8080/tcp
+```
+- **`/listo`** responde con `"modelo":"http://api:8080"`: la interfaz llegó a la API **por su nombre**.
+- **`/recomendar`** da **los mismos números que en el escalón 1, en Windows**. El modelo y los datos son los mismos; solo ha cambiado dónde corren.
+- **`docker ps`** enseña la diferencia de puertos. La interfaz tiene `0.0.0.0:8090->8090/tcp` (publicado). La API solo `8080/tcp`: escucha dentro de su red, pero no tiene puerta al equipo.
+
+Abre la página: en el Codespace, desde la pestaña **Puertos**, el 8090.
 
 ### 6.5 El error clásico: `127.0.0.1` dentro de un contenedor
 Prueba a arrancar otra interfaz diciéndole que la API está en `127.0.0.1`, como en el escalón 1:
 ```text
 docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local
-curl http://127.0.0.1:8091/listo      →  503: «La API del modelo en http://127.0.0.1:8080 no responde …»
+curl http://127.0.0.1:8091/listo
 docker rm -f interfaz-mal
+```
+Salida real:
+```text
+{"detalle":"La API del modelo en http://127.0.0.1:8080 no responde ([Errno 111] Connection refused). ¿Está arrancada y /listo responde?"}
 ```
 **Dentro de un contenedor, `127.0.0.1` es el propio contenedor**, no tu equipo ni el contenedor de al lado. Dentro de «interfaz-mal» no hay nada en el 8080. Es el error más frecuente al pasar de procesos a contenedores, y el 503 de `/listo` lo dice sin tener que adivinar.
 
@@ -253,15 +284,15 @@ docker rm -f interfaz-mal
 
 ## 7. Romper a propósito
 
-Apunta lo que esperas **antes** de ejecutar cada prueba. Todas están automatizadas en el workflow `validar-dos-contenedores.yml`.
+Apunta lo que esperas **antes** de ejecutar cada prueba. Todas están automatizadas en el workflow `validar-dos-contenedores.yml`; la columna «Salida real» es la de su ejecución del 14/11/2026.
 
-| Prueba | Orden | Esperado | Lección |
+| Prueba | Orden | Salida real | Lección |
 |---|---|---|---|
-| Escribir en los datos | `docker exec interfaz sh -c 'echo x > /datos/intruso'` | Falla: *Read-only file system* | `:ro` protege el dato aunque el código tenga un error. |
-| Llamar a la API desde el equipo | `curl http://127.0.0.1:8080/salud` | No conecta | Sin `-p` no hay puerta. |
+| Escribir en los datos | `docker exec interfaz sh -c 'echo x > /datos/intruso'` | `sh: 1: cannot create /datos/intruso: Read-only file system` | `:ro` protege el dato aunque el código tenga un error. |
+| Llamar a la API desde el equipo | `curl http://127.0.0.1:8080/salud` | `curl: (7) Failed to connect to 127.0.0.1 port 8080 after 0 ms: Could not connect to server` | Sin `-p` no hay puerta. |
 | Llamar a la API desde la interfaz | `docker exec interfaz python -c "import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())"` | `b'{"estado":"listo"}'` | Dentro de la red, por nombre, sí. |
-| Interfaz sin volumen | `docker run -d --name sin-datos --network retencion -p 8092:8090 retencion-interfaz:local` y `curl http://127.0.0.1:8092/listo` | 503: «No existe la base /datos/curso.db. ¿Has montado el volumen…?» | Los datos no están en la imagen. |
-| Parar la API | `docker stop api` y `curl http://127.0.0.1:8090/salud` y `/listo` | `/salud` 200, `/listo` 503 | Vivo no es listo: reiniciar la interfaz no lo arregla. |
+| Interfaz sin volumen | `docker run -d --name sin-datos --network retencion -p 8092:8090 retencion-interfaz:local` y `curl http://127.0.0.1:8092/listo` | 503 `{"detalle":"No existe la base /datos/curso.db. ¿Has montado el volumen con los datos? (-v .../data/processed:/datos:ro)"}` | Los datos no están en la imagen. |
+| Parar la API | `docker stop api` y `curl http://127.0.0.1:8090/salud` y `/listo` | `/salud` 200; `/listo` 503 `{"detalle":"La API del modelo en http://api:8080 no responde ([Errno -3] Temporary failure in name resolution). …"}` | Vivo no es listo: reiniciar la interfaz no lo arregla. Y fíjate en el motivo: con la API parada, **el nombre `api` deja de existir en la red** (la «guía telefónica» de Docker ya no lo encuentra). |
 | ¿Quién soy? | `docker exec interfaz id -u` | `10001` | Ni root ni privilegios. |
 
 Para limpiar: `docker rm -f api interfaz sin-datos` y `docker network rm retencion`.
@@ -278,6 +309,13 @@ docker compose -f deploy/docker/compose.yaml ps                # estado y salud
 docker compose -f deploy/docker/compose.yaml logs -f interfaz  # registros (Ctrl+C para salir)
 docker compose -f deploy/docker/compose.yaml down              # para y borra contenedores y red; imágenes y datos se quedan
 ```
+`ps`, salida real (con `--format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'`):
+```text
+SERVICE    STATUS                    PORTS
+api        Up 11 seconds (healthy)   8080/tcp
+interfaz   Up 5 seconds (healthy)    0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
+```
+La interfaz arrancó **6 segundos después** que la API. Es `depends_on: condition: service_healthy`: Compose esperó a que la API estuviera sana.
 
 | A mano (escalón 4) | En `compose.yaml` |
 |---|---|
@@ -362,5 +400,5 @@ Porque no ejecuta el modelo: le pide la probabilidad a la API por HTTP. Lleva me
   - que con la base en solo lectura funciona y no la modifica;
   - y `/salud` y `/listo`.
 - **Simulado en Windows sin Docker** (14/11/2026): `/app` y `/datos` copiados aparte, la base marcada de solo lectura y las variables de entorno del Dockerfile, contra la API real. El resultado: las mismas probabilidades, el 503 al parar la API y la base intacta.
-- **Con Docker real:** el workflow `.github/workflows/validar-dos-contenedores.yml` ejecuta los escalones 3, 4 y 5 y todas las roturas del apartado 7. **Pendiente de su primera ejecución.**
+- **Con Docker real:** el workflow `.github/workflows/validar-dos-contenedores.yml` ejecuta los escalones 3, 4 y 5 y todas las roturas del apartado 7. **En verde en GitHub Actions** (ubuntu-latest, 14/11/2026, dos ejecuciones). Las salidas reales de esta guía son las de esa ejecución: el workflow las publica como anotaciones en la página de la ejecución.
 - **Sin probar:** en un Codespace a mano, y en Docker Desktop (Windows o Mac).
