@@ -467,7 +467,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
 <div class="grid2" style="margin-top:20px">
  <div class="card f"><h3>0:00 · Revisión (30 min)</h3><p class="small">Entorno, pipeline y pruebas de S1 en verde. Comprobar que Docker responde en tu Codespace.</p></div>
  <div class="card f"><h3>0:30 · Teoría (60 min)</h3><p class="small">Contrato de la API, errores y registros (45 min) y contenedor + primer CI (15 min).</p></div>
- <div class="card f"><h3>1:30 · Práctica (135 min)</h3><p class="small">Arrancar la API, romperla a propósito, comparar predicciones, construir la imagen y ver el CI.</p></div>
+ <div class="card f"><h3>1:30 · Práctica (135 min)</h3><p class="small">Arrancar la API, romperla a propósito, comparar predicciones, construir la imagen y ver el CI. Después, el laboratorio <b>exponer el servicio</b>.</p></div>
  <div class="card f"><h3>3:45 · Entrega (15 min)</h3><p class="small">Se explica la tarea y la rúbrica, se resuelven dudas y se avanza a S3.</p></div>
 </div>
 </section>
@@ -714,6 +714,28 @@ API http://127.0.0.1:8098       200            0.000e+00  coincide
 <div class="budget st" id="pbudget"></div>
 <div class="card" id="pdet" style="min-height:200px"></div>
 <p class="small" style="margin-top:8px">Guía completa: <span class="mono">01-Sesiones/S2-API-y-Docker/practica/guia-laboratorio.md</span></p>
+</section>
+
+<section class="slide" data-part="D" data-min="60" data-title="Laboratorio: exponer el servicio"
+ data-notes="Bloque 6 de la práctica, después de Docker en el Codespace. Responde a lo que preguntó el grupo: ya tenemos la API, pero ¿dónde y cómo la usa una persona de negocio, que solo conoce el id del cliente? Se hace con su propia presentación, «Del ordenador al servicio» (27 diapositivas, notas con la tecla S, unos 60 minutos): pros y contras de llevar un modelo a producción, la arquitectura de la exposición, todo en el ordenador, la interfaz en su imagen, dos contenedores en una red con la base en solo lectura, Compose y el mapa a producción. Requisitos: el pipeline ejecutado y la imagen de la API del bloque 4. Las salidas que muestra son reales, del workflow de GitHub Actions.">
+<p class="kick st">Práctica · bloque 6 · laboratorio</p><h1 class="st">Exponer el servicio</h1>
+<div class="split" style="grid-template-columns:1.15fr .85fr;gap:22px">
+ <div class="path st">
+  <div class="step"><span class="num">1</span><div><b>Todo en mi ordenador</b><span class="d">dos procesos en 127.0.0.1: funciona, pero no sale de ahí</span></div></div>
+  <div class="step"><span class="num">2</span><div><b>La API en su imagen</b><span class="d">lo del bloque 4: igual en cualquier equipo con Docker</span></div></div>
+  <div class="step"><span class="num">3</span><div><b>La interfaz en su imagen</b><span class="d">ids → variables (SQL de FS) → API · sin modelo ni datos</span></div></div>
+  <div class="step"><span class="num">4</span><div><b>Dos contenedores que se hablan</b><span class="d">red · la API sin -p · datos con -v …:ro</span></div></div>
+  <div class="step"><span class="num">5</span><div><b>Lo mismo con Compose</b><span class="d">un archivo: deploy/docker/compose.yaml</span></div></div>
+  <div class="step"><span class="num">6</span><div><b>¿Ya es producción?</b><span class="d">lo que falta y en qué sesión se ve</span></div><span class="tag">S3 · S4 · S5</span></div>
+ </div>
+ <div class="col">
+  <div class="card f"><h3>La pregunta</h3><p class="small">La API pide 13 variables; quien hace la campaña solo tiene <b>ids de cliente</b>. ¿Dónde llama y qué recibe? Una <b>interfaz</b> con probabilidad, tramo y recomendación.</p></div>
+  <div class="card f"><h3>Antes de empezar</h3><p class="small">Pipeline ejecutado y la imagen <span class="mono">retencion-api:local</span> del bloque 4, en tu Codespace.</p></div>
+  <div class="callout f" style="font-size:18px">Presentación del laboratorio: <b>Del ordenador al servicio</b> · 27 diapositivas · salidas reales<br>
+   <a class="btn primary" style="display:inline-block;margin-top:10px;text-decoration:none" href="../del-ordenador-al-servicio/index.html">Abrir el laboratorio →</a>
+   <span class="small" style="display:block;margin-top:8px">En texto: <span class="mono">docs/del-ordenador-al-servicio.md</span></span></div>
+ </div>
+</div>
 </section>
 
 <section class="slide" data-part="D" data-min="10" data-title="La tarea y la rúbrica"

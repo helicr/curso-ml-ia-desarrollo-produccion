@@ -263,7 +263,7 @@ class TestPdfGenerados:
         from pypdf import PdfReader
         ruta = pdf('S2', '01-presentacion-s2.pdf')
         paginas = PdfReader(str(ruta)).pages
-        assert len(paginas) == 21
+        assert len(paginas) == 22          # con la del laboratorio «exponer el servicio» (14/11/2026)
         todo = ' '.join(p.extract_text() or '' for p in paginas)
         assert 'Hacer clic' not in todo and 'Haz clic' not in todo
         assert 'Pantalla completa (F)' not in todo

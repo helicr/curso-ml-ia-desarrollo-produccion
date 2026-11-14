@@ -18,11 +18,13 @@ Al terminar, la persona asistente puede:
 | 0–30 | Revisión de entorno | `slides/` diap. 3 · `checklist.md` |
 | 30–90 | Teoría | `slides/` diap. 4–17 · `teoria/README.md` |
 | 90–225 | Práctica (135 min, pausa de 10) | `slides/` diap. 18 · `practica/guia-laboratorio.md` |
-| 225–240 | Entrega y cierre | `tarea/README.md` · `slides/` diap. 19–21 |
+| (+60) | Laboratorio: exponer el servicio | `slides/` diap. 19 → presentación `del-ordenador-al-servicio/` · `practica/interfaz-de-consulta.md` |
+| 225–240 | Entrega y cierre | `tarea/README.md` · `slides/` diap. 20–22 |
 
 ## Contenido de esta carpeta
 - `index.html`: índice de la sesión (presentaciones, documentos y qué falta). Se genera con `00-Planificacion/indices-de-sesion/generar_indices.py`.
-- `slides/index.html`: presentación interactiva (21 diapositivas; flechas, **O** índice, **S** notas, **F** pantalla completa). La diapositiva 8 es un laboratorio de «¿200, 422 o 503?» con las respuestas reales de la API. (nueve casos de archivo y el servidor sin modelo)
+- `slides/index.html`: presentación interactiva (22 diapositivas; flechas, **O** índice, **S** notas, **F** pantalla completa). La diapositiva 8 es un laboratorio de «¿200, 422 o 503?» con las respuestas reales de la API (nueve casos de archivo y el servidor sin modelo). La 19 presenta el laboratorio «exponer el servicio» y abre su presentación.
+- `del-ordenador-al-servicio/index.html`: presentación del laboratorio «exponer el servicio» (27 diapositivas, unos 60 min), generada con `del-ordenador-al-servicio/generar.py`.
 - `guion.md`: guion del docente minuto a minuto.
 - `checklist.md`: comprobaciones del docente y del alumnado.
 - `teoria/README.md`: resumen de teoría y glosario.

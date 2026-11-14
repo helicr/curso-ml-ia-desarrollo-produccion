@@ -85,7 +85,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
-| [`01-presentacion-s2.pdf`](S2-API-y-Docker/01-presentaciones/01-presentacion-s2.pdf) | Presentación de S2 | 21 | 3.4 MB |
+| [`01-presentacion-s2.pdf`](S2-API-y-Docker/01-presentaciones/01-presentacion-s2.pdf) | Presentación de S2 | 22 | 3.7 MB |
 | [`02-guia-de-codespaces.pdf`](S2-API-y-Docker/01-presentaciones/02-guia-de-codespaces.pdf) | Codespaces: tu laboratorio de Docker en la nube | 38 | 5.3 MB |
 | [`03-contenedores-el-modelo-mental.pdf`](S2-API-y-Docker/01-presentaciones/03-contenedores-el-modelo-mental.pdf) | Contenedores: el modelo mental | 16 | 1.7 MB |
 | [`04-del-dockerfile-a-produccion.pdf`](S2-API-y-Docker/01-presentaciones/04-del-dockerfile-a-produccion.pdf) | Contenedores: del Dockerfile a producción | 17 | 1.7 MB |
@@ -111,4 +111,4 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | PDF | Contenido | Páginas | Tamaño |
 |---|---|---|---|
 | [`01-readme-s2.pdf`](S2-API-y-Docker/03-instructor/01-readme-s2.pdf) | README de S2 | 3 | 149 KB |
-| [`02-guion-s2.pdf`](S2-API-y-Docker/03-instructor/02-guion-s2.pdf) | Guion de S2 | 3 | 136 KB |
+| [`02-guion-s2.pdf`](S2-API-y-Docker/03-instructor/02-guion-s2.pdf) | Guion de S2 | 3 | 169 KB |

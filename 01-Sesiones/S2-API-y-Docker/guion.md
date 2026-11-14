@@ -43,9 +43,13 @@ Ritmo: 10 preparar · 25 arrancar · 30 romper · **10 pausa** · 25 comparar y 
   **Tiempo:** la sesión dura 240 min y la práctica ya va justa. Si no cabe, hacer la parte A y la B hasta el paso 3 como demo del docente (unos 25 min), y dejar el resto como lectura obligatoria antes de S3.
 - Quien termine antes: empezar la tarea (reentrenar con una variable nueva y ver el 503 de `/listo`).
 
-## 3:45–4:00 · Entrega y cierre (diap. 19–21)
-- Tarea y rúbrica (diap. 19): dos rutas (A: Online Retail II con la variable de S1; B: caso propio).
-- Errores frecuentes (diap. 20) y avance de S3 (diap. 21): la misma imagen va a Cloud Run.
+## Laboratorio: exponer el servicio (diap. 19 → presentación `del-ordenador-al-servicio/`)
+- La diapositiva 19 de S2 presenta el laboratorio y abre su presentación con el botón «Abrir el laboratorio →». Desde allí, «⌂ Índice de S2» vuelve al índice de la sesión.
+- Detalle del bloque, tiempos y mensajes: ver el punto «Tras el bloque 4» de la práctica, más arriba.
+
+## 3:45–4:00 · Entrega y cierre (diap. 20–22)
+- Tarea y rúbrica (diap. 20): dos rutas (A: Online Retail II con la variable de S1; B: caso propio).
+- Errores frecuentes (diap. 21) y avance de S3 (diap. 22): la misma imagen va a Cloud Run.
 - Recordar: evidencia = pruebas en verde + mensaje 503 del esquema desactualizado + comparación contra el contenedor + imagen (tamaño y usuario) + enlace a una ejecución del workflow.
 
 ## Si algo falla en directo
