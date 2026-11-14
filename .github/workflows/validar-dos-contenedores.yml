@@ -37,10 +37,12 @@ jobs:
         run: |
           docker build -f deploy/docker/Dockerfile -t retencion-api:local .
           docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
-          docker image ls 'retencion-*'
+          mkdir -p /tmp/s     # salidas que se publican como anotaciones al final (se leen sin permisos de administrador)
+          docker image ls 'retencion-*' --format '{{.Repository}}:{{.Tag}}  {{.Size}}' | tee /tmp/s/1-imagenes.txt
           echo "--- que hay en /app de la interfaz (ni modelo ni datos):"
-          docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*"; ls /app/ia_mlops'
-          if docker run --rm --entrypoint python retencion-interfaz:local -c "import sklearn"; then echo "MAL: la interfaz lleva scikit-learn"; exit 1; fi
+          docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*" | sort; ls /app/ia_mlops' | tee /tmp/s/1-app.txt
+          if docker run --rm --entrypoint python retencion-interfaz:local -c "import sklearn" 2> /tmp/s/1-sin-sklearn.txt; then echo "MAL: la interfaz lleva scikit-learn"; exit 1; fi
+          tail -1 /tmp/s/1-sin-sklearn.txt > /tmp/s/x && mv /tmp/s/x /tmp/s/1-sin-sklearn.txt
 
       - name: "Paso a mano: red + API + interfaz"
         run: |
@@ -49,34 +51,36 @@ jobs:
           docker run -d --name api --network retencion retencion-api:local
           docker run -d --name interfaz --network retencion -p 8090:8090 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local
           for _ in $(seq 1 40); do curl -fsS http://127.0.0.1:8090/listo && break; sleep 2; done
-          curl -fsS http://127.0.0.1:8090/listo
+          curl -fsS http://127.0.0.1:8090/listo | tee /tmp/s/1-listo.txt
           curl -fsS http://127.0.0.1:8090/estado
           curl -fsS -X POST http://127.0.0.1:8090/recomendar -H 'content-type: application/json' -d '{"cliente_ids": [13599, 18108, 13306, 99999]}' | tee /tmp/r.json
           python -c "import json; r=json.load(open('/tmp/r.json')); assert r['encontrados']==3 and r['origen']=='http://api:8080', r"
+          python -c "import json; r=json.load(open('/tmp/r.json')); print('origen', r['origen'], '| corte', r['corte']); [print(x['cliente_id'], x['probabilidad'], x['segmento'], 'puesto', x['puesto']) for x in r['resultados']]; [print(f['cliente_id'], f['motivo']) for f in r['no_encontrados']]" | tee /tmp/s/1-recomendar.txt
           test "$(docker exec interfaz id -u)" = "10001"
-          docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+          for _ in $(seq 1 30); do docker ps --filter name=api --format '{{.Status}}' | grep -q '(healthy)' && break; sleep 2; done
+          docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' | tee /tmp/s/1-docker-ps.txt
 
       - name: "Romper: volumen de solo lectura, API no publicada, 127.0.0.1 dentro del contenedor, API parada"
         run: |
           set -x
           # el volumen es de solo lectura: el contenedor no puede escribir en los datos
           # (con «set -e», una orden negada con «!» nunca hace fallar el paso: por eso «if ...; then exit 1»)
-          if docker exec interfaz sh -c 'echo x > /datos/intruso'; then echo "MAL: se pudo escribir en /datos"; exit 1; fi
+          if docker exec interfaz sh -c 'echo x > /datos/intruso' 2> /tmp/s/2-solo-lectura.txt; then echo "MAL: se pudo escribir en /datos"; exit 1; fi
           # la API no se publico (-p): desde el equipo no se llega; desde la interfaz, si (por nombre)
-          if curl -fsS --max-time 3 http://127.0.0.1:8080/salud; then echo "MAL: la API esta publicada"; exit 1; fi
-          docker exec interfaz python -c "import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())"
+          if curl -fsS --max-time 3 http://127.0.0.1:8080/salud 2> /tmp/s/2-api-desde-el-equipo.txt; then echo "MAL: la API esta publicada"; exit 1; fi
+          docker exec interfaz python -c "import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())" | tee /tmp/s/2-api-desde-la-interfaz.txt
           # el error clasico: 127.0.0.1 dentro de un contenedor es EL PROPIO contenedor
           docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local
           for _ in $(seq 1 20); do curl -fsS http://127.0.0.1:8091/salud && break; sleep 1; done
-          test "$(curl -s -o /tmp/mal.json -w '%{http_code}' http://127.0.0.1:8091/listo)" = "503"; cat /tmp/mal.json; echo
+          test "$(curl -s -o /tmp/mal.json -w '%{http_code}' http://127.0.0.1:8091/listo)" = "503"; cp /tmp/mal.json /tmp/s/2-url-127.txt; cat /tmp/mal.json; echo
           # sin volumen: no hay datos
           docker run -d --name interfaz-sin-datos --network retencion -p 8092:8090 retencion-interfaz:local
           for _ in $(seq 1 20); do curl -fsS http://127.0.0.1:8092/salud && break; sleep 1; done
-          test "$(curl -s -o /tmp/sin.json -w '%{http_code}' http://127.0.0.1:8092/listo)" = "503"; cat /tmp/sin.json; echo
+          test "$(curl -s -o /tmp/sin.json -w '%{http_code}' http://127.0.0.1:8092/listo)" = "503"; cp /tmp/sin.json /tmp/s/2-sin-volumen.txt; cat /tmp/sin.json; echo
           # la API se para: la interfaz sigue viva (/salud) pero no lista (/listo 503)
           docker stop api
           curl -fsS http://127.0.0.1:8090/salud
-          test "$(curl -s -o /tmp/parada.json -w '%{http_code}' http://127.0.0.1:8090/listo)" = "503"; cat /tmp/parada.json; echo
+          test "$(curl -s -o /tmp/parada.json -w '%{http_code}' http://127.0.0.1:8090/listo)" = "503"; cp /tmp/parada.json /tmp/s/2-api-parada.txt; cat /tmp/parada.json; echo
 
       - name: Registros (si algo falla)
         if: failure()
@@ -90,7 +94,7 @@ jobs:
         run: |
           set -x
           docker compose -f deploy/docker/compose.yaml up --build -d --wait
-          docker compose -f deploy/docker/compose.yaml ps
+          docker compose -f deploy/docker/compose.yaml ps --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}' | tee /tmp/s/2-compose-ps.txt
           curl -fsS http://127.0.0.1:8090/listo
           curl -fsS -X POST http://127.0.0.1:8090/recomendar -H 'content-type: application/json' -d '{"cliente_ids": [13599]}'
           if curl -fsS --max-time 3 http://127.0.0.1:8080/salud; then echo "MAL: la API esta publicada"; exit 1; fi
@@ -99,3 +103,13 @@ jobs:
       - name: Bajar compose
         if: always()
         run: docker compose -f deploy/docker/compose.yaml down || true
+
+      # Las salidas reales, como anotaciones (máximo 10 por paso; por eso dos pasos). Se ven en la página de la ejecución.
+      - name: Salidas reales (1)
+        if: always()
+        run: |
+          for f in /tmp/s/1-*.txt; do [ -f "$f" ] && echo "::notice title=$(basename "$f" .txt)::$(sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\r//g' -e 's/\n/%0A/g' "$f")"; done; true
+      - name: Salidas reales (2)
+        if: always()
+        run: |
+          for f in /tmp/s/2-*.txt; do [ -f "$f" ] && echo "::notice title=$(basename "$f" .txt)::$(sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\r//g' -e 's/\n/%0A/g' "$f")"; done; true
