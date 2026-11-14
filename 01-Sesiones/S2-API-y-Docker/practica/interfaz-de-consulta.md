@@ -2,7 +2,8 @@
 
 **Duración:** unos 60 minutos, después del bloque 4 (la imagen de la API en el Codespace). **Requisito:** `python -m ia_mlops.pipeline` ejecutado; deja `models/modelo_mlflow/` y la base `data/processed/curso.db`.
 
-**La explicación completa**, desde lo básico, está en [**Del ordenador al servicio**](../../../04-Proyecto-Base/docs/del-ordenador-al-servicio.md). Esta hoja es el recorrido de clase: qué hacer, en qué orden y qué preguntarse. Cada paso remite al apartado de la guía.
+**En clase se proyecta la presentación** [**Del ordenador al servicio**](../del-ordenador-al-servicio/index.html) (27 diapositivas, unos 60 min): cada orden se copia con ⧉ en tu Codespace y las salidas que muestra son reales.
+**La explicación completa en texto**, desde lo básico, está en la [guía](../../../04-Proyecto-Base/docs/del-ordenador-al-servicio.md). Esta hoja es el recorrido: qué hacer, en qué orden y qué preguntarse. Cada paso remite al apartado de la guía.
 
 ## La idea en un minuto
 Ya tenemos el modelo expuesto como API, pero la API pide **13 variables** por cliente. Quien prepara la campaña solo conoce el **id del cliente** y quiere saber **qué hacer** con él. La interfaz cubre ese hueco:

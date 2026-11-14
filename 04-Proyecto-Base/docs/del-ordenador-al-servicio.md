@@ -36,6 +36,41 @@ La clave está en esta tabla. **La API no sabe qué es un id de cliente**: solo 
 
 El detalle de la interfaz (cómo calcula las variables, la regla de tramos, los endpoints) está en [`interfaz-de-consulta.md`](interfaz-de-consulta.md). Aquí lo que importa es **dónde corre cada pieza y qué cambia al moverla**.
 
+### La arquitectura de la exposición del modelo
+Dos momentos distintos: lo que se **construye** una vez por versión del modelo y lo que **ocurre** en cada consulta.
+
+```text
+ CONSTRUCCIÓN · una vez por versión del modelo
+ ┌───────────┐   ┌──────────────────────┐   ┌──────────────┐   ┌─────────────────────┐   ┌─────────────┐   ┌──────────────────┐
+ │Operacional│──►│Pipelines             │──►│Entrenar      │──►│Modelo + firma       │──►│Imagen API   │   │Imagen interfaz   │
+ │retail.db  │   │RAW→MASTER→FS→ML      │   │MLflow        │   │models/modelo_mlflow │   │retencion-api│   │código + SQL de FS│
+ └───────────┘   └──────────┬───────────┘   └──────────────┘   └─────────────────────┘   └──────┬──────┘   └────────┬─────────┘
+                            │ escribe curso.db                                          docker run│         docker run │
+ EJECUCIÓN · cada consulta  │                                                                    │                    │
+                            │      ┌─ red «retencion» ──────────────────────────────────────────┼────────────────────┼──┐
+ ┌─────────┐  (1) ids       │      │  ┌──────────────────────────┐ (3) POST 13 variables  ┌────▼─────────────────────┐ │   ┌──────────────────────┐
+ │ Persona │────────────────┼──────┼─►│ Contenedor interfaz :8090│───────────────────────►│ Contenedor API :8080     │ │   │ Operación            │
+ │         │◄───────────────┼──────┼──│ (publicado con -p)       │◄───────────────────────│ (sin -p: no se publica)  │ │   │ /salud · /listo      │
+ └─────────┘ (5) recomendación     │  │ ids → variables → tramo  │ (4) probabilidad+avisos│ contrato = firma · modelo│ │   │ registros JSON,      │
+                            │      │  └────────────┬─────────────┘                        └──────────────────────────┘ │   │ sin datos de clientes│
+                            │      └───────────────┼────────────────────────────────────────────────────────────────────┘   └──────────────────────┘
+                            │                      │ (2) variables en el corte (SQL de FS)
+                            │               ┌──────▼───────────────┐
+                            └──────────────►│ curso.db             │
+                                            │ volumen solo lectura │
+                                            └──────────────────────┘
+```
+
+1. La persona escribe ids en la página de la interfaz.
+2. La interfaz calcula las 13 variables de cada cliente con el SQL de FS, sobre `curso.db` montada en solo lectura (la escriben los pipelines, no la interfaz).
+3. Envía las variables a la API por la red; la API las valida contra la firma del modelo (422 si no cumplen).
+4. La API devuelve la probabilidad y los avisos («fuera del rango visto al entrenar»).
+5. La interfaz aplica la regla de tramos y devuelve tramo y recomendación.
+
+En producción (apartado 9) **el dibujo es el mismo**; cambia en qué se convierte cada caja: Artifact Registry para las imágenes, Cloud Run para los dos contenedores, BigQuery para `curso.db`, el workflow de S4 para la construcción y registros y alertas centralizados para la operación.
+
+Este recorrido tiene también su presentación, la que se proyecta en clase: `01-Sesiones/S2-API-y-Docker/del-ordenador-al-servicio/index.html`.
+
 ---
 
 ## 1. Conceptos básicos (todavía sin Docker)

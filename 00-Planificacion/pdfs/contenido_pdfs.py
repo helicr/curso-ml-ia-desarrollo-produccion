@@ -246,6 +246,15 @@ SESIONES = [
                         '(`01-Sesiones/S2-API-y-Docker/contenedores/guia-practica.md`).',
             },
             {
+                'origen': '01-Sesiones/S2-API-y-Docker/del-ordenador-al-servicio/index.html',
+                'tipo': 'presentacion', 'grupo': 'presentaciones',
+                'titulo': 'Del ordenador al servicio',
+                'archivo': '05-del-ordenador-al-servicio.pdf',
+                'espera_ms': 900,
+                'nota': PERDIDO_EN_PRESENTACIONES + ' Las dos diapositivas interactivas (la receta del Dockerfile y «Romper a propósito») '
+                        'muestran en el PDF un solo caso; todos están en `04-Proyecto-Base/docs/del-ordenador-al-servicio.md`.',
+            },
+            {
                 'origen': '01-Sesiones/S2-API-y-Docker/teoria/README.md',
                 'tipo': 'documento', 'grupo': 'alumno',
                 'titulo': 'Teoría y glosario de S2',

@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Del ordenador al servicio · S2 · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{
+  --bg:#031a33;--bg2:#062a4d;--panel:#0a3560;--panel2:#0e4378;--line:#1a5fa3;
+  --blue:#2bb3ff;--gold:#fcd34d;--text:#eef6ff;--muted:#a9c8ea;
+  --ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--opt:#b39cff;--r:16px;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--blue)}
+code,.mono{font-family:var(--mono)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* ---------- Escenario 1280x720 escalado ---------- */
+#viewport{position:fixed;left:0;right:0;top:0;bottom:46px;overflow:hidden;
+  background:radial-gradient(1200px 700px at 20% 0%,#07305a 0%,var(--bg) 70%)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;
+  transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;padding:54px 70px 56px;opacity:0;visibility:hidden;
+  transform:translateX(28px);transition:opacity .45s ease,transform .45s ease,visibility 0s .45s;
+  background:linear-gradient(160deg,rgba(6,42,77,.55),rgba(3,26,51,0) 60%);overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease}
+.slide.past{transform:translateX(-28px)}
+.slide::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;
+  background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.9}
+.foot{position:absolute;left:70px;right:70px;bottom:18px;display:flex;justify-content:space-between;
+  font-size:13px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.foot b{color:var(--gold);font-weight:600}
+
+.kick{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:12px}
+h1{font-size:44px;line-height:1.12;letter-spacing:-.01em;margin-bottom:22px;font-weight:800}
+h2{font-size:26px;margin-bottom:10px}
+h3{font-size:20px;margin-bottom:6px}
+p{font-size:20px;line-height:1.5;color:var(--text)}
+.lead{font-size:25px;line-height:1.45}
+.muted{color:var(--muted)}
+.small{font-size:15px;line-height:1.45;color:var(--muted)}
+.acc{color:var(--blue)} .gold{color:var(--gold)}
+.card{background:linear-gradient(180deg,var(--panel),#082d54);border:1px solid var(--line);border-radius:var(--r);padding:18px 22px}
+.card.dashed{border-style:dashed;background:rgba(179,156,255,.07);border-color:var(--opt)}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.core{color:#06223f;background:var(--blue);border-color:var(--blue)}
+.tag.opt{color:var(--opt);border-color:var(--opt);border-style:dashed}
+.tag.gold{color:#2b2100;background:var(--gold);border-color:var(--gold)}
+.tag.ok{color:#032b1c;background:var(--ok);border-color:var(--ok)}
+.tag.pend{color:var(--warn);border-color:var(--warn)}
+.row{display:flex;gap:18px}.col{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.btn{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-weight:600;font-size:16px;transition:.2s}
+.btn:hover{background:var(--panel2);border-color:var(--blue)}
+.btn.primary{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.btn.primary:hover{filter:brightness(1.1)}
+.callout{border-left:5px solid var(--gold);background:rgba(252,211,77,.08);padding:14px 18px;border-radius:0 12px 12px 0;font-size:19px}
+.warnbox{border-left:5px solid var(--warn);background:rgba(251,191,36,.09);padding:12px 16px;border-radius:0 12px 12px 0;font-size:17px}
+
+/* ---------- Animaciones ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes flow{to{stroke-dashoffset:-32}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(43,179,255,.55)}50%{box-shadow:0 0 0 12px rgba(43,179,255,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes steam{0%{opacity:0;transform:translateY(8px)}50%{opacity:.8}100%{opacity:0;transform:translateY(-26px)}}
+@keyframes packet{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(100% - 14px);opacity:0}}
+.slide.active .st{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0)*70ms)}
+.f{opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .45s ease,transform .45s ease}
+.f.on{opacity:1;transform:none;pointer-events:auto}
+.f.mark{display:none}
+
+/* ---------- Portada ---------- */
+.cover{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;height:500px}
+.cover h1{font-size:60px;line-height:1.05;margin:6px 0 16px}
+.cover .sub{font-size:25px;color:var(--muted);margin-bottom:28px}
+.cover-logo{height:58px;margin-bottom:22px}
+.pill{position:absolute;right:70px;top:34px}
+.inst{display:flex;gap:18px;align-items:center;margin:8px 0 22px}
+.inst img{width:92px;height:92px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+.inst b{font-size:22px}.inst span{display:block;font-size:17px;color:var(--muted)}
+.inst a{font-size:16px;color:var(--blue);text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.hero svg{width:100%;height:100%}
+.flowpath{fill:none;stroke:var(--blue);stroke-width:3;stroke-dasharray:6 10;animation:flow 1.1s linear infinite;opacity:.8}
+.hnode{fill:var(--panel);stroke:var(--blue);stroke-width:2}
+.htxt{fill:var(--text);font-size:17px;font-weight:700;text-anchor:middle;font-family:var(--sans)}
+
+/* ---------- Encuesta ---------- */
+.poll-q{font-size:30px;font-weight:700;line-height:1.3;margin-bottom:20px;min-height:80px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.popt{position:relative;text-align:left;padding:16px 18px 16px 62px;border-radius:14px;border:1px solid var(--line);background:var(--panel);overflow:hidden;min-height:92px}
+.popt:hover{border-color:var(--blue)}
+.popt .k{position:absolute;left:16px;top:16px;width:34px;height:34px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-weight:800}
+.popt .t{font-size:18px;line-height:1.35;position:relative;z-index:1}
+.popt .bar{position:absolute;left:0;bottom:0;height:6px;background:var(--blue);width:0;transition:width .5s}
+.popt .n{position:absolute;right:14px;top:10px;font-weight:800;font-size:22px;color:var(--gold);z-index:1}
+.popt.right{border-color:var(--ok);box-shadow:0 0 0 2px rgba(52,211,153,.35) inset}
+.poll-nav{display:flex;gap:12px;align-items:center;margin-top:18px}
+.poll-hint{margin-left:auto;font-size:17px;color:var(--gold);max-width:520px}
+
+/* ---------- Núcleo / opcional ---------- */
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}
+.list{list-style:none;display:flex;flex-direction:column;gap:11px}
+.list li{display:flex;gap:12px;align-items:flex-start;font-size:20px;line-height:1.35}
+.list li::before{content:"";flex:none;width:12px;height:12px;border-radius:4px;margin-top:8px;background:var(--blue)}
+.card.dashed .list li::before{background:transparent;border:2px dashed var(--opt)}
+.list b{color:var(--gold)}
+
+/* ---------- Notebook → servicio ---------- */
+.path{display:flex;flex-direction:column;gap:9px;position:relative}
+.step{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 16px}
+.step .num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--blue);color:#04213f;display:grid;place-items:center;font-weight:800}
+.step b{font-size:18px;display:block}.step span.d{font-size:15px;color:var(--muted)}
+.step .tag{margin-left:auto}
+
+/* ---------- Evidencia ---------- */
+.stat{display:flex;align-items:baseline;gap:14px}
+.stat .big{font-size:68px;font-weight:800;color:var(--gold);line-height:1;white-space:nowrap}
+.meter{height:10px;border-radius:99px;background:#0b3a69;overflow:hidden;margin:6px 0 16px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.sysbox{position:relative;border:2px dashed var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sysbox .cell{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 8px;text-align:center;font-size:16px;color:var(--muted)}
+.sysbox .core{grid-column:2;grid-row:2;background:var(--blue);color:#04213f;font-weight:800;font-size:15px;padding:8px 4px;border:0;transform:scale(.62);animation:pulse 2.2s infinite}
+.sysbox .lab{position:absolute;top:-14px;left:18px;background:var(--bg2);padding:0 10px;font-size:13px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+
+/* ---------- Mapa del curso ---------- */
+.tl{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;position:relative;margin:8px 0 14px}
+.tl::before{content:"";position:absolute;left:8%;right:8%;top:25px;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));opacity:.5}
+.node{position:relative;text-align:center;padding:2px 4px}
+.node .dot{width:52px;height:52px;border-radius:50%;margin:0 auto 6px;background:var(--panel);border:3px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:18px;transition:.25s}
+.node small{display:block;font-size:13px;color:var(--muted);line-height:1.25}
+.node.sel .dot{background:var(--blue);color:#04213f;border-color:var(--gold);transform:scale(1.14);animation:pulse 2s infinite}
+.node:hover .dot{border-color:var(--blue)}
+.bands{display:grid;grid-template-columns:repeat(6,1fr);gap:6px 10px;margin-bottom:14px}
+.band{font-size:14px;font-weight:700;padding:5px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.band.m{background:rgba(43,179,255,.22);color:var(--blue);border:1px solid var(--blue)}
+.band.a{background:rgba(252,211,77,.18);color:var(--gold);border:1px solid var(--gold)}
+.band.l{background:rgba(148,163,184,.18);color:#cbd5e1;border:1px solid #94a3b8}
+.band.g{background:rgba(52,211,153,.18);color:var(--ok);border:1px solid var(--ok)}
+.band.o{background:rgba(179,156,255,.1);color:var(--opt);border:1px dashed var(--opt)}
+.panel{min-height:180px}
+.panel h2{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.panel ul{list-style:none;columns:2;column-gap:28px}
+.panel li{font-size:18px;line-height:1.35;margin-bottom:6px;break-inside:avoid}
+.panel li::before{content:"› ";color:var(--gold);font-weight:800}
+.panel li.o{color:var(--opt)}
+
+/* ---------- Capas ---------- */
+.layers{display:flex;align-items:stretch;gap:0;position:relative;margin:4px 0 18px}
+.layer{flex:1;text-align:center;padding:14px 6px;border:2px solid var(--line);background:var(--panel);margin-left:-2px;position:relative;
+  clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%,14px 50%);cursor:pointer;transition:.25s}
+.layer:first-child{clip-path:polygon(0 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,0 100%)}
+.layer b{display:block;font-size:15px;letter-spacing:.04em}
+.layer span{font-size:12px;color:var(--muted);display:block;margin-top:4px}
+.layer.sel{background:var(--blue);color:#04213f}.layer.sel span{color:#0a3b66}
+.layer:hover:not(.sel){background:var(--panel2)}
+.track{position:relative;height:14px;margin:-8px 0 14px;overflow:hidden}
+.packet{position:absolute;top:2px;width:14px;height:10px;border-radius:5px;background:var(--gold);animation:packet 3.2s linear infinite}
+.packet:nth-child(2){animation-delay:1.05s;background:var(--blue)}.packet:nth-child(3){animation-delay:2.1s}
+.ldetail{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;min-height:210px}
+.ldetail h2{display:flex;align-items:center;gap:12px}
+.tblname{font-family:var(--mono);color:var(--gold)}
+
+/* ---------- Local → GCP ---------- */
+.map{display:flex;flex-direction:column;gap:9px}
+.mrow{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;align-items:center}
+.pillbox{padding:11px 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:18px}
+.pillbox.g{border-color:var(--ok);background:rgba(52,211,153,.1)}
+.pillbox small{display:block;font-size:14px;color:var(--muted)}
+.arrow{height:22px}.arrow svg{width:100%;height:100%}
+.strat{text-align:center;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:6px;border-radius:8px}
+.strat.rehost{background:#2563eb;color:#fff}.strat.replatform{background:var(--gold);color:#2b2100}.strat.refactor{background:var(--ok);color:#032b1c}
+.mhead{display:grid;grid-template-columns:1fr 70px 1.15fr 120px;gap:12px;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:2px}
+
+/* ---------- Método / entregas / evaluación ---------- */
+.loop{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.lstep{padding:20px 18px;border-radius:18px;background:var(--panel);border:1px solid var(--line);position:relative;min-height:190px}
+.lstep .n{font-size:44px;font-weight:800;color:var(--gold);line-height:1;margin-bottom:6px}
+.lstep p{font-size:17px;color:var(--muted)}
+.lstep::after{content:"→";position:absolute;right:-17px;top:50%;font-size:26px;color:var(--blue);z-index:2}
+.lstep:last-child::after{content:none}
+.rhythm{display:flex;height:46px;border-radius:12px;overflow:hidden;margin:6px 0 8px;border:1px solid var(--line)}
+.rhythm div{display:grid;place-items:center;font-size:14px;font-weight:700;color:#04213f;transform-origin:left;transition:transform .8s}
+.chain{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:12px 0 22px}
+.chain::before{content:"";position:absolute;left:5%;right:5%;top:20px;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:4px;opacity:.6}
+.link{position:relative;text-align:center}
+.link .when{width:42px;height:42px;border-radius:50%;margin:0 auto 10px;background:var(--gold);color:#2b2100;display:grid;place-items:center;font-weight:800;position:relative;z-index:1}
+.link .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 10px;min-height:118px;font-size:17px;font-weight:600;line-height:1.3}
+.link .box small{display:block;margin-top:6px;font-weight:400;font-size:14px;color:var(--muted)}
+.eval{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+.eval .pct{font-size:84px;font-weight:800;line-height:1;color:var(--gold)}
+.eval .pct span{font-size:36px;color:var(--blue)}
+.stack{display:flex;height:30px;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.stack i{display:block;height:100%;transform-origin:left;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+
+/* ---------- Pausa ---------- */
+.pause{display:grid;grid-template-columns:.9fr 1.1fr;gap:30px;align-items:center;height:80%}
+.clock{font-size:150px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1;color:var(--blue)}
+.clock.done{color:var(--ok)}
+.clock.low{color:var(--warn)}
+.cup{display:block;margin:0 auto;width:250px;animation:float 5s ease-in-out infinite}
+.steam{animation:steam 3s ease-in-out infinite}.steam:nth-of-type(2){animation-delay:1s}.steam:nth-of-type(3){animation-delay:2s}
+.t120{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:14px 0 6px;font-size:13px;font-weight:700}
+.t120 div{display:grid;place-items:center;color:#04213f;white-space:nowrap}
+
+/* ---------- Parte B ---------- */
+.budget{display:flex;height:64px;border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:8px 0 8px}
+.budget button{display:grid;place-items:center;font-size:13px;font-weight:700;color:#04213f;border-right:2px solid var(--bg);padding:0 2px;line-height:1.1;text-align:center;transition:.2s}
+.budget button:hover{filter:brightness(1.18);transform:scaleY(1.06)}
+.zones{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.zone{padding:16px 14px;border-radius:16px;border:2px solid var(--line);background:var(--panel);cursor:pointer;transition:.25s;min-height:230px}
+.zone .zt{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.zone b{display:block;font-size:22px;margin:4px 0 8px}
+.zone ul{list-style:none}.zone li{font-size:16px;color:var(--muted);margin-bottom:5px}
+.zone.sel{border-color:var(--blue);background:var(--panel2);transform:translateY(-4px)}
+.zone.sel li{color:var(--text)}
+.zone .arr{display:none}
+.filters{display:flex;gap:10px;margin-bottom:16px}
+.fchip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:16px;background:var(--panel)}
+.fchip.on{background:var(--blue);color:#04213f;border-color:var(--blue)}
+.tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tool{padding:16px 18px;border-radius:14px;background:var(--panel);border:1px solid var(--line);transition:.3s}
+.tool.dim{opacity:.22;transform:scale(.97)}
+.tool b{font-size:20px;display:block;margin-bottom:4px}.tool p{font-size:16px;color:var(--muted)}
+.tool .tag{margin-top:10px}
+.cmdgrid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:start}
+.term{background:#02101f;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:7px;padding:9px 14px;background:#06223f;font-size:13px;color:var(--muted)}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#fb7185}.term .bar i:nth-child(2){background:#fbbf24}.term .bar i:nth-child(3){background:#34d399}
+.term .bar em{margin-left:8px;font-style:normal}
+.term pre{font-family:var(--mono);font-size:18px;line-height:1.6;padding:16px 18px;white-space:pre-wrap;word-break:break-all;min-height:140px}
+.term .ps{color:var(--ok)}.term .out{color:#cfe4ff;display:block;opacity:.92}.term .pend{color:var(--warn)}
+.term .caret{display:inline-block;width:10px;height:19px;background:var(--gold);vertical-align:-3px;animation:pulse 1s steps(2) infinite}
+.cmdbtns{display:flex;gap:10px;margin-top:12px}
+.sim{font-size:13px;color:var(--muted);margin-top:8px}
+.badge{margin-left:12px;vertical-align:middle;font-size:14px}
+
+/* ---------- Diagnóstico ---------- */
+.diag{display:grid;grid-template-columns:1fr 250px;gap:22px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:11px;align-items:center;text-align:left;padding:8px 12px;border-radius:11px;background:var(--panel);border:1px solid var(--line);min-height:56px;transition:.2s}
+.chk .bx{flex:none;width:28px;height:28px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:17px}
+.chk b{font-size:15px;display:block;line-height:1.2}.chk span{font-size:12.5px;color:var(--muted)}
+.chk[data-s="ok"]{border-color:var(--ok)}.chk[data-s="ok"] .bx{background:var(--ok);border-color:var(--ok);color:#032b1c}
+.chk[data-s="fail"]{border-color:var(--bad)}.chk[data-s="fail"] .bx{background:var(--bad);border-color:var(--bad);color:#3b0a14}
+.chk.opt b::after{content:" · opcional";color:var(--opt);font-weight:600}
+.gauge{text-align:center}
+.gauge svg{width:200px;height:200px}
+.gauge .gnum{font-size:44px;font-weight:800;fill:var(--text)}
+.gauge .gcap{font-size:13px;fill:var(--muted)}
+
+/* ---------- Cierre ---------- */
+.cards4{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cards4 .card p{font-size:18px;color:var(--muted)}
+
+/* ---------- Barra inferior, notas, índice ---------- */
+#bar{position:fixed;left:0;right:0;bottom:0;height:46px;background:#021224;border-top:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:0 12px;font-size:14px;z-index:20}
+#bar button{padding:6px 11px;border-radius:8px;color:var(--text)}
+#bar button:hover{background:var(--panel)}
+#bar .sp{flex:1}
+#bar a#bhome{padding:6px 11px;border-radius:8px;color:var(--text);text-decoration:none;white-space:nowrap}
+#bar a#bhome:hover{background:var(--panel)}
+@media(max-width:900px){#bar a#bhome .tx{display:none}}
+#bar .part{color:var(--muted)}#bar .part.on{color:var(--gold);font-weight:700}
+#prog{position:fixed;left:0;top:0;height:4px;background:var(--gold);z-index:30;transition:width .3s}
+#clockref{color:var(--muted);font-variant-numeric:tabular-nums;margin:0 8px}
+#notes{position:fixed;right:0;top:0;bottom:46px;width:min(380px,90vw);background:#021224f2;border-left:1px solid var(--line);padding:22px 20px;transform:translateX(100%);transition:transform .3s;z-index:25;overflow:auto}
+#notes.on{transform:none}
+#notes h3{color:var(--gold);font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+#notes p{font-size:16px;line-height:1.5;color:var(--text);margin-bottom:10px}
+#index{position:fixed;inset:0 0 46px 0;background:#021224f5;z-index:26;padding:28px 38px;overflow:auto;display:none}
+#index.on{display:block}
+#index h2{margin-bottom:16px}
+#index .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+#index button{text-align:left;padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+#index button:hover{border-color:var(--blue)}
+#index small{display:block;color:var(--gold);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+#index button.cur{border-color:var(--gold)}
+noscript{position:fixed;inset:0;display:grid;place-items:center;font-size:22px;padding:40px;text-align:center;background:var(--bg)}
+
+
+/* ---------- Tema: cristal sobre degradados ---------- */
+#viewport{background:
+  radial-gradient(900px 620px at 6% -8%,rgba(43,179,255,.30),transparent 62%),
+  radial-gradient(820px 560px at 104% 112%,rgba(252,211,77,.17),transparent 60%),
+  radial-gradient(720px 520px at 92% -6%,rgba(179,156,255,.16),transparent 60%),var(--bg)}
+.slide{background:none;isolation:isolate;padding-top:58px}
+.slide::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1.2px);background-size:30px 30px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 75%);mask-image:linear-gradient(180deg,#000,transparent 75%)}
+.kick{display:inline-flex;align-items:center;gap:10px;padding:7px 16px;border-radius:999px;margin-bottom:18px;
+  border:1px solid rgba(252,211,77,.35);background:rgba(252,211,77,.08);font-size:14px}
+h1{font-size:48px;margin-bottom:26px;background:linear-gradient(95deg,#fff 30%,#a5dcff 75%,#fcd34d 130%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+h1 .tag{-webkit-text-fill-color:initial}
+.cover h1{font-size:56px;margin-bottom:14px}
+p{font-size:22px}.lead{font-size:27px}.small{font-size:17px}
+.card,.term,.tool,.zone,.step,.pillbox,.chk,.lstep,.link .box,.popt,.layer,.node .dot{
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  border-color:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  box-shadow:0 12px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.09)}
+.card{padding:22px 26px}
+.card.dashed{background:rgba(179,156,255,.08);border-color:var(--opt)}
+.pillbox.g{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.55)}
+.zone.sel,.layer.sel,.node.sel .dot{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#bfe9ff;color:#031a33}
+.zone.sel{color:var(--text);background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.zone.sel b,.zone.sel li{color:var(--text)}
+.chk[data-s="ok"]{background:rgba(52,211,153,.13)}.chk[data-s="fail"]{background:rgba(251,113,133,.13)}
+.btn{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);padding:12px 20px}
+.btn.primary{background:linear-gradient(180deg,#38bdf8,#1d8fdc);border-color:#7dd3fc;color:#031a33;box-shadow:0 8px 22px rgba(43,179,255,.35)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.callout{background:linear-gradient(90deg,rgba(252,211,77,.14),rgba(252,211,77,.03));font-size:21px;padding:16px 22px}
+.step{padding:11px 18px}.step b{font-size:20px}.step span.d{font-size:16px}
+.list li{font-size:22px}.panel li{font-size:20px}
+.term{background:#020d1a}.term pre{font-size:21px;min-height:190px;padding:20px 22px}
+.term .bar{font-size:14px}
+.cmdgrid{gap:30px}
+.cmdgrid .card p{font-size:20px!important}
+.lstep{min-height:250px;padding:24px 22px}.lstep p{font-size:19px}.lstep .n{font-size:52px}
+.rhythm{height:58px}.rhythm div{font-size:16px}
+.link .box{min-height:150px;font-size:19px;padding:16px 12px}.link .box small{font-size:15px}
+.eval .pct{font-size:100px}.eval .card p{font-size:19px}
+.budget{height:96px}.budget button{font-size:15px}
+.zone{min-height:290px;padding:20px 18px}.zone b{font-size:25px}.zone li{font-size:18px;margin-bottom:8px}
+.tool{padding:22px 22px}.tool b{font-size:22px}.tool p{font-size:18px}
+.chk{min-height:58px;padding:6px 12px}.chk b{font-size:16.5px}.chk span{font-size:13.5px}
+.cards4 .card p{font-size:21px}.cards4{gap:20px}
+.mrow{gap:14px}.pillbox{font-size:19px;padding:12px 16px}
+.node .dot{width:58px;height:58px;font-size:20px}
+.popt{min-height:112px}.popt .t{font-size:20px}
+.stat p{font-size:24px}
+.layer{padding:18px 6px}.layer b{font-size:16px}
+.ldetail{min-height:230px}
+.slide.active .st{animation-duration:.7s}
+
+/* ---------- Niveles de madurez ---------- */
+.lvls{display:flex;flex-direction:column;gap:8px}
+.lvl{display:flex;align-items:center;gap:14px;text-align:left;padding:10px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));transition:.25s;position:relative}
+.lvl:nth-child(2){margin-left:22px}.lvl:nth-child(3){margin-left:44px}
+.lvl .lv{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:19px;background:var(--panel2)}
+.lvl b{display:block;font-size:19px}.lvl small{display:block;color:var(--muted);font-size:14px}
+.lvl:hover{border-color:var(--blue)}
+.lvl.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.lvl.sel .lv{background:var(--blue);color:#031a33}
+#lvdet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#lvdet p{font-size:17px;color:var(--text)}
+#lvdet .risk{color:var(--warn);font-size:16px;margin-top:6px}
+
+/* ---------- Ajustes de espacio ---------- */
+.cover .sub{font-size:24px;margin-bottom:18px}
+.inst{margin:0 0 16px}
+.path{gap:7px}.step{padding:8px 16px}.step b{font-size:19px}.step span.d{font-size:15px}.step .num{width:30px;height:30px}
+.tl{margin:2px 0 8px}.bands{margin-bottom:10px}.panel{min-height:0;padding:16px 24px}
+.panel li{font-size:18px;margin-bottom:4px}.panel h2{font-size:24px;margin-bottom:6px}
+.map{gap:6px}.pillbox{padding:8px 14px;font-size:18px}.pillbox small{font-size:13px}
+.mhead{margin-bottom:0}
+#s8 .callout,.slide .callout.f{font-size:19px;padding:12px 18px}
+.term pre{font-size:19px;min-height:150px;overflow-wrap:anywhere;word-break:normal}
+.cmdgrid .card p{font-size:18px!important}
+.cmdgrid .card{padding:16px 22px}
+.sim{margin-top:6px}
+
+/* ---------- Herramientas: más compactas ---------- */
+#toolgrid{gap:10px}
+#toolgrid .tool{padding:12px 18px}
+#toolgrid .tool b{font-size:20px;margin-bottom:2px}
+#toolgrid .tool p{font-size:16px;line-height:1.4}
+#toolgrid .tool .tag{margin-top:6px}
+.filters{margin-bottom:10px}
+
+@media (max-width:760px){
+  #clockref,#bfull,#bar .part{display:none}
+  #bar{gap:2px;padding:0 6px}#count{white-space:nowrap}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html,body{overflow:visible;height:auto;background:#031a33;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #viewport{position:static;overflow:visible;background:none}
+  #stage{position:static;transform:none;width:1280px;height:auto}
+  .slide{position:relative;height:720px;opacity:1;visibility:visible;transform:none;page-break-after:always;break-after:page}
+  .f,.f.mark{opacity:1!important;transform:none!important}.f.mark{display:none}
+  #bar,#prog,#notes,#index{display:none!important}
+  .st{animation:none!important;opacity:1!important}
+}
+/* ---------- S1 ---------- */
+.big2{font-size:54px;font-weight:800;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.tbl{width:100%;border-collapse:collapse;font-size:16px}
+.tbl th{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);text-align:left;padding:6px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 10px;border-bottom:1px solid rgba(26,95,163,.45);font-family:var(--mono);font-size:15px}
+.tbl td.t{font-family:var(--sans)} .tbl tr.hl td{background:rgba(252,211,77,.12)}
+.num-r{text-align:right}
+.dirt{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.dirt .card{padding:14px 12px;text-align:center}
+.dirt .v{font-size:36px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1.05}
+.dirt .l{font-size:15px;color:var(--muted);margin-top:6px;line-height:1.3}
+.tline{position:relative;height:90px;margin:14px 0 6px;border-top:3px solid var(--line)}
+.tline .ev{position:absolute;top:-8px;width:3px;height:22px;background:var(--blue);transition:background .3s}
+.tline .ev.fut{background:var(--bad);opacity:.55}
+.tline .ev.used{background:var(--ok)}
+.tline .cut{position:absolute;top:-24px;bottom:-6px;width:3px;background:var(--gold)}
+.tline .cut::after{content:"corte";position:absolute;top:-4px;left:6px;font-size:13px;color:var(--gold);font-weight:700}
+.tline .win{position:absolute;top:-8px;height:22px;background:rgba(251,113,133,.18);border:1px dashed var(--bad)}
+.tline .lab{position:absolute;top:30px;font-size:12px;color:var(--muted);transform:translateX(-50%);white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.bar2{height:30px;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--gold));display:flex;align-items:center;padding:0 10px;color:#04213f;font-weight:800;font-size:16px;transition:width .9s cubic-bezier(.2,.7,.2,1);width:0}
+.win-split{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.win-split .card{padding:12px 14px;text-align:center}
+.pre{background:#021326;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-family:var(--mono);font-size:15px;line-height:1.5;white-space:pre;overflow:hidden;color:#d6e9ff}
+.pre b{color:var(--gold)}
+
+
+/* ---------- S2 ---------- */
+.badge2{display:inline-grid;place-items:center;min-width:92px;padding:5px 14px;border-radius:12px;font-weight:800;font-size:26px;font-family:var(--mono);background:var(--panel2);border:2px solid var(--line)}
+.badge2.c200{background:rgba(52,211,153,.18);border-color:var(--ok);color:var(--ok)}
+.badge2.c422{background:rgba(251,191,36,.15);border-color:var(--warn);color:var(--warn)}
+.badge2.c503,.badge2.c500{background:rgba(251,113,133,.15);border-color:var(--bad);color:var(--bad)}
+.casebtn{display:block;width:100%;text-align:left;padding:7px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));font-size:15px;transition:.2s}
+.casebtn:hover{border-color:var(--blue)}
+.casebtn.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.casebtn b{font-family:var(--mono);font-weight:600}
+#labbody{white-space:pre-wrap;word-break:break-word;overflow:auto;max-height:244px!important}
+.dkl{display:block;width:100%;text-align:left;padding:8px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#021326;
+  font-size:14px;line-height:1.35;white-space:pre-wrap;color:#d6e9ff;transition:.2s}
+.dkl:hover{border-color:var(--blue)}
+.dkl.sel{border-color:var(--gold);background:rgba(252,211,77,.10)}
+.budget button{border-radius:0}
+.tbl.dens td{padding:3px 10px;font-size:14px}
+.tbl.dens th{padding:4px 10px}
+
+
+/* ---------- Del ordenador al servicio ---------- */
+.hero svg{width:100%;height:100%}
+.hnode.gold{stroke:var(--gold)} .hnode.prod{stroke:var(--ok);stroke-width:2.5}
+.htxt2{fill:var(--muted);font-size:13px;text-anchor:middle;font-family:var(--sans)}
+.htxt3{fill:var(--gold);font-size:13px;font-weight:700;letter-spacing:.06em;text-anchor:middle;font-family:var(--sans)}
+.flowpath.bad{stroke:var(--bad)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mini2{padding:12px 16px!important}.mini2 h3{font-size:17px;margin-bottom:4px}.mini2 .small{font-size:15px;line-height:1.4}
+.mini2 .list li{font-size:16px}.mini2 .list li::before{margin-top:6px}
+.t2 .bar{justify-content:flex-start}.t2 .bar em{flex:1}
+.t2 .tls{padding:8px 10px 10px;font-family:var(--mono);font-size:14px;line-height:1.45}
+.t2 .tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px;border-radius:6px}
+.t2 .tln:hover{background:rgba(255,255,255,.05)}
+.t2 .tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;color:#d6e9ff}
+.t2 .tln.c{color:var(--muted);font-style:italic;padding-top:5px}
+.t2 .ps{color:var(--ok)}
+.cp{flex:none;width:26px;height:24px;border-radius:6px;border:1px solid rgba(255,255,255,.2);font-size:13px;color:var(--muted)}
+.cp:hover{border-color:var(--blue);color:var(--text)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}
+.cpall{width:auto;padding:0 10px;font-family:var(--sans);font-size:12px}
+.realbox{background:#021326;border:1px solid rgba(52,211,153,.45);border-radius:12px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:13px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;color:#d6e9ff}
+.tbl.dens2{font-size:15px}.tbl.dens2 td{font-family:var(--sans);font-size:14.5px;padding:5px 9px;line-height:1.3}.tbl.dens2 th{padding:5px 9px;font-size:12px}
+.tbl.dens2 td .mono{font-size:13.5px}
+.tbl.big td{font-size:16px;padding:6px 10px}
+.szrow{display:flex;align-items:center;gap:10px;margin:6px 0}.szrow>span{width:70px;font-size:14px}
+.szbar{height:26px;border-radius:7px;background:linear-gradient(90deg,var(--ok),#1b9e73);display:flex;align-items:center;padding:0 8px;color:#032b1c;font-size:13px}
+.szbar.api{background:linear-gradient(90deg,var(--blue),#1d8fdc);color:#031a33}
+.rbtn{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.035));font-size:16px;transition:.2s}
+.rbtn:hover{border-color:var(--blue)}.rbtn.sel{background:linear-gradient(180deg,rgba(43,179,255,.30),rgba(43,179,255,.12));border-color:var(--blue)}
+.rbtn small{display:block;color:var(--muted);font-size:13px}
+#rdet pre.pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.reveal{margin-top:10px}
+.arq svg{display:block;width:100%;max-height:462px}
+.arq.pq svg{max-height:240px}
+.htxt2[text-anchor="start"],.htxt3[text-anchor="start"]{text-anchor:start}
+.arq .f{transform:none}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="1" data-title="Portada"
+ data-notes="Esta presentación responde a lo que preguntó el grupo: ya tenemos el modelo en una API, pero ¿dónde llama el usuario?, ¿cómo pone un id o una lista y recibe una recomendación?, ¿qué diferencia hay entre tenerlo en mi ordenador y tenerlo como servicio? Vamos en seis escalones; cada uno añade una sola idea y se puede ejecutar. Que cada persona tenga el Codespace abierto con la imagen de la API del bloque 4.">
+<p class="kick st">S2 · ML e IA: de desarrollo a producción</p><h1 class="st">Del ordenador al servicio</h1>
+
+<div class="cover" style="height:470px"><div>
+ <p class="sub st">La API y la interfaz, paso a paso: de dos procesos en tu portátil a dos contenedores que se hablan, y lo que falta para producción.</p>
+ <div class="chips st"><span class="tag core">6 escalones</span><span class="tag">unos 60 min</span><span class="tag">Codespace</span><span class="tag ok">Probado con Docker real</span></div>
+ <div class="card st" style="margin-top:22px"><h3>Cómo seguirla</h3><p class="small">Cada orden lleva <b>⧉</b> para copiarla en la terminal de tu Codespace, de una en una. <b>← →</b> avanzan · <b>O</b> índice · <b>F</b> pantalla completa.
+ Las salidas que ves son <b>reales</b> (GitHub Actions y Windows, 14/11/2026). Todo está explicado en texto en <span class="mono">04-Proyecto-Base/docs/del-ordenador-al-servicio.md</span>.</p></div>
+</div><div class="hero st"><svg viewBox="0 0 560 360" role="img" aria-label="Los seis escalones"><rect class="hnode" x="10" y="300" width="150" height="44" rx="10"/><text class="htxt" x="85" y="320" style="font-size:15px">1 · Mi ordenador</text><text class="htxt2" x="85" y="337">procesos</text><rect class="hnode" x="88" y="250" width="150" height="44" rx="10"/><text class="htxt" x="163" y="270" style="font-size:15px">2 · API en imagen</text><text class="htxt2" x="163" y="287">bloque 4</text><path class="flowpath" d="M85 300 L100 294"/><rect class="hnode" x="166" y="200" width="150" height="44" rx="10"/><text class="htxt" x="241" y="220" style="font-size:15px">3 · Interfaz en imagen</text><text class="htxt2" x="241" y="237">sin modelo ni datos</text><path class="flowpath" d="M163 250 L178 244"/><rect class="hnode" x="244" y="150" width="150" height="44" rx="10"/><text class="htxt" x="319" y="170" style="font-size:15px">4 · Dos contenedores</text><text class="htxt2" x="319" y="187">red + volumen</text><path class="flowpath" d="M241 200 L256 194"/><rect class="hnode" x="322" y="100" width="150" height="44" rx="10"/><text class="htxt" x="397" y="120" style="font-size:15px">5 · Compose</text><text class="htxt2" x="397" y="137">un archivo</text><path class="flowpath" d="M319 150 L334 144"/><rect class="hnode prod" x="400" y="50" width="150" height="44" rx="10"/><text class="htxt" x="475" y="70" style="font-size:15px">6 · Producción</text><text class="htxt2" x="475" y="87">S3 · S4 · S5</text><path class="flowpath" d="M397 100 L412 94"/></svg></div></div>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="La pregunta y el plan"
+ data-notes="Muestre el JSON de la API: trece variables. Pregunte quién en marketing sabría rellenarlas. Nadie. La persona de negocio tiene ids y quiere una acción. Ese hueco es lo que llenamos hoy: una interfaz que traduce ids a variables, llama a la API y devuelve una recomendación. Y la llevamos de mi portátil a un servicio.">
+<p class="kick st">Lo que nos preguntaron</p><h1 class="st">Ya tengo la API… ¿y ahora quién la usa?</h1>
+
+<div class="split" style="grid-template-columns:1.05fr 1fr">
+ <div class="card st"><h3>La API pide esto</h3><pre class="pre" style="font-size:14px">{"recencia_dias": 35, "frecuencia": 6, "monto_total": 1250.4,
+ "ticket_medio": 208.4, "unidades_total": 410,
+ "productos_distintos": 38, "antiguedad_dias": 310,
+ "frecuencia_90d": 2, "monto_90d": 380.5,
+ "frecuencia_180d": 4, "dias_medios_entre_compras": 55.0,
+ "devoluciones": 1, "es_reino_unido": 1}</pre>
+ <p class="small" style="margin-top:8px">Trece variables. Nadie de negocio las conoce.</p></div>
+ <div class="col">
+  <div class="card f"><h3>Quien hace la campaña tiene esto</h3><p class="mono" style="font-size:26px;color:var(--gold)">13599, 18108, 13306</p><p class="small">…y quiere saber <b>qué hacer</b> con cada uno.</p></div>
+  <div class="card f"><h3>Hoy, en cuatro partes</h3><ul class="list"><li><span><b>A</b> · ¿por qué llevar un modelo a producción?</span></li><li><span><b>B</b> · todo en mi ordenador</span></li><li><span><b>C</b> · dos contenedores que se hablan</span></li><li><span><b>D</b> · ¿esto ya es producción?</span></li></ul></div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="Modelos que no salen del portátil"
+ data-notes="No demonice el cuaderno: para explorar es lo correcto. Pero un modelo que solo vive en un portátil no genera valor de forma repetida. Recorra los contras uno a uno con ejemplos del aula: ¿quién ha tenido que rehacer un análisis porque no sabía con qué versión se hizo? El de «nadie vigila» lo vamos a ver hoy con un dato real: 132 de 148 clientes salen marcados «revisar».">
+<p class="kick st">Antes de construir · pros y contras</p><h1 class="st">El modelo que se queda en el portátil</h1>
+
+<div class="grid2" style="gap:16px">
+ <div class="card f" style="border-color:rgba(52,211,153,.6)"><h3 style="color:var(--ok)">Lo bueno (y es legítimo)</h3><ul class="list"><li><span><b>Rápido y barato</b> para explorar: sin infraestructura ni permisos.</span></li><li><span><b>Libertad</b> para cambiarlo todo mientras aún no sabes qué funciona.</span></li><li><span>Suficiente para un <b>análisis puntual</b>: una decisión, un informe.</span></li><li><span>Sirve para <b>validar la idea</b> antes de invertir en llevarla a producción.</span></li></ul></div>
+ <div class="card f" style="border-color:rgba(251,113,133,.6)"><h3 style="color:var(--bad)">Lo que cuesta no llevarlo</h3><ul class="list"><li><span><b>Nadie más lo usa</b>: el valor se queda en una presentación.</span></li><li><span>«<b>En mi máquina funciona</b>»: otra persona no obtiene lo mismo.</span></li><li><span>Depende de <b>una persona</b>: si se va o se enferma, se va el modelo.</span></li><li><span>Se ejecuta <b>a mano</b>: pasos olvidados, versiones distintas.</span></li><li><span><b>Nadie vigila</b> si se degrada con datos nuevos.</span></li><li><span><b>Datos de clientes en portátiles</b> y sin rastro de qué modelo decidió qué.</span></li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="Producción tampoco es gratis"
+ data-notes="Equilibre el mensaje: producción tiene coste. La regla práctica es la tabla de la derecha. Si todo es «no», un cuaderno bien documentado basta. Si hay algún «sí», hay que salir del portátil. Mencione que producción puede ser por lotes: el laboratorio extra hace exactamente eso, puntuar a todos y dejar un CSV. Hoy hacemos la versión en línea: alguien pregunta por unos ids y recibe respuesta al momento.">
+<p class="kick st">El otro lado</p><h1 class="st">Producción tampoco es gratis: ¿cuándo merece la pena?</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr">
+ <div class="card f"><h3>Lo que añade producción</h3><ul class="list"><li><span>Infraestructura que se <b>paga</b> cada mes.</span></li><li><span><b>Mantenimiento</b>: dependencias, parches de seguridad, versiones.</span></li><li><span><b>Vigilancia</b>: registros, métricas, alertas y alguien que responda.</span></li><li><span><b>Disciplina</b>: pruebas, revisiones y despliegues controlados; cambiar es más lento.</span></li></ul></div>
+ <div class="card f"><h3>Merece la pena si respondes «sí» a alguna</h3><table class="tbl dens2"><tr><th>Pregunta</th><th>Si es «sí»…</th></tr><tr><td>¿Lo usarán <b>otras personas o sistemas</b>?</td><td>necesita una forma de llamarlo</td></tr><tr><td>¿Se decide con él <b>a menudo</b> (cada día, cada semana)?</td><td>no puede depender de alguien a mano</td></tr><tr><td>¿Los <b>datos cambian</b> y hay que volver a puntuar?</td><td>necesita un proceso repetible</td></tr><tr><td>¿Hay que poder <b>explicar qué modelo decidió qué</b>?</td><td>necesita versiones y trazas</td></tr><tr><td>¿Un fallo <b>cuesta dinero</b> o clientes?</td><td>necesita vigilancia</td></tr></table>
+ <p class="small" style="margin-top:8px">«Producción» no siempre es una API: a veces es un <b>proceso por lotes</b> que deja la lista de la campaña cada lunes (el laboratorio extra, <span class="mono">python -m ia_mlops.explotacion</span>).</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Las cuatro piezas"
+ data-notes="Este es el mapa de todo lo que sigue. Insista en la frase del primer recuadro: es la razón de que existan dos servicios. La recomendación no sale del modelo: es una regla de negocio en config.SEGMENTOS_RECOMPRA, con tramos 70 y 40 por ciento que se acuerdan con quien hace la campaña.">
+<p class="kick st">El mapa</p><h1 class="st">Cuatro piezas y quién usa cada una</h1>
+
+<div class="card st" style="padding:14px 18px"><svg viewBox="0 0 1140 250" role="img" aria-label="Las cuatro piezas">
+<defs><marker id="fl-s4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker></defs>
+<rect class="hnode" x="10" y="85" width="150" height="80" rx="14"/><text class="htxt" x="85" y="120">Persona</text><text class="htxt2" x="85" y="142">conoce el id</text>
+<rect class="hnode gold" x="250" y="70" width="230" height="110" rx="14"/><text class="htxt" x="365" y="108">INTERFAZ</text><text class="htxt2" x="365" y="132">ids → variables →</text><text class="htxt2" x="365" y="152">recomendación</text>
+<rect class="hnode" x="600" y="10" width="230" height="80" rx="14"/><text class="htxt" x="715" y="45">Datos + SQL de FS</text><text class="htxt2" x="715" y="68">curso.db · 02_poblar_fs.sql</text>
+<rect class="hnode" x="600" y="160" width="230" height="80" rx="14"/><text class="htxt" x="715" y="195">API del modelo</text><text class="htxt2" x="715" y="218">13 variables → probabilidad</text>
+<rect class="hnode" x="930" y="160" width="200" height="80" rx="14"/><text class="htxt" x="1030" y="195">Modelo</text><text class="htxt2" x="1030" y="218">models/modelo_mlflow</text>
+<path class="flowpath" d="M160 125 L246 125" marker-end="url(#fl-s4)"/>
+<path class="flowpath" d="M480 105 L596 55" marker-end="url(#fl-s4)"/><text class="htxt3" x="520" y="62">(1) variables</text>
+<path class="flowpath" d="M480 150 L596 195" marker-end="url(#fl-s4)"/><text class="htxt3" x="520" y="200">(2) HTTP</text>
+<path class="flowpath" d="M830 200 L926 200" marker-end="url(#fl-s4)"/>
+</svg></div>
+<div class="grid2" style="gap:14px;margin-top:14px">
+ <div class="callout f">La <b>API no sabe qué es un id</b>: solo sabe de variables. La <b>persona no sabe qué son las variables</b>: solo conoce el id.</div>
+ <div class="callout f">La <b>interfaz traduce</b>: (1) calcula las 13 variables con el SQL de FS, (2) llama a la API, (3) aplica la regla de negocio de tramos.</div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Arquitectura de la exposición"
+ data-notes="Diapositiva clave: vuelva a ella al final de cada escalón. Arriba, la franja morada es la CONSTRUCCIÓN, que ocurre una vez por versión del modelo: los datos operacionales pasan por los pipelines RAW, MASTER, FS y ML; se entrena y se registra en MLflow; sale el modelo con su firma; y se construyen dos imágenes, la de la API con el modelo dentro y la de la interfaz con el código y el SQL de FS, sin modelo ni datos. Abajo, la franja azul es la EJECUCIÓN de cada consulta, en cinco pasos que se revelan con la flecha: 1, la persona escribe ids en la página de la interfaz; 2, la interfaz calcula las 13 variables con el mismo SQL de FS sobre curso.db, montada en solo lectura; 3, envía las variables a la API por la red, que las valida contra la firma; 4, la API devuelve probabilidad y avisos; 5, la interfaz aplica la regla de tramos y devuelve la recomendación. A la derecha, operación: cada servicio dice si está vivo y listo y deja una línea de registro por petición, sin datos de clientes. La línea discontinua de la izquierda recuerda que curso.db la escriben los pipelines: la interfaz solo la lee.">
+<p class="kick st">La arquitectura · lo que montamos hoy</p><h1 class="st">Cómo funciona la exposición del modelo</h1>
+
+<div class="card st arq" style="padding:8px 10px"><svg viewBox="0 0 1140 490" role="img" aria-label="Arquitectura de la exposición del modelo"><defs><marker id="fa-s5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker><marker id="fb-s5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#a9c8ea"/></marker></defs><rect x="2" y="2" width="1136" height="140" rx="14" fill="rgba(179,156,255,.06)" stroke="#b39cff" stroke-dasharray="6 6"/><text class="htxt3" x="14" y="22" text-anchor="start" fill="#b39cff">CONSTRUCCIÓN · una vez por versión del modelo</text><rect class="hnode" x="12" y="40" width="150" height="76" rx="12"/><text class="htxt" x="87" y="75" style="font-size:15px">Operacional</text><text class="htxt2" x="87" y="93">retail.db</text><rect class="hnode" x="182" y="40" width="180" height="76" rx="12"/><text class="htxt" x="272" y="75" style="font-size:15px">Pipelines</text><text class="htxt2" x="272" y="93">RAW → MASTER → FS → ML</text><rect class="hnode" x="384" y="40" width="170" height="76" rx="12"/><text class="htxt" x="469" y="75" style="font-size:15px">Entrenar</text><text class="htxt2" x="469" y="93">MLflow · retencion-90d</text><rect class="hnode" x="576" y="40" width="170" height="76" rx="12"/><text class="htxt" x="661" y="75" style="font-size:15px">Modelo + firma</text><text class="htxt2" x="661" y="93">models/modelo_mlflow</text><rect class="hnode" x="768" y="40" width="170" height="76" rx="12"/><text class="htxt" x="853" y="75" style="font-size:15px">Imagen API</text><text class="htxt2" x="853" y="93">retencion-api</text><rect class="hnode" x="962" y="40" width="168" height="76" rx="12"/><text class="htxt" x="1046" y="75" style="font-size:15px">Imagen interfaz</text><text class="htxt2" x="1046" y="93">código + SQL de FS</text><path class="flowpath" d="M162 78 L178 78" marker-end="url(#fa-s5)"/><path class="flowpath" d="M362 78 L380 78" marker-end="url(#fa-s5)"/><path class="flowpath" d="M554 78 L572 78" marker-end="url(#fa-s5)"/><path class="flowpath" d="M746 78 L764 78" marker-end="url(#fa-s5)"/><rect x="2" y="158" width="1136" height="330" rx="14" fill="rgba(43,179,255,.05)" stroke="#2bb3ff" stroke-width="2"/><text class="htxt3" x="14" y="178" text-anchor="start">EJECUCIÓN · cada consulta</text><rect x="196" y="196" width="636" height="198" rx="16" fill="rgba(252,211,77,.05)" stroke="#fcd34d" stroke-dasharray="8 6" stroke-width="2"/><text class="htxt3" x="600" y="388">red «retencion» (Docker)</text><rect class="hnode" x="14" y="262" width="130" height="76" rx="12"/><text class="htxt" x="79" y="297" style="font-size:15px">Persona</text><text class="htxt2" x="79" y="315">conoce el id</text><rect class="hnode gold" x="216" y="226" width="250" height="146" rx="14"/><text class="htxt" x="341" y="252" style="font-size:16px">Contenedor interfaz</text><text class="htxt2" x="341" y="270">:8090 · publicado con -p</text><text class="htxt2" x="341" y="300" style="fill:#eef6ff">ids → 13 variables (SQL de FS)</text><text class="htxt2" x="341" y="322" style="fill:#eef6ff">probabilidad → tramo (regla)</text><text class="htxt2" x="341" y="344" style="fill:#eef6ff">página web · /recomendar</text><rect class="hnode" x="566" y="226" width="250" height="146" rx="14"/><text class="htxt" x="691" y="252" style="font-size:16px">Contenedor API</text><text class="htxt2" x="691" y="270">:8080 · sin -p</text><text class="htxt2" x="691" y="300" style="fill:#eef6ff">contrato = firma del modelo (422)</text><text class="htxt2" x="691" y="322" style="fill:#eef6ff">modelo en memoria: predict_proba</text><text class="htxt2" x="691" y="344" style="fill:#eef6ff">/predecir · /predecir/lote</text><rect class="hnode" x="216" y="412" width="250" height="60" rx="12"/><text class="htxt" x="341" y="439" style="font-size:15px">curso.db</text><text class="htxt2" x="341" y="457">volumen de solo lectura</text><rect class="hnode" x="880" y="226" width="246" height="146" rx="14"/><text class="htxt" x="1003" y="256" style="font-size:16px">Operación</text><text class="htxt2" x="1003" y="284" style="fill:#eef6ff">/salud · /listo · HEALTHCHECK</text><text class="htxt2" x="1003" y="308" style="fill:#eef6ff">registros JSON por stdout</text><text class="htxt2" x="1003" y="332" style="fill:#eef6ff">sin datos de clientes</text><path d="M853 116 L853 150 L691 150 L691 222" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s5)"/><path d="M1046 116 L1046 186 L420 186 L420 222" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s5)"/><text class="htxt2" x="770" y="145" style="fill:#a9c8ea">docker run</text><text class="htxt2" x="1090" y="160" style="fill:#a9c8ea">docker run</text><path d="M272 116 L272 132 L160 132 L160 442 L212 442" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s5)"/><text class="htxt2" x="120" y="400" style="fill:#a9c8ea">FS escrita</text><text class="htxt2" x="120" y="416" style="fill:#a9c8ea">por los pipelines</text><g class="f"><path class="flowpath" d="M144 286 L212 286" marker-end="url(#fa-s5)"/><circle cx="178" cy="272" r="12" fill="#fcd34d"/><text x="178" y="277" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">1</text><text class="htxt2" x="178" y="305">ids</text></g><g class="f"><path class="flowpath" d="M341 372 L341 408" marker-end="url(#fa-s5)"/><circle cx="318" cy="390" r="12" fill="#fcd34d"/><text x="318" y="395" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">2</text><text class="htxt2" x="356" y="395" text-anchor="start">variables en el corte</text></g><g class="f"><path class="flowpath" d="M466 272 L562 272" marker-end="url(#fa-s5)"/><circle cx="514" cy="256" r="12" fill="#fcd34d"/><text x="514" y="261" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">3</text><text class="htxt2" x="514" y="292">POST 13 variables</text></g><g class="f"><path class="flowpath" d="M562 330 L470 330" marker-end="url(#fa-s5)"/><circle cx="514" cy="314" r="12" fill="#fcd34d"/><text x="514" y="319" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">4</text><text class="htxt2" x="514" y="350">probabilidad + avisos</text></g><g class="f"><path class="flowpath" d="M212 318 L148 318" marker-end="url(#fa-s5)"/><circle cx="178" cy="334" r="12" fill="#fcd34d"/><text x="178" y="339" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">5</text><text class="htxt2" x="178" y="362">recomendación</text></g><g class="f"><path d="M816 300 L876 300" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="4 4"/><path d="M836 240 L876 240" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="4 4"/><text class="htxt2" x="1003" y="400" style="fill:#34d399">cada servicio dice si está vivo y listo,</text><text class="htxt2" x="1003" y="418" style="fill:#34d399">y deja una línea por petición</text></g></svg></div>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Proceso, puerto y dirección"
+ data-notes="Dibuje la analogía: el equipo es un edificio y los puertos son puertas numeradas. 127.0.0.1 es «solo atiendo a quien está dentro del edificio»; 0.0.0.0 es «atiendo en todas las puertas que den a la calle». Por eso make api usa 127.0.0.1 y las imágenes usan 0.0.0.0: dentro de un contenedor, toda llamada llega desde fuera.">
+<p class="kick st">Conceptos · 1</p><h1 class="st">Proceso, puerto y <b>quién puede llamar</b></h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="card f"><h3>Proceso y puerto</h3><p class="small">Un <b>proceso</b> es un programa en marcha. Un servidor se queda <b>escuchando</b> en un <b>puerto</b>, una «puerta» numerada del equipo: la API en el <span class="mono">8080</span>, la interfaz en el <span class="mono">8090</span>. Dos procesos no comparten puerto: <span class="mono">address already in use</span>.</p></div>
+  <div class="card f"><h3>Cliente y servidor</h3><p class="small">El <b>cliente</b> pide (navegador, <span class="mono">curl</span>), el <b>servidor</b> responde. Hablan <b>HTTP</b> con <b>JSON</b> y un código: <b>200</b> bien, <b>422</b> petición sin sentido, <b>503</b> ahora no puedo. La interfaz es servidor para ti y <b>cliente</b> de la API.</p></div>
+ </div>
+ <div class="card st" style="padding:10px"><svg viewBox="0 0 560 300" role="img" aria-label="127.0.0.1 frente a 0.0.0.0">
+<defs><marker id="fh-s6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker></defs>
+<rect x="150" y="20" width="390" height="260" rx="18" fill="none" stroke="#2bb3ff" stroke-dasharray="8 6" stroke-width="2"/>
+<text class="htxt3" x="345" y="44">TU EQUIPO</text>
+<rect class="hnode" x="200" y="70" width="290" height="60" rx="12"/><text class="htxt" x="345" y="96">uvicorn --host 127.0.0.1</text><text class="htxt2" x="345" y="117">solo atiende al propio equipo</text>
+<rect class="hnode gold" x="200" y="190" width="290" height="60" rx="12"/><text class="htxt" x="345" y="216">uvicorn --host 0.0.0.0</text><text class="htxt2" x="345" y="237">atiende también desde fuera</text>
+<rect class="hnode" x="10" y="125" width="110" height="60" rx="12"/><text class="htxt" x="65" y="152">otro</text><text class="htxt2" x="65" y="172">equipo</text>
+<path class="flowpath bad" d="M120 145 L196 105"/><text x="150" y="112" fill="#fb7185" font-size="26" font-weight="800">✗</text>
+<path class="flowpath" d="M120 165 L196 215" marker-end="url(#fh-s6)"/><text x="145" y="222" fill="#34d399" font-size="22" font-weight="800">✓</text>
+</svg></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Dependencias, configuración y salud"
+ data-notes="Tres ideas que vuelven en cada escalón. La tabla del centro es la clave del paso a contenedores: el código no cambia, cambia la configuración. Y vivo frente a listo: la interfaz puede estar viva sin poder atender porque la API se cayó; reiniciarla no arregla nada.">
+<p class="kick st">Conceptos · 2</p><h1 class="st">Lo que el código no lleva dentro</h1>
+
+<div class="grid2" style="gap:16px">
+ <div class="card f"><h3>Dependencias</h3><p class="small">Todo lo que el programa necesita y <b>no está en su código</b>: Python 3.11, fastapi y pandas, <span class="mono">curso.db</span>, el SQL de FS… y <b>otro servicio</b>, la API. En tu portátil «está ahí» porque lo instalaste tú. <b>Esa es la trampa.</b></p></div>
+ <div class="card f"><h3>Configuración por variables de entorno</h3><table class="tbl dens2"><tr><th>Variable</th><th>Mi ordenador</th><th>Contenedor</th></tr><tr><td><span class="mono">CURSO_URL_API</span></td><td><span class="mono">http://127.0.0.1:8080</span></td><td><span class="mono">http://api:8080</span></td></tr><tr><td><span class="mono">CURSO_DB</span></td><td><span class="mono">data/processed/curso.db</span></td><td><span class="mono">/datos/curso.db</span></td></tr><tr><td><span class="mono">CURSO_DB_SOLO_LECTURA</span></td><td>(vacía)</td><td><span class="mono">1</span></td></tr></table><p class="small" style="margin-top:6px">El mismo código; cambia solo lo que se le pasa desde fuera.</p></div>
+ <div class="card f" style="grid-column:1/3"><h3>Vivo no es lo mismo que listo</h3><div class="grid2" style="gap:14px">
+  <p class="small"><span class="badge2 c200" style="font-size:16px;min-width:0">/salud</span> ¿El proceso <b>responde</b>? Si no, se reinicia. Es lo que pregunta el <span class="mono">HEALTHCHECK</span>.</p>
+  <p class="small"><span class="badge2 c503" style="font-size:16px;min-width:0">/listo</span> ¿Tiene lo que necesita (la base y la API)? Si no, <b>reiniciar no sirve</b>: el 503 dice qué falta.</p></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Escalón 1: todo en mi ordenador"
+ data-notes="Que todos lo arranquen. En el Codespace también funciona así, con el entorno conda. La segunda terminal imprime «Interfaz en http://127.0.0.1:8090». /listo debe decir datos ok y la URL de la API. Si alguien tiene el 8080 ocupado por el contenedor del bloque 4, que lo pare antes con docker rm -f.">
+<p class="kick st">Escalón 1 · práctica</p><h1 class="st">Todo en mi ordenador</h1>
+
+<div class="split" style="grid-template-columns:1fr 1.05fr;gap:20px">
+ <div class="card st" style="padding:10px"><svg viewBox="0 0 600 300" role="img" aria-label="Escalón 1: todo en mi ordenador">
+<defs><marker id="f1-s8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker></defs>
+<rect x="5" y="5" width="590" height="290" rx="18" fill="rgba(43,179,255,.06)" stroke="#2bb3ff" stroke-width="2"/>
+<text class="htxt3" x="300" y="30">TU ORDENADOR · conda env-ia-mlops · tu clon · tus archivos</text>
+<rect class="hnode" x="25" y="60" width="120" height="56" rx="12"/><text class="htxt" x="85" y="93">navegador</text>
+<rect class="hnode gold" x="200" y="50" width="180" height="76" rx="12"/><text class="htxt" x="290" y="80">interfaz</text><text class="htxt2" x="290" y="102">127.0.0.1:8090</text>
+<rect class="hnode" x="430" y="50" width="150" height="76" rx="12"/><text class="htxt" x="505" y="80">API</text><text class="htxt2" x="505" y="102">127.0.0.1:8080</text>
+<rect class="hnode" x="200" y="190" width="180" height="70" rx="12"/><text class="htxt" x="290" y="220">data/processed/</text><text class="htxt2" x="290" y="242">curso.db (lectura y escritura)</text>
+<rect class="hnode" x="430" y="190" width="150" height="70" rx="12"/><text class="htxt" x="505" y="220">models/</text><text class="htxt2" x="505" y="242">el modelo</text>
+<path class="flowpath" d="M145 88 L196 88" marker-end="url(#f1-s8)"/><path class="flowpath" d="M380 88 L426 88" marker-end="url(#f1-s8)"/>
+<path class="flowpath" d="M290 126 L290 186" marker-end="url(#f1-s8)"/><path class="flowpath" d="M505 126 L505 186" marker-end="url(#f1-s8)"/>
+</svg></div>
+ <div class="col">
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Dos terminales · con conda activate env-ia-mlops · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080
+python -m ia_mlops.interfaz --url http://127.0.0.1:8080">Copiar todo</button></div><div class="tls"><div class="tln c"># terminal 1: la API del modelo</div><div class="tln"><span class="ps">$</span> <code>python -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080</code><button class="cp" data-t="python -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080" title="Copiar">⧉</button></div><div class="tln c"># terminal 2: la interfaz, que llama a esa API</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.interfaz --url http://127.0.0.1:8080</code><button class="cp" data-t="python -m ia_mlops.interfaz --url http://127.0.0.1:8080" title="Copiar">⧉</button></div></div></div>
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Comprobar</em><button class="cp cpall" data-t="curl http://127.0.0.1:8090/salud
+curl http://127.0.0.1:8090/listo">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>curl http://127.0.0.1:8090/salud</code><button class="cp" data-t="curl http://127.0.0.1:8090/salud" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>curl http://127.0.0.1:8090/listo</code><button class="cp" data-t="curl http://127.0.0.1:8090/listo" title="Copiar">⧉</button></div></div></div>
+  <div class="realbox "><div class="rk">Salida real · Windows · 14/11/2026</div><pre>{&quot;estado&quot;:&quot;listo&quot;,&quot;datos&quot;:&quot;ok&quot;,&quot;modelo&quot;:&quot;http://127.0.0.1:8080&quot;}</pre></div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="La interfaz en acción"
+ data-notes="Abra http://127.0.0.1:8090. La captura es real, de la interfaz con la muestra. Recorra la tabla: puesto y decil son entre los 148 clientes del corte; el tramo y la recomendación salen de la regla de negocio. El aviso «revisar» enlaza con la diapositiva de pros y contras: sin vigilancia, un modelo se queda viejo sin que nadie lo note. La pregunta de los tramos: ¿a quién va el incentivo, al medio o al de más probabilidad como en el laboratorio extra? Depende del objetivo de negocio.">
+<p class="kick st">Escalón 1 · práctica</p><h1 class="st">La interfaz: ids → probabilidad → recomendación</h1>
+
+<div class="split" style="grid-template-columns:1.25fr .75fr;gap:18px">
+ <div class="card st" style="padding:8px;overflow:hidden"><img src="img/interfaz-consulta.png" alt="La interfaz con cuatro clientes: tres tramos y uno sin predicción" style="width:100%;height:440px;object-fit:cover;object-position:top;border-radius:10px"></div>
+ <div class="col">
+  <div class="card f mini2"><h3>Prueba en la página</h3><ul class="list"><li><span><span class="mono">13599</span> → 99,8 %, <span class="mono">alta</span>, puesto 1 de 148</span></li><li><span><b>Ejemplo</b>: tres tramos y un id que no existe</span></li><li><span>Carga un <b>CSV</b> con columna <span class="mono">cliente_id</span></span></li><li><span>Corte <span class="mono">2011-03-01</span>: ¿por qué cambian las variables?</span></li></ul></div>
+  <div class="card f mini2"><h3>Para pensar</h3><p class="small">Casi todos salen <b>⚠ Revisar</b>: <span class="mono">antiguedad_dias=738</span> fuera de lo visto al entrenar <span class="mono">[1, 364]</span>. El modelo se entrenó con cortes de 2010. <b>Así se ve un modelo que nadie vigila</b> (deriva, S5).</p></div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Por qué no se puede sacar"
+ data-notes="Esta diapositiva es la que pidieron explicar: por qué lo de mi ordenador no se puede sacar. No es que esté mal hecho; es que depende de cosas que solo existen en ese equipo. Haga que paren la API y vean el 503: la interfaz está viva pero no lista. Luego que la vuelvan a arrancar o la paren del todo, porque en la parte C usaremos el puerto 8080 dentro de Docker.">
+<p class="kick st">Escalón 1 · conclusión</p><h1 class="st">«En mi máquina funciona»… y solo ahí</h1>
+
+<div class="split" style="grid-template-columns:1.2fr .8fr">
+ <div class="card st"><table class="tbl dens2"><tr><th>Depende de…</th><th>¿Qué pasa en otro equipo?</th></tr><tr><td>Tu <b>entorno conda</b> y sus versiones</td><td>Otras versiones, otras probabilidades… o no arranca</td></tr><tr><td>Tus <b>archivos</b> (<span class="mono">models/</span>, <span class="mono">curso.db</span>)</td><td>Si no ejecutó el pipeline, no existen</td></tr><tr><td>Tu <b>sistema operativo</b></td><td>Cambian comandos y comillas (PowerShell o bash)</td></tr><tr><td>Tu <b>sesión abierta</b></td><td>Cierras el portátil y el servicio desaparece</td></tr><tr><td><span class="mono">127.0.0.1</span></td><td>Nadie más puede llamarlo</td></tr></table></div>
+ <div class="col">
+  <div class="card f"><h3>Prueba vivo frente a listo</h3><p class="small">Para la API (Ctrl+C en la terminal 1): <span class="mono">/salud</span> sigue en 200 y <span class="mono">/listo</span>:</p><div class="realbox "><div class="rk">Salida real · Windows · 14/11/2026</div><pre>{&quot;detalle&quot;:&quot;La API del modelo en http://127.0.0.1:8080 no responde (…). ¿Está arrancada y /listo responde?&quot;}</pre></div></div>
+  <div class="callout f" style="font-size:18px">Sirve para <b>desarrollar</b> y <b>demostrar</b>. No es un servicio: nadie puede depender de él.</div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="1" data-title="Conceptos de contenedores"
+ data-notes="Repaso rápido de las presentaciones de contenedores 1 y 2, que eran obligatorias antes de S2. Pase deprisa; vuelva sobre red y volumen, que son nuevas en la práctica de hoy.">
+<p class="kick st">Conceptos · 3 · repaso</p><h1 class="st">Lo mínimo de contenedores para seguir</h1>
+
+<div class="grid3">
+<div class="card f mini2"><h3>Imagen</h3><p class="small">Plantilla congelada: base, Python, paquetes y código. No cambia.</p></div><div class="card f mini2"><h3>Contenedor</h3><p class="small">Una imagen <b>en ejecución</b>. Al borrarlo se pierde lo que escribió dentro.</p></div><div class="card f mini2"><h3>Contexto y <span class="mono">.dockerignore</span></h3><p class="small">Lo que se envía a Docker al construir, y lo que <b>no</b>.</p></div><div class="card f mini2"><h3><span class="mono">-p equipo:contenedor</span></h3><p class="small">Abre una puerta del equipo hacia el contenedor. Sin <span class="mono">-p</span>, no se llega.</p></div><div class="card f mini2"><h3><span class="mono">-v origen:destino:ro</span></h3><p class="small">Monta una carpeta del equipo dentro, en <b>solo lectura</b>. Los datos quedan fuera de la imagen.</p></div><div class="card f mini2"><h3>Red</h3><p class="small">Los contenedores de una red se encuentran <b>por su nombre</b>: Docker hace de guía telefónica.</p></div><div class="card f mini2"><h3><span class="mono">-e</span> / <span class="mono">ENV</span></h3><p class="small">La configuración, desde fuera.</p></div><div class="card f mini2"><h3><span class="mono">USER 10001</span></h3><p class="small">Sin privilegios: si alguien lo ataca, puede hacer menos.</p></div><div class="card f mini2"><h3><span class="mono">HEALTHCHECK</span></h3><p class="small">Docker pregunta «¿estás vivo?» y <span class="mono">docker ps</span> muestra <span class="mono">(healthy)</span>.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="1" data-title="Escalón 2: la API en su imagen"
+ data-notes="Si alguien no tiene la imagen de la API, que la construya ahora: tarda un par de minutos la primera vez. Mientras, explique que el escalón 2 resuelve la mitad del problema de «en mi máquina funciona», pero solo para la API.">
+<p class="kick st">Escalón 2 · repaso del bloque 4</p><h1 class="st">La API ya vive en una imagen</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col"><div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Lo que hiciste en el bloque 4</em><button class="cp cpall" data-t="docker build -f deploy/docker/Dockerfile -t retencion-api:local .">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>docker build -f deploy/docker/Dockerfile -t retencion-api:local .</code><button class="cp" data-t="docker build -f deploy/docker/Dockerfile -t retencion-api:local ." title="Copiar">⧉</button></div></div></div>
+  <div class="card f"><h3>Lleva</h3><p class="small">Python 3.11, versiones exactas (<span class="mono">requirements-api.lock</span>), <span class="mono">ia_mlops/</span> y <b>el modelo</b>.</p></div>
+  <div class="card f"><h3>No lleva</h3><p class="small">Datos de clientes, cuadernos, pruebas ni SQL (<span class="mono">.dockerignore</span> de la raíz).</p></div></div>
+ <div class="col">
+  <div class="card f" style="border-color:rgba(52,211,153,.6)"><h3 style="color:var(--ok)">Qué ganamos</h3><p class="small">Ya no depende de tu conda ni de tu sistema operativo: cualquier equipo con Docker obtiene <b>lo mismo</b>, hasta el último decimal (lo comprobaste con <span class="mono">comparar</span>).</p></div>
+  <div class="card f" style="border-color:rgba(251,191,36,.6)"><h3 style="color:var(--warn)">Qué falta</h3><p class="small">Sigue pidiendo <b>13 variables</b>. Falta la pieza para personas: la interfaz, en su propia imagen.</p></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="1" data-title="Escalón 3: ¿por qué otra imagen?"
+ data-notes="Pregunte antes de mostrar: ¿por qué no meter la interfaz en la imagen de la API? Recoja respuestas y luego revele las tres. La primera es la de más peso: seguridad y privacidad de los datos.">
+<p class="kick st">Escalón 3 · diseño</p><h1 class="st">¿Por qué una imagen aparte para la interfaz?</h1>
+
+<div class="loop" style="grid-template-columns:repeat(3,1fr)">
+ <div class="lstep f"><div class="n">1</div><b>Sin datos de clientes en la imagen del modelo</b><p>Si la API buscara las variables por id, <span class="mono">curso.db</span> viajaría dentro y cualquiera con la imagen tendría los datos.</p></div>
+ <div class="lstep f"><div class="n">2</div><b>Cada pieza cambia por un motivo</b><p>Reentrenas el modelo sin tocar la interfaz; cambias la página o los tramos sin reconstruir el modelo.</p></div>
+ <div class="lstep f"><div class="n">3</div><b>Cada pieza escala por separado</b><p>En producción puede haber diez copias de la API y una sola interfaz.</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="La receta de la interfaz" data-enter="dock"
+ data-notes="Pulse cada bloque. Tres decisiones a destacar. Uno: -c requirements-api.lock es un archivo de restricciones; no instala nada por sí mismo, solo fija versiones, y así las dos imágenes usan las mismas. Dos: no se copia ni models ni data. Tres: HEALTHCHECK pregunta a /salud y no a /listo.">
+<p class="kick st">Escalón 3 · interfaz.Dockerfile</p><h1 class="st">La receta, línea a línea</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr;gap:20px">
+ <div class="col" id="dklines" style="gap:7px"></div>
+ <div class="card" id="dkdet" style="min-height:420px"></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Construir y mirar dentro"
+ data-notes="Que construyan la imagen. La primera vez descarga paquetes: un par de minutos. Las salidas de la derecha son las del workflow real. Fuera de ia_mlops solo hay tres archivos: ni modelo ni datos. Y el import de sklearn falla, como debe: esta imagen no ejecuta el modelo.">
+<p class="kick st">Escalón 3 · práctica</p><h1 class="st">Construir y comprobar que no lleva nada de más</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr;gap:18px">
+ <div class="col">
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Terminal del Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
+docker image ls &#x27;retencion-*&#x27;
+docker run --rm --entrypoint sh retencion-interfaz:local -c &#x27;find /app -type f -not -path &quot;*/ia_mlops/*&quot;&#x27;
+docker run --rm --entrypoint python retencion-interfaz:local -c &quot;import sklearn&quot;">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .</code><button class="cp" data-t="docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local ." title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker image ls &#x27;retencion-*&#x27;</code><button class="cp" data-t="docker image ls &#x27;retencion-*&#x27;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker run --rm --entrypoint sh retencion-interfaz:local -c &#x27;find /app -type f -not -path &quot;*/ia_mlops/*&quot;&#x27;</code><button class="cp" data-t="docker run --rm --entrypoint sh retencion-interfaz:local -c &#x27;find /app -type f -not -path &quot;*/ia_mlops/*&quot;&#x27;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker run --rm --entrypoint python retencion-interfaz:local -c &quot;import sklearn&quot;</code><button class="cp" data-t="docker run --rm --entrypoint python retencion-interfaz:local -c &quot;import sklearn&quot;" title="Copiar">⧉</button></div></div></div>
+  <div class="card f mini2"><h3>Cada imagen, su lista de exclusiones</h3><p class="small"><span class="mono">interfaz.Dockerfile.dockerignore</span>: Docker la usa en lugar de la de la raíz. Estrategia: <b>excluir todo</b> (<span class="mono">*</span>) y dejar pasar solo lo que se copia (<span class="mono">!ia_mlops</span>, <span class="mono">!sql/fs/02_poblar_fs.sql</span>…).</p></div>
+ </div>
+ <div class="col">
+  <div class="card f mini2"><h3>Tamaño</h3>
+   <div class="szrow"><span class="mono">interfaz</span><div class="szbar" style="width:51%"><b>423 MB</b></div></div>
+   <div class="szrow"><span class="mono">api</span><div class="szbar api" style="width:100%"><b>826 MB</b></div></div>
+   <p class="small" style="margin-top:6px">La mitad: sin scikit-learn, scipy ni mlflow.</p></div>
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>/app/requirements-api.lock
+/app/requirements-interfaz.txt
+/app/sql/fs/02_poblar_fs.sql</pre></div>
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>ModuleNotFoundError: No module named &#x27;sklearn&#x27;</pre></div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="Escalón 4: el diagrama"
+ data-notes="Esta es la diapositiva central. Recorra el dibujo de izquierda a derecha: el navegador entra por la única puerta abierta, -p 8090; la interfaz llama a la API por su nombre dentro de la red; la API no tiene puerta al exterior; los datos están en tu carpeta y entran en solo lectura. Principio: exponer lo mínimo.">
+<p class="kick st">Escalón 4 · el servicio</p><h1 class="st">Dos contenedores que se hablan</h1>
+
+<div class="card st" style="padding:12px 14px"><svg viewBox="0 0 1140 330" role="img" aria-label="Dos contenedores en una red">
+<defs><marker id="f2-s16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker>
+<marker id="f2b-s16" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fb7185"/></marker></defs>
+<rect x="5" y="5" width="1130" height="320" rx="18" fill="rgba(43,179,255,.05)" stroke="#2bb3ff" stroke-width="2"/>
+<text class="htxt3" x="24" y="30" text-anchor="start">EQUIPO (el Codespace)</text>
+<rect x="290" y="45" width="830" height="190" rx="16" fill="rgba(252,211,77,.05)" stroke="#fcd34d" stroke-dasharray="8 6" stroke-width="2"/>
+<text class="htxt3" x="705" y="68" fill="#fcd34d">red «retencion» · los contenedores se encuentran por su nombre</text>
+<rect class="hnode" x="25" y="100" width="150" height="64" rx="12"/><text class="htxt" x="100" y="128">navegador</text><text class="htxt2" x="100" y="150">:8090</text>
+<rect class="hnode gold" x="330" y="90" width="230" height="120" rx="14"/>
+<text class="htxt" x="445" y="122">interfaz</text><text class="htxt2" x="445" y="146">usuario 10001</text><text class="htxt2" x="445" y="166">sin modelo</text><text class="htxt2" x="445" y="186">sin datos dentro</text>
+<rect class="hnode" x="820" y="90" width="270" height="120" rx="14"/><text class="htxt" x="955" y="122">api</text><text class="htxt2" x="955" y="146">usuario 10001 · con el modelo</text><text class="htxt2" x="955" y="166">escucha en :8080 dentro de la red</text><text class="htxt2" x="955" y="186">sin -p: no se publica</text>
+<path class="flowpath" d="M175 132 L326 132" marker-end="url(#f2-s16)"/><text class="htxt3" x="250" y="120">-p 8090:8090</text>
+<path class="flowpath" d="M560 150 L816 150" marker-end="url(#f2-s16)"/><text class="htxt3" x="688" y="138">http://api:8080</text>
+<rect class="hnode" x="330" y="262" width="300" height="50" rx="12"/><text class="htxt" x="480" y="285">data/processed/</text><text class="htxt2" x="480" y="304">en tu carpeta, fuera de la imagen</text>
+<path class="flowpath" d="M445 258 L445 214" marker-end="url(#f2-s16)"/><text class="htxt3" x="560" y="250" text-anchor="start">-v …:/datos:ro (solo lectura)</text>
+
+</svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="callout f" style="font-size:17px"><b>Red</b>: la interfaz llama a <span class="mono">http://api:8080</span>, por <b>nombre</b>.</div>
+ <div class="callout f" style="font-size:17px"><b>Puertos</b>: solo la interfaz tiene <span class="mono">-p</span>. La API no se publica.</div>
+ <div class="callout f" style="font-size:17px"><b>Datos</b>: un volumen <span class="mono">:ro</span>. Se leen; no se pueden tocar.</div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Paso a paso"
+ data-notes="Dicte despacio, de una en una. El error más común aquí es lanzar la interfaz antes de que la API esté sana: no pasa nada, /listo dará 503 unos segundos. /listo debe mostrar «modelo»: «http://api:8080»; eso prueba que llegó por nombre. Lea con el grupo la columna PORTS de docker ps.">
+<p class="kick st">Escalón 4 · práctica</p><h1 class="st">Paso a paso: red, API e interfaz</h1>
+
+<div class="split" style="grid-template-columns:1.15fr .85fr;gap:18px">
+ <div class="col">
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Terminal del Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="docker network create retencion
+docker run -d --name api --network retencion retencion-api:local
+docker ps
+docker run -d --name interfaz --network retencion -p 8090:8090 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local
+curl http://127.0.0.1:8090/listo">Copiar todo</button></div><div class="tls"><div class="tln c"># 1. la red</div><div class="tln"><span class="ps">$</span> <code>docker network create retencion</code><button class="cp" data-t="docker network create retencion" title="Copiar">⧉</button></div><div class="tln c"># 2. la API: sin -p, no se publica</div><div class="tln"><span class="ps">$</span> <code>docker run -d --name api --network retencion retencion-api:local</code><button class="cp" data-t="docker run -d --name api --network retencion retencion-api:local" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker ps</code><button class="cp" data-t="docker ps" title="Copiar">⧉</button></div><div class="tln c"># 3. la interfaz: su puerto, sus datos en solo lectura</div><div class="tln"><span class="ps">$</span> <code>docker run -d --name interfaz --network retencion -p 8090:8090 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local</code><button class="cp" data-t="docker run -d --name interfaz --network retencion -p 8090:8090 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local" title="Copiar">⧉</button></div><div class="tln c"># 4. comprobar</div><div class="tln"><span class="ps">$</span> <code>curl http://127.0.0.1:8090/listo</code><button class="cp" data-t="curl http://127.0.0.1:8090/listo" title="Copiar">⧉</button></div></div></div>
+  <p class="small">Espera a que <span class="mono">docker ps</span> muestre <span class="mono">(healthy)</span> en la API. En PowerShell (Docker Desktop, sin probar): <span class="mono">-v &quot;${PWD}\data\processed:/datos:ro&quot;</span>.</p>
+ </div>
+ <div class="col">
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>{&quot;estado&quot;:&quot;listo&quot;,&quot;datos&quot;:&quot;ok&quot;,&quot;modelo&quot;:&quot;http://api:8080&quot;}</pre></div>
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>NAMES      STATUS                   PORTS
+interfaz   Up 6 seconds (healthy)   0.0.0.0:8090-&gt;8090/tcp
+api        Up 6 seconds (healthy)   8080/tcp</pre></div>
+  <div class="card f mini2"><p class="small">Fíjate en los puertos: la interfaz tiene <span class="mono">0.0.0.0:8090->8090</span> (publicado); la API solo <span class="mono">8080/tcp</span>: escucha en su red, sin puerta al equipo.</p></div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="El mismo resultado"
+ data-notes="Compare con lo que vieron en el escalón 1. Si los números no coinciden, algo está mal: otra base o otro modelo. En el Codespace la página se abre desde la pestaña Puertos; GitHub la reenvía de forma privada, solo para la cuenta de cada persona.">
+<p class="kick st">Escalón 4 · comprobación</p><h1 class="st">Mismos números, otro sitio</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr;gap:18px">
+ <div class="col">
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Terminal del Codespace</em><button class="cp cpall" data-t="curl -X POST http://127.0.0.1:8090/recomendar -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;cliente_ids&quot;: [13599, 18108, 13306, 99999]}&#x27;">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>curl -X POST http://127.0.0.1:8090/recomendar -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;cliente_ids&quot;: [13599, 18108, 13306, 99999]}&#x27;</code><button class="cp" data-t="curl -X POST http://127.0.0.1:8090/recomendar -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;cliente_ids&quot;: [13599, 18108, 13306, 99999]}&#x27;" title="Copiar">⧉</button></div></div></div>
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>origen http://api:8080 | corte 2011-12-10
+13599 0.9977 alta puesto 1
+18108 0.4159 media puesto 75
+13306 0.128 baja puesto 148
+99999 no existe en MASTER</pre></div>
+ </div>
+ <div class="col">
+  <div class="card f"><h3>Igual que en tu Windows</h3><table class="tbl dens2"><tr><th>Cliente</th><th>Escalón 1 (Windows)</th><th>Escalón 4 (contenedores)</th></tr><tr><td>13599</td><td>0,9977 · alta</td><td>0,9977 · alta</td></tr><tr><td>18108</td><td>0,4159 · media</td><td>0,4159 · media</td></tr><tr><td>13306</td><td>0,128 · baja</td><td>0,128 · baja</td></tr></table>
+   <p class="small" style="margin-top:8px">El modelo y los datos son los mismos: solo cambió <b>dónde corren</b>.</p></div>
+  <div class="callout f" style="font-size:18px">Abre la página: pestaña <b>Puertos</b> del Codespace → <b>8090</b>.</div>
+ </div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="El error clásico"
+ data-notes="El error que más se repite al pasar de procesos a contenedores. En el escalón 1 la API estaba en 127.0.0.1 porque las dos piezas compartían equipo. En un contenedor, 127.0.0.1 es el propio contenedor y allí no escucha nadie en el 8080. El 503 de /listo lo dice sin adivinar: Connection refused.">
+<p class="kick st">Escalón 4 · el error más frecuente</p><h1 class="st"><span class="mono">127.0.0.1</span> dentro de un contenedor es <b>él mismo</b></h1>
+
+<div class="card st arq pq" style="padding:6px 10px"><svg viewBox="0 0 1140 330" role="img" aria-label="Dos contenedores en una red">
+<defs><marker id="f2-s19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker>
+<marker id="f2b-s19" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fb7185"/></marker></defs>
+<rect x="5" y="5" width="1130" height="320" rx="18" fill="rgba(43,179,255,.05)" stroke="#2bb3ff" stroke-width="2"/>
+<text class="htxt3" x="24" y="30" text-anchor="start">EQUIPO (el Codespace)</text>
+<rect x="290" y="45" width="830" height="190" rx="16" fill="rgba(252,211,77,.05)" stroke="#fcd34d" stroke-dasharray="8 6" stroke-width="2"/>
+<text class="htxt3" x="705" y="68" fill="#fcd34d">red «retencion» · los contenedores se encuentran por su nombre</text>
+<rect class="hnode" x="25" y="100" width="150" height="64" rx="12"/><text class="htxt" x="100" y="128">navegador</text><text class="htxt2" x="100" y="150">:8090</text>
+<rect class="hnode gold" x="330" y="90" width="140" height="120" rx="14"/>
+<text class="htxt" x="400" y="122">interfaz-mal</text><text class="htxt2" x="400" y="146">usuario 10001</text><text class="htxt2" x="400" y="166">sin modelo</text><text class="htxt2" x="400" y="186">sin datos dentro</text>
+<rect class="hnode" x="820" y="90" width="270" height="120" rx="14"/><text class="htxt" x="955" y="122">api</text><text class="htxt2" x="955" y="146">usuario 10001 · con el modelo</text><text class="htxt2" x="955" y="166">escucha en :8080 dentro de la red</text><text class="htxt2" x="955" y="186">sin -p: no se publica</text>
+<path class="flowpath" d="M175 132 L326 132" marker-end="url(#f2-s19)"/><text class="htxt3" x="250" y="120">-p 8090:8090</text>
+
+<rect class="hnode" x="330" y="262" width="300" height="50" rx="12"/><text class="htxt" x="480" y="285">data/processed/</text><text class="htxt2" x="480" y="304">en tu carpeta, fuera de la imagen</text>
+<path class="flowpath" d="M445 258 L445 214" marker-end="url(#f2-s19)"/><text class="htxt3" x="560" y="250" text-anchor="start">-v …:/datos:ro (solo lectura)</text>
+<path d="M470 150 C 560 110, 560 230, 470 200" fill="none" stroke="#fb7185" stroke-width="3" stroke-dasharray="6 6" marker-end="url(#f2b-s19)"/><text x="560" y="128" fill="#fb7185" font-size="15" font-weight="700">127.0.0.1:8080</text><text x="560" y="148" fill="#fb7185" font-size="14">= él mismo: nadie escucha</text>
+</svg></div>
+<div class="split" style="grid-template-columns:1.1fr .9fr;gap:16px;margin-top:10px">
+ <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Pruébalo</em><button class="cp cpall" data-t="docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local
+curl http://127.0.0.1:8091/listo
+docker rm -f interfaz-mal">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local</code><button class="cp" data-t="docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v &quot;$PWD/data/processed:/datos:ro&quot; retencion-interfaz:local" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>curl http://127.0.0.1:8091/listo</code><button class="cp" data-t="curl http://127.0.0.1:8091/listo" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker rm -f interfaz-mal</code><button class="cp" data-t="docker rm -f interfaz-mal" title="Copiar">⧉</button></div></div></div>
+ <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>{&quot;detalle&quot;:&quot;La API del modelo en http://127.0.0.1:8080 no responde ([Errno 111] Connection refused). ¿Está arrancada y /listo responde?&quot;}</pre></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Romper a propósito" data-enter="romper"
+ data-notes="Que cada persona apunte lo que espera antes de pulsar. Las salidas son las del workflow real. La de «parar la API» es la más rica: el motivo no es connection refused sino name resolution, porque al parar el contenedor su nombre desaparece de la red. Vivo no es listo: /salud sigue en 200. Al terminar: docker rm -f api interfaz y docker network rm retencion.">
+<p class="kick st">Escalón 4 · laboratorio</p><h1 class="st">Romper a propósito: ¿qué esperas?</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr;gap:18px">
+ <div class="col" id="rbtns" style="gap:7px"></div>
+ <div class="card" id="rdet" style="min-height:440px"></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Escalón 5: Compose"
+ data-notes="Cuatro órdenes largas con banderas no se repiten igual cada vez: Compose las escribe una vez y además documenta. Abra deploy/docker/compose.yaml y lea la tabla con el archivo al lado. Las rutas del archivo se resuelven desde deploy/docker, por eso el contexto es ../..">
+<p class="kick st">Escalón 5 · un archivo</p><h1 class="st">Lo mismo, escrito una vez: Docker Compose</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr;gap:18px">
+ <div class="col">
+  <div class="term t2"><div class="bar"><i></i><i></i><i></i><em>Terminal del Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="docker rm -f api interfaz; docker network rm retencion
+docker compose -f deploy/docker/compose.yaml up --build -d
+docker compose -f deploy/docker/compose.yaml ps
+docker compose -f deploy/docker/compose.yaml logs -f interfaz
+docker compose -f deploy/docker/compose.yaml down">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>docker rm -f api interfaz; docker network rm retencion</code><button class="cp" data-t="docker rm -f api interfaz; docker network rm retencion" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker compose -f deploy/docker/compose.yaml up --build -d</code><button class="cp" data-t="docker compose -f deploy/docker/compose.yaml up --build -d" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker compose -f deploy/docker/compose.yaml ps</code><button class="cp" data-t="docker compose -f deploy/docker/compose.yaml ps" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker compose -f deploy/docker/compose.yaml logs -f interfaz</code><button class="cp" data-t="docker compose -f deploy/docker/compose.yaml logs -f interfaz" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>docker compose -f deploy/docker/compose.yaml down</code><button class="cp" data-t="docker compose -f deploy/docker/compose.yaml down" title="Copiar">⧉</button></div></div></div>
+  <div class="realbox f"><div class="rk">Salida real · GitHub Actions · 14/11/2026</div><pre>SERVICE    STATUS                    PORTS
+api        Up 11 seconds (healthy)   8080/tcp
+interfaz   Up 5 seconds (healthy)    0.0.0.0:8090-&gt;8090/tcp</pre></div>
+  <p class="small f">La interfaz arrancó <b>6 s después</b>: Compose esperó a que la API estuviera sana (<span class="mono">depends_on: service_healthy</span>).</p>
+ </div>
+ <div class="card f"><table class="tbl dens2"><tr><th>A mano</th><th>En compose.yaml</th></tr><tr><td><span class="mono">docker network create retencion</span></td><td>automática (<span class="mono">name: retencion</span>)</td></tr><tr><td><span class="mono">--name api</span></td><td><span class="mono">services: api:</span></td></tr><tr><td><span class="mono">docker build -f …</span></td><td><span class="mono">build: {context, dockerfile}</span></td></tr><tr><td><span class="mono">-p 8090:8090</span></td><td><span class="mono">ports: [&quot;8090:8090&quot;]</span></td></tr><tr><td><span class="mono">-v …/data/processed:/datos:ro</span></td><td><span class="mono">volumes: [&quot;../../data/processed:/datos:ro&quot;]</span></td></tr><tr><td><span class="mono">-e CURSO_URL_API=…</span></td><td><span class="mono">environment:</span></td></tr><tr><td>mirar <span class="mono">docker ps</span> hasta <span class="mono">(healthy)</span></td><td><span class="mono">depends_on: condition: service_healthy</span></td></tr></table>
+  <p class="small" style="margin-top:8px">Compose sirve para <b>un equipo</b>. Para muchos, lo hacen plataformas como Cloud Run o Kubernetes (S3 y S4).</p></div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="¿Ya es producción?"
+ data-notes="Sea honesto: lo de hoy es el artefacto que iría a producción, pero no es producción. Recorra la tabla fila a fila y diga en qué sesión se ve cada cosa. La última frase es la idea que deben llevarse: todo lo que hicimos hoy, separar, sacar datos, configurar por entorno, es lo que hace que el salto a producción no obligue a reescribir nada.">
+<p class="kick st">Escalón 6 · honestidad</p><h1 class="st">Ya tienes el artefacto. El Codespace <b>no</b> es producción</h1>
+
+<div class="card st" style="padding:12px 18px"><table class="tbl dens2 big"><tr><th>Aspecto</th><th>En el Codespace (hoy)</th><th>En producción</th><th>En el curso</th></tr><tr><td><b>Dónde corre</b></td><td>una máquina tuya que se apaga</td><td>plataforma gestionada que lo mantiene y reinicia</td><td>S3 · Cloud Run</td></tr><tr><td><b>Quién llega</b></td><td>solo tú (puerto privado)</td><td>usuarios autenticados; la API solo desde servicios autorizados</td><td>S3 · IAM</td></tr><tr><td><b>Imágenes</b></td><td>construidas a mano</td><td>construidas en el CI, versionadas en un registro</td><td>S3–S4 · Artifact Registry</td></tr><tr><td><b>Datos</b></td><td>SQLite montado como volumen</td><td>almacén gestionado, con permisos y copias</td><td>S3 · BigQuery</td></tr><tr><td><b>Secretos</b></td><td>no hay</td><td>en un gestor de secretos, nunca en la imagen</td><td>S3 · Secret Manager</td></tr><tr><td><b>Despliegue</b></td><td><span class="mono">docker compose up</span></td><td>automático, con pruebas y aprobación</td><td>S4 · CI/CD</td></tr><tr><td><b>Vigilancia</b></td><td><span class="mono">docker logs</span></td><td>registros, métricas y alertas</td><td>S3 y S5</td></tr><tr><td><b>Calidad del modelo</b></td><td>el aviso «revisar»</td><td>deriva, reentrenamiento y vuelta atrás</td><td>S5</td></tr></table></div>
+<div class="callout f" style="margin-top:12px">Pasar a producción <b>no cambia el código ni las imágenes</b>: cambia <b>dónde</b> corren y <b>lo que las rodea</b>. Por eso hoy separamos las piezas, sacamos los datos y pusimos la configuración fuera.</div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="La misma arquitectura en producción"
+ data-notes="Ponga esta diapositiva al lado de la de arquitectura del principio: las cajas y las flechas son las mismas. Cambia en qué se convierte cada pieza. Las imágenes se guardan versionadas en Artifact Registry. Los dos contenedores pasan a dos servicios de Cloud Run: la interfaz con HTTPS y usuarios autenticados, y la API privada, que solo puede llamar la interfaz (IAM). curso.db pasa a tablas en BigQuery con permisos. La construcción la hace el workflow de S4, con pruebas y aprobación. El registro de modelos y la vuelta atrás con un alias son de S5, igual que métricas, alertas y deriva. Esto es el mapa de lo que viene: hoy no se despliega nada en GCP.">
+<p class="kick st">Escalón 6 · el mapa a producción</p><h1 class="st">La misma arquitectura, en producción</h1>
+
+<div class="card st arq" style="padding:8px 10px"><svg viewBox="0 0 1140 490" role="img" aria-label="Arquitectura de la exposición del modelo"><defs><marker id="fa-s23" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#fcd34d"/></marker><marker id="fb-s23" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#a9c8ea"/></marker></defs><rect x="2" y="2" width="1136" height="140" rx="14" fill="rgba(179,156,255,.06)" stroke="#b39cff" stroke-dasharray="6 6"/><text class="htxt3" x="14" y="22" text-anchor="start" fill="#b39cff">CONSTRUCCIÓN · automática en el CI (S4)</text><rect class="hnode" x="12" y="40" width="150" height="76" rx="12"/><text class="htxt" x="87" y="75" style="font-size:15px">Sistemas de origen</text><text class="htxt2" x="87" y="93">ventas, CRM…</text><rect class="hnode" x="182" y="40" width="180" height="76" rx="12"/><text class="htxt" x="272" y="75" style="font-size:15px">Pipelines orquestados</text><text class="htxt2" x="272" y="93">workflow de S4</text><rect class="hnode" x="384" y="40" width="170" height="76" rx="12"/><text class="htxt" x="469" y="75" style="font-size:15px">Registro de modelos</text><text class="htxt2" x="469" y="93">MLflow · alias (S5)</text><rect class="hnode" x="576" y="40" width="170" height="76" rx="12"/><text class="htxt" x="661" y="75" style="font-size:15px">Modelo aprobado</text><text class="htxt2" x="661" y="93">versión + firma</text><rect class="hnode" x="768" y="40" width="170" height="76" rx="12"/><text class="htxt" x="853" y="75" style="font-size:15px">Artifact Registry</text><text class="htxt2" x="853" y="93">imagen API versionada</text><rect class="hnode" x="962" y="40" width="168" height="76" rx="12"/><text class="htxt" x="1046" y="75" style="font-size:15px">Artifact Registry</text><text class="htxt2" x="1046" y="93">imagen interfaz</text><path class="flowpath" d="M162 78 L178 78" marker-end="url(#fa-s23)"/><path class="flowpath" d="M362 78 L380 78" marker-end="url(#fa-s23)"/><path class="flowpath" d="M554 78 L572 78" marker-end="url(#fa-s23)"/><path class="flowpath" d="M746 78 L764 78" marker-end="url(#fa-s23)"/><rect x="2" y="158" width="1136" height="330" rx="14" fill="rgba(43,179,255,.05)" stroke="#2bb3ff" stroke-width="2"/><text class="htxt3" x="14" y="178" text-anchor="start">EJECUCIÓN · servicios gestionados (S3)</text><rect x="196" y="196" width="636" height="198" rx="16" fill="rgba(252,211,77,.05)" stroke="#fcd34d" stroke-dasharray="8 6" stroke-width="2"/><text class="htxt3" x="600" y="388">red privada · IAM entre servicios</text><rect class="hnode" x="14" y="262" width="130" height="76" rx="12"/><text class="htxt" x="79" y="297" style="font-size:15px">Persona</text><text class="htxt2" x="79" y="315">conoce el id</text><rect class="hnode gold" x="216" y="226" width="250" height="146" rx="14"/><text class="htxt" x="341" y="252" style="font-size:16px">Cloud Run · interfaz</text><text class="htxt2" x="341" y="270">HTTPS · usuarios autenticados</text><text class="htxt2" x="341" y="300" style="fill:#eef6ff">ids → 13 variables (SQL de FS)</text><text class="htxt2" x="341" y="322" style="fill:#eef6ff">probabilidad → tramo (regla)</text><text class="htxt2" x="341" y="344" style="fill:#eef6ff">página web · /recomendar</text><rect class="hnode" x="566" y="226" width="250" height="146" rx="14"/><text class="htxt" x="691" y="252" style="font-size:16px">Cloud Run · API</text><text class="htxt2" x="691" y="270">privada: solo la interfaz</text><text class="htxt2" x="691" y="300" style="fill:#eef6ff">contrato = firma del modelo (422)</text><text class="htxt2" x="691" y="322" style="fill:#eef6ff">modelo en memoria: predict_proba</text><text class="htxt2" x="691" y="344" style="fill:#eef6ff">/predecir · /predecir/lote</text><rect class="hnode" x="216" y="412" width="250" height="60" rx="12"/><text class="htxt" x="341" y="439" style="font-size:15px">BigQuery</text><text class="htxt2" x="341" y="457">tablas FS con permisos</text><rect class="hnode" x="880" y="226" width="246" height="146" rx="14"/><text class="htxt" x="1003" y="256" style="font-size:16px">Operación</text><text class="htxt2" x="1003" y="284" style="fill:#eef6ff">salud y reinicio automáticos</text><text class="htxt2" x="1003" y="308" style="fill:#eef6ff">registros centralizados</text><text class="htxt2" x="1003" y="332" style="fill:#eef6ff">métricas, alertas, deriva (S5)</text><path d="M853 116 L853 150 L691 150 L691 222" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s23)"/><path d="M1046 116 L1046 186 L420 186 L420 222" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s23)"/><text class="htxt2" x="770" y="145" style="fill:#a9c8ea">despliegue</text><text class="htxt2" x="1090" y="160" style="fill:#a9c8ea">despliegue</text><path d="M272 116 L272 132 L160 132 L160 442 L212 442" fill="none" stroke="#a9c8ea" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#fb-s23)"/><text class="htxt2" x="120" y="400" style="fill:#a9c8ea">FS escrita</text><text class="htxt2" x="120" y="416" style="fill:#a9c8ea">por los pipelines</text><g><path class="flowpath" d="M144 286 L212 286" marker-end="url(#fa-s23)"/><circle cx="178" cy="272" r="12" fill="#fcd34d"/><text x="178" y="277" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">1</text><text class="htxt2" x="178" y="305">ids</text></g><g><path class="flowpath" d="M341 372 L341 408" marker-end="url(#fa-s23)"/><circle cx="318" cy="390" r="12" fill="#fcd34d"/><text x="318" y="395" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">2</text><text class="htxt2" x="356" y="395" text-anchor="start">variables en el corte</text></g><g><path class="flowpath" d="M466 272 L562 272" marker-end="url(#fa-s23)"/><circle cx="514" cy="256" r="12" fill="#fcd34d"/><text x="514" y="261" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">3</text><text class="htxt2" x="514" y="292">POST 13 variables</text></g><g><path class="flowpath" d="M562 330 L470 330" marker-end="url(#fa-s23)"/><circle cx="514" cy="314" r="12" fill="#fcd34d"/><text x="514" y="319" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">4</text><text class="htxt2" x="514" y="350">probabilidad + avisos</text></g><g><path class="flowpath" d="M212 318 L148 318" marker-end="url(#fa-s23)"/><circle cx="178" cy="334" r="12" fill="#fcd34d"/><text x="178" y="339" text-anchor="middle" font-size="14" font-weight="800" fill="#2b2100">5</text><text class="htxt2" x="178" y="362">recomendación</text></g><g><path d="M816 300 L876 300" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="4 4"/><path d="M836 240 L876 240" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="4 4"/><text class="htxt2" x="1003" y="400" style="fill:#34d399">cada servicio dice si está vivo y listo,</text><text class="htxt2" x="1003" y="418" style="fill:#34d399">y deja una línea por petición</text></g></svg></div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Los escalones en una tabla"
+ data-notes="Repase la tabla de arriba abajo con una sola palabra por salto: reproducible, separado, documentado, gestionado. Si queda tiempo, pida a alguien que explique con sus palabras un salto.">
+<p class="kick st">Resumen</p><h1 class="st">Los escalones, de un vistazo</h1>
+
+<div class="card st" style="padding:12px 18px"><table class="tbl dens2 big"><tr><th></th><th>Qué corre</th><th>Depende de</th><th>Quién llega</th><th>Datos</th></tr><tr><td><b>1 · Mi ordenador</b></td><td>dos procesos Python</td><td>tu conda, tus archivos, tu sesión</td><td>solo tú (<span class="mono">127.0.0.1</span>)</td><td>tu carpeta, con escritura</td></tr><tr><td><b>2 · API en imagen</b></td><td>un contenedor</td><td>solo la imagen</td><td>tú, por <span class="mono">-p 8080</span></td><td>no usa</td></tr><tr><td><b>3–4 · Dos contenedores</b></td><td>dos contenedores en una red</td><td>solo las imágenes</td><td>tú, solo a la interfaz</td><td>volumen <span class="mono">:ro</span></td></tr><tr><td><b>5 · Compose</b></td><td>lo mismo, en un archivo</td><td>el archivo y las imágenes</td><td>igual</td><td>igual</td></tr><tr><td><b>6 · Producción</b></td><td>las mismas imágenes</td><td>la plataforma</td><td>usuarios autenticados</td><td>almacén gestionado</td></tr></table></div>
+<div class="grid2" style="margin-top:12px;gap:14px">
+ <div class="callout f" style="font-size:18px">Del 1 al 2: <b>reproducible</b>. Del 2 al 4: <b>separado y protegido</b>.</div>
+ <div class="callout f" style="font-size:18px">Del 4 al 5: <b>documentado</b>. Del 5 al 6: <b>gestionado y vigilado</b>.</div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Autoevaluación"
+ data-notes="Lea cada pregunta, deje unos segundos y revele la respuesta con la flecha. Las respuestas aparecen de una en una. Si hay tiempo, use la sexta para volver al principio: pros y contras.">
+<p class="kick st">Comprueba que lo tienes</p><h1 class="st">Seis preguntas</h1>
+
+<div class="grid2" style="gap:12px">
+<div class="card mini2"><h3>1. ¿Por qué la interfaz llama a <span class="mono">http://api:8080</span> y no a <span class="mono">127.0.0.1</span>?</h3><p class="small f">Dentro de un contenedor, <span class="mono">127.0.0.1</span> es él mismo. En la red, Docker resuelve <span class="mono">api</span> al contenedor de la API.</p></div><div class="card mini2"><h3>2. ¿Por qué la API no lleva <span class="mono">-p</span>?</h3><p class="small f">Nadie de fuera necesita hablarle: solo la interfaz, dentro de la red. Exponer lo mínimo.</p></div><div class="card mini2"><h3>3. ¿Por qué los datos van en un volumen?</h3><p class="small f">La imagen se copia y se comparte: no debe llevar datos de clientes. Con <span class="mono">:ro</span>, no se pueden estropear.</p></div><div class="card mini2"><h3>4. La API se cae: ¿qué dan <span class="mono">/salud</span> y <span class="mono">/listo</span>?</h3><p class="small f"><span class="mono">/salud</span> 200 y <span class="mono">/listo</span> 503. Si el <span class="mono">HEALTHCHECK</span> mirara <span class="mono">/listo</span>, Docker reiniciaría la interfaz sin arreglar nada.</p></div><div class="card mini2"><h3>5. ¿Qué cambia en el código del escalón 1 al 4? ¿Y al 6?</h3><p class="small f">Nada. Cambian la configuración y dónde corren las piezas.</p></div><div class="card mini2"><h3>6. ¿Cuándo NO merece la pena llevar un modelo a producción?</h3><p class="small f">Cuando es un análisis puntual o un prototipo que nadie más usará ni repetirá.</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Cierre"
+ data-notes="Cierre recordando la pregunta inicial: dónde y cómo llama el usuario al modelo. Respuesta: a una interfaz que conoce los datos, que llama a una API que conoce el modelo, cada una en su contenedor. Pida que anoten cualquier diferencia que vean en su Codespace: el material se probó en GitHub Actions y todavía no se ha recorrido a mano en un Codespace.">
+<p class="kick st">Cierre</p><h1 class="st">Qué te llevas</h1>
+
+<div class="grid2">
+ <div class="card f"><h3>Hoy</h3><ul class="list"><li><span>Por qué (y cuándo) sacar un modelo del <b>portátil</b></span></li><li><span>Una <b>interfaz</b> que convierte ids en recomendaciones</span></li><li><span><b>Dos imágenes</b>: la del modelo y la de la interfaz, sin datos</span></li><li><span><b>Red, puertos, volumen <span class="mono">:ro</span></b> y vivo frente a listo</span></li><li><span><b>Compose</b> y lo que falta para producción</span></li></ul></div>
+ <div class="card f"><h3>Para seguir</h3><ul class="list"><li><span>Guía completa: <span class="mono">docs/del-ordenador-al-servicio.md</span></span></li><li><span>Recorrido de clase: <span class="mono">practica/interfaz-de-consulta.md</span></span></li><li><span>Al acabar: <span class="mono">docker compose -f deploy/docker/compose.yaml down</span></span></li><li><span>S3: esta imagen, en <b>Cloud Run</b></span></li></ul></div>
+</div>
+<p class="small" style="margin-top:10px">Probado con Docker real en GitHub Actions (14/11/2026). Aún sin recorrer a mano en un Codespace: anota lo que te salga distinto.</p>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado"></span>
+  <button class="part" data-p="A">Por qué</button><button class="part" data-p="B">Mi ordenador</button><button class="part" data-p="C">Contenedores</button><button class="part" data-p="D">Producción</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S2">⌂ <span class="tx">Índice de </span>S2</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en 04-Proyecto-Base/docs/del-ordenador-al-servicio.md.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=> (r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const DK=[{"l": "FROM python:3.11-slim", "t": "Base", "d": "La misma base que la API: el mismo Python que el entorno del curso.", "r": "Menos sistema, menos que mantener y vigilar."}, {"l": "ENV CURSO_DB=/datos/curso.db \\\n    CURSO_DB_SOLO_LECTURA=1 \\\n    CURSO_URL_API=http://api:8080", "t": "Configuración", "d": "Valores por defecto. Se cambian al arrancar con -e, sin reconstruir la imagen.", "r": "Dónde están los datos y la API no es cosa del código."}, {"l": "COPY requirements-api.lock requirements-interfaz.txt ./\nRUN pip install -c requirements-api.lock \\\n    -r requirements-interfaz.txt", "t": "Dependencias", "d": "Solo fastapi, uvicorn, pydantic, pandas y numpy. -c es un archivo de RESTRICCIONES: no instala nada por sí mismo, fija la versión de lo que se instala. Las dos imágenes usan las mismas versiones.", "r": "Sin scikit-learn ni mlflow: la interfaz no ejecuta el modelo."}, {"l": "COPY ia_mlops/ ia_mlops/\nCOPY sql/fs/02_poblar_fs.sql sql/fs/…", "t": "Código y SQL", "d": "El paquete y el SQL con el que se calculan las variables. Nada de models/ ni de data/.", "r": "Lo que no está en la imagen no se puede filtrar desde la imagen."}, {"l": "RUN useradd --uid 10001 … && mkdir /datos\nUSER 10001", "t": "Sin root", "d": "Un usuario sin privilegios y el punto de montaje de los datos.", "r": "Mismo criterio que la API: docker exec interfaz id -u da 10001."}, {"l": "EXPOSE 8090\nHEALTHCHECK … /salud", "t": "Puerto y salud", "d": "EXPOSE documenta el puerto (no lo publica: eso es -p). Docker pregunta a /salud cada 30 s.", "r": "/salud y no /listo: si la API cae, reiniciar la interfaz no arregla nada."}, {"l": "CMD [\"uvicorn\", \"ia_mlops.interfaz.app:app\",\n     \"--host\", \"0.0.0.0\", \"--port\", \"8090\"]", "t": "Arranque", "d": "0.0.0.0: dentro de un contenedor, las llamadas siempre llegan «desde fuera».", "r": "Con 127.0.0.1 nadie podría llegar, ni con -p."}];
+const RO=[{"t": "Escribir en los datos", "c": "docker exec interfaz sh -c 'echo x > /datos/intruso'", "e": "falla", "s": "sh: 1: cannot create /datos/intruso: Read-only file system", "l": ":ro protege el dato aunque el código tenga un error."}, {"t": "La API desde el equipo", "c": "curl http://127.0.0.1:8080/salud", "e": "no conecta", "s": "curl: (7) Failed to connect to 127.0.0.1 port 8080 after 0 ms: Could not connect to server", "l": "Sin -p no hay puerta."}, {"t": "La API desde la interfaz", "c": "docker exec interfaz python -c \"import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())\"", "e": "200", "s": "b'{\"estado\":\"listo\"}'", "l": "Dentro de la red, por nombre, sí."}, {"t": "Interfaz sin volumen", "c": "docker run -d --name sin-datos --network retencion -p 8092:8090 retencion-interfaz:local\ncurl http://127.0.0.1:8092/listo", "e": "503", "s": "{\"detalle\":\"No existe la base /datos/curso.db. ¿Has montado el volumen con los datos? (-v .../data/processed:/datos:ro)\"}", "l": "Los datos no están en la imagen: hay que montarlos."}, {"t": "Parar la API", "c": "docker stop api\ncurl http://127.0.0.1:8090/salud     # 200\ncurl http://127.0.0.1:8090/listo", "e": "503", "s": "{\"detalle\":\"La API del modelo en http://api:8080 no responde ([Errno -3] Temporary failure in name resolution). ¿Está arrancada y /listo responde?\"}", "l": "Vivo no es listo. Y el motivo: al parar el contenedor, el nombre «api» desaparece de la red."}];
+const FUENTE="Salida real · GitHub Actions · 14/11/2026";
+
+const slides=$$('.slide'); const N=slides.length;
+const state=slides.map(()=>({r:0,frags:[]}));
+let cur=0;
+function partName(p){return p==='A'?'Por qué':p==='B'?'Mi ordenador':p==='C'?'Contenedores':'Producción'}
+slides.forEach((s,i)=>{
+  s.dataset.i=i; state[i].frags=$$('.f',s);
+  const f=document.createElement('div'); f.className='foot';
+  f.innerHTML=`<span>ML e IA · S2 · Del ordenador al servicio</span><span><b>${esc(partName(s.dataset.part))}</b> · ${i+1} / ${N}</span>`;
+  s.appendChild(f);
+});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function applyFrags(i){const st=state[i]; st.frags.forEach((el,k)=>el.classList.toggle('on',k<st.r))}
+slides.forEach(s=>$$('.st',s).forEach((e,k)=>{if(!e.style.getPropertyValue('--d')) e.style.setProperty('--d',k)}));
+const hooks={};
+function go(i,full){
+  i=Math.max(0,Math.min(N-1,i)); cur=i;
+  slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i)});
+  if(full!==undefined){state[i].r=full?state[i].frags.length:0}
+  applyFrags(i); chrome();
+  const e=slides[i].dataset.enter; if(e&&hooks[e]) hooks[e](slides[i]);
+  try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+}
+function next(){const st=state[cur]; if(st.r<st.frags.length){st.r++;applyFrags(cur);return} if(cur<N-1) go(cur+1,false)}
+function prev(){const st=state[cur]; if(st.r>0){st.r--;applyFrags(cur);return} if(cur>0) go(cur-1,true)}
+function chrome(){
+  const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N;
+  $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL;
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto: '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));
+}
+function fit(){const v=$('#viewport'); const sc=Math.min(v.clientWidth/1280,v.clientHeight/720); $('#stage').style.setProperty('--s',sc.toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(partName(s.dataset.part))} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i,false)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=prev; $('#bnext').onclick=next;
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen() };
+$$('#bar .part').forEach(b=>b.onclick=()=>{const k=slides.findIndex(s=>s.dataset.part===b.dataset.p);go(k,false)});
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();next()}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();prev()}
+  else if(k==='Home'){e.preventDefault();go(0,false)}
+  else if(k==='End'){e.preventDefault();go(N-1,true)}
+  else if(k==='o'||k==='O'){toggle('#index')}
+  else if(k==='s'||k==='S'){toggle('#notes')}
+  else if(k==='f'||k==='F'){$('#bfull').click()}
+  else if(k==='Escape'){toggle('#index',false);toggle('#notes',false)}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?next():prev()}},{passive:true});
+
+/* Copiar órdenes */
+document.addEventListener('click',async e=>{const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+
+/* Dockerfile de la interfaz */
+hooks.dock=()=>{ const box=$('#dklines'); if(box._ok) return; box._ok=1;
+  box.innerHTML=DK.map((x,i)=>`<button class="dkl" data-i="${i}"><span class="mono">${esc(x.l)}</span></button>`).join('');
+  function show(i){ const x=DK[i]; $$('.dkl',box).forEach((b,k)=>b.classList.toggle('sel',k===i));
+    $('#dkdet').innerHTML=`<h2>${i+1}. ${esc(x.t)}</h2><p style="margin-top:6px;font-size:19px">${esc(x.d)}</p><div class="callout" style="margin-top:14px;font-size:18px">${esc(x.r)}</div>`; }
+  box.addEventListener('click',e=>{const b=e.target.closest('.dkl'); if(b) show(+b.dataset.i)});
+  show(2); };
+
+/* Romper a propósito */
+hooks.romper=()=>{ const box=$('#rbtns'); if(box._ok) return; box._ok=1;
+  box.innerHTML=RO.map((x,i)=>`<button class="rbtn" data-i="${i}"><b>${esc(x.t)}</b><small>esperado: ${esc(x.e)}</small></button>`).join('');
+  function show(i){ const x=RO[i]; $$('.rbtn',box).forEach((b,k)=>b.classList.toggle('sel',k===i));
+    $('#rdet').innerHTML=`<h2>${esc(x.t)}</h2><pre class="pre" style="margin-top:8px">${esc(x.c)}</pre>`+
+      `<div class="realbox reveal"><div class="rk">${esc(FUENTE)}</div><pre>${esc(x.s)}</pre></div>`+
+      `<div class="callout" style="margin-top:12px;font-size:18px">${esc(x.l)}</div>`; }
+  box.addEventListener('click',e=>{const b=e.target.closest('.rbtn'); if(b) show(+b.dataset.i)});
+  show(4); };
+
+fit();
+const h=parseInt((location.hash||'').slice(1),10);
+go(isNaN(h)?0:h-1,false);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1,false)});
+})();
+</script>
+</body>
+</html>

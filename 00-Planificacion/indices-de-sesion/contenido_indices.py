@@ -119,6 +119,9 @@ SESIONES = [
             alumno('Guía de laboratorio', f'{S2}/practica/guia-laboratorio.md', 'Paso a paso con presupuesto de tiempo y salidas esperadas.'),
             alumno('Laboratorio extra: de la ingesta a la explotación', f'{S2}/practica/laboratorio-extra-de-punta-a-punta.md',
                    'Si sobra tiempo (unos 60 min): pipelines uno a uno, modelo registrado, API, la lista de la campaña y el ciclo con datos nuevos.'),
+            deck('Del ordenador al servicio', f'{S2}/del-ordenador-al-servicio/index.html',
+                 'La que se proyecta en clase y sigues en tu Codespace: pros y contras de llevar un modelo a producción, la arquitectura de la exposición, '
+                 'de dos procesos en tu portátil a dos contenedores (red, puertos, volumen de solo lectura, Compose) y el mapa a producción. Salidas reales.', volver=True),
             alumno('Interfaz de consulta: del ordenador al servicio', f'{S2}/practica/interfaz-de-consulta.md',
                    'Unos 60 min: ids de cliente → probabilidad y recomendación, primero en tu ordenador y después en dos contenedores (API e interfaz) en el Codespace.'),
             alumno('Del ordenador al servicio (guía completa)', '04-Proyecto-Base/docs/del-ordenador-al-servicio.md',
