@@ -1,0 +1,36 @@
+# El servicio completo en un archivo: la API del modelo y la interfaz de consulta, en su propia red.
+# Es lo mismo que los comandos «docker network create / docker run» de docs/del-ordenador-al-servicio.md, escrito una vez.
+#
+# Desde la carpeta del proyecto (04-Proyecto-Base), DESPUES de  python -m ia_mlops.pipeline  (deja el modelo y data/processed/curso.db):
+#   docker compose -f deploy/docker/compose.yaml up --build -d     # construye las dos imagenes y arranca
+#   docker compose -f deploy/docker/compose.yaml ps                # estado y salud de cada servicio
+#   docker compose -f deploy/docker/compose.yaml logs -f interfaz  # registros de uno
+#   docker compose -f deploy/docker/compose.yaml down              # para y borra contenedores y red (las imagenes y los datos quedan)
+#
+# Las rutas relativas de este archivo se resuelven desde ESTA carpeta (deploy/docker): por eso el contexto es ../..
+name: retencion
+
+services:
+  api:                                   # el nombre del servicio es su nombre en la red: la interfaz la llama en http://api:8080
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: retencion-api:local
+    # Sin «ports»: la API NO se publica fuera. Solo la interfaz, dentro de la red, puede llamarla.
+    # Para probarla con curl desde fuera, descomenta:
+    # ports: ["8080:8080"]
+
+  interfaz:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/interfaz.Dockerfile
+    image: retencion-interfaz:local
+    ports:
+      - "8090:8090"                      # equipo:contenedor -> http://127.0.0.1:8090 (en Codespaces, pestaña Puertos)
+    environment:
+      CURSO_URL_API: http://api:8080     # configuracion por variable de entorno: la misma imagen sirve para otra API cambiando esto
+    volumes:
+      - ../../data/processed:/datos:ro   # los datos NO van en la imagen: se montan, y en solo lectura
+    depends_on:
+      api:
+        condition: service_healthy       # espera a que el HEALTHCHECK de la API diga «sano» antes de arrancar

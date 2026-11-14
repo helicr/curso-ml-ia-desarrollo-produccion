@@ -1,0 +1,9 @@
+# Lo MINIMO para la imagen de la INTERFAZ de consulta (deploy/docker/interfaz.Dockerfile).
+# No sirve el modelo (eso es la API): no necesita scikit-learn, scipy ni mlflow. Calcula variables con SQLite (viene con Python)
+# y pandas, y llama a la API por HTTP (urllib, de la biblioteca estandar).
+# Las versiones EXACTAS no se repiten aqui: la imagen instala con  -c requirements-api.lock  (las mismas que la imagen de la API).
+fastapi
+uvicorn
+pydantic
+pandas
+numpy

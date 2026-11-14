@@ -34,6 +34,13 @@ Ritmo: 10 preparar · 25 arrancar · 30 romper · **10 pausa** · 25 comparar y 
 - Recorrer el chat/pantallas a los 15 min de cada bloque.
 - **Bloque 2 (romper):** pedir que apunten el código esperado **antes** de cada `curl`. Los casos 08 y 09 (200 con advertencia) son los que más discuten.
 - **Bloque 4 (Docker):** es el de más riesgo. Si el Codespace no arranca, esa persona sigue con el bloque 5: el CI construye la imagen. Anotar el mensaje exacto de cada fallo (es información para mejorar el `devcontainer`).
+- **Tras el bloque 4: la interfaz de consulta, del ordenador al servicio (unos 60 min)** (`practica/interfaz-de-consulta.md`, que remite a `04-Proyecto-Base/docs/del-ordenador-al-servicio.md`). Responde a lo que preguntó el alumnado: «ya tengo la API, ¿dónde y cómo la llama el usuario?». Tres partes:
+  - **A · en el ordenador (15 min):** dos procesos en `127.0.0.1`. Mensaje: funciona, pero depende de mi entorno, mis archivos y mi sesión, y no se puede sacar de ahí.
+  - **B · dos contenedores en el Codespace (35 min):** la imagen de la interfaz, sin modelo ni datos; red `retencion`; la API sin `-p`; la base con `-v …:ro`; las roturas (`127.0.0.1` dentro de un contenedor, solo lectura, vivo frente a listo); Compose. Mensaje: es el artefacto que iría a producción.
+  - **C · ¿ya es producción? (10 min):** el Codespace no lo es. Tabla de lo que falta y en qué sesión se ve (S3 Cloud Run, IAM, BigQuery y secretos; S4 despliegue con aprobación; S5 alertas, deriva y *rollback*).
+
+  Otros mensajes: la recomendación es una regla de negocio y no sale del modelo; 132 de los 148 clientes salen «revisar» por `antiguedad_dias`, lo que enlaza con la deriva de S5.
+  **Tiempo:** la sesión dura 240 min y la práctica ya va justa. Si no cabe, hacer la parte A y la B hasta el paso 3 como demo del docente (unos 25 min), y dejar el resto como lectura obligatoria antes de S3.
 - Quien termine antes: empezar la tarea (reentrenar con una variable nueva y ver el 503 de `/listo`).
 
 ## 3:45–4:00 · Entrega y cierre (diap. 19–21)

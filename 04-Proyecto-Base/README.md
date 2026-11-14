@@ -92,6 +92,20 @@ docker build -f deploy/docker/Dockerfile -t retencion-api:local .      # en Code
 Cinco endpoints (`/salud`, `/listo`, `/modelo`, `/predecir`, `/predecir/lote`), un contrato que sale de la **firma del modelo MLflow**, errores 422/503/500 distinguibles,
 registros JSON por la salida estándar y una imagen mínima que no corre como root. Todo explicado, con lo que se probó y lo que no, en `docs/api-y-contenedor.md`.
 
+## La interfaz de consulta (S2)
+La API pide las 13 variables; quien hace la campaña solo conoce el **id del cliente**. La interfaz hace de puente: calcula las variables desde el id con el SQL de FS, llama a la API y traduce la probabilidad en una recomendación (regla de negocio en `config.SEGMENTOS_RECOMPRA`).
+```text
+make api                                              # terminal 1: la API del modelo (8080)
+python -m ia_mlops.interfaz --url http://127.0.0.1:8080   # terminal 2: la interfaz en http://127.0.0.1:8090  (o: make interfaz)
+```
+Uno, varios o una lista de ids (CSV/TXT), fecha de corte opcional y descarga en CSV. Explicado en `docs/interfaz-de-consulta.md`.
+
+Como **servicio de dos contenedores** (la API con el modelo y la interfaz sin modelo ni datos, en una red y con la base montada en solo lectura):
+```text
+docker compose -f deploy/docker/compose.yaml up --build -d     # http://127.0.0.1:8090 · la API no se publica
+```
+El recorrido completo, desde lo básico hasta lo que falta para producción: `docs/del-ordenador-al-servicio.md`.
+
 ## Pruebas
 ```text
 python -m pytest tests                  # todas (incluye ejecutar los cuadernos)

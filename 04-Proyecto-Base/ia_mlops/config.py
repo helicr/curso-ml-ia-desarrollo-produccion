@@ -9,6 +9,8 @@ del codigo. Los cuadernos repiten estos valores en su celda de parametros; las p
 Las rutas se pueden cambiar con variables de entorno (util en pruebas y en contenedores):
     CURSO_DB_OPERACIONAL  base operacional «retail», la fuente   (por defecto data/external/retail.db)
     CURSO_DB       base SQLite analitica       (por defecto data/processed/curso.db)
+    CURSO_DB_SOLO_LECTURA  1 = abrir esa base en solo lectura (el contenedor de la interfaz la recibe montada :ro)
+    CURSO_URL_API  la API del modelo a la que llama la interfaz (en el contenedor: http://api:8080)
     CURSO_MODELOS  carpeta de modelos          (por defecto models/)
     CURSO_REPORTES carpeta de reportes         (por defecto reports/)
     CURSO_LOG_NIVEL nivel de registro de la API (por defecto INFO)
@@ -23,6 +25,7 @@ SQL = RAIZ / 'sql'
 # Dos bases: la OPERACIONAL simula el sistema de ventas (la fuente); la ANALITICA guarda las capas RAW a ML.
 DB_OPERACIONAL = Path(os.environ.get('CURSO_DB_OPERACIONAL', RAIZ / 'data' / 'external' / 'retail.db'))
 DB =Path(os.environ.get('CURSO_DB', DATA_PROCESSED / 'curso.db'))
+DB_SOLO_LECTURA = os.environ.get('CURSO_DB_SOLO_LECTURA', '') == '1'   # 1 = abrir la base sin poder escribir (contenedor de la interfaz)
 MODELOS = Path(os.environ.get('CURSO_MODELOS', RAIZ / 'models'))
 REPORTES = Path(os.environ.get('CURSO_REPORTES', RAIZ / 'reports'))
 
@@ -61,3 +64,16 @@ CARPETA_MODELO_MLFLOW = 'modelo_mlflow'
 # MLflow: experimento (agrupa las ejecuciones) y nombre del modelo en el registro (cada entrenamiento crea una versión nueva).
 EXPERIMENTO_MLFLOW = 'retencion-90d'
 MODELO_REGISTRADO = 'retencion-90d'
+
+# Interfaz de consulta (S2, ia_mlops/interfaz): de la PROBABILIDAD que da el modelo a una RECOMENDACION para el negocio.
+# Es una regla de negocio, no sale del modelo: los umbrales y las acciones se acuerdan con quien hace la campaña y se cambian aquí.
+# Se recorre en orden: el primer tramo cuyo «desde» no supere la probabilidad es el del cliente.
+SEGMENTOS_RECOMPRA = [
+    {'segmento': 'alta', 'desde': 0.70,
+     'recomendacion': 'Comprará probablemente sin ayuda: comunicación habitual o venta cruzada; no gastar el incentivo.'},
+    {'segmento': 'media', 'desde': 0.40,
+     'recomendacion': 'Indeciso: prioridad de la campaña de recompra; aquí un incentivo puede cambiar el resultado.'},
+    {'segmento': 'baja', 'desde': 0.0,
+     'recomendacion': 'Poco probable que compre en 90 días: contacto de recuperación de bajo coste o no invertir.'},
+]
+URL_API = os.environ.get('CURSO_URL_API')   # la interfaz llama a la API del modelo aquí; sin valor, usa el modelo de models/ directamente

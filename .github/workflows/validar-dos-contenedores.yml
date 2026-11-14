@@ -1,0 +1,101 @@
+name: Validar API e interfaz en dos contenedores
+# Ejecuta con Docker REAL lo que describe 04-Proyecto-Base/docs/del-ordenador-al-servicio.md:
+#   1) a mano: red, contenedor de la API, contenedor de la interfaz con la base montada :ro;
+#   2) lo mismo con docker compose;
+#   3) las roturas a proposito (sin API, URL con 127.0.0.1, volumen de solo lectura, API sin publicar).
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+    paths:
+      - '04-Proyecto-Base/ia_mlops/**'
+      - '04-Proyecto-Base/deploy/docker/**'
+      - '04-Proyecto-Base/requirements-*'
+      - '.github/workflows/validar-dos-contenedores.yml'
+permissions:
+  contents: read
+jobs:
+  dos-contenedores:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: 04-Proyecto-Base
+    env:
+      CURSO_SIN_PANTALLA: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Entorno y pipeline (deja models/ y data/processed/curso.db)
+        run: |
+          pip install -r requirements-dev.txt && pip install -e . --no-deps
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+      - name: Construir las dos imagenes
+        run: |
+          docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+          docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
+          docker image ls 'retencion-*'
+          echo "--- que hay en /app de la interfaz (ni modelo ni datos):"
+          docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*"; ls /app/ia_mlops'
+          if docker run --rm --entrypoint python retencion-interfaz:local -c "import sklearn"; then echo "MAL: la interfaz lleva scikit-learn"; exit 1; fi
+
+      - name: "Paso a mano: red + API + interfaz"
+        run: |
+          set -x
+          docker network create retencion
+          docker run -d --name api --network retencion retencion-api:local
+          docker run -d --name interfaz --network retencion -p 8090:8090 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local
+          for _ in $(seq 1 40); do curl -fsS http://127.0.0.1:8090/listo && break; sleep 2; done
+          curl -fsS http://127.0.0.1:8090/listo
+          curl -fsS http://127.0.0.1:8090/estado
+          curl -fsS -X POST http://127.0.0.1:8090/recomendar -H 'content-type: application/json' -d '{"cliente_ids": [13599, 18108, 13306, 99999]}' | tee /tmp/r.json
+          python -c "import json; r=json.load(open('/tmp/r.json')); assert r['encontrados']==3 and r['origen']=='http://api:8080', r"
+          test "$(docker exec interfaz id -u)" = "10001"
+          docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+
+      - name: "Romper: volumen de solo lectura, API no publicada, 127.0.0.1 dentro del contenedor, API parada"
+        run: |
+          set -x
+          # el volumen es de solo lectura: el contenedor no puede escribir en los datos
+          # (con «set -e», una orden negada con «!» nunca hace fallar el paso: por eso «if ...; then exit 1»)
+          if docker exec interfaz sh -c 'echo x > /datos/intruso'; then echo "MAL: se pudo escribir en /datos"; exit 1; fi
+          # la API no se publico (-p): desde el equipo no se llega; desde la interfaz, si (por nombre)
+          if curl -fsS --max-time 3 http://127.0.0.1:8080/salud; then echo "MAL: la API esta publicada"; exit 1; fi
+          docker exec interfaz python -c "import urllib.request; print(urllib.request.urlopen('http://api:8080/listo').read())"
+          # el error clasico: 127.0.0.1 dentro de un contenedor es EL PROPIO contenedor
+          docker run -d --name interfaz-mal --network retencion -p 8091:8090 -e CURSO_URL_API=http://127.0.0.1:8080 -v "$PWD/data/processed:/datos:ro" retencion-interfaz:local
+          for _ in $(seq 1 20); do curl -fsS http://127.0.0.1:8091/salud && break; sleep 1; done
+          test "$(curl -s -o /tmp/mal.json -w '%{http_code}' http://127.0.0.1:8091/listo)" = "503"; cat /tmp/mal.json; echo
+          # sin volumen: no hay datos
+          docker run -d --name interfaz-sin-datos --network retencion -p 8092:8090 retencion-interfaz:local
+          for _ in $(seq 1 20); do curl -fsS http://127.0.0.1:8092/salud && break; sleep 1; done
+          test "$(curl -s -o /tmp/sin.json -w '%{http_code}' http://127.0.0.1:8092/listo)" = "503"; cat /tmp/sin.json; echo
+          # la API se para: la interfaz sigue viva (/salud) pero no lista (/listo 503)
+          docker stop api
+          curl -fsS http://127.0.0.1:8090/salud
+          test "$(curl -s -o /tmp/parada.json -w '%{http_code}' http://127.0.0.1:8090/listo)" = "503"; cat /tmp/parada.json; echo
+
+      - name: Registros (si algo falla)
+        if: failure()
+        run: for c in api interfaz interfaz-mal interfaz-sin-datos; do echo "=== $c"; docker logs $c 2>&1 | tail -40 || true; done
+
+      - name: Limpiar el paso a mano
+        if: always()
+        run: docker rm -f api interfaz interfaz-mal interfaz-sin-datos || true; docker network rm retencion || true
+
+      - name: Lo mismo con docker compose
+        run: |
+          set -x
+          docker compose -f deploy/docker/compose.yaml up --build -d --wait
+          docker compose -f deploy/docker/compose.yaml ps
+          curl -fsS http://127.0.0.1:8090/listo
+          curl -fsS -X POST http://127.0.0.1:8090/recomendar -H 'content-type: application/json' -d '{"cliente_ids": [13599]}'
+          if curl -fsS --max-time 3 http://127.0.0.1:8080/salud; then echo "MAL: la API esta publicada"; exit 1; fi
+          docker compose -f deploy/docker/compose.yaml logs --tail 5 interfaz
+
+      - name: Bajar compose
+        if: always()
+        run: docker compose -f deploy/docker/compose.yaml down || true

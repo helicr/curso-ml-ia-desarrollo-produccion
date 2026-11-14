@@ -6,7 +6,7 @@ FUENTE ?= muestra
 
 FORZAR ?=
 
-.PHONY: ayuda datos operacional raw master ml train pipeline notebooks traducir test test-rapido diagramas api comparar imagen contenedor lock limpiar
+.PHONY: ayuda datos operacional raw master ml train pipeline notebooks traducir test test-rapido diagramas api interfaz comparar imagen contenedor lock limpiar
 
 ayuda:  ## Muestra esta ayuda
 	@grep -E '^[a-z-]+:.*##' Makefile | sed 's/:.*##/ -> /'
@@ -55,6 +55,9 @@ diagramas:  ## Regenera las imagenes de docs/img (los cuadernos 00, 03 y 04 las 
 
 api:  ## Arranca la API en http://127.0.0.1:8080 (docs en /docs). Antes: make pipeline
 	$(PYTHON) -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080
+
+interfaz:  ## Interfaz web (ids de cliente -> probabilidad y recomendacion) en http://127.0.0.1:8090. Llama a la API de URL (por defecto http://127.0.0.1:8080)
+	$(PYTHON) -m ia_mlops.interfaz --url $(or $(URL),http://127.0.0.1:8080)
 
 comparar:  ## Compara paquete, joblib y MLflow y, con URL=http://127.0.0.1:8080, tambien la API. Antes: make pipeline
 	$(PYTHON) -m ia_mlops.modeling.comparar $(if $(URL),--url $(URL),)

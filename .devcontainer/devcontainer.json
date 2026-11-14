@@ -11,9 +11,10 @@
   },
   "hostRequirements": { "cpus": 2 },
   "postCreateCommand": "bash .devcontainer/postcreate.sh",
-  "forwardPorts": [8080, 5000],
+  "forwardPorts": [8080, 8090, 5000],
   "portsAttributes": {
     "8080": { "label": "API ia-mlops (S2)", "onAutoForward": "notify" },
+    "8090": { "label": "Interfaz de consulta (S2)", "onAutoForward": "notify" },
     "5000": { "label": "MLflow UI", "onAutoForward": "notify" }
   },
   "customizations": {

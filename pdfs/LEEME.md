@@ -66,7 +66,7 @@ Los enlaces entre archivos del repositorio apuntan a la rama `main` en GitHub.
 | [`04-rubrica.pdf`](S1-Datos-y-Entrenamiento/02-alumno/04-rubrica.pdf) | Rúbrica de S1 | 1 | 55 KB |
 | [`05-plantilla-de-la-decision.pdf`](S1-Datos-y-Entrenamiento/02-alumno/05-plantilla-de-la-decision.pdf) | Plantilla de la decisión (evidencia) | 2 | 67 KB |
 | [`06-checklist.pdf`](S1-Datos-y-Entrenamiento/02-alumno/06-checklist.pdf) | Checklist de S1 | 1 | 85 KB |
-| [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 4 | 340 KB |
+| [`07-proyecto-base.pdf`](S1-Datos-y-Entrenamiento/02-alumno/07-proyecto-base.pdf) | Proyecto base (Online Retail II) | 5 | 349 KB |
 | [`08-tu-caso-bank-marketing.pdf`](S1-Datos-y-Entrenamiento/02-alumno/08-tu-caso-bank-marketing.pdf) | Tu caso: Bank Marketing | 6 | 255 KB |
 | [`09-plantilla-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/09-plantilla-de-avance.pdf) | Plantilla de cada avance del caso propio | 3 | 106 KB |
 | [`10-rubrica-de-avance.pdf`](S1-Datos-y-Entrenamiento/02-alumno/10-rubrica-de-avance.pdf) | Rúbrica de cada avance del caso propio | 2 | 100 KB |
