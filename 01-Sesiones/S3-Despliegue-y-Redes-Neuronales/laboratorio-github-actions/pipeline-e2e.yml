@@ -1,0 +1,207 @@
+# Pipeline de datos de punta a punta orquestado con GitHub Actions (S3 → S4).
+# Cada etapa del proyecto es un JOB; los jobs se encadenan con `needs:` y se pasan la base de datos como ARTEFACTO.
+# En la pestaña Actions el grafo dibuja el pipeline: origen → RAW → MASTER → FS/ML → entrenar → (probar API · campaña) → resumen.
+#
+# Se copia en:  .github/workflows/pipeline-e2e.yml  (en la raíz de tu copia del repositorio)
+# Se lanza: con un push a una rama lab/**, o a mano desde Actions → «Pipeline de datos e2e» → Run workflow
+#           (el botón solo aparece cuando el archivo está en la rama principal del repositorio).
+name: Pipeline de datos e2e
+
+on:
+  push:
+    branches: ['lab/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  PYTHON: "3.11"
+
+defaults:
+  run:
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  # ── 0 · El sistema de origen (simulado): la base operacional «retail» ──────────────────────────────────────────────
+  origen:
+    name: 0 · Origen (base operacional)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - name: Crear la base operacional con la muestra
+        run: python -m ia_mlops.operacional
+      - uses: actions/upload-artifact@v4
+        with: { name: operacional, path: 04-Proyecto-Base/data/external/retail.db, retention-days: 3 }
+
+  # ── 1 · RAW: copia fiel del origen ─────────────────────────────────────────────────────────────────────────────
+  raw:
+    name: 1 · Ingesta RAW
+    needs: origen
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: operacional, path: 04-Proyecto-Base/data/external }
+      - name: retail.db → RAW
+        run: python -m ia_mlops.pipeline_ingesta_raw
+      - uses: actions/upload-artifact@v4
+        with: { name: db-raw, path: 04-Proyecto-Base/data/processed/curso.db, retention-days: 3 }
+
+  # ── 2 · MASTER: limpieza y reglas de calidad ───────────────────────────────────────────────────────────────────
+  master:
+    name: 2 · MASTER y calidad
+    needs: raw
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: db-raw, path: 04-Proyecto-Base/data/processed }
+      - name: RAW → MASTER
+        run: python -m ia_mlops.pipeline_ingesta_master
+      - uses: actions/upload-artifact@v4
+        with: { name: db-master, path: 04-Proyecto-Base/data/processed/curso.db, retention-days: 3 }
+
+  # ── 3 · FS y ML: variables por cliente y corte, y la tabla de entrenamiento ───────────────────────────────────
+  fs-ml:
+    name: 3 · Feature store y tabla ML
+    needs: master
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: db-master, path: 04-Proyecto-Base/data/processed }
+      - name: MASTER → FS → ML
+        run: python -m ia_mlops.pipeline_ml
+      - uses: actions/upload-artifact@v4
+        with: { name: db-ml, path: 04-Proyecto-Base/data/processed/curso.db, retention-days: 3 }
+
+  # ── 4 · Entrenar, elegir el mejor modelo y registrarlo en MLflow ──────────────────────────────────────────────
+  entrenar:
+    name: 4 · Entrenar y registrar (MLflow)
+    needs: fs-ml
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: db-ml, path: 04-Proyecto-Base/data/processed }
+      - name: ML → modelo + MLflow
+        run: python -m ia_mlops.pipeline_train | tee entrenamiento.txt
+      - name: Comprobar el registro de MLflow
+        run: python -m ia_mlops.mlflow_ui --comprobar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: modelo
+          retention-days: 3
+          path: |
+            04-Proyecto-Base/models/
+            04-Proyecto-Base/data/processed/curso.db
+            04-Proyecto-Base/entrenamiento.txt
+
+  # ── 5a · Probar el modelo servido por la API (en paralelo con 5b) ─────────────────────────────────────────────
+  probar-api:
+    name: 5a · Probar la API
+    needs: entrenar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: modelo, path: 04-Proyecto-Base }
+      - name: Arrancar la API y pedir una predicción
+        run: |
+          python -m uvicorn ia_mlops.api.app:app --host 127.0.0.1 --port 8080 > api.log 2>&1 &
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/listo && break; sleep 2; done
+          echo
+          curl -fsS -X POST http://127.0.0.1:8080/predecir -H 'Content-Type: application/json' \
+               -d @tests/datos/cliente_ejemplo.json | tee prediccion.json
+          echo
+          python -c "import json; p = json.load(open('prediccion.json'))['probabilidad']; assert 0 <= p <= 1, p; print('probabilidad', round(p, 4))"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: api, path: "04-Proyecto-Base/prediccion.json\n04-Proyecto-Base/api.log", retention-days: 3 }
+
+  # ── 5b · Explotación: la lista de la campaña (en paralelo con 5a) ──────────────────────────────────────────────
+  campana:
+    name: 5b · Lista de la campaña
+    needs: entrenar
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: modelo, path: 04-Proyecto-Base }
+      - name: Puntuar a todos los clientes y elegir el 10 %
+        run: python -m ia_mlops.explotacion | tee campana.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: campana
+          retention-days: 3
+          path: |
+            04-Proyecto-Base/reports/campana/
+            04-Proyecto-Base/campana.txt
+
+  # ── 6 · Resumen en la página del run ────────────────────────────────────────────────────────────────────────
+  resumen:
+    name: 6 · Resumen
+    needs: [probar-api, campana]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: salidas }
+      - name: Escribir el resumen del run
+        working-directory: .
+        run: |
+          {
+            echo "## Pipeline de datos e2e"
+            echo
+            echo "| Etapa | Resultado |"
+            echo "|---|---|"
+            echo "| 0 · Origen → 1 · RAW → 2 · MASTER → 3 · FS/ML | correcto (cada etapa en su job) |"
+            echo "| 4 · Entrenar y registrar | ver abajo |"
+            echo "| 5a · API | $(cat salidas/api/prediccion.json) |"
+            echo
+            echo "### Entrenamiento"
+            echo '```'
+            cat salidas/modelo/entrenamiento.txt
+            echo '```'
+            echo "### Campaña"
+            echo '```'
+            cat salidas/campana/campana.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

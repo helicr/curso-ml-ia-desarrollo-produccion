@@ -1,0 +1,39 @@
+# Laboratorio de GitHub Actions (S3): ejecuta las pruebas del proyecto en cada push a una rama que empiece por lab/
+# Se copia en:  .github/workflows/pruebas-proyecto.yml  (en la raíz de tu copia del repositorio del curso)
+name: Pruebas del proyecto
+
+on:
+  push:
+    branches: ['lab/**']   # solo las ramas del laboratorio: develop y main no lo disparan
+  workflow_dispatch:       # botón para lanzarlo a mano (GitHub solo lo muestra si el archivo está en la rama principal)
+
+permissions:
+  contents: read           # lo mínimo: solo leer el repositorio
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest   # una máquina Linux nueva y vacía, prestada por GitHub
+    timeout-minutes: 10      # si algo se cuelga, se corta a los 10 minutos
+    defaults:
+      run:
+        working-directory: 04-Proyecto-Base
+    env:
+      CURSO_SIN_PANTALLA: "1"   # gráficos sin ventana (no hay pantalla)
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements-dev.txt
+          pip install -e . --no-deps
+
+      - name: Ejecutar las pruebas
+        run: python -m pytest -v tests/test_raw_y_master.py tests/test_fs_y_ml.py tests/test_interfaz.py
