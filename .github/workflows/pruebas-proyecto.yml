@@ -4,7 +4,7 @@ name: Pruebas del proyecto
 
 on:
   push:
-    branches: ['lab/**']   # solo las ramas del laboratorio: develop y main no lo disparan
+    branches: ['lab/**', 'actions-clase']   # solo las ramas del laboratorio: develop y main no lo disparan
   workflow_dispatch:       # botón para lanzarlo a mano (GitHub solo lo muestra si el archivo está en la rama principal)
 
 permissions:
