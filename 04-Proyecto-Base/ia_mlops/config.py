@@ -69,7 +69,7 @@ MODELO_REGISTRADO = 'retencion-90d'
 # Es una regla de negocio, no sale del modelo: los umbrales y las acciones se acuerdan con quien hace la campaña y se cambian aquí.
 # Se recorre en orden: el primer tramo cuyo «desde» no supere la probabilidad es el del cliente.
 SEGMENTOS_RECOMPRA = [
-    {'segmento': 'alta', 'desde': 0.70,
+    {'segmento': 'alta', 'desde': 0.75,
      'recomendacion': 'Comprará probablemente sin ayuda: comunicación habitual o venta cruzada; no gastar el incentivo.'},
     {'segmento': 'media', 'desde': 0.40,
      'recomendacion': 'Indeciso: prioridad de la campaña de recompra; aquí un incentivo puede cambiar el resultado.'},
