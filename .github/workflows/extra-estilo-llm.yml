@@ -68,7 +68,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "${{ env.PYTHON }}" }
       - name: Instalar solo lo que piden las pruebas (sin torch ni transformers)
-        run: pip install -q pytest pyyaml numpy pillow scikit-image matplotlib   # supuesto: confirmar con T05
+        run: pip install -q pytest pyyaml numpy==2.4.6 pillow==13.0.0 scikit-image==0.26.0 scikit-learn==1.9.1 matplotlib   # lo que importan estilo/ y pruebas/ (sin torch ni modelos)
       - name: pytest
         run: python -m pytest pruebas -q
 
