@@ -1,0 +1,37 @@
+# Requisitos del extra «LLM de visión que copia el estilo de color» (S4).
+# Para qué sirven: lo que usan los notebooks 00 a 04 del extra y el módulo comun_estilo.py
+# (carga del modelo de visión, LoRA, métricas, comparación con la línea base).
+# Van APARTE de los requisitos del proyecto base del curso: no se mezclan con ellos.
+#
+# Cómo se instala (dentro de un entorno virtual, con Python 3.11):
+#   pip install -r requisitos-extra-estilo.txt
+#
+# Tiempo de instalación medido: 102 s para transformers, peft, accelerate, scikit-image,
+# nbconvert, ipykernel y psutil sobre un venv que ya tenía torch.
+# Fuente: 00-Planificacion/s4/_pico_llm_estilo/INFORME.md, tabla «Tiempos, tamaños y memoria»
+# (comando pip fuera de los notebooks; Windows 11, CPU). La instalación de torch no figura medida en el INFORME.
+#
+# Versiones: las del estudio técnico (Python 3.11.18, Windows 11, CPU). En Linux (GitHub Actions)
+# sin verificar: el índice de PyTorch para CPU evita bajar la versión con CUDA.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.15.0+cpu
+torchvision==0.29.2+cpu
+transformers==5.23.0
+peft==0.22.0
+accelerate==1.16.0
+huggingface_hub==2.4.0
+mlflow==3.18.0
+scikit-learn==1.9.1
+scikit-image==0.26.0
+numpy==2.4.6
+pillow==13.0.0
+matplotlib==3.11.2
+psutil==7.2.2
+nbconvert==7.17.2
+ipykernel==7.4.0
+# papermill: solo para la prueba tipo CI (ejecución de los notebooks con parámetros). Fuente: INFORME.md, «Versiones de librerías».
+papermill==2.7.0
+# sin fijar: no medida (no aparece en el INFORME ni en los requisitos del pico).
+pandas
+# sin fijar: no medida (el INFORME solo fija ipykernel; no aparece el paquete jupyter).
+jupyter

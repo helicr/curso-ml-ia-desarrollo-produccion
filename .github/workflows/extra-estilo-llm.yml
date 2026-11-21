@@ -1,0 +1,411 @@
+# Extra de S4: un LLM de visión que copia el estilo de color de una foto, orquestado con GitHub Actions.
+# Tres actos: 1-2 (leer los ajustes: A/B/C/D, notebooks 02-04) y 3 (explicar el estilo con palabras, notebook 05).
+# Cada notebook del extra es un JOB; los jobs se encadenan con `needs:` y se pasan sus resultados como ARTEFACTOS.
+# En la pestaña Actions el grafo dibuja el experimento:
+#
+#   pruebas ─► preparar (00) ─► datos (01) ─┬─► zero-shot (02, versión A) ──────────┐
+#                                           ├─► lora (03, versión B) ───────────────┼─► comparar (04) ─┐
+#                                           ├─► base-y-reinhard (04 · ETAPA=c_d) ───┘                  ├─► resumen
+#                                           └─► explicar (05, acto 3) ─────────────────────────────────┘
+#
+# Se copia en:  .github/workflows/extra-estilo-llm.yml  (en la raíz de tu copia del repositorio; BORRADOR de T19, se prueba en T20)
+# Se lanza: con un push a una rama lab/**, o a mano desde Actions → «Extra S4 · estilo de color con un LLM» → Run workflow
+#           (el botón solo aparece cuando el archivo está en la rama principal del repositorio).
+name: Extra S4 · estilo de color con un LLM
+
+on:
+  push:
+    branches: ['lab/**']
+  workflow_dispatch:
+    inputs:
+      # Valores por defecto: tamaño mínimo para CI propuesto en el INFORME del estudio técnico (N = 60, 2 épocas;
+      # con N = 16 y 1 época el pipeline corre pero B no llega a aprender el formato JSON). Sin verificar en un runner de GitHub.
+      n_ejemplos:
+        description: 'Número de fotos fabricadas (N_EJEMPLOS)'
+        default: '60'
+      epocas:
+        description: 'Épocas del fine-tuning LoRA de la versión B (EPOCAS)'
+        default: '2'
+      n_frases:
+        description: 'Frases de entrenamiento del acto 3 (N_FRASES)'
+        default: '100'
+
+permissions:
+  contents: read
+
+env:
+  PYTHON: "3.11"
+  # Todos los notebooks leen y escriben en la misma carpeta de trabajo; el modelo se descarga una vez en HF_HOME y se cachea.
+  ESTILO_TRABAJO: ${{ github.workspace }}/trabajo
+  HF_HOME: ${{ github.workspace }}/hf-cache
+  # Parámetros que papermill inyecta en la celda `parameters` de cada notebook.
+  # Con un push no hay entradas manuales, así que se usan los valores por defecto de la derecha.
+  N_EJEMPLOS: ${{ inputs.n_ejemplos || '60' }}   # INFORME: tamaño mínimo para CI propuesto (estimación, sin verificar)
+  EPOCAS: ${{ inputs.epocas || '2' }}            # INFORME: ídem
+  RESOLUCION: "224"                              # INFORME: resolución de la ejecución de referencia
+  MODELO: "HuggingFaceTB/SmolVLM-256M-Instruct"  # INFORME: modelo elegido (apache-2.0)
+  # Acto 3 (notebook 05): INFORME, ronda 4, configuración de CI propuesta "-p N_FRASES 100 -p EPOCAS 1" (sin verificar).
+  N_FRASES: ${{ inputs.n_frases || '100' }}
+  EPOCAS_EXPLICAR: "1"
+  FORMATO: "facil"                               # INFORME: es el valor por defecto del 05 (el formato «json» salió mucho peor)
+  # Tar de Oxford-IIIT Pet (~792 MB). datos.py lo descarga a tempfile.gettempdir()/oxford_pets_images.tar.gz si ESTILO_TAR no existe;
+  # en el runner Linux eso es /tmp. Se cachea esa misma ruta: el primer run lo descarga y los siguientes lo restauran.
+  ESTILO_TAR: /tmp/oxford_pets_images.tar.gz
+
+defaults:
+  run:
+    working-directory: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm
+
+jobs:
+  # ── 0 · Pruebas rápidas, sin descargar ningún modelo ───────────────────────────────────────────────────────────────
+  # Si algo básico está roto (ajustes de color, métricas, este mismo workflow), el pipeline se para aquí y no gasta minutos.
+  pruebas:
+    name: 0 · Pruebas (sin modelos)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10   # sin medida en el INFORME; ajustar tras el run real
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}" }
+      - name: Instalar solo lo que piden las pruebas (sin torch ni transformers)
+        run: pip install -q pytest pyyaml numpy pillow scikit-image matplotlib   # supuesto: confirmar con T05
+      - name: pytest
+        run: python -m pytest pruebas -q
+
+  # ── 1 · Preparar el entorno: versiones, modelo y fotos (notebook 00) ───────────────────────────────────────────────
+  preparar:
+    name: 1 · Preparar entorno (00)
+    needs: pruebas
+    runs-on: ubuntu-latest
+    # INFORME: notebook 00 = 13 s, instalación = 102 s, primera descarga del modelo = 51,7 s (portátil). El runner puede ser más lento: ajustar tras el run real.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      # Caché del modelo de Hugging Face: este job lo descarga y los demás lo reutilizan sin volver a bajarlo.
+      - uses: actions/cache@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      - name: Ejecutar 00_preparar_entorno.ipynb
+        run: |
+          mkdir -p "$ESTILO_TRABAJO" salidas
+          papermill 00_preparar_entorno.ipynb salidas/00_preparar_entorno.ipynb \
+            -p MODELO "$MODELO" -p RESOLUCION "$RESOLUCION" -p N_EJEMPLOS "$N_EJEMPLOS" -p EPOCAS "$EPOCAS"
+      # SIEMPRE se sube el notebook ejecutado, aunque falle, para ver en qué celda se rompió.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-00-preparar, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+
+  # ── 2 · Datos fabricados: parejas train/val/test (notebook 01) ─────────────────────────────────────────────────────
+  datos:
+    name: 2 · Datos fabricados (01)
+    needs: preparar
+    runs-on: ubuntu-latest
+    # INFORME: notebook 01 = 12-15 s con el tar local; la descarga del tar en CI no está medida (solo el primer run). Ajustar tras el run real.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      # Caché del tar de Oxford-IIIT Pet (~792 MB, fuera de la carpeta de trabajo para que no viaje en artefactos).
+      # El primer run lo descarga (ESTILO_TAR no existe aún) y lo guarda al terminar el job; los siguientes lo restauran.
+      - name: Caché del tar de Oxford-IIIT Pet
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ESTILO_TAR }}
+          key: oxford-iiit-pet-images-tar-v1
+      - name: Ejecutar 01_datos_fabricados.ipynb
+        run: |
+          mkdir -p "$ESTILO_TRABAJO" salidas
+          papermill 01_datos_fabricados.ipynb salidas/01_datos_fabricados.ipynb \
+            -p N_EJEMPLOS "$N_EJEMPLOS" -p RESOLUCION "$RESOLUCION"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-01-datos, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      # Las parejas (carpeta de trabajo) pasan a los tres jobs siguientes como artefacto.
+      - uses: actions/upload-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}", retention-days: 3 }
+
+  # ── 3a · Versión A: zero-shot, el modelo sin entrenar (notebook 02) — en paralelo con 3b y 3c ──────────────────────
+  zero-shot:
+    name: 3a · Zero-shot, versión A (02)
+    needs: datos
+    runs-on: ubuntu-latest
+    # INFORME: con N = 60 el test son 12 fotos a ≈5 s/foto (≈1 min); el 02 completo con 60 fotos de test tardó 320 s. Margen amplio; ajustar tras el run real.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      - uses: actions/download-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}" }
+      - name: Ejecutar 02_zero_shot.ipynb
+        run: |
+          mkdir -p salidas
+          papermill 02_zero_shot.ipynb salidas/02_zero_shot.ipynb \
+            -p MODELO "$MODELO" -p RESOLUCION "$RESOLUCION" -p N_EJEMPLOS "$N_EJEMPLOS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-02-zero-shot, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      # Métricas de la versión A. Supuesto: se escriben fuera de la carpeta de parejas, que ya viaja en el artefacto «datos».
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metricas-a
+          path: |
+            ${{ env.ESTILO_TRABAJO }}
+            !${{ env.ESTILO_TRABAJO }}/parejas/**
+          retention-days: 3
+
+  # ── 3b · Versión B: fine-tuning con LoRA y registro en MLflow (notebook 03) ───────────────────────────────────────
+  lora:
+    name: 3b · Fine-tuning LoRA, versión B (03)
+    needs: datos
+    runs-on: ubuntu-latest
+    # INFORME: con N = 60 y 2 épocas, estimación ≈5 min en el portátil (2,2 s/foto de preparación, 3,7 s/paso, 5 s/foto de inferencia), sin medir.
+    # Referencias medidas: N = 16 y 1 época = 120 s; N = 300 y 3 épocas = 1456 s. Es el job más lento del acto 1-2. El runner puede ser más lento: ajustar tras el run real.
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      - uses: actions/download-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}" }
+      - name: Ejecutar 03_fine_tuning_lora.ipynb
+        run: |
+          mkdir -p salidas
+          papermill 03_fine_tuning_lora.ipynb salidas/03_fine_tuning_lora.ipynb \
+            -p MODELO "$MODELO" -p RESOLUCION "$RESOLUCION" -p N_EJEMPLOS "$N_EJEMPLOS" -p EPOCAS "$EPOCAS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-03-lora, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      # Adaptador LoRA + métricas B + mlflow.db (SQLite, sin servidor), igual que la base de MLflow del pipeline e2e de S3.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: adaptador-lora
+          path: |
+            ${{ env.ESTILO_TRABAJO }}
+            !${{ env.ESTILO_TRABAJO }}/parejas/**
+          retention-days: 3
+
+  # ── 3c · Líneas base C (red pequeña) y D (Reinhard), sin LLM (notebook 04, solo esa etapa) ────────────────────────
+  base-y-reinhard:
+    name: 3c · Base C y Reinhard D (04, ETAPA=c_d)
+    needs: datos
+    runs-on: ubuntu-latest
+    # INFORME: 04 c_d = 24 s (N = 16, CPU compartida). Ajustar tras el run real.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      - uses: actions/download-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}" }
+      # Supuesto a confirmar: 04 acepta el parámetro ETAPA («c_d» = solo C y D; «completo» = todo). Si no, se separa en otro notebook.
+      - name: Ejecutar 04_comparar_y_transferir.ipynb (solo C y D)
+        run: |
+          mkdir -p salidas
+          papermill 04_comparar_y_transferir.ipynb salidas/04_c_d.ipynb \
+            -p ETAPA c_d -p RESOLUCION "$RESOLUCION" -p N_EJEMPLOS "$N_EJEMPLOS" -p EPOCAS "$EPOCAS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-04-c-d, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metricas-c-d
+          path: |
+            ${{ env.ESTILO_TRABAJO }}
+            !${{ env.ESTILO_TRABAJO }}/parejas/**
+          retention-days: 3
+
+  # ── 3d · Acto 3: el LLM explica el JSON de ajustes en español (notebook 05) — en paralelo con 3a, 3b y 3c ────────────
+  # Lee val/test de parejas/ (artefacto «datos»); el train se fabrica dentro del notebook (JSON al azar, sin fotos).
+  explicar:
+    name: 3d · Acto 3, explicar el estilo (05)
+    needs: datos
+    runs-on: ubuntu-latest
+    # INFORME (ronda 3 y 4): ejecución de referencia (500 frases, 2 épocas, 60 de test) = 1454 s; la prueba tipo CI de la ronda 3 (N = 16, 1 época) = 114 s.
+    # Con N_FRASES = 100, 1 época y 12 frases de test (N_EJEMPLOS = 60) se espera una duración de pocos minutos: ≈0,9 s por ejemplo y época de
+    # entrenamiento (906 s / 1000) y ≈4-4,5 s por frase de test y versión (A3 y B3). Sin medir con esta configuración.
+    # El runner de GitHub puede ser más lento: ajustar tras el run real.
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      - uses: actions/download-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}" }
+      - name: Ejecutar 05_explicar_estilo.ipynb
+        run: |
+          mkdir -p salidas
+          papermill 05_explicar_estilo.ipynb salidas/05_explicar_estilo.ipynb \
+            -p MODELO "$MODELO" -p N_EJEMPLOS "$N_EJEMPLOS" -p N_FRASES "$N_FRASES" -p EPOCAS "$EPOCAS_EXPLICAR" -p FORMATO "$FORMATO"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-05, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      # Adaptador de la explicación (7,06 MB en la ejecución de referencia), sus métricas y las frases.
+      # El 05 registra los runs A3 y B3 en su propia mlflow.db (este job corre en su máquina): se sube aquí, aparte de la de «adaptador-lora».
+      - uses: actions/upload-artifact@v4
+        with:
+          name: explicacion
+          path: |
+            ${{ env.ESTILO_TRABAJO }}/adaptador_explicacion
+            ${{ env.ESTILO_TRABAJO }}/resultados/metricas_explicacion.json
+            ${{ env.ESTILO_TRABAJO }}/resultados/explicaciones.jsonl
+            ${{ env.ESTILO_TRABAJO }}/mlflow.db
+          retention-days: 3
+
+  # ── 4 · Comparar: tabla A/B/C/D y panel de transferencia (notebook 04 completo) ───────────────────────────────────
+  comparar:
+    name: 4 · Comparar y transferir (04)
+    needs: [zero-shot, lora, base-y-reinhard]
+    runs-on: ubuntu-latest
+    # INFORME: 04 completo ≈ 40 s (19 s con N = 16). Ajustar tras el run real.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON }}"
+          cache: pip
+          cache-dependency-path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: hf-cache
+          key: hf-${{ env.MODELO }}-${{ hashFiles('01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/requisitos-extra-estilo.txt') }}
+      - name: Instalar
+        run: pip install -q -r requisitos-extra-estilo.txt papermill ipykernel
+      # Se juntan en la carpeta de trabajo los resultados de los tres jobs anteriores (y las parejas).
+      - uses: actions/download-artifact@v4
+        with: { name: datos, path: "${{ env.ESTILO_TRABAJO }}" }
+      - uses: actions/download-artifact@v4
+        with: { name: metricas-a, path: "${{ env.ESTILO_TRABAJO }}" }
+      - uses: actions/download-artifact@v4
+        with: { name: adaptador-lora, path: "${{ env.ESTILO_TRABAJO }}" }
+      - uses: actions/download-artifact@v4
+        with: { name: metricas-c-d, path: "${{ env.ESTILO_TRABAJO }}" }
+      - name: Ejecutar 04_comparar_y_transferir.ipynb (completo)
+        run: |
+          mkdir -p salidas
+          papermill 04_comparar_y_transferir.ipynb salidas/04_comparar_y_transferir.ipynb \
+            -p ETAPA completo -p MODELO "$MODELO" -p RESOLUCION "$RESOLUCION" -p N_EJEMPLOS "$N_EJEMPLOS" -p EPOCAS "$EPOCAS"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: nb-04-comparar, path: 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/salidas/, retention-days: 3 }
+      # Tabla comparativa (CSV/JSON) y panel (PNG): lo que se ve al final.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: comparacion
+          path: |
+            ${{ env.ESTILO_TRABAJO }}
+            !${{ env.ESTILO_TRABAJO }}/parejas/**
+          retention-days: 3
+
+  # ── 5 · Resumen en la página del run ───────────────────────────────────────────────────────────────────────────────
+  resumen:
+    name: 5 · Resumen
+    needs: [comparar, explicar]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5   # solo lee artefactos y escribe Markdown; sin medida
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: comparacion, path: salidas }
+      - uses: actions/download-artifact@v4
+        with: { name: explicacion, path: salidas-explicacion }
+      - name: Escribir el resumen del run
+        working-directory: .
+        run: |
+          {
+            echo "## Extra S4 · estilo de color con un LLM (actos 1, 2 y 3)"
+            echo
+            echo "### Actos 1-2 · leer los ajustes (A zero-shot · B LoRA · C red pequeña · D Reinhard)"
+            echo
+            # La tabla es resultados/tabla_comparativa.csv (INFORME); se busca por «tabla» en el nombre y se pasa a Markdown.
+            python - <<'PY'
+          import csv, pathlib
+          archivos = sorted(pathlib.Path("salidas").rglob("*tabla*.csv"))
+          if not archivos:
+              print("_No se encontró la tabla comparativa (CSV) en los artefactos._")
+          else:
+              filas = list(csv.reader(archivos[0].open(encoding="utf-8")))
+              print("| " + " | ".join(filas[0]) + " |")
+              print("|" + "---|" * len(filas[0]))
+              for f in filas[1:]:
+                  print("| " + " | ".join(f) + " |")
+          PY
+            echo
+            echo "### Acto 3 · explicar el estilo"
+            echo
+            # Claves de metricas_explicacion.json (notebook 05): A3 y B3 con pct_ajustes_sentido_correcto,
+            # pct_frases_con_alucinacion y pct_frases_perfectas; n_test; B3 además n_train y epocas.
+            python - <<'PY'
+          import json, pathlib
+          archivos = sorted(pathlib.Path("salidas-explicacion").rglob("metricas_explicacion.json"))
+          if not archivos:
+              print("_No se encontró metricas_explicacion.json en los artefactos._")
+          else:
+              m = json.loads(archivos[0].read_text(encoding="utf-8"))
+              print("| Versión | Sentido correcto | Alucinación | Frases perfectas |")
+              print("|---|---|---|---|")
+              for clave, nombre in (("A3", "A3 · one-shot"), ("B3", "B3 · LoRA")):
+                  v = m[clave]
+                  print(f"| {nombre} | {v['pct_ajustes_sentido_correcto']:.1f} % | {v['pct_frases_con_alucinacion']:.1f} % | {v['pct_frases_perfectas']:.1f} % |")
+              b = m["B3"]
+              print()
+              print(f"_{m.get('n_test', '?')} frases de test; B3 entrenado con {b.get('n_train', '?')} frases fabricadas y {b.get('epocas', '?')} época(s)._")
+          PY
+            echo
+            echo "### Artefactos de este run (pestaña Summary, abajo)"
+            echo "- \`explicacion\`: adaptador del acto 3, métricas y frases de A3 y B3"
+            echo "- \`comparacion\`: tabla y panel de transferencia de estilo"
+            echo "- \`adaptador-lora\`: adaptador LoRA, métricas de B y mlflow.db"
+            echo "- \`metricas-a\`, \`metricas-c-d\`, \`datos\`: resultados intermedios"
+            echo "- \`nb-00-preparar\` … \`nb-05\`: cada notebook ejecutado, con sus salidas"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,14 @@
+# Datos, modelos y trabajo generados (fuera del repositorio)
+trabajo/
+datos/
+modelos/
+mlruns/
+*.db
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Python y Jupyter
+__pycache__/
+.ipynb_checkpoints/
