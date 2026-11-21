@@ -130,6 +130,14 @@ jobs:
         with:
           path: ${{ env.ESTILO_TAR }}
           key: oxford-iiit-pet-images-tar-v1
+      # Si la caché no tiene el tar (primer run), se descarga con curl: desde el runner, la descarga con urllib
+      # de Python devolvió un error HTTP (21/11/2026) y con curl funcionó desde un Codespace (8,8 s, 20/11/2026).
+      - name: Descargar Oxford-IIIT Pet si no está en la caché
+        run: |
+          if [ ! -s "$ESTILO_TAR" ]; then
+            time curl -fSL --retry 3 -o "$ESTILO_TAR" https://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz
+          fi
+          ls -l "$ESTILO_TAR"
       - name: Ejecutar 01_datos_fabricados.ipynb
         run: |
           mkdir -p "$ESTILO_TRABAJO" salidas

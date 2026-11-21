@@ -91,7 +91,12 @@ def preparar_fotos(trabajo: Path, n_fotos: int, resolucion: int, tar: str | None
         if not Path(tar).exists():
             print("Descargando Oxford-IIIT Pet (~800 MB)...")
             t0 = time.perf_counter()
-            urllib.request.urlretrieve(URL_PETS, tar)
+            # Con el agente por defecto de Python, la web de Oxford devolvió un error HTTP en GitHub Actions
+            # (21/11/2026); con un agente de navegador y siguiendo redirecciones, como hace curl, se descarga.
+            peticion = urllib.request.Request(URL_PETS, headers={"User-Agent": "Mozilla/5.0 (curso-ml-ia)"})
+            with urllib.request.urlopen(peticion) as r, open(tar, "wb") as f:
+                while bloque := r.read(1 << 20):
+                    f.write(bloque)
             print(f"Descarga: {time.perf_counter() - t0:.0f} s")
     elegidas = {"gato": [], "perro": []}
     prob = min(1.0, 1.6 * n_fotos / 7390)  # ~7390 fotos en el archivo
