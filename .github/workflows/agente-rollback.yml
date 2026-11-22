@@ -1,0 +1,226 @@
+name: Agente · Rollback
+# =====================================================================================================================
+# QUÉ HACE  (a mano: Actions > «Agente · Rollback» > Run workflow; o push a lab/agente-rollback/**)
+#
+#   Vuelve a una versión anterior del AGENTE SIN reevaluar ni reconstruir nada. El agente «en producción» es el que dice
+#   04-Proyecto-Base/agentes/referencia-agente.json en la rama base, y las imágenes de las versiones anteriores siguen en GHCR
+#   (interfaz-agente:v<N>-<huella>): volver atrás es devolver la ficha a esa versión. Este workflow:
+#     1) busca en el historial de git la ficha de la versión pedida (por defecto, la inmediatamente anterior a la actual);
+#     2) comprueba que su imagen existe en GHCR (si no existe, se para: la ficha apuntaría a una imagen que no se puede usar);
+#     3) enseña, sobre un almacén de MLflow nuevo, cómo se mueve el alias del prompt (ver «QUÉ SE MUEVE Y DÓNDE»);
+#     4) abre un PULL REQUEST (rama «referencia-agente/rollback-v<N>-<n.º de ejecución>») que restaura esa ficha tal cual estaba
+#        y actualiza agentes/historial-agente.json: la restaurada queda «produccion» y la que se deja, «retirada».
+#   NUNCA hace push a develop ni a main. Al FUSIONAR el PR, el agente de producción vuelve a ser el anterior.
+#   No borra nada: ni imágenes, ni el historial, ni la versión que se deja. Volver a avanzar es lanzar «Agente · Nueva versión».
+#
+#   Entradas:
+#     version            número de la versión a restaurar (p. ej. 1). Vacío = la anterior a la actual en el historial.
+#     comprobar_imagen   si está marcado (por defecto), se exige que la imagen esté en GHCR. Desmárcalo solo si sabes por qué.
+#
+#   La versión 1 de la referencia del agente (medida en local, el 22/11/2026) NO tiene imagen en GHCR hasta que alguien la publique:
+#   un rollback a la v1 con la comprobación activada se para con ese mensaje. Es a propósito (igual que en S4).
+#
+# QUÉ SE MUEVE Y DÓNDE  (léelo con calma: aquí está la diferencia entre lo real y lo didáctico)
+#   * En GIT (lo REAL de este workflow): el pull request cambia agentes/referencia-agente.json y agentes/historial-agente.json. Al
+#     fusionarlo, «el agente de producción» de este repositorio pasa a ser el anterior. Es revisable, deshacible y queda en el historial.
+#   * En GHCR: no se toca nada. La imagen anterior ya estaba publicada; la actual sigue ahí.
+#   * En MLFLOW: los alias (`produccion` del PROMPT, `champion` del AGENTE) son punteros a versiones y VIVEN EN EL SERVIDOR/ALMACÉN DE
+#     MLFLOW donde se registraron. En este laboratorio ese almacén es una base SQLite DEL RUNNER, que se destruye al acabar cada
+#     ejecución; no hay ningún servidor de MLflow permanente al que este workflow pueda llegar. Por eso el paso «Demostración» crea un
+#     almacén NUEVO, registra los dos prompts y mueve el alias de uno a otro con la misma orden que se usaría de verdad
+#     (`python -m ia_mlops.agente.registro alias prompt --version N`). Es una DEMOSTRACIÓN de cómo se mueve el alias, NO un rollback
+#     de ningún servidor real. Con un servidor de MLflow permanente, ese sería el segundo paso del rollback: ejecutar esa orden
+#     apuntando CURSO_MLFLOW_URI a ese servidor (y con sus credenciales), que este workflow no tiene ni se inventa.
+#     Además, el prompt «actual» se registra con el texto que tenga agente.py en ESTA rama: si el prompt de esa versión antigua ya
+#     cambió en el código, la demostración no lo reproduce (limitación a propósito: no se reconstruye el pasado desde MLflow).
+#
+# ENSAYO: un push a lab/agente-rollback/<nombre> lo lanza sobre esa rama (que debe contener la referencia a la que se quiere volver
+#   atrás: una rama en la que ya se haya fusionado el PR de una versión nueva). Con «sin-comprobar» en el nombre NO se comprueba que
+#   la imagen exista en GHCR. Lanzado a mano (workflow_dispatch), mandan las entradas.
+#
+# CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/agente-rollback.yml  (ver la cabecera de agente-nueva-version.yml para una raíz distinta).
+# SIN SECRETOS PROPIOS: solo el GITHUB_TOKEN de la ejecución. Permisos mínimos: leer paquetes (comprobar la imagen) y crear la rama y el
+# PR. Requiere el mismo permiso de Actions para crear PR que agente-nueva-version.yml (CONFIGURAR-REPOSITORIO.md).
+# SIN VERIFICAR en Actions: este workflow (aún no se ha ejecutado). El patrón es el de rollback.yml de S4, ejecutado el 22/11/2026.
+# =====================================================================================================================
+on:
+  push:
+    branches: ['lab/agente-rollback/**']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión a restaurar (número, p. ej. 1). Vacío = la anterior a la actual"
+        type: string
+        required: false
+        default: ""
+      comprobar_imagen:
+        description: "Exigir que la imagen de esa versión esté publicada en GHCR"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# El MISMO grupo que agente-nueva-version.yml: no se publica una versión y se vuelve atrás a la vez (los dos cambian qué agente es el
+# de producción). Un run de «Nueva versión» esperando aprobación bloquea a este: cancélalo o apruébalo.
+concurrency:
+  group: agente-version
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    name: Abrir el pull request que restaura el agente anterior
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write         # solo para crear la RAMA NUEVA del pull request (nunca se empuja a develop ni a main)
+      pull-requests: write    # para abrir el pull request
+      packages: read          # para comprobar que la imagen existe en GHCR
+    env:
+      VERSION_PEDIDA: ${{ inputs.version }}
+      COMPROBAR_IMAGEN: ${{ (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar'))) }}
+      BASE: ${{ github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      FICHA: 04-Proyecto-Base/agentes/referencia-agente.json
+      HISTORIAL: 04-Proyecto-Base/agentes/historial-agente.json
+      LAB: 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-agentes
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # hace falta todo el historial para encontrar las fichas anteriores
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Buscar la ficha de la versión a restaurar en el historial
+        id: buscar
+        run: |
+          python - <<'FIN' >> "$GITHUB_OUTPUT"
+          import json, os, subprocess, sys
+          ficha, pedida = os.environ['FICHA'], os.environ['VERSION_PEDIDA'].strip()
+          actual = json.load(open(ficha, encoding='utf-8'))
+          commits = subprocess.run(['git', 'log', '--format=%H', '--', ficha], capture_output=True, text=True, check=True).stdout.split()
+          if pedida and (not pedida.isdigit() or int(pedida) < 1):
+              sys.exit(f'::error title=Entrada no válida::version debe ser un número entero mayor o igual que 1 (recibido: {pedida})')
+          destino = int(pedida) if pedida else None
+          for c in commits:                                   # del más reciente al más antiguo
+              r = subprocess.run(['git', 'show', f'{c}:{ficha}'], capture_output=True, text=True)
+              if r.returncode != 0:
+                  continue
+              try:
+                  d = json.loads(r.stdout)
+              except json.JSONDecodeError:
+                  continue
+              v = d.get('version')
+              if (destino is None and v != actual['version']) or (destino is not None and v == destino):
+                  if v == actual['version']:
+                      sys.exit(f"::error title=Nada que restaurar::La versión {v} ya es la de producción en esta rama.")
+                  print(f'commit={c}')
+                  print(f'version={v}')
+                  print(f"etiqueta=interfaz-agente:v{v}-{d['huella_agente']}")      # la etiqueta con la que nueva-version publica en GHCR
+                  print(f"actual={actual['version']}")
+                  break
+          else:
+              sys.exit('::error title=No encontrada::No hay en el historial de ' + ficha + ' una versión ' + (str(destino) if destino else 'anterior a la actual') + '.')
+          FIN
+          cat "$GITHUB_OUTPUT"
+
+      - name: Comprobar que la imagen existe en GHCR
+        if: (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar')))
+        env:
+          ETIQUETA_IMAGEN: ${{ steps.buscar.outputs.etiqueta }}
+        run: |
+          propietario="$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
+          imagen="ghcr.io/${propietario}/${ETIQUETA_IMAGEN}"
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          if ! docker manifest inspect "$imagen" > /dev/null 2>&1; then
+            echo "::error title=La imagen no está en GHCR::No se encuentra ${imagen}. Restaurar esa ficha dejaría la producción apuntando a una imagen que no se puede descargar. Si la imagen es de un paquete privado de otro propietario, o nunca se publicó, no hay rollback posible a esa versión."
+            exit 1
+          fi
+          echo "La imagen existe: ${imagen}"
+
+      # DEMOSTRACIÓN (ver «QUÉ SE MUEVE Y DÓNDE»): un almacén de MLflow nuevo, dos versiones del prompt y el alias `produccion` movido.
+      # No toca nada real y no bloquea el rollback si falla (continue-on-error).
+      - name: Demostración · mover el alias del prompt en un MLflow efímero
+        continue-on-error: true
+        working-directory: 04-Proyecto-Base
+        env:
+          CURSO_MLFLOW_URI: sqlite:///${{ runner.temp }}/mlflow-rollback/mlflow.db
+          VERSION: ${{ steps.buscar.outputs.version }}
+          ACTUAL: ${{ steps.buscar.outputs.actual }}
+        run: |
+          python -m pip install -q -r requirements-dev.txt -r requirements-agente.txt
+          python -m pip install -q -e . --no-deps
+          mkdir -p "$RUNNER_TEMP/mlflow-rollback"
+          cd ..
+          prompt_restaurada="$(python "$LAB/historial_agente.py" prompt-de --historial "$HISTORIAL" --version "$VERSION")"
+          prompt_retirada="$(python "$LAB/historial_agente.py" prompt-de --historial "$HISTORIAL" --version "$ACTUAL")"
+          cd 04-Proyecto-Base
+          registrar() {   # «nuevo» = prompts/sistema-v2.txt; «actual» = el que tenga agente.py en esta rama
+            if [ "$1" = "nuevo" ]; then
+              python -m ia_mlops.agente.registro registrar-prompt --archivo "../${LAB}/prompts/sistema-v2.txt"
+            else
+              python -m ia_mlops.agente.registro registrar-prompt
+            fi
+          }
+          {
+            echo "## Demostración · alias del prompt en un MLflow efímero"
+            echo
+            echo "Almacén **nuevo** del runner (se destruye al acabar). Sirve para ver cómo se mueve un alias, no es un servidor de producción."
+            echo
+            echo '```'
+            registrar "$prompt_restaurada"            # v1: el prompt de la versión que se restaura
+            registrar "$prompt_retirada"              # v2 (si el texto es otro): el prompt que se deja; el alias queda aquí = «antes del rollback»
+            echo "--- antes del rollback:"
+            python -m ia_mlops.agente.registro mostrar
+            python -m ia_mlops.agente.registro alias prompt --version 1      # el rollback: el alias `produccion` vuelve a la v1
+            echo "--- después del rollback:"
+            python -m ia_mlops.agente.registro mostrar
+            echo '```'
+            echo
+            echo "Si los dos prompts son el mismo texto, solo existe la v1 y el alias no se mueve (no había nada que deshacer en MLflow)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Rama nueva, ficha restaurada y pull request
+        env:
+          COMMIT: ${{ steps.buscar.outputs.commit }}
+          VERSION: ${{ steps.buscar.outputs.version }}
+          ACTUAL: ${{ steps.buscar.outputs.actual }}
+          ETIQUETA_IMAGEN: ${{ steps.buscar.outputs.etiqueta }}
+        run: |
+          rama="referencia-agente/rollback-v${VERSION}-${GITHUB_RUN_ID}"
+          case "$rama" in main|develop|master) echo "MAL: no se empuja a $rama"; exit 1 ;; esac
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$rama"
+          cp "$FICHA" /tmp/ficha-retirada.json                  # el agente que sale de producción
+          git show "${COMMIT}:${FICHA}" > "$FICHA"              # la ficha restaurada, tal cual estaba
+          # El historial no se restaura del pasado: se actualiza. La restaurada pasa a «produccion» y la que se deja, a «retirada».
+          python "${LAB}/historial_agente.py" rollback --historial "$HISTORIAL" --restaurada "$FICHA" --retirada /tmp/ficha-retirada.json \
+            --ejecucion "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          git add "$FICHA" "$HISTORIAL"
+          git commit -m "Rollback del agente: de v${ACTUAL} a v${VERSION} (${ETIQUETA_IMAGEN})"
+          git push origin "refs/heads/${rama}"
+          cat > /tmp/cuerpo.md <<FIN
+          Devuelve \`${FICHA}\` a la **versión ${VERSION}** (\`${ETIQUETA_IMAGEN}\`), que estaba en producción antes de la ${ACTUAL}. La ficha se restaura tal cual estaba en el commit \`${COMMIT}\`.
+
+          También actualiza \`${HISTORIAL}\`: la versión ${VERSION} figura como «produccion» y la ${ACTUAL}, como «retirada».
+
+          Al fusionar este pull request, el agente de producción vuelve a ser el anterior. No se borra nada: la imagen de la versión ${ACTUAL} sigue en GHCR.
+
+          **Lo que este PR NO mueve:** los alias de MLflow (\`produccion\` del prompt, \`champion\` del agente). Viven en el servidor de MLflow donde se registraron; el de este laboratorio es efímero (el del runner). Con un servidor permanente, habría que mover el alias allí con \`python -m ia_mlops.agente.registro alias prompt --version N\`.
+
+          Generado por la ejecución ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}.
+          FIN
+          url="$(gh pr create --base "$BASE" --head "$rama" --title "Rollback del agente: v${ACTUAL} a v${VERSION}" --body-file /tmp/cuerpo.md)"
+          echo "::notice title=pull-request::${url}"
+          {
+            echo "## Rollback · de v${ACTUAL} a v${VERSION}"
+            echo
+            echo "Pull request: ${url}"
+            echo
+            echo "Al fusionarlo, el agente en producción pasa a ser \`${ETIQUETA_IMAGEN}\`."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,73 @@
+{
+  "esquema": 1,
+  "version": 1,
+  "huella_agente": "e90daa8a20bef846",
+  "huella_preguntas": "fbdddc9aecd09eb0",
+  "llm": "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M",
+  "preguntas": 25,
+  "omitidas": 0,
+  "metricas": {
+    "acierto_herramienta": 0.8,
+    "acierto_argumentos": 0.7,
+    "sin_inventar": 0.96,
+    "comprobaciones_ok": 0.84,
+    "trampas_superadas": 0.8571,
+    "respuestas_correctas": 0.76,
+    "latencia_p50_s": 19.236,
+    "latencia_p95_s": 104.937,
+    "pasos_medios": 1.56,
+    "cifras_inventadas": 1
+  },
+  "conteos": {
+    "preguntas": 25,
+    "omitidas": 0,
+    "con_herramienta_esperada": 20,
+    "con_argumentos": 10,
+    "trampas": 14,
+    "con_comprobaciones": 25,
+    "con_cifras": 25,
+    "total": 25
+  },
+  "por_categoria": {
+    "normal": {
+      "preguntas": 11,
+      "correctas": 7,
+      "fallidas": [
+        "n03",
+        "n08",
+        "n10",
+        "n11"
+      ],
+      "acierto_herramienta": 0.7273,
+      "sin_inventar": 0.9091
+    },
+    "trampa": {
+      "preguntas": 6,
+      "correctas": 5,
+      "fallidas": [
+        "t05"
+      ],
+      "acierto_herramienta": 1.0,
+      "sin_inventar": 1.0
+    },
+    "seguridad": {
+      "preguntas": 5,
+      "correctas": 5,
+      "fallidas": [],
+      "acierto_herramienta": 1.0,
+      "sin_inventar": 1.0
+    },
+    "sentido": {
+      "preguntas": 3,
+      "correctas": 2,
+      "fallidas": [
+        "m02"
+      ],
+      "acierto_herramienta": 0.0,
+      "sin_inventar": 1.0
+    }
+  },
+  "criticas_falladas": [],
+  "generado_en": "2026-11-22T20:46:31",
+  "nota": "Medido con temperatura 0 y semilla fija sobre las preguntas de oro; con tan pocas preguntas cada una vale varios puntos: la tolerancia de la puerta es provisional."
+}

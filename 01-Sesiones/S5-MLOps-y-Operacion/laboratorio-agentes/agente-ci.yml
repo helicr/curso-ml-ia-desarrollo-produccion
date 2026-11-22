@@ -1,0 +1,165 @@
+name: Agente · CI (pruebas con LLM falso y humo)
+# =====================================================================================================================
+# QUÉ HACE  (en cada push a una rama lab/agente/**, y a mano)
+#
+#   Es el CI de CADA push: rápido, determinista y SIN LLM real (decisión D5 de la planificación de S5). El LLM de verdad
+#   (Ollama) es lento y no siempre da lo mismo; se evalúa aparte, en agente-evaluar.yml.
+#
+#     pruebas ──► humo
+#
+#   1) pruebas  Niveles 1 a 3 de la pirámide del agente, con el LLM falso y datos temporales (no necesitan la base del proyecto):
+#                 nivel 1  tests/test_agente_herramientas.py  cada herramienta MCP como función Python
+#                 nivel 2  tests/test_servidor_mcp.py         un cliente MCP arranca el servidor por stdio y llama a las herramientas
+#                 nivel 3  tests/test_agente.py, test_agente_evaluacion.py, test_agente_registro.py, test_skills.py
+#                          el bucle del agente con un LLM de guion, las skills, la puerta de calidad y el registro en MLflow
+#                          tests/test_panel_asistente.py     el endpoint POST /asistente del panel
+#   2) humo     Nivel 6: levanta el compose del agente con el perfil «ci» (la API del modelo + la interfaz con la pestaña
+#               «Asistente» y el LLM falso, sin Ollama), comprueba que POST /asistente contesta 200 con la herramienta
+#               esperada y lo apaga. Prueba que las imágenes se CONSTRUYEN y ARRANCAN juntas, no que el LLM sea bueno.
+#
+#   Qué NO hace: no evalúa la calidad del LLM real (agente-evaluar.yml), no publica nada (agente-nueva-version.yml).
+#
+# ENSAYO: GitHub solo enseña «Run workflow» si el archivo está en la rama por defecto. Para ensayarlo desde una rama de
+#   laboratorio basta un push a  lab/agente/<lo-que-quieras>  (p. ej. lab/agente/ci).  Resultado esperado: dos trabajos en verde.
+#
+# CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/agente-ci.yml  de TU repositorio (ver CONFIGURAR-REPOSITORIO.md).
+#   Está escrito para el repositorio del curso, donde el proyecto vive en 04-Proyecto-Base (ver `working-directory`).
+#
+# SIN SECRETOS: solo permiso de lectura. Tiempos: SIN MEDIR todavía en Actions (este workflow aún no se ha ejecutado allí).
+# =====================================================================================================================
+on:
+  push:
+    branches: ['lab/agente/**']
+  workflow_dispatch:
+
+# Lo mínimo imprescindible: leer el repositorio.
+permissions:
+  contents: read
+
+# Un push nuevo a la misma rama sustituye a la ejecución anterior (aquí SÍ se cancela: un CI viejo no sirve de nada).
+concurrency:
+  group: agente-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CURSO_SIN_PANTALLA: "1"           # matplotlib sin ventana
+
+defaults:
+  run:
+    shell: bash                     # bash con -e y pipefail
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  # ===================================================================================================================
+  pruebas:
+    name: "1 · Pruebas del agente (niveles 1 a 3, LLM falso)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      # requirements-agente.txt se instala ENCIMA de requirements-dev.txt y fija mcp==1.30.0 (la 2.x rompe el código).
+      - name: Instalar dependencias fijadas (proyecto + agente)
+        run: |
+          python -m pip install -r requirements-dev.txt -r requirements-agente.txt
+          python -m pip install -e . --no-deps
+
+      # Las pruebas de nivel 2 se OMITEN en silencio si falta «mcp»: aquí se exige que esté, para que «verde» no engañe.
+      - name: Comprobar que el SDK de MCP está instalado
+        run: python -c "import mcp, importlib.metadata as m; print('mcp', m.version('mcp'))"
+
+      - name: Pruebas de los niveles 1 a 3
+        run: |
+          python -m pytest -q -rs -p no:cacheprovider \
+            tests/test_agente*.py tests/test_skills.py tests/test_servidor_mcp.py tests/test_panel_asistente.py
+
+  # ===================================================================================================================
+  humo:
+    name: "2 · Humo del despliegue (compose con perfil ci)"
+    needs: pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      COMPOSE: deploy/docker/compose-agente.yaml
+      SALIDAS: salidas-agente          # carpeta (dentro de 04-Proyecto-Base) donde se guarda cada respuesta
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar
+        run: python -m pip install -q -r requirements-dev.txt && python -m pip install -q -e . --no-deps
+
+      # El compose NO crea los datos: monta la base, la campaña y las fichas del modelo. Se dejan igual que en validar-produccion.yml.
+      - name: Datos, modelo y lote (operacional + pipeline + explotacion)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          python -m ia_mlops.explotacion
+          mkdir -p "$SALIDAS"
+          # Si estos archivos faltan, Docker crearía CARPETAS con su nombre al montarlos y la interfaz fallaría de forma rara.
+          test -f models/referencia.json && test -f models/historial_versiones.json && test -f data/processed/curso.db && ls reports/campana
+
+      - name: Levantar el compose con el perfil ci (construye la API y la interfaz del agente)
+        run: docker compose -f "$COMPOSE" --profile ci up -d --build
+
+      - name: Esperar a que la interfaz esté lista (/listo)
+        run: |
+          for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:8090/listo -o "$SALIDAS/00-listo.json" && break; sleep 2; done
+          cat "$SALIDAS/00-listo.json"; echo
+          docker compose -f "$COMPOSE" --profile ci ps --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}'
+
+      # El humo de verdad: una pregunta al asistente. Con el LLM falso la herramienta se elige por palabras clave («versión», «producción»).
+      - name: POST /asistente devuelve 200 y usa la herramienta esperada
+        run: |
+          codigo=$(curl -s -o "$SALIDAS/01-asistente.json" -w '%{http_code}' --max-time 120 -X POST http://127.0.0.1:8090/asistente \
+            -H 'content-type: application/json' -d '{"pregunta": "¿Qué versión del modelo está en producción?"}')
+          echo "POST /asistente -> HTTP $codigo"
+          cat "$SALIDAS/01-asistente.json"; echo
+          test "$codigo" = "200"
+          python - <<'FIN'
+          import json, os
+          d = json.load(open(os.environ['SALIDAS'] + '/01-asistente.json', encoding='utf-8'))
+          assert d['respuesta'], 'respuesta vacía'
+          assert d['llm']['tipo'] == 'falso', f"el perfil ci debe usar el LLM falso, y usa {d['llm']}"
+          usadas = [h['nombre'] for h in d['herramientas']]
+          assert 'version_en_produccion' in usadas, f'se esperaba version_en_produccion y se usó {usadas}'
+          print('Herramientas usadas:', usadas)
+          FIN
+
+      - name: Registro de los contenedores (si algo falla)
+        if: failure()
+        run: docker compose -f "$COMPOSE" --profile ci logs --no-color --tail 80 || true
+
+      # Siempre se apaga, también si algo falló (-v borra los volúmenes anónimos del compose).
+      - name: Apagar el compose
+        if: always()
+        run: docker compose -f "$COMPOSE" --profile ci down -v || true
+
+      - name: Resumen
+        if: always()
+        run: |
+          {
+            echo "## Agente · humo del despliegue"
+            echo
+            if [ -f "$SALIDAS/01-asistente.json" ]; then
+              echo "Respuesta de \`POST /asistente\` (LLM falso, perfil ci):"
+              echo
+              echo '```json'
+              head -c 1500 "$SALIDAS/01-asistente.json"
+              echo
+              echo '```'
+            else
+              echo "No se llegó a preguntar al asistente: mira el paso que falló."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

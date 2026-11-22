@@ -1,0 +1,554 @@
+name: Agente · Nueva versión
+# =====================================================================================================================
+# QUÉ HACE  (a mano: Actions > «Agente · Nueva versión» > Run workflow; o push a lab/agente-version/**)
+#
+#   Lleva una versión nueva del AGENTE de retención a producción de punta a punta, con el mismo ciclo que el modelo de S4:
+#   puerta de calidad, aprobación humana y un rastro que se puede revisar y deshacer. Un agente es un sistema de software más:
+#   se prueba, se evalúa, se versiona, se aprueba y se puede deshacer. «Producción» son dos cosas que van juntas:
+#     * la IMAGEN de la interfaz con la pestaña «Asistente» en GHCR:  ghcr.io/<propietario>/interfaz-agente:v<N>-<huella del agente>
+#     * la FICHA de esa versión en el repositorio:                    04-Proyecto-Base/agentes/referencia-agente.json
+#   La «huella del agente» (prompt de sistema + modelo de LLM + skills) es lo que identifica a un agente: si cambias una coma del
+#   prompt o de una skill, o el modelo, cambia la huella; si no cambia nada, la huella es la misma y no hay nada que publicar.
+#
+#     evaluar ──► construir-y-probar ──► publicar ──► referencia
+#
+#   1) evaluar             Calcula la huella del agente. Si es la de la referencia: «igual» (sin gastar ni un minuto de LLM).
+#                          Si no, instala Ollama en el runner, pasa las 25 PREGUNTAS DE ORO por el agente con el LLM real y las
+#                          COMPARA con agentes/referencia-agente.json (`python -m ia_mlops.agente.evaluacion comparar`):
+#                            igual      misma huella: nada que publicar. El resto de trabajos se OMITEN (gris) y el resumen lo explica.
+#                            rechazada  el acierto de herramienta o «sin inventar» cae MÁS que la tolerancia (0,10, provisional),
+#                                       o falla una pregunta de seguridad (siempre, sin tolerancia): el trabajo FALLA (rojo).
+#                            aceptada   pasa a los trabajos siguientes. Si lo es, además registra el prompt y el agente en MLflow.
+#   2) construir-y-probar  Construye la imagen `interfaz-agente`, levanta el compose del agente (perfil ci: LLM falso) y comprueba
+#                          que POST /asistente contesta 200. Es el nivel 6 (humo) de la pirámide: la imagen que se probó es la que se publica.
+#   3) publicar            ESPERA LA APROBACIÓN de una persona (environment «produccion»). Aprobada, sube la imagen a GHCR con la
+#                          etiqueta v<N+1>-<huella>. Es el único trabajo con permiso «packages: write».
+#   4) referencia          Abre un PULL REQUEST (rama «referencia-agente/v<N+1>-<n.º de ejecución>») que actualiza
+#                          agentes/referencia-agente.json (`evaluacion crear-referencia`) y agentes/historial-agente.json (la nueva
+#                          «produccion», la anterior «anterior»). NUNCA hace push a develop ni a main: la nueva versión pasa a ser
+#                          «la de producción» cuando una persona FUSIONA el PR.
+#
+# ENSAYO POR RAMAS (GitHub solo enseña «Run workflow» si el archivo está en la rama por defecto; un push a una rama
+# lab/agente-version/<escenario> lo lanza y el NOMBRE de la rama elige el escenario):
+#   lab/agente-version/igual         sin cambios en el agente           → IGUAL: la huella es la de la referencia; 2 a 4 omitidos.
+#   lab/agente-version/prompt-nuevo  prompt de prompts/sistema-v2.txt   → evalúa con el LLM real; ACEPTADA o RECHAZADA según
+#                                    midan las preguntas de oro (NO está medido de antemano: ese es el ejercicio).
+#   lab/agente-version/rechazo       el mismo prompt nuevo + tolerancia -0,10 (se exige MEJORAR 0,10) → RECHAZADA con seguridad:
+#                                    «sin inventar» ya está en 0,96 y no puede subir 0,10. Igual que el truco de S4 con datos reales.
+#   Lanzado a mano (workflow_dispatch), mandan las entradas.
+#
+# EL ATAJO DIDÁCTICO DEL PROMPT (léelo: es la parte «de mentira» del ensayo)
+#   Para no editar código a mano en clase, en prompt-nuevo y rechazo el workflow ejecuta  laboratorio-agentes/aplicar_prompt.py,
+#   que sustituye la constante SISTEMA de agente.py por el texto de prompts/sistema-v2.txt EN EL RUNNER (no hace commit). Así lo que se
+#   evalúa y lo que se construye llevan el prompt nuevo. En un flujo real no se parchea nada: el cambio de prompt llega en un commit
+#   de la rama, se revisa en un pull request y el workflow solo evalúa lo que encuentra. Por eso el PR que abre el trabajo 4 NO
+#   incluye ese cambio de código: solo la ficha y el historial.
+#
+# ROLLBACK (volver a la versión anterior): agente-rollback.yml, en esta misma carpeta (abre un PR que restaura la ficha anterior).
+#   Comparte con este workflow el grupo de «concurrency»: ver abajo.
+#
+# QUÉ CONFIGURA QUIEN ADMINISTRA EL REPOSITORIO (una vez; ver CONFIGURAR-REPOSITORIO.md, que remite al de S4)
+#   - environment «produccion» con revisores y permiso de Actions para crear pull requests: los de S4, los mismos.
+#
+# CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/agente-nueva-version.yml  de TU repositorio. Está escrito para el repositorio
+#   del curso (proyecto en 04-Proyecto-Base y esta carpeta en 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-agentes: los pasos usan
+#   los scripts que hay en ella; variable LAB). Si tu raíz es otra, ajusta `working-directory`, `LAB` y los prefijos de las rutas.
+#
+# SIN SECRETOS PROPIOS: solo el GITHUB_TOKEN que GitHub crea en cada ejecución, con los permisos mínimos de cada trabajo.
+# Las cifras salen de la ejecución: ninguna está escrita a mano aquí.
+# SIN VERIFICAR en Actions: este workflow entero (aún no se ha ejecutado), la instalación de Ollama en el runner (propuesta del
+# pico T00), el tiempo y la memoria de la evaluación (a medir) y el resultado de prompt-nuevo. El patrón de aprobación, GHCR y PR
+# es el de S4, ejecutado de verdad en Actions el 22/11/2026.
+# =====================================================================================================================
+on:
+  push:
+    branches: ['lab/agente-version/**']
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Prompt de sistema a evaluar: actual (el de agente.py) o nuevo (el de prompts/sistema-v2.txt, aplicado en el runner)"
+        type: choice
+        options:
+          - actual
+          - nuevo
+        default: actual
+      tolerancia:
+        description: "Cuánto puede empeorar el acierto de herramienta o «sin inventar» (vacío = 0.10). Negativo = exigencia de mejora: -0.10 rechaza una versión que no mejore 0.10"
+        type: string
+        required: false
+        default: ""
+
+# Lo mínimo para todo el workflow; cada trabajo declara abajo los suyos (y solo los que necesita).
+permissions:
+  contents: read
+
+# MISMO grupo que agente-rollback.yml, a propósito: tanto publicar una versión como deshacerla cambian QUÉ agente es «el de
+# producción» (agentes/referencia-agente.json y la imagen). Si corrieran a la vez, el rollback podría leer el historial justo
+# antes de que el PR de la versión nueva lo cambie, y los dos PR se pisarían. La segunda ejecución espera, no cancela a la
+# primera (que puede estar esperando aprobación). Consecuencia que ya vimos en S4: un run parado en «Waiting» BLOQUEA al
+# siguiente del grupo; cancélalo o apruébalo. (El CI y la evaluación tienen sus propios grupos: no tocan producción.)
+concurrency:
+  group: agente-version
+  cancel-in-progress: false
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  MLFLOW_ENABLE_ASYNC_TRACE_LOGGING: "false"
+  OLLAMA_CONTEXT_LENGTH: "8192"
+  OLLAMA_VERSION: "0.40.17"
+  # Variante del ensayo, elegida por la ENTRADA (a mano) o por el NOMBRE DE LA RAMA (push). `rechazo` implica prompt nuevo.
+  PROMPT: ${{ inputs.prompt || ((contains(github.ref_name, 'prompt-nuevo') || contains(github.ref_name, 'rechazo')) && 'nuevo' || 'actual') }}
+  TOLERANCIA_ENTRADA: ${{ inputs.tolerancia || (contains(github.ref_name, 'rechazo') && '-0.10' || '') }}
+  # El mismo modelo que en clase (misma huella que la referencia). Con el nombre corto qwen2.5:3b saldría otra huella: ver agente-evaluar.yml.
+  MODELO: hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M
+  CURSO_LLM_MODELO: hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M
+  CURSO_LLM_URL: http://127.0.0.1:11434/v1
+  CURSO_MLFLOW_URI: sqlite:///${{ github.workspace }}/04-Proyecto-Base/mlflow-agente/mlflow.db
+  LAB: 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-agentes
+
+defaults:
+  run:
+    shell: bash                     # bash con -e y pipefail: un fallo dentro de una tubería (orden | tee) también rompe el paso
+    working-directory: 04-Proyecto-Base    # carpeta del proyecto dentro del repositorio (ver «CÓMO USAR ESTE ARCHIVO»)
+
+jobs:
+  # ===================================================================================================================
+  evaluar:
+    name: "1 · Evaluar el agente y comparar con la versión en producción"
+    runs-on: ubuntu-latest
+    timeout-minutes: 150          # evaluación con Ollama en CPU: ver agente-evaluar.yml (tiempo A MEDIR; el tope es generoso)
+    permissions:
+      contents: read
+    outputs:
+      decision: ${{ steps.decidir.outputs.decision }}                       # igual | aceptada | rechazada
+      version_referencia: ${{ steps.decidir.outputs.version_referencia }}   # la que está en producción
+      version_nueva: ${{ steps.decidir.outputs.version_nueva }}             # la que se publicaría (N+1)
+      huella: ${{ steps.decidir.outputs.huella }}                           # huella del agente candidato
+      etiqueta: ${{ steps.decidir.outputs.etiqueta }}                       # v<N+1>-<huella>
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar dependencias fijadas (proyecto + agente)
+        run: |
+          python -m pip install -r requirements-dev.txt -r requirements-agente.txt
+          python -m pip install -e . --no-deps
+
+      - name: Comprobar las entradas
+        run: |
+          echo "prompt = $PROMPT"
+          if [ -n "$TOLERANCIA_ENTRADA" ]; then
+            valida=0
+            python -c 'import sys; v = float(sys.argv[1]); assert -1 <= v <= 1' "$TOLERANCIA_ENTRADA" 2> /dev/null || valida=1
+            if [ "$valida" = "1" ]; then
+              echo "::error title=Entrada no válida::tolerancia debe ser un número entre -1 y 1 (recibido: $TOLERANCIA_ENTRADA)"
+              exit 1
+            fi
+            echo "::notice title=Tolerancia::Se usa la tolerancia pedida ($TOLERANCIA_ENTRADA), no la de evaluacion.py"
+          fi
+
+      # El atajo didáctico (ver la cabecera): el prompt nuevo se aplica en el runner, sin commit.
+      - name: Aplicar el prompt nuevo (solo en prompt-nuevo y rechazo)
+        if: env.PROMPT == 'nuevo'
+        run: python "../${LAB}/aplicar_prompt.py"
+
+      # Los mismos datos que validar-produccion.yml y puntuar-lote.yml de S4.
+      - name: Datos, modelo de retención y lote (operacional + pipeline + explotacion)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          python -m ia_mlops.explotacion
+          mkdir -p mlflow-agente
+
+      # La huella del agente se calcula SIN LLM. Si es la de la referencia, no hay nada que evaluar: «igual», en segundos.
+      - name: Huella del agente (¿es el mismo que en producción?)
+        id: previa
+        run: |
+          python - <<'FIN' >> "$GITHUB_OUTPUT"
+          import json, os
+          from ia_mlops.agente import registro
+          from ia_mlops.agente.agente import SISTEMA
+          from ia_mlops.agente.skills import cargar_skills
+          huella = registro.huella_agente(SISTEMA, os.environ['CURSO_LLM_MODELO'], cargar_skills())
+          ref = json.load(open('agentes/referencia-agente.json', encoding='utf-8'))
+          igual = huella == ref['huella_agente']
+          if igual:
+              json.dump({'decision': 'igual', 'huella': huella, 'tolerancia': None,
+                         'motivo': f"Mismo agente que la versión {ref['version']} en producción (huella {huella}: mismo prompt, mismo modelo, mismas skills): no hay nada que publicar."},
+                        open('decision.json', 'w', encoding='utf-8'), ensure_ascii=False)
+          print('igual=' + ('true' if igual else 'false'))
+          print('huella=' + huella)
+          FIN
+          cat "$GITHUB_OUTPUT"
+
+      # ---- Ollama en el runner (propuesta del pico T00; SIN VERIFICAR en Actions; tiempos y memoria: A MEDIR) -------------
+      - name: Caché de los modelos de Ollama
+        if: steps.previa.outputs.igual != 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/ollama-modelos
+          key: ollama-modelos-${{ env.MODELO }}-v1
+
+      - name: Instalar Ollama (versión fijada) y arrancar el servidor
+        if: steps.previa.outputs.igual != 'true'
+        run: |
+          curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION="$OLLAMA_VERSION" sh
+          ollama --version
+          sudo systemctl stop ollama 2> /dev/null || true        # el servicio que instala el script usaría otra carpeta de modelos
+          mkdir -p "$HOME/ollama-modelos"
+          OLLAMA_MODELS="$HOME/ollama-modelos" nohup ollama serve > "$RUNNER_TEMP/ollama.log" 2>&1 &
+          for _ in $(seq 1 60); do curl -sf http://127.0.0.1:11434/api/tags > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:11434/api/tags > /dev/null || { echo "::error title=Ollama no arranca::mira ollama.log"; cat "$RUNNER_TEMP/ollama.log"; exit 1; }
+
+      - name: Descargar el modelo (con la caché, solo comprueba)
+        if: steps.previa.outputs.igual != 'true'
+        run: ollama pull "$MODELO" && ollama list
+
+      - name: Evaluar el agente (25 preguntas de oro con Ollama + servidor MCP)
+        if: steps.previa.outputs.igual != 'true'
+        run: python -m ia_mlops.agente.evaluacion evaluar --llm ollama --json evaluacion.json | tee "$RUNNER_TEMP/evaluar.txt"
+
+      # La puerta de calidad. Códigos de `comparar`: 0 igual o aceptada · 1 rechazada · 2 no se pudo comparar.
+      # Aquí solo el 2 corta: la decisión «rechazada» se escribe en el resumen y la ejecución se pone en rojo en el ÚLTIMO paso.
+      - name: Comparar con agentes/referencia-agente.json (la puerta de calidad)
+        if: steps.previa.outputs.igual != 'true'
+        run: |
+          args=(--resultados evaluacion.json --json decision.json)
+          if [ -n "$TOLERANCIA_ENTRADA" ]; then args+=(--tolerancia "$TOLERANCIA_ENTRADA"); fi
+          codigo=0
+          python -m ia_mlops.agente.evaluacion comparar "${args[@]}" > /tmp/comparar.txt 2>&1 || codigo=$?
+          cat /tmp/comparar.txt
+          if [ "$codigo" = "2" ]; then
+            echo "::error title=No se pudo comparar::$(tail -n 1 /tmp/comparar.txt)"
+            exit 1
+          fi
+
+      - name: Decisión y salidas del trabajo
+        id: decidir
+        run: |
+          python - <<'FIN' >> "$GITHUB_OUTPUT"
+          import json
+          d = json.load(open('decision.json', encoding='utf-8'))
+          ref = json.load(open('agentes/referencia-agente.json', encoding='utf-8'))
+          huella = d.get('huella') or json.load(open('evaluacion.json', encoding='utf-8'))['huella_agente']
+          nueva = ref['version'] + 1
+          print('decision=' + d['decision'])
+          print(f"version_referencia={ref['version']}")
+          print(f'version_nueva={nueva}')
+          print(f'huella={huella}')
+          print(f'etiqueta=v{nueva}-{huella}')
+          FIN
+          cat "$GITHUB_OUTPUT"
+
+      # El resumen se escribe SIEMPRE (también si se rechaza): es lo primero que lee quien abre la ejecución.
+      - name: Resumen de la ejecución
+        if: always() && steps.decidir.outputs.decision != ''
+        run: |
+          if [ -f evaluacion.json ]; then
+            python "../${LAB}/resumen_evaluacion.py" --informe evaluacion.json --referencia agentes/referencia-agente.json --decision decision.json >> "$GITHUB_STEP_SUMMARY"
+          else
+            python - <<'FIN' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.load(open('decision.json', encoding='utf-8'))
+          print('## Agente · nueva versión · IGUAL · nada que publicar\n')
+          print(d['motivo'] + '\n')
+          print('Se calculó la huella del agente sin LLM y coincide con la de la referencia, así que no se instaló Ollama ni se evaluó nada. '
+                '**Los trabajos siguientes se omiten a propósito.** Para ensayar una versión nueva, usa la rama prompt-nuevo (o la entrada prompt = nuevo).')
+          FIN
+          fi
+
+      - name: Sin novedad (el agente es el mismo)
+        if: steps.decidir.outputs.decision == 'igual'
+        run: |
+          echo "::notice title=Sin novedad::El agente tiene la misma huella que la versión ${{ steps.decidir.outputs.version_referencia }} en producción: no se construye ni se publica nada."
+
+      # Registra el prompt y el agente en MLflow: alias `produccion` del prompt y `champion` del agente. OJO, honestidad: este MLflow vive
+      # en una base SQLite DEL RUNNER, que se destruye al acabar el trabajo; solo queda la copia del artefacto «mlflow-agente». Sirve para
+      # enseñar el registro y alimentar el PR; no es un servidor de MLflow permanente. No bloquea si falla (es didáctico).
+      - name: Registrar el prompt y el agente en MLflow (almacén efímero del runner)
+        if: steps.decidir.outputs.decision == 'aceptada'
+        continue-on-error: true
+        run: |
+          python -m ia_mlops.agente.registro registrar-prompt
+          python -m ia_mlops.agente.registro registrar-agente
+          python - <<'FIN' > registro.json
+          import json
+          from ia_mlops.agente import registro
+          registro.conectar()
+          print(json.dumps(registro.estado(), ensure_ascii=False))
+          FIN
+          cat registro.json
+
+      # Lo que necesitan los trabajos siguientes, en UNA carpeta (así el artefacto tiene siempre la misma estructura).
+      - name: Empaquetar la candidata (ficha nueva, ficha anterior, informes)
+        if: steps.decidir.outputs.decision == 'aceptada'
+        env:
+          VERSION_NUEVA: ${{ steps.decidir.outputs.version_nueva }}
+        run: |
+          mkdir -p paquete
+          cp agentes/referencia-agente.json paquete/referencia-anterior.json      # la que sale de producción, tal cual está en la rama
+          python -m ia_mlops.agente.evaluacion crear-referencia --resultados evaluacion.json --version "$VERSION_NUEVA" --referencia paquete/referencia-agente.json
+          cp evaluacion.json decision.json paquete/
+          if [ -f registro.json ]; then cp registro.json paquete/; fi
+          echo "$PROMPT" > paquete/prompt.txt
+          ls -l paquete
+
+      - name: Subir la candidata
+        if: steps.decidir.outputs.decision == 'aceptada'
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidata
+          retention-days: 7
+          path: 04-Proyecto-Base/paquete
+
+      - name: Guardar MLflow (base SQLite y mlruns con trazas y métricas)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-agente
+          retention-days: 14
+          if-no-files-found: ignore
+          path: |
+            04-Proyecto-Base/mlflow-agente
+            04-Proyecto-Base/mlruns
+
+      # Va el ÚLTIMO para que el resumen ya esté escrito: aquí es donde la ejecución se pone en rojo si se rechaza.
+      - name: Rechazar la versión si empeora más que la tolerancia
+        if: steps.decidir.outputs.decision == 'rechazada'
+        run: |
+          motivo="$(python -c "import json; print(json.load(open('decision.json', encoding='utf-8'))['motivo'])")"
+          echo "::error title=Agente rechazado::$motivo No se construye ni se publica nada."
+          exit 1
+
+  # ===================================================================================================================
+  construir-y-probar:
+    name: "2 · Construir la imagen del agente y probar el humo"
+    needs: evaluar
+    # «igual» y «rechazada» no llegan aquí: este trabajo queda omitido (gris), no fallido.
+    if: needs.evaluar.outputs.decision == 'aceptada'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    env:
+      ETIQUETA: ${{ needs.evaluar.outputs.etiqueta }}
+      COMPOSE: deploy/docker/compose-agente.yaml
+      SALIDAS: salidas-agente
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar
+        run: python -m pip install -q -r requirements-dev.txt && python -m pip install -q -e . --no-deps
+
+      # La imagen debe llevar el MISMO agente que se evaluó: si la variante era el prompt nuevo, se aplica igual que en el trabajo 1.
+      - name: Aplicar el prompt nuevo (solo en prompt-nuevo y rechazo)
+        if: env.PROMPT == 'nuevo'
+        run: python "../${LAB}/aplicar_prompt.py"
+
+      - name: Datos, modelo y lote (los monta el compose)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          python -m ia_mlops.explotacion
+          mkdir -p "$SALIDAS"
+          test -f models/referencia.json && test -f models/historial_versiones.json && test -f data/processed/curso.db && ls reports/campana
+
+      # Se construye con docker build (para poner las etiquetas OCI) y el compose, que ya la encuentra con ese nombre, la usa tal cual:
+      # el contenedor probado es el que se publica.
+      - name: Construir la imagen interfaz-agente (con la etiqueta de versión dentro)
+        run: |
+          docker build \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --label "org.opencontainers.image.version=${ETIQUETA}" \
+            -f deploy/docker/interfaz-agente.Dockerfile -t retencion-interfaz-agente:local .
+          docker image ls retencion-interfaz-agente:local --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
+          test "$(docker run --rm --entrypoint id retencion-interfaz-agente:local -u)" = "10001"
+
+      - name: Levantar el compose con el perfil ci (la API se construye; la interfaz ya está construida)
+        run: |
+          docker compose -f "$COMPOSE" --profile ci up -d
+          for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:8090/listo -o "$SALIDAS/00-listo.json" && break; sleep 2; done
+          cat "$SALIDAS/00-listo.json"; echo
+
+      - name: Humo · POST /asistente devuelve 200 y usa la herramienta esperada
+        run: |
+          codigo=$(curl -s -o "$SALIDAS/01-asistente.json" -w '%{http_code}' --max-time 120 -X POST http://127.0.0.1:8090/asistente \
+            -H 'content-type: application/json' -d '{"pregunta": "¿Qué versión del modelo está en producción?"}')
+          echo "POST /asistente -> HTTP $codigo"; cat "$SALIDAS/01-asistente.json"; echo
+          test "$codigo" = "200"
+          python - <<'FIN'
+          import json, os
+          d = json.load(open(os.environ['SALIDAS'] + '/01-asistente.json', encoding='utf-8'))
+          usadas = [h['nombre'] for h in d['herramientas']]
+          assert d['respuesta'] and d['llm']['tipo'] == 'falso', d
+          assert 'version_en_produccion' in usadas, f'se esperaba version_en_produccion y se usó {usadas}'
+          FIN
+
+      - name: Registro de los contenedores (si algo falla)
+        if: failure()
+        run: docker compose -f "$COMPOSE" --profile ci logs --no-color --tail 80 || true
+
+      - name: Apagar el compose
+        if: always()
+        run: docker compose -f "$COMPOSE" --profile ci down -v || true
+
+      - name: Resumen
+        if: always()
+        run: |
+          {
+            echo "## Construir y probar · ${ETIQUETA}"
+            echo
+            echo "Imagen \`interfaz-agente\` construida y probada con el compose del agente (perfil ci, LLM falso): /listo y \`POST /asistente\` con respuesta 200."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar la imagen probada (la que se publicará, no otra reconstruida)
+        run: docker save retencion-interfaz-agente:local | gzip > "$RUNNER_TEMP/imagen.tar.gz"
+
+      - name: Subir la imagen probada
+        uses: actions/upload-artifact@v4
+        with:
+          name: imagen
+          retention-days: 1
+          path: ${{ runner.temp }}/imagen.tar.gz
+
+  # ===================================================================================================================
+  publicar:
+    name: "3 · Publicar en GHCR (con aprobación manual)"
+    needs: [evaluar, construir-y-probar]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # El trabajo se queda en «Waiting» hasta que un revisor del environment lo aprueba (lo configura quien administra el
+    # repositorio; ver CONFIGURAR-REPOSITORIO.md). Este es el ÚNICO trabajo con environment y el único con «packages: write».
+    environment:
+      name: produccion
+    permissions:
+      contents: read
+      packages: write
+    # Este trabajo NO descarga el repositorio (solo usa la imagen ya probada): la carpeta 04-Proyecto-Base no existe aquí,
+    # así que trabaja en la raíz. Sin esta línea falla al arrancar (visto en el ensayo de S4 del 22/11/2026, run 45028846520).
+    defaults:
+      run:
+        working-directory: .
+    env:
+      ETIQUETA: ${{ needs.evaluar.outputs.etiqueta }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: imagen
+          path: ${{ runner.temp }}
+
+      - name: Cargar la imagen probada
+        run: gunzip -c "$RUNNER_TEMP/imagen.tar.gz" | docker load
+
+      - name: Iniciar sesión en GHCR y publicar
+        run: |
+          propietario="$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"    # GHCR exige minúsculas
+          destino="ghcr.io/${propietario}/interfaz-agente:${ETIQUETA}"
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker tag retencion-interfaz-agente:local "$destino"
+          docker push "$destino"
+          {
+            echo "## Publicada en GHCR"
+            echo
+            echo "\`${destino}\`"
+            echo
+            docker image inspect "$destino" --format '{{index .RepoDigests 0}}' | sed 's/^/digest: `/; s/$/`/'
+            echo
+            echo "Falta fusionar el pull request que abre el trabajo siguiente: hasta entonces, **el agente en producción sigue siendo el anterior** (el que dice agentes/referencia-agente.json)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===================================================================================================================
+  referencia:
+    name: "4 · Abrir el pull request que actualiza agentes/referencia-agente.json"
+    needs: [evaluar, construir-y-probar, publicar]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write         # solo para crear la RAMA NUEVA del pull request (nunca se empuja a develop ni a main)
+      pull-requests: write    # para abrir el pull request
+    env:
+      ETIQUETA: ${{ needs.evaluar.outputs.etiqueta }}
+      VERSION_NUEVA: ${{ needs.evaluar.outputs.version_nueva }}
+      VERSION_REFERENCIA: ${{ needs.evaluar.outputs.version_referencia }}
+      BASE: ${{ github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidata
+          path: 04-Proyecto-Base/paquete
+
+      # La ficha nueva ya la creó el trabajo 1 con `evaluacion crear-referencia` (aquí no hace falta instalar nada). El historial
+      # (agentes/historial-agente.json) lo actualiza un script con solo la biblioteca estándar: la nueva entra como «produccion»
+      # y la que sale pasa a «anterior». Los dos archivos van en el MISMO pull request.
+      - name: Escribir la referencia nueva y el historial
+        run: |
+          cp paquete/referencia-agente.json agentes/referencia-agente.json
+          python "../${LAB}/historial_agente.py" nueva --historial agentes/historial-agente.json \
+            --anterior paquete/referencia-anterior.json --nueva agentes/referencia-agente.json \
+            --prompt "$(cat paquete/prompt.txt)" --ejecucion "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          python - <<'FIN'
+          import json, os
+          d = json.load(open('agentes/referencia-agente.json', encoding='utf-8'))
+          assert d['version'] == int(os.environ['VERSION_NUEVA']), (d['version'], os.environ['VERSION_NUEVA'])
+          assert f"v{d['version']}-{d['huella_agente']}" == os.environ['ETIQUETA'], 'la ficha no coincide con la imagen publicada'
+          print('La ficha coincide con la imagen publicada: interfaz-agente:' + os.environ['ETIQUETA'])
+          FIN
+
+      - name: Rama nueva, commit y pull request
+        run: |
+          rama="referencia-agente/v${VERSION_NUEVA}-${GITHUB_RUN_ID}"
+          case "$rama" in main|develop|master) echo "MAL: no se empuja a $rama"; exit 1 ;; esac
+          propietario="$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
+          PROPIETARIO="$propietario" python - <<'FIN' > /tmp/cuerpo.md
+          import json, os
+          d = json.load(open('paquete/decision.json', encoding='utf-8'))
+          nueva = json.load(open('agentes/referencia-agente.json', encoding='utf-8'))
+          antes = json.load(open('paquete/referencia-anterior.json', encoding='utf-8'))
+          print(f"Actualiza `04-Proyecto-Base/agentes/referencia-agente.json` y `agentes/historial-agente.json`: el agente **v{os.environ['VERSION_NUEVA']}** pasa a ser el de producción y el anterior queda como «anterior».\n")
+          print(f"Imagen publicada en GHCR tras la aprobación del environment `produccion`: `ghcr.io/{os.environ['PROPIETARIO']}/interfaz-agente:{os.environ['ETIQUETA']}`.\n")
+          print('| | v%s (actual) | v%s (nueva) |\n|---|---|---|' % (os.environ['VERSION_REFERENCIA'], os.environ['VERSION_NUEVA']))
+          print(f"| huella del agente | `{antes['huella_agente']}` | `{nueva['huella_agente']}` |")
+          print(f"| LLM | `{antes['llm']}` | `{nueva['llm']}` |")
+          for k in ('acierto_herramienta', 'acierto_argumentos', 'sin_inventar', 'respuestas_correctas'):
+              print(f"| {k} | {100 * antes['metricas'][k]:.0f} % | {100 * nueva['metricas'][k]:.0f} % |")
+          print(f"\nDecisión de la puerta de calidad: **{d['decision']}**. {d['motivo']}\n")
+          if open('paquete/prompt.txt', encoding='utf-8').read().strip() == 'nuevo':
+              print('> Ensayo: el prompt nuevo (`laboratorio-agentes/prompts/sistema-v2.txt`) se aplicó en el runner con un atajo didáctico. '
+                    'Este PR NO cambia `agente.py`: en un flujo real, el cambio de prompt iría en un commit de la rama y en este mismo PR.\n')
+          if os.path.exists('paquete/registro.json'):
+              r = json.load(open('paquete/registro.json', encoding='utf-8'))
+              print('MLflow (almacén **efímero** del runner; copia en el artefacto `mlflow-agente`): ' +
+                    'prompt ' + ', '.join(f"@{a['alias']} → v{a['version']}" for a in r['prompt']['alias']) + ' · agente ' +
+                    ', '.join(f"v{v['version']} {'/'.join('@' + x for x in v['alias'])}" for v in r['agente']['versiones'] if v['alias']) + '.\n')
+          print(f"Generado por la ejecución {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}.")
+          print('Al fusionar este pull request, el agente de producción pasa a ser el nuevo. Para volver atrás: workflow «Agente · Rollback».')
+          FIN
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$rama"
+          git add agentes/referencia-agente.json agentes/historial-agente.json
+          git commit -m "Referencia del agente: ${ETIQUETA}"
+          git push origin "refs/heads/${rama}"
+          url="$(gh pr create --base "$BASE" --head "$rama" --title "Referencia del agente: ${ETIQUETA}" --body-file /tmp/cuerpo.md)"
+          echo "::notice title=pull-request::${url}"
+          echo "Pull request abierto: ${url}" >> "$GITHUB_STEP_SUMMARY"

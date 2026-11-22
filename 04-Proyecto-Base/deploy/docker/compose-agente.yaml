@@ -1,0 +1,93 @@
+# El servicio de producción + el ASISTENTE (S5): la API del modelo, la interfaz con el panel y un LLM local (Ollama).
+# Es compose-produccion.yaml (que NO se toca) con otra interfaz (con la pestaña «Asistente») y, según el perfil, con Ollama.
+#
+# DOS PERFILES (hay que elegir uno; los dos publican el puerto 8090, no se levantan a la vez):
+#   ollama   la interfaz con un LLM REAL:  CURSO_LLM=ollama y Ollama en su propio contenedor
+#   ci       la interfaz con el LLM FALSO: CURSO_LLM=falso, sin Ollama (para CI, para ensayar y para equipos sin memoria de sobra)
+#
+# ANTES: lo mismo que compose-produccion.yaml (operacional, pipeline y explotacion ejecutados en 04-Proyecto-Base; el compose no los crea).
+#
+# Desde la carpeta del proyecto (04-Proyecto-Base):
+#   docker compose -f deploy/docker/compose-agente.yaml --profile ollama up --build -d     # con Ollama
+#   sh deploy/docker/ollama-pull.sh        (o  .\deploy\docker\ollama-pull.ps1 )          # UNA vez: descarga el modelo (ver abajo)
+#   docker compose -f deploy/docker/compose-agente.yaml --profile ci up --build -d         # o bien, sin Ollama
+#   docker compose -f deploy/docker/compose-agente.yaml --profile ollama down              # (con -v se borra también el modelo descargado)
+#
+# Panel: http://127.0.0.1:8090/panel#asistente
+#
+# OLLAMA
+#   Imagen: ollama/ollama:0.40.16 (versión fijada; es de las publicadas en Docker Hub el 9/11/2026). NO se ha ejecutado aquí: sin probar.
+#   Tamaño: Docker Hub la lista en unos 3,4 GB (amd64) comprimidos; el tamaño en disco y la memoria en uso NO están medidos. El modelo (Q4_K_M de 3 B)
+#   se guarda en el volumen «ollama_modelos» y pesa aparte. En un Codespace de 2 núcleos puede quedarse corto: plan B, el perfil «ci».
+#   Modelo: hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M. En la red de la oficina el nombre corto «qwen2.5:3b» NO baja por el proxy
+#   (registry.ollama.ai); el nombre hf.co/... sí. Si tras el proxy falla, hay que pasar HTTPS_PROXY al contenedor ollama.
+#
+# LAS HERRAMIENTAS DEL AGENTE
+#   La interfaz las usa EN MEMORIA (ia_mlops/interfaz/asistente.py). Para usar el servidor MCP (python -m ia_mlops.agente.servidor_mcp) habría que
+#   darle a la imagen el modelo y scikit-learn, que la interfaz no lleva: queda fuera de este compose.
+name: retencion-agente
+
+x-interfaz: &interfaz
+  build:
+    context: ../..
+    dockerfile: deploy/docker/interfaz-agente.Dockerfile
+  image: retencion-interfaz-agente:local
+  ports:
+    - "8090:8090"
+  volumes:
+    - ../../data/processed:/datos:ro
+    - ../../reports/campana:/campana:ro
+    - ../../models/referencia.json:/app/models/referencia.json:ro
+    - ../../models/historial_versiones.json:/app/models/historial_versiones.json:ro
+  tmpfs:
+    - /tmp
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: ${IMAGEN_API:-retencion-api:local}
+
+  ollama:
+    profiles: ["ollama"]
+    image: ollama/ollama:0.40.16
+    volumes:
+      - ollama_modelos:/root/.ollama     # los modelos descargados sobreviven a «down» (no a «down -v»)
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    # Sin «ports»: solo la interfaz, dentro de la red, lo llama (http://ollama:11434).
+
+  interfaz:                              # perfil ollama: LLM real
+    <<: *interfaz
+    profiles: ["ollama"]
+    environment:
+      CURSO_URL_API: http://api:8080
+      CURSO_DEMO: "1"
+      CURSO_CAMPANA: /campana
+      CURSO_LLM: ollama
+      CURSO_LLM_URL: http://ollama:11434/v1
+      CURSO_LLM_MODELO: hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M
+    depends_on:
+      api:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+
+  interfaz-ci:                           # perfil ci: LLM falso, sin Ollama
+    <<: *interfaz
+    profiles: ["ci"]
+    environment:
+      CURSO_URL_API: http://api:8080
+      CURSO_DEMO: "1"
+      CURSO_CAMPANA: /campana
+      CURSO_LLM: falso
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  ollama_modelos:
