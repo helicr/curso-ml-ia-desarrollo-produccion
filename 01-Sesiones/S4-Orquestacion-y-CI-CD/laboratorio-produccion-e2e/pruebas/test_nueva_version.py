@@ -67,8 +67,14 @@ def test_los_archivos_existen_y_son_yaml_validos(nueva, rollback):
 
 
 def test_solo_se_dispara_a_mano(nueva, rollback):
-    for wf in (nueva, rollback):
-        assert set(disparadores(wf)) == {'workflow_dispatch'}, 'una versión nueva o un rollback nunca se disparan solos'
+    assert set(disparadores(rollback)) == {'workflow_dispatch'}, 'un rollback nunca se dispara solo'
+    # La versión nueva se lanza a mano; además, SOLO para ensayarla sin la rama principal, con un push a ramas lab/nueva-version/**.
+    d = disparadores(nueva)
+    assert set(d) <= {'workflow_dispatch', 'push'} and 'workflow_dispatch' in d
+    if 'push' in d:
+        ramas = d['push'].get('branches') or []
+        assert ramas and all(r.startswith('lab/nueva-version/') for r in ramas), 'el push solo puede venir de ramas de ensayo'
+        assert not set(d['push']) & {'branches-ignore', 'tags'}, 'nada de ramas sin filtro ni etiquetas'
 
 
 def test_entradas_de_nueva_version(nueva):

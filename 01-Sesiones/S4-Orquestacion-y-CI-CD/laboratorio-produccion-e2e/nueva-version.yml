@@ -80,6 +80,13 @@ name: Nueva versión del modelo
 # entero (aún no se ha ejecutado) y actions/cache@v4, que aquí se usa por primera vez.
 # =====================================================================================================================
 on:
+  # ENSAYO (sin la rama principal): GitHub solo enseña «Run workflow» si el archivo está en la rama por defecto del repositorio.
+  # Para ensayarlo en una rama de laboratorio, un push a lab/nueva-version/<escenario> lo lanza y el NOMBRE de la rama elige el escenario:
+  #   …/muestra → sin datos nuevos (escenario a: «igual») · …/completo → Excel completo (escenario c: «aceptada»)
+  #   …/completo-rechazo → Excel completo con tolerancia -0,10 (escenario b: «rechazada»)
+  # Lanzado a mano (workflow_dispatch), mandan las entradas.
+  push:
+    branches: ['lab/nueva-version/**']
   workflow_dispatch:
     inputs:
       fuente:
@@ -128,8 +135,8 @@ jobs:
       etiqueta: ${{ steps.comparar.outputs.etiqueta }}                       # v<N+1>-<huella>
       fuente_referencia: ${{ steps.comparar.outputs.fuente_referencia }}     # fuente con la que se entrenó la versión en producción
     env:
-      FUENTE: ${{ inputs.fuente }}
-      TOLERANCIA_ENTRADA: ${{ inputs.tolerancia }}
+      FUENTE: ${{ (inputs.fuente || (contains(github.ref_name, 'completo') && 'completo' || 'muestra')) }}
+      TOLERANCIA_ENTRADA: ${{ (inputs.tolerancia || (contains(github.ref_name, 'rechazo') && '-0.10' || '')) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -163,14 +170,14 @@ jobs:
       # El Excel de UCI no está en el repositorio. Se guarda en la caché de Actions para no bajarlo (~45 MB) en cada ejecución.
       # La clave lleva el principio del sha256 del zip que espera config.SHA256_ZIP_UCI (una prueba comprueba que coinciden).
       - name: Datos completos · restaurar de la caché
-        if: inputs.fuente == 'completo'
+        if: (inputs.fuente || (contains(github.ref_name, 'completo') && 'completo' || 'muestra')) == 'completo'
         uses: actions/cache@v4
         with:
           path: 04-Proyecto-Base/data/raw/online_retail_ii
           key: uci-online-retail-ii-572e36277c23
 
       - name: Datos completos · descargar de UCI si no estaban en la caché (verifica el sha256)
-        if: inputs.fuente == 'completo'
+        if: (inputs.fuente || (contains(github.ref_name, 'completo') && 'completo' || 'muestra')) == 'completo'
         run: python -m ia_mlops.dataset descargar
 
       - name: Entrenar (pipeline completo con la fuente pedida)
@@ -477,7 +484,7 @@ jobs:
       ETIQUETA: ${{ needs.entrenar.outputs.etiqueta }}
       VERSION_NUEVA: ${{ needs.entrenar.outputs.version_nueva }}
       VERSION_REFERENCIA: ${{ needs.entrenar.outputs.version_referencia }}
-      FUENTE: ${{ inputs.fuente }}
+      FUENTE: ${{ (inputs.fuente || (contains(github.ref_name, 'completo') && 'completo' || 'muestra')) }}
       BASE: ${{ github.ref_name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
