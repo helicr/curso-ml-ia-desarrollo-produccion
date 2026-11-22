@@ -25,7 +25,7 @@ def test_las_variables_del_corte_salen_del_mismo_sql_de_fs_y_no_tocan_la_capa(co
 
 
 def test_la_campana_ordena_reparte_en_deciles_y_guarda_la_trazabilidad(con, carpeta_modelo, salidas_tmp):
-    tabla, r = ex.campana(con, carpeta_modelo=carpeta_modelo, capacidad=0.10)
+    tabla, r = ex.campana(con, carpeta_modelo=carpeta_modelo, capacidad=0.10, guardar_fs=False)
     n = len(tabla)
     assert n == r['clientes_puntuados'] > 0
     assert tabla['probabilidad'].is_monotonic_decreasing and tabla['puesto'].tolist() == list(range(1, n + 1))
@@ -40,8 +40,8 @@ def test_la_campana_ordena_reparte_en_deciles_y_guarda_la_trazabilidad(con, carp
 
 def test_por_la_api_da_exactamente_lo_mismo_que_en_local(con, carpeta_modelo, arrancar_servidor, salidas_tmp):
     puerto, _ = arrancar_servidor(carpeta_modelo)
-    local, _ = ex.campana(con, carpeta_modelo=carpeta_modelo, guardar=False)
-    api, r = ex.campana(con, url=f'http://127.0.0.1:{puerto}', guardar=False)
+    local, _ = ex.campana(con, carpeta_modelo=carpeta_modelo, guardar=False, guardar_fs=False)
+    api, r = ex.campana(con, url=f'http://127.0.0.1:{puerto}', guardar=False, guardar_fs=False)
     assert r['origen'].startswith('http://127.0.0.1')
     pd.testing.assert_series_equal(local['cliente_id'], api['cliente_id'])
     assert (local['probabilidad'] - api['probabilidad']).abs().max() < 1e-12

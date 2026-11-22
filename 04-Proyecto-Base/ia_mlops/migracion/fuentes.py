@@ -27,6 +27,11 @@ from . import tipos
 
 PREFIJOS_POR_DEFECTO = ('master_', 'fs_', 'ml_')
 
+# Tablas que EMPIEZAN por un prefijo de capa pero NO son la capa analítica a migrar: son ESTADO DE PRODUCCIÓN (lo que va
+# dejando la explotación al puntuar, o la demo), no resultado del pipeline. Se excluyen de la selección por prefijos;
+# si alguien las pide por nombre (--tablas), se migran igual.
+TABLAS_EXCLUIDAS = frozenset({'fs_produccion', 'demo_compras'})
+
 
 class MigracionError(Exception):
     """Un problema que se explica al usuario (no un fallo del programa): tabla inexistente, tipo imposible, carpeta vacia..."""
@@ -45,7 +50,7 @@ def seleccionar(tablas_disponibles, prefijos=PREFIJOS_POR_DEFECTO, tablas=None):
         if faltan:
             raise MigracionError(f'No existen en el origen las tablas: {", ".join(faltan)}')
         return sorted(tablas)
-    return sorted(t for t in tablas_disponibles if t.startswith(tuple(prefijos)))
+    return sorted(t for t in tablas_disponibles if t.startswith(tuple(prefijos)) and t not in TABLAS_EXCLUIDAS)
 
 
 def _q(identificador):

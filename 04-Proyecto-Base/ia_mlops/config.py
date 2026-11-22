@@ -76,4 +76,16 @@ SEGMENTOS_RECOMPRA = [
     {'segmento': 'baja', 'desde': 0.0,
      'recomendacion': 'Poco probable que compre en 90 días: contacto de recuperación de bajo coste o no invertir.'},
 ]
+
+# Puesta en producción (ia_mlops/produccion.py): «la versión en producción» vive en el repositorio, en models/referencia.json
+# (la ruta se puede cambiar con CURSO_REFERENCIA, útil en pruebas). Al entrenar una versión nueva se compara con ella:
+#   - METRICA_COMPARACION: la métrica principal, medida en TEST (los mismos cortes de CORTES['test'] en las dos versiones).
+#     Es el AUC, la misma que usa train.py para elegir el modelo (con valid).
+#   - TOLERANCIA_COMPARACION: cuánto puede EMPEORAR el AUC de test (diferencia absoluta) sin rechazar la versión nueva.
+#     0,02 es PROVISIONAL, como en el taller: no sale de una medición; con tan pocos clientes de test (250 filas) el AUC oscila
+#     más que eso por puro azar del corte. Es una regla de negocio y de riesgo: se acuerda y se cambia aquí.
+REFERENCIA = Path(os.environ.get('CURSO_REFERENCIA', RAIZ / 'models' / 'referencia.json'))
+METRICA_COMPARACION = 'auc'
+TOLERANCIA_COMPARACION = 0.02
+
 URL_API = os.environ.get('CURSO_URL_API')   # la interfaz llama a la API del modelo aquí; sin valor, usa el modelo de models/ directamente

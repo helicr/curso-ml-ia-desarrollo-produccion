@@ -31,7 +31,7 @@ def test_el_estado_da_el_corte_el_modelo_y_ejemplos_de_todos_los_tramos(cliente,
 
 
 def test_la_probabilidad_es_la_de_la_explotacion_y_la_recomendacion_sigue_la_regla(cliente, con, carpeta_modelo):
-    tabla, _ = ex.campana(con, carpeta_modelo=carpeta_modelo, guardar=False)
+    tabla, _ = ex.campana(con, carpeta_modelo=carpeta_modelo, guardar=False, guardar_fs=False)
     ids = tabla['cliente_id'].iloc[[0, 5, 40, -1]].tolist()
     r = cliente.post('/recomendar', json={'cliente_ids': ids}).json()
     assert r['encontrados'] == r['pedidos'] == 4 and r['clientes_en_el_corte'] == len(tabla)

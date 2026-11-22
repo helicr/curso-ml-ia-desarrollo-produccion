@@ -17,18 +17,21 @@ Uso (desde 04-Proyecto-Base, después de ejecutar el pipeline):
     python -m ia_mlops.explotacion --url http://127.0.0.1:8080     # a través de la API o del contenedor
     python -m ia_mlops.explotacion                                 # con el modelo local, sin API
     python -m ia_mlops.explotacion --capacidad 0.2 --top 15
+    python -m ia_mlops.explotacion --sin-guardar-fs                # sin escribir fs_produccion (por defecto SÍ se escribe)
     python -m ia_mlops.explotacion --comparar-con reports/campana/campana_2011-12-10.csv   # ¿cuántos clientes repiten?
 """
 import argparse
 import json
 import math
+import sqlite3
 import urllib.request
 from datetime import datetime
 
 import pandas as pd
 
-from . import config, db
+from . import config, db, fs_produccion, produccion
 from .api.servicio import Servicio
+from .fs_produccion import leer_fs_produccion  # noqa: F401  (se re-exporta: explotacion.leer_fs_produccion(con, ids, corte))
 
 LOTE_MAXIMO = 1000            # el contrato de /predecir/lote (esquemas.LoteClientes) admite hasta 1000 clientes
 
@@ -104,20 +107,41 @@ def puntuar_local(filas, carpeta=None):
             {'modelo': meta['modelo'], 'huella_datos': meta['huella_datos'], 'entrenado_en': meta['entrenado_en']})
 
 
-def campana(con=None, corte=None, url=None, capacidad=0.10, carpeta_modelo=None, guardar=True):
-    """Puntúa a todos los clientes en `corte` y devuelve (tabla ordenada, resumen). Con guardar=True, escribe CSV y JSON."""
+def _referencia():
+    """Qué dice models/referencia.json (la versión en producción), para dejarlo en el resumen; None si no existe."""
+    try:
+        r = produccion.leer_referencia()
+    except produccion.ErrorReferencia:
+        return None
+    return {'version': r['version'], 'etiqueta_imagen': r['etiqueta_imagen'], 'huella_datos': r['huella_datos']}
+
+
+def campana(con=None, corte=None, url=None, capacidad=0.10, carpeta_modelo=None, guardar=True, guardar_fs=True):
+    """Puntúa a todos los clientes en `corte` y devuelve (tabla ordenada, resumen). Con guardar=True, escribe CSV y JSON.
+
+    Con guardar_fs=True (por defecto), guarda además las 13 variables de ese corte en la tabla fs_produccion de la base
+    (reemplazando las filas del mismo corte), para poder leerlas después sin recalcular (ver ia_mlops/fs_produccion.py).
+    """
     cierre = con is None
     con = con or db.conectar()
     try:
         corte = corte or corte_por_defecto(con)
         df = variables_en_corte(con, corte)
+        if df.empty:
+            raise RuntimeError(f'Ningún cliente tiene compras antes de {corte}.')
+        filas = _filas(df)
+        probs, avisos, info = puntuar_api(filas, url) if url else puntuar_local(filas, carpeta_modelo)
+        fs = None
+        if guardar_fs:                  # solo si la puntuación salió bien: no se guarda un corte a medias
+            try:
+                n_fs = fs_produccion.guardar_corte(con, df, corte)
+                version, huella = fs_produccion.version_del_modelo()
+                fs = {'tabla': fs_produccion.TABLA, 'filas': n_fs, 'version_modelo': version, 'huella_modelo': huella}
+            except sqlite3.OperationalError as e:      # p. ej. base abierta en solo lectura
+                fs = {'tabla': fs_produccion.TABLA, 'filas': 0, 'error': f'no se pudo guardar: {e}'}
     finally:
         if cierre:
             con.close()
-    if df.empty:
-        raise RuntimeError(f'Ningún cliente tiene compras antes de {corte}.')
-    filas = _filas(df)
-    probs, avisos, info = puntuar_api(filas, url) if url else puntuar_local(filas, carpeta_modelo)
 
     tabla = pd.DataFrame({'cliente_id': df['cliente_id'].astype(int), 'probabilidad': probs,
                           'n_advertencias': [len(a) for a in avisos], 'advertencias': [' | '.join(a) for a in avisos]})
@@ -136,6 +160,8 @@ def campana(con=None, corte=None, url=None, capacidad=0.10, carpeta_modelo=None,
         'probabilidad_media_campana': round(float(tabla.loc[:n_campana - 1, 'probabilidad'].mean()), 4),
         'clientes_con_advertencias': int((tabla['n_advertencias'] > 0).sum()),
         'probabilidad_media_por_decil': {int(k): v for k, v in por_decil.items()},
+        'referencia': _referencia(),
+        'fs_produccion': fs,
     }
     if guardar:
         carpeta = config.REPORTES / 'campana'
@@ -162,9 +188,11 @@ def main(argv=None):
     ap.add_argument('--capacidad', type=float, default=0.10, help='Fracción de clientes a los que llega la campaña (0.10 = el 10 %%)')
     ap.add_argument('--top', type=int, default=10, help='Cuántos clientes mostrar en pantalla')
     ap.add_argument('--comparar-con', help='CSV de otra campaña para ver cuántos clientes repiten')
+    ap.add_argument('--sin-guardar-fs', action='store_true',
+                    help='no guardar las variables del corte en la tabla fs_produccion (por defecto se guardan)')
     a = ap.parse_args(argv)
 
-    tabla, r = campana(corte=a.corte, url=a.url, capacidad=a.capacidad)
+    tabla, r = campana(corte=a.corte, url=a.url, capacidad=a.capacidad, guardar_fs=not a.sin_guardar_fs)
     print(f'Corte de explotación: {r["corte"]} · modelo {r["modelo"]} (huella {r["huella_datos"]}, entrenado {r["entrenado_en"]})')
     print(f'Origen de las predicciones: {r["origen"]}')
     print(f'Clientes puntuados: {r["clientes_puntuados"]} · probabilidad media {r["probabilidad_media"]:.3f}')
@@ -179,6 +207,18 @@ def main(argv=None):
         c = comparar_campanas(tabla, a.comparar_con)
         print(f'\nFrente a {a.comparar_con}: {c["en_ambas"]} clientes en ambas campañas, '
               f'{c["solo_ahora"]} nuevos, {c["solo_antes"]} que salen.')
+    if r['referencia']:
+        print(f'Versión en producción (models/referencia.json): v{r["referencia"]["version"]} · {r["referencia"]["etiqueta_imagen"]}')
+    else:
+        print('Versión en producción: no hay models/referencia.json')
+    fs = r['fs_produccion']
+    if fs is None:
+        print('FS de producción: no se guardó (--sin-guardar-fs)')
+    elif fs.get('error'):
+        print(f'FS de producción: {fs["error"]}')
+    else:
+        print(f'FS de producción: {fs["filas"]} filas del corte {r["corte"]} en la tabla {fs["tabla"]} '
+              f'(versión {fs["version_modelo"]}, huella {fs["huella_modelo"]})')
     print('\nGuardado en: ' + ' y '.join(r.get('archivos', [])))
     return 0
 

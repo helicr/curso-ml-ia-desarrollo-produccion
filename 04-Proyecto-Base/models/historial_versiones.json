@@ -1,0 +1,15 @@
+{
+  "versiones": [
+    {
+      "version": 1,
+      "etiqueta_imagen": "retencion-api:v1-35a94deb4e04ab4a",
+      "huella_datos": "35a94deb4e04ab4a",
+      "modelo": "regresion_logistica",
+      "fuente_datos": "muestra",
+      "auc_test": 0.747092830088378,
+      "entrenado_en": "2026-11-13T17:04:12",
+      "aprobado_en": "2026-11-22T13:26:32",
+      "estado": "produccion"
+    }
+  ]
+}

@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Un LLM y el estilo de color · Extra S4 · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--bg:#ffffff;--text:#1d2733;--muted:#5b6673;--line:#d6dde6;--panel:#f6f8fb;--blue:#1f5fa8;--gold:#9a6a00;
+  --ok:#1d7a4f;--bad:#b4323c;--code:#0f1b2a;--codetx:#e6eef8;
+  --mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,Menlo,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+a{color:var(--blue)}
+.mono,code,pre{font-family:var(--mono);font-variant-ligatures:none;font-feature-settings:"calt" 0,"liga" 0}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#viewport{position:fixed;left:0;right:0;top:0;bottom:46px;overflow:hidden;background:var(--bg)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center}
+.slide{position:absolute;inset:0;padding:34px 60px 46px;display:none;background:var(--bg);overflow:hidden}
+.slide.active{display:block}
+.slide::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--blue)}
+.kick{font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:4px}
+h1{font-size:31px;line-height:1.15;margin-bottom:12px;font-weight:750}
+h1 .mono{font-size:27px}
+h3{font-size:18px;margin-bottom:5px;color:var(--text)}
+p{font-size:17.5px;line-height:1.42}
+.sub{font-size:20px;line-height:1.4;color:var(--muted)}
+.small{font-size:16px;line-height:1.38}
+.foot{position:absolute;left:60px;right:60px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.foot b{color:var(--blue)}
+.split{display:grid;gap:16px}
+.col{display:flex;flex-direction:column;gap:9px;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.card p{font-size:16.5px}
+.callout{border-left:4px solid var(--blue);background:#eef4fb;padding:8px 12px;border-radius:8px;font-size:17px;line-height:1.4}
+.mira{border-color:#9fd1b7;background:#f1faf5}.mira h3{color:var(--ok)}
+.falla{border-color:#ebb7bb;background:#fdf3f4}.falla h3{color:var(--bad)}
+.list{list-style:none}.list li{position:relative;padding-left:15px;font-size:16.5px;line-height:1.38;margin:3px 0}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.mira .list li::before{background:var(--ok)}.falla .list li::before{background:var(--bad)}
+.tbl{border-collapse:collapse;width:100%;font-size:15px}
+.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid var(--line);padding:4px 7px}
+.tbl td{border-bottom:1px solid var(--line);padding:4px 7px;vertical-align:top;line-height:1.3}
+.tbl .mono{font-size:13.5px}
+.tag{display:inline-block;align-self:flex-start;padding:2px 12px;border-radius:999px;font-size:14.5px;font-weight:700;border:1.5px solid}
+.tag.vivo{color:var(--ok);border-color:var(--ok);background:#f1faf5}
+.tag.leer{color:var(--gold);border-color:var(--gold);background:#fff8e6}
+.term{background:var(--code);border-radius:10px;overflow:hidden;border:1px solid #23344a}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#1a2a3e;color:#b8c7d9;font-size:13px}
+.term .bar em{flex:1;font-style:normal}
+.tls{padding:5px 8px 7px;font-family:var(--mono);font-size:14px;line-height:1.4}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--codetx)}
+.tln.c{color:#8fa3b8;font-style:italic}
+.ps{color:#7fd4a8}
+pre.code{margin:0;padding:8px 12px 10px;font-family:var(--mono);font-size:11.6px;line-height:1.36;color:var(--codetx);white-space:pre-wrap;overflow-wrap:anywhere}
+pre.code.light{color:var(--text);padding:2px 2px;font-size:12px;line-height:1.35;white-space:pre;overflow:hidden}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #55708f;font-size:13px;color:#d8e4f2;background:#22364e}
+.cp.ok{border-color:#7fd4a8;color:#7fd4a8}
+.cpall{padding:0 10px;font-family:var(--sans);font-size:12px}
+.realbox{border:1px solid #9fd1b7;border-radius:10px;padding:6px 10px;background:#fbfdfc}
+.realbox .rk{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:13.5px;line-height:1.36;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
+.realbox.pq pre{font-size:12.6px}
+.capcol{gap:8px}
+.cap{margin:0;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cap figcaption{font-size:13px;color:var(--muted)}
+.capa{display:block;cursor:zoom-in;padding:0;text-align:left}
+.capa img{display:block;max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+.falta{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;min-height:120px;border:2px dashed #b9c3cf;border-radius:8px;background:#f8fafc;color:var(--muted);text-align:center;padding:10px}
+.falta b{color:var(--text);font-size:16px}.falta small{font-size:12.5px}
+.bars{display:flex;flex-direction:column;gap:7px}
+.brow{display:grid;grid-template-columns:270px 1fr 150px;gap:10px;align-items:center;font-size:15.5px}
+.bt{height:20px;background:#eef1f5;border-radius:5px;overflow:hidden;display:block}
+.b{display:block;height:100%}
+.b.mal,.dot.mal{background:var(--bad)}.b.bien,.dot.bien{background:var(--blue)}.b.ref,.dot.ref{background:#7b8794}
+.dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:3px;vertical-align:-1px}
+.bv{font-size:15.5px}
+details summary{cursor:pointer;color:var(--blue);font-size:14.5px;margin-top:4px}
+details p{margin-top:6px}
+#bar{position:fixed;left:0;right:0;bottom:0;height:46px;display:flex;align-items:center;gap:6px;padding:0 10px;background:#f3f5f8;border-top:1px solid var(--line);font-size:13.5px}
+#bar button,#bar a{padding:5px 10px;border-radius:7px;border:1px solid var(--line);background:#fff;text-decoration:none;color:var(--text)}
+#bar .part.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+#bar .sp{flex:1}
+#count,#clockref{color:var(--muted);padding:0 6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--blue);z-index:5}
+#notes{position:fixed;right:12px;bottom:56px;width:min(460px,92vw);max-height:60vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.15);display:none;z-index:10}
+#notes.on{display:block}#notes p{font-size:15px}
+#index{position:fixed;inset:0 0 46px 0;background:rgba(255,255,255,.98);display:none;overflow:auto;padding:24px 30px;z-index:9}
+#index.on{display:block}
+#idxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin-top:12px}
+#idxgrid button{text-align:left;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;font-size:14px}
+#idxgrid button small{display:block;color:var(--muted);font-size:12px}
+#idxgrid button.cur{border-color:var(--blue);background:#eef4fb}
+#zoom{position:fixed;inset:0;background:rgba(10,16,24,.88);display:none;align-items:center;justify-content:center;z-index:20;cursor:zoom-out;padding:20px}
+#zoom.on{display:flex}
+#zoom img{max-width:100%;max-height:100%;border-radius:6px;background:#fff}
+#zoom p{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#e6eef8;font-size:14px}
+@media print{#bar,#prog,#notes,#index,#zoom,.cp{display:none!important}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="1" data-title="Portada"
+ data-notes="Bienvenida. Este extra es opcional y no puntúa: sirve para ver un experimento de ML completo, incluido el fracaso honesto de un modelo grande frente a uno simple. Los notebooks se entregan con sus salidas, así que quien no pueda ejecutar nada puede seguirlo igual leyéndolos. Avise de que la parte B se puede hacer en vivo salvo los notebooks 03 y 05, que tardan unos veinte minutos cada uno.">
+<p class="kick">S4 · Extra · Un LLM y el estilo de color</p><h1>Antes de afinar un LLM, <b>mide una línea base barata</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <p class="sub">En 60 minutos sigues, paso a paso, un experimento completo: un LLM de visión pequeño intenta leer el estilo de color de una foto, una regresión que entrena en segundos le gana, y después el mismo LLM sí funciona explicando con palabras. Al final lo orquestas en GitHub Actions.</p>
+  <div class="card"><h3>Cómo seguirla</h3><ul class="list"><li>Cada orden lleva <b>⧉</b>: cópiala y pégala en tu terminal. <b>Copiar todo</b> copia el bloque entero.</li><li>Las salidas y las capturas son <b>reales</b>: salen de los notebooks ya ejecutados. Clic en una captura para ampliarla; <b>Esc</b> la cierra.</li><li>El extra es opcional: no entra en la tarea ni en la rúbrica.</li><li>Teclas: <b>← →</b> avanzar · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa.</li></ul></div>
+ </div>
+ <div class="card"><h3>El plan de la hora</h3><table class="tbl"><tr><th>Parte</th><th>Min</th><th>Qué haces</th></tr><tr><td><b>A · La idea</b></td><td>5</td><td>Los tres actos, glosario y qué se instala</td></tr><tr><td><b>B · Paso a paso</b></td><td>25</td><td>Los notebooks 00 a 05, uno por diapositiva</td></tr><tr><td><b>C · Resultados</b></td><td>20</td><td>Tabla, panel, frases y MLflow</td></tr><tr><td><b>D · Actions</b></td><td>10</td><td>El mismo experimento, orquestado en GitHub</td></tr></table></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Los tres actos"
+ data-notes="Cuente la historia de los tres actos sin entrar en el código. En el acto 1 el LLM parece un éxito (JSON perfecto, pérdida que baja) y no lo es: su error es peor que contestar siempre la media. En el acto 2 una regresión barata gana. En el acto 3 el LLM sí funciona porque la tarea es de lenguaje. Cierre con la frase del mensaje: antes de afinar un LLM, mide una línea base barata.">
+<p class="kick">A · La idea</p><h1>Tres actos, <b>un mensaje</b></h1>
+
+<div class="grid3">
+ <div class="card"><h3>Acto 1 · El LLM intenta leer el estilo</h3><p class="small">¿Puede SmolVLM-256M escribir los 5 ajustes como JSON? (notebooks 02 y 03)</p><ul class="list"><li>Sin entrenar (A): <b>55 %</b> de JSON válido.</li><li>Con LoRA (B): <b>100 %</b> de JSON válido, pero su error (<b>0,310</b>) es peor que contestar siempre la media (<b>0,259</b>).</li><li>Aprende el <b>formato</b>, no la tarea.</li></ul></div>
+ <div class="card"><h3>Acto 2 · Una línea base barata</h3><p class="small">¿Y si no usamos un LLM? (notebook 04)</p><ul class="list"><li>Una regresión (Ridge) sobre <b>27 estadísticas de color</b> entrena en segundos.</li><li>Error <b>0,151</b>: es la mejor de todas.</li><li>Se registra en MLflow como <span class="mono">produccion</span>.</li></ul></div>
+ <div class="card"><h3>Acto 3 · El LLM explica en español</h3><p class="small">¿Y si le damos una tarea de lenguaje? (notebook 05)</p><ul class="list"><li>Con LoRA, <b>100 %</b> de sentido correcto frente a 40,7 % sin entrenar.</li><li>Pero fluido no es correcto: <b>18,3 %</b> de frases con algún ajuste inventado.</li></ul></div>
+</div>
+<div class="callout" style="margin-top:14px"><b>El mensaje.</b> Usa cada herramienta para lo que sirve. Para <b>medir</b> un color, unas estadísticas y una regresión son más baratas y más exactas; el LLM brilla redactando. Y siempre: <b>mide primero la línea base</b> («contestar la media»); si tu modelo no la mejora, no ha aprendido nada de la foto.</div>
+<p class="small" style="margin-top:10px;color:var(--muted)">Los datos se <b>fabrican</b>: a una foto se le aplican cinco ajustes de color conocidos (exposición, temperatura, tinte, contraste, saturación) y así la etiqueta sale exacta y gratis. Cifras de la configuración de clase: 300 fotos, 60 de test.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="1" data-title="Glosario mínimo"
+ data-notes="No lea el glosario entero: señale solo los términos que el alumno va a necesitar enseguida, que son LoRA, el MAE normalizado y papermill. Cada notebook vuelve a explicar lo suyo, así que nadie debe quedarse atrás por una palabra. El artefacto de GitHub Actions se explica en la parte D.">
+<p class="kick">A · Glosario</p><h1>Diez palabras para seguir el extra</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="card"><table class="tbl"><tr><th>Término</th><th>Qué significa aquí</th></tr><tr><td><b>LLM / VLM</b></td><td>Modelo de lenguaje grande: escribe texto palabra a palabra. El VLM (de visión) también mira una imagen. SmolVLM-256M: 256 millones de parámetros.</td></tr><tr><td><b>Zero-shot / one-shot</b></td><td>Preguntar sin enseñar ningún ejemplo, o dando uno solo en la pregunta. No se entrena nada.</td></tr><tr><td><b>Fine-tuning y LoRA</b></td><td>Afinar = seguir entrenando con tus datos. LoRA lo hace barato: congela el modelo y entrena matrices pequeñas añadidas.</td></tr><tr><td><b>Adaptador</b></td><td>El archivo con esas matrices (7 MB), aparte del modelo base (494 MB).</td></tr><tr><td><b>JSON</b></td><td>Texto con pares «nombre: valor», p. ej. <span class="mono">{&quot;exposicion&quot;: 0.3}</span>.</td></tr></table></div>
+ <div class="card"><table class="tbl"><tr><th>Término</th><th>Qué significa aquí</th></tr><tr><td><b>MAE normalizado</b></td><td>Error medio entre ajuste predicho y real, dividido por el ancho de su rango. 0 es perfecto.</td></tr><tr><td><b>Ridge</b></td><td>Regresión lineal con penalización contra coeficientes exagerados; entrena en segundos.</td></tr><tr><td><b>ΔE, SSIM</b></td><td>ΔE: diferencia de color con el resultado ideal (menor es mejor). SSIM: estructura conservada (1 = idéntica).</td></tr><tr><td><b>Alucinación</b></td><td>Que el modelo afirme algo que no está en la entrada: aquí, mencionar un ajuste que no se tocó.</td></tr><tr><td><b>papermill</b></td><td>Ejecuta un notebook desde la terminal cambiándole parámetros y guarda una copia ya ejecutada.</td></tr></table></div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="1" data-title="Qué se instala"
+ data-notes="Es la diapositiva de las preguntas prácticas: cuánto se baja y si cabe en el portátil. Las cifras salen del notebook 00 y del estudio técnico. Recuerde que los 8 GB de RAM son un mínimo previsto que no se ha verificado en un equipo de ese tamaño; quien no llegue puede seguir el extra leyendo los notebooks ya ejecutados.">
+<p class="kick">A · Antes de empezar</p><h1>Qué se instala y <b>cuánto ocupa</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <div class="card"><h3>Se instala en un entorno aparte</h3><table class="tbl"><tr><th>Paquete</th><th>Para qué</th></tr><tr><td><span class="mono">torch</span>, <span class="mono">torchvision</span> (CPU)</td><td>Las redes; el LLM de visión funciona sobre <span class="mono">torch</span></td></tr><tr><td><span class="mono">transformers</span>, <span class="mono">peft</span></td><td>Cargar SmolVLM; LoRA (notebook 03)</td></tr><tr><td><span class="mono">scikit-learn</span>, <span class="mono">scikit-image</span></td><td>Ridge, color Lab, ΔE y SSIM</td></tr><tr><td><span class="mono">mlflow</span> 3.18</td><td>Registrar y comparar experimentos</td></tr><tr><td><span class="mono">papermill</span>, <span class="mono">jupyter</span></td><td>Ejecutar los notebooks desde la terminal o en el navegador</td></tr></table>
+  <p class="small" style="margin-top:6px">Todas las versiones están fijadas en <span class="mono">requisitos-extra-estilo.txt</span>. Instalación medida: <b>102 s</b> para transformers, peft, accelerate, scikit-image, nbconvert, ipykernel y psutil sobre un entorno que ya tenía <span class="mono">torch</span> (la de <span class="mono">torch</span> no está medida).</p></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Descargas (van fuera del repositorio)</h3><table class="tbl"><tr><th>Qué</th><th>Tamaño</th><th>Cuándo</th></tr><tr><td>SmolVLM-256M-Instruct</td><td>493,9 MB</td><td>notebook 00</td></tr><tr><td>MobileNetV3-small</td><td>9,8 MB</td><td>notebook 00</td></tr><tr><td>Fotos Oxford-IIIT Pet</td><td>791,9 MB</td><td>notebook 01</td></tr><tr><td><b>Suma</b></td><td><b>≈ 1,3 GB</b></td><td></td></tr></table></div>
+  <div class="card"><h3>Memoria y disco</h3><ul class="list"><li>Memoria pico medida: <b>1541 MB</b> en el 02, <b>2747 MB</b> en el 03 y <b>2887 MB</b> en el 05.</li><li>CPU, sin GPU. Se recomiendan <b>8 GB de RAM</b> (mínimo previsto, sin verificar) y ~<b>2 GB</b> de disco libre.</li><li>El adaptador LoRA pesa <b>7,06 MB</b>.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Preparar el entorno"
+ data-notes="Estas son las mismas variables que fija el workflow en su bloque env: ESTILO_TRABAJO y HF_HOME. Lo importante es que la carpeta de trabajo queda fuera del repositorio, para no ensuciarlo con cientos de megas. Si el alumno no define HF_HOME, el código usa una subcarpeta hf de la carpeta de trabajo. Avise del aviso de git status con las figuras de img/, que el 01 y el 05 reescriben al ejecutarse.">
+<p class="kick">B · Paso 0 · terminal</p><h1>Entorno, <b>carpeta de trabajo</b> y parámetros</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr">
+ <div class="col">
+  <div class="term"><div class="bar"><em>Terminal · Codespace, macOS, Linux, WSL o Git Bash</em><button class="cp cpall" data-t="cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm
+python3.11 -m venv ~/venv-estilo
+source ~/venv-estilo/bin/activate
+pip install -r requisitos-extra-estilo.txt
+export ESTILO_TRABAJO=&quot;$HOME/trabajo-estilo&quot; HF_HOME=&quot;$HOME/hf-estilo&quot;
+export MODELO=&quot;HuggingFaceTB/SmolVLM-256M-Instruct&quot; RESOLUCION=224 N_EJEMPLOS=300 EPOCAS=3
+mkdir -p &quot;$ESTILO_TRABAJO/salidas&quot;">⧉ Copiar todo</button></div><div class="tls"><div class="tln c"># desde la raíz del repositorio</div><div class="tln"><span class="ps">$</span><code>cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm</code><button class="cp" data-t="cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>python3.11 -m venv ~/venv-estilo</code><button class="cp" data-t="python3.11 -m venv ~/venv-estilo" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>source ~/venv-estilo/bin/activate</code><button class="cp" data-t="source ~/venv-estilo/bin/activate" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>pip install -r requisitos-extra-estilo.txt</code><button class="cp" data-t="pip install -r requisitos-extra-estilo.txt" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>export ESTILO_TRABAJO=&quot;$HOME/trabajo-estilo&quot; HF_HOME=&quot;$HOME/hf-estilo&quot;</code><button class="cp" data-t="export ESTILO_TRABAJO=&quot;$HOME/trabajo-estilo&quot; HF_HOME=&quot;$HOME/hf-estilo&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>export MODELO=&quot;HuggingFaceTB/SmolVLM-256M-Instruct&quot; RESOLUCION=224 N_EJEMPLOS=300 EPOCAS=3</code><button class="cp" data-t="export MODELO=&quot;HuggingFaceTB/SmolVLM-256M-Instruct&quot; RESOLUCION=224 N_EJEMPLOS=300 EPOCAS=3" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>mkdir -p &quot;$ESTILO_TRABAJO/salidas&quot;</code><button class="cp" data-t="mkdir -p &quot;$ESTILO_TRABAJO/salidas&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">python3.11</span> no existe: <span class="mono">python --version</span> debe decir <b>3.11</b> (las versiones fijadas son las de Python 3.11).</li><li>En PowerShell las variables se definen con <span class="mono">$env:NOMBRE = &quot;valor&quot;</span>; estas órdenes son de bash.</li></ul></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Qué fija cada variable</h3><table class="tbl"><tr><th>Variable</th><th>Para qué</th></tr><tr><td><span class="mono">ESTILO_TRABAJO</span></td><td>Carpeta de trabajo: fotos, parejas, resultados y <span class="mono">mlflow.db</span>. <b>Fuera del repositorio.</b></td></tr><tr><td><span class="mono">HF_HOME</span></td><td>Caché del modelo. Si no la defines, el código usa <span class="mono">&lt;trabajo&gt;/hf</span>.</td></tr><tr><td><span class="mono">MODELO</span>, <span class="mono">RESOLUCION</span>, <span class="mono">N_EJEMPLOS</span>, <span class="mono">EPOCAS</span></td><td>Valores de clase (300 fotos, 3 épocas) para <span class="mono">papermill -p</span>, como el bloque <span class="mono">env:</span> del workflow.</td></tr></table></div>
+  <div class="card falla"><h3>Ojo con el repositorio</h3><ul class="list"><li>El 01 y el 05 <b>reescriben figuras de <span class="mono">img/</span></b>: <span class="mono">git status</span> las verá modificadas. No las subas: <span class="mono">git restore img/</span>.</li><li>El 01 guarda las fotos ya extraídas: si bajas <span class="mono">N_EJEMPLOS</span> en otra ejecución, usa otra <span class="mono">ESTILO_TRABAJO</span>.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Dos formas de ejecutar"
+ data-notes="Explique las dos formas. Jupyter es para mirar y tocar; papermill es lo que hace el workflow: ejecuta el notebook entero desde la terminal, pisa los parámetros con -p y guarda la copia ejecutada. La tabla de dependencias evita el error más común, que es ejecutar el 04 sin haber hecho el 03. En clase se hacen en vivo el 00, el 01 y como mucho el 02; el 03 y el 05 se leen ya ejecutados porque tardan unos veinte minutos cada uno.">
+<p class="kick">B · Paso 0 · cómo ejecutar</p><h1>Jupyter, en vivo; <b>papermill</b>, como el workflow</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="card"><h3>Con Jupyter (celda a celda)</h3><ul class="list"><li>Lanza Jupyter <b>desde el mismo terminal</b>, con las variables ya definidas, y abre el <span class="mono">.ipynb</span> con el kernel «Python 3».</li><li>Ejecuta las celdas en orden (<b>Mayús + Intro</b>).</li><li>Sin tocar nada usa los valores pequeños de la celda <span class="mono">parameters</span>: <b>60 fotos y 2 épocas</b>. Para otros valores, cámbialos ahí o define <span class="mono">ESTILO_N_EJEMPLOS</span> y <span class="mono">ESTILO_EPOCAS</span> antes de abrir.</li></ul></div>
+  <div class="term"><div class="bar"><em>Terminal</em><button class="cp cpall" data-t="cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm
+jupyter lab">⧉ Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span><code>cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm</code><button class="cp" data-t="cd 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>jupyter lab</code><button class="cp" data-t="jupyter lab" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="card"><h3>Con papermill (lo que hace el workflow)</h3><ul class="list"><li><span class="mono">papermill ENTRADA SALIDA -p NOMBRE valor</span>: pisa los valores de la celda <span class="mono">parameters</span>.</li><li>Deja una copia <b>ya ejecutada</b> en <span class="mono">$ESTILO_TRABAJO/salidas/</span>: si algo falla, ahí ves en qué celda.</li></ul></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Quién necesita a quién (misma carpeta de trabajo)</h3><table class="tbl"><tr><th>Notebook</th><th>Necesita</th><th>Deja</th></tr><tr><td><b>00</b> preparar</td><td>nada</td><td>modelo y red en caché, <span class="mono">entorno.json</span></td></tr><tr><td><b>01</b> datos</td><td>las fotos (se descargan)</td><td><span class="mono">parejas/</span> (train, val, test)</td></tr><tr><td><b>02</b> zero-shot</td><td>el 01</td><td><span class="mono">pred_A</span>, <span class="mono">metricas_A</span></td></tr><tr><td><b>03</b> LoRA</td><td>el 01</td><td>adaptador, <span class="mono">pred_B</span>, <span class="mono">mlflow.db</span></td></tr><tr><td><b>04</b> comparar</td><td>el 01, el 02 y el 03</td><td>tabla, panel, alias en MLflow</td></tr><tr><td><b>05</b> explicar</td><td>el 01</td><td>adaptador de la explicación, frases</td></tr></table></div>
+  <div class="callout">Orden recomendado: <b>00 → 01 → 02 → 03 → 04 → 05</b>. El 05 solo necesita el 01: en el workflow corre a la vez que el 02, el 03 y el 04 (C y D).</div>
+  <div class="card"><h3>Qué hacer en vivo y qué leer</h3><ul class="list"><li><b>En vivo:</b> 00 (13 s), 01 (≈ 15 s), 02 (≈ 5 min).</li><li><b>Ya ejecutado:</b> 03 (24 min) y 05 (23 min); el 04 (≈ 40 s) necesita el 03.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Notebook 00"
+ data-notes="El 00 es la prueba de humo: si algo del entorno está mal, aquí se ve antes de gastar veinte minutos en el 03. La captura enseña las versiones instaladas; deben coincidir con las de requisitos-extra-estilo.txt. En la salida real la descarga tardó 0,2 s porque el modelo ya estaba en caché; la primera vez en el estudio previo fueron 51,7 s, según la red.">
+<p class="kick">B · Paso 1 · 00_preparar_entorno</p><h1>00 · Comprobar que <b>tu ordenador está listo</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag vivo">En vivo · 13 s (la descarga del modelo, 51,7 s la primera vez)</span>
+  <p class="small">No entrena nada: comprueba versiones y licencia, descarga el modelo (493,9 MB) y la red pequeña (9,8 MB) a la caché y mira RAM y disco.</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 00_preparar_entorno.ipynb &quot;$ESTILO_TRABAJO/salidas/00_preparar_entorno.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;</code><button class="cp" data-t="papermill 00_preparar_entorno.ipynb &quot;$ESTILO_TRABAJO/salidas/00_preparar_entorno.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>HuggingFaceTB/SmolVLM-256M-Instruct: licencia «apache-2.0»; 493.9 MB; 0.2 s
+MobileNetV3-small (ImageNet): 0.2 s
+Todo listo.
+Resumen guardado en &lt;trabajo&gt;/entorno.json</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>Descarga lenta o parada: define <span class="mono">HTTPS_PROXY</span> y <span class="mono">HTTP_PROXY</span> antes de abrir Jupyter.</li><li>«no space left»: cambia <span class="mono">ESTILO_TRABAJO</span> a un disco con más espacio.</li><li><span class="mono">ModuleNotFoundError: estilo</span>: abre el notebook desde dentro de la carpeta del extra.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p00-versiones.webp" data-alt="Notebook 00: versiones instaladas (torch con +cpu, sin errores)" title="Clic para ampliar"><img src="img/p00-versiones.webp" alt="Notebook 00: versiones instaladas (torch con +cpu, sin errores)" style="max-height:300px"></button><figcaption>Notebook 00: versiones instaladas (torch con +cpu, sin errores)</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Python <b>3.11</b>, <span class="mono">torch</span> con <b>+cpu</b> y la lista de versiones sin errores.</li><li>Licencia <span class="mono">apache-2.0</span> y <b>«Todo listo.»</b> al final.</li><li>Con el modelo ya en caché la «descarga» tarda 0,2 s: no baja nada.</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Notebook 01"
+ data-notes="Este notebook explica por qué fabricar datos: la etiqueta es exacta y gratis porque la ponemos nosotros. La comprobación clave es la de las parejas: aplicar el JSON guardado a la original reproduce exactamente la editada. La figura de abajo muestra cuatro fotos con sus ajustes: en las que están cerca del neutro casi no se nota el cambio, y eso ya anticipa que no será fácil para un modelo. Ojo: este notebook reescribe dos figuras de img/.">
+<p class="kick">B · Paso 2 · 01_datos_fabricados</p><h1>01 · <b>Fabricar</b> las fotos con ajustes conocidos</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag vivo">En vivo · 12–15 s con el tar ya descargado</span>
+  <p class="small">Aplica a cada foto cinco ajustes al azar, guarda (original, editada, JSON) y reparte por foto en train 70 %, val 10 % y test 20 %. Comprueba que las etiquetas valen.</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 01_datos_fabricados.ipynb &quot;$ESTILO_TRABAJO/salidas/01_datos_fabricados.ipynb&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p RESOLUCION &quot;$RESOLUCION&quot;</code><button class="cp" data-t="papermill 01_datos_fabricados.ipynb &quot;$ESTILO_TRABAJO/salidas/01_datos_fabricados.ipynb&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p RESOLUCION &quot;$RESOLUCION&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>300 fotos de 224 px; 150 gatos
+{&#x27;train&#x27;: 210, &#x27;val&#x27;: 30, &#x27;test&#x27;: 60}
+Ninguna foto repetida entre partes: True
+300 de 300 parejas se reproducen exactamente aplicando su JSON a la original</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>La descarga de 791,9 MB es lenta: bájala aparte y define <span class="mono">ESTILO_TAR</span> con la ruta del <span class="mono">images.tar.gz</span>.</li><li>Bajas <span class="mono">N_EJEMPLOS</span> y salen solo gatos: borra la carpeta <span class="mono">fotos_&lt;resolución&gt;</span> o usa otra <span class="mono">ESTILO_TRABAJO</span>.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p01-comprobacion.webp" data-alt="Notebook 01: 300 de 300 parejas se reproducen exactamente" title="Clic para ampliar"><img src="img/p01-comprobacion.webp" alt="Notebook 01: 300 de 300 parejas se reproducen exactamente" style="max-height:120px"></button><figcaption>Notebook 01: 300 de 300 parejas se reproducen exactamente</figcaption></figure>
+  <figure class="cap"><button class="capa" data-src="img/01_antes_despues.png" data-alt="Notebook 01: cuatro fotos originales y editadas con su JSON" title="Clic para ampliar"><img src="img/01_antes_despues.png" alt="Notebook 01: cuatro fotos originales y editadas con su JSON" style="max-height:250px"></button><figcaption>Notebook 01: cuatro fotos originales y editadas con su JSON</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>300 de 300</b> parejas se reproducen aplicando su JSON a la original.</li><li>Con los valores por defecto (60 fotos) verás 60 de 60.</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Notebook 02"
+ data-notes="Es el punto de partida. La tabla enseña que en los cinco ajustes el modelo se equivoca más que contestar siempre lo mismo, y la segunda captura explica por qué: no mira la foto, copia los extremos del rango que le dimos en el prompt. Se puede lanzar en vivo y, mientras tarda unos cinco minutos, dedicar ese tiempo a comentar el glosario o la diapositiva siguiente. La celda lenta no muestra nada mientras trabaja.">
+<p class="kick">B · Paso 3 · 02_zero_shot</p><h1>02 · Versión A: preguntar al LLM <b>sin entrenarlo</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag vivo">En vivo con paciencia · 320 s (≈ 5 s por foto de test)</span>
+  <p class="small">Carga SmolVLM-256M, le pide un JSON con los cinco ajustes y mide el % de JSON válido y el error frente a «neutro» y «media». Sin ayuda describe la foto; con el arranque <span class="mono">{"exposicion":</span> escribe un JSON.</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 02_zero_shot.ipynb &quot;$ESTILO_TRABAJO/salidas/02_zero_shot.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot;</code><button class="cp" data-t="papermill 02_zero_shot.ipynb &quot;$ESTILO_TRABAJO/salidas/02_zero_shot.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>Versión A: 60 fotos; 5.61 s por foto de media (mín 3.52, máx 9.97)
+JSON válido (formato correcto): 55%
+ajuste          MAE  MAE norm.   neutro  media train
+MEDIA                    0.433    0.259        0.259
+5 respuestas distintas en 60 fotos
+60 respuestas con exposición 0,7 y temperatura -1 (los extremos del prompt)</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>«Faltan las parejas»: ejecuta antes el 01 sobre la misma <span class="mono">ESTILO_TRABAJO</span>.</li><li>La celda lenta no muestra nada mientras trabaja: es normal (≈ 5 minutos).</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p02-metricas.webp" data-alt="Notebook 02: % de JSON válido y error por ajuste frente a «neutro» y «media»" title="Clic para ampliar"><img src="img/p02-metricas.webp" alt="Notebook 02: % de JSON válido y error por ajuste frente a «neutro» y «media»" style="max-height:200px"></button><figcaption>Notebook 02: % de JSON válido y error por ajuste frente a «neutro» y «media»</figcaption></figure>
+  <figure class="cap"><button class="capa" data-src="img/p02-respuestas.webp" data-alt="Notebook 02: solo 5 respuestas distintas en 60 fotos" title="Clic para ampliar"><img src="img/p02-respuestas.webp" alt="Notebook 02: solo 5 respuestas distintas en 60 fotos" style="max-height:120px"></button><figcaption>Notebook 02: solo 5 respuestas distintas en 60 fotos</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>55 %</b> de JSON válido y error medio <b>0,433</b>, peor que «neutro» y «media» (0,259).</li><li><b>5 respuestas distintas</b> en 60 fotos: copia los extremos del prompt (0,7; −1; 0,2…).</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Notebook 03"
+ data-notes="Este notebook no se entrega ejecutado: lleva la salida del estudio técnico del 20 de noviembre escrita en bloques de texto, y las capturas son de esos bloques. Ejecutarlo entero lleva 24 minutos: unos 9 de preparar los ejemplos (el codificador de imagen, una sola vez por foto) y unos 10 de entrenamiento. Por eso conviene leerlo ya hecho. La lección: una curva de pérdida bonita y un formato perfecto no prueban que el modelo haya aprendido la tarea.">
+<p class="kick">B · Paso 4 · 03_fine_tuning_lora</p><h1>03 · Versión B: afinar con <b>LoRA</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag leer">Mejor leerlo ya ejecutado · 1456 s (24 min)</span>
+  <p class="small">Congela el modelo y entrena solo <b>1 843 200 parámetros (0,71 %)</b>: 210 ejemplos, 3 épocas, curva de pérdida, error en test y registro en MLflow. Es el notebook más lento del extra.</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 03_fine_tuning_lora.ipynb &quot;$ESTILO_TRABAJO/salidas/03_fine_tuning_lora.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;</code><button class="cp" data-t="papermill 03_fine_tuning_lora.ipynb &quot;$ESTILO_TRABAJO/salidas/03_fine_tuning_lora.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida del estudio técnico del 20/11/2026 · el notebook 03 la lleva escrita en su texto</div><pre>trainable params: 1,843,200 || all params: 258,328,128 || trainable%: 0.7135
+Época 0: pérdida de validación 2.758
+Época 3: pérdida de entrenamiento (último lote) 0.484, validación 0.475
+Entrenamiento: 593 s, 159 pasos, 3.73 s por paso de 4 ejemplos
+Adaptador: 7.06 MB  |  pesos del modelo base (safetensors): 493.9 MB</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">OSError</span> al cargar el modelo: ejecuta antes el 00 o revisa la red y el proxy.</li><li><span class="mono">database is locked</span>: otra ventana de MLflow tiene la base abierta; ciérrala.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p03-resultados.webp" data-alt="Notebook 03: resultados en test de B (error 0,310 frente a 0,259)" title="Clic para ampliar"><img src="img/p03-resultados.webp" alt="Notebook 03: resultados en test de B (error 0,310 frente a 0,259)" style="max-height:250px"></button><figcaption>Notebook 03: resultados en test de B (error 0,310 frente a 0,259)</figcaption></figure>
+  <figure class="cap"><button class="capa" data-src="img/03_curva_perdida.png" data-alt="Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)" title="Clic para ampliar"><img src="img/03_curva_perdida.png" alt="Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)" style="max-height:150px"></button><figcaption>Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>La pérdida cae de <b>2,758 a 0,479</b> en la primera época y se queda plana.</li><li>Formato correcto <b>100 %</b>, pero error <b>0,310 &gt; 0,259</b>.</li><li>Adaptador: <b>7,06 MB</b> frente a 493,9 MB del modelo.</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Notebook 04"
+ data-notes="Este es el acto 2. La regresión sobre 27 estadísticas de color tarda unos seis segundos entre entrenar e inferir y gana en todo. Aviso importante: el 04 lee las predicciones del 02 y del 03 y busca en MLflow el run del 03, así que en directo solo se puede lanzar si el 03 se ha ejecutado antes sobre la misma carpeta de trabajo. Si no, se enseña ya ejecutado. Las filas de ΔE se explican en la parte de resultados.">
+<p class="kick">B · Paso 5 · 04_comparar_y_transferir</p><h1>04 · Comparar con una <b>línea base barata</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag vivo">En vivo si ya hay 02 y 03 · ≈ 40 s</span>
+  <p class="small">Añade C (MobileNet + Ridge), C_color (27 estadísticas + Ridge) y D (Reinhard), mide el error y la transferencia de estilo, dibuja el panel y registra los modelos en MLflow.</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 04_comparar_y_transferir.ipynb &quot;$ESTILO_TRABAJO/salidas/04_comparar_y_transferir.ipynb&quot; -p ETAPA completo -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;</code><button class="cp" data-t="papermill 04_comparar_y_transferir.ipynb &quot;$ESTILO_TRABAJO/salidas/04_comparar_y_transferir.ipynb&quot; -p ETAPA completo -p MODELO &quot;$MODELO&quot; -p RESOLUCION &quot;$RESOLUCION&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p EPOCAS &quot;$EPOCAS&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>Versión ganadora (menor ΔE medio con el objetivo): C_color
+Runs creados en esta ejecución: [&#x27;A_zero_shot&#x27;, &#x27;C_mobilenet_ridge&#x27;, &#x27;C_color_ridge&#x27;, &#x27;D_reinhard&#x27;, &#x27;2c_estadisticas_lora&#x27;, &#x27;comparativa&#x27;]
+estilo-color-ridge v1: alias «produccion» (MAE normalizado 0.151)
+estilo-lora-adaptador v1: alias «descartado»</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>No encuentra <span class="mono">B_lora</span>: el 03 no se ha ejecutado sobre esta carpeta de trabajo.</li><li><span class="mono">database is locked</span>: cierra la otra ventana de MLflow.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p04-tabla.webp" data-alt="Notebook 04: tabla comparativa completa" title="Clic para ampliar"><img src="img/p04-tabla.webp" alt="Notebook 04: tabla comparativa completa" style="max-height:215px"></button><figcaption>Notebook 04: tabla comparativa completa</figcaption></figure>
+  <figure class="cap"><button class="capa" data-src="img/p04-mlflow.webp" data-alt="Notebook 04: alias «produccion» y «descartado» en MLflow" title="Clic para ampliar"><img src="img/p04-mlflow.webp" alt="Notebook 04: alias «produccion» y «descartado» en MLflow" style="max-height:40px"></button><figcaption>Notebook 04: alias «produccion» y «descartado» en MLflow</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Gana <b>C_color</b> (menor ΔE medio con el objetivo: <b>7,500</b>).</li><li>Dos alias en MLflow: <span class="mono">produccion</span> para <span class="mono">estilo-color-ridge</span> y <span class="mono">descartado</span> para el adaptador LoRA.</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Notebook 05"
+ data-notes="Este es el acto 3. Aquí el fine-tuning sí funciona porque la tarea es de lenguaje: convertir información estructurada en texto. La entrada es solo un JSON de cinco números, así que no hace falta ninguna foto y los datos salen de unas reglas, que además dan la verdad contra la que medir. Tarda 23 minutos en CPU, por eso se lee ya ejecutado. La pérdida de validación baja de 2,464 a 0,032 en escala logarítmica.">
+<p class="kick">B · Paso 6 · 05_explicar_estilo</p><h1>05 · Acto 3: el LLM <b>explica con palabras</b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <span class="tag leer">Mejor leerlo ya ejecutado · 1397 s (23 min)</span>
+  <p class="small">Convierte el JSON de ajustes en una frase en español. Los datos de entrenamiento son gratis: <b>500 JSON fabricados</b> y sus frases salen de unas reglas, sin fotos. Compara A3 (un ejemplo en el prompt) con B3 (LoRA).</p>
+  <div class="term"><div class="bar"><em>Terminal · papermill</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>papermill 05_explicar_estilo.ipynb &quot;$ESTILO_TRABAJO/salidas/05_explicar_estilo.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p N_FRASES 500 -p EPOCAS 2 -p FORMATO facil</code><button class="cp" data-t="papermill 05_explicar_estilo.ipynb &quot;$ESTILO_TRABAJO/salidas/05_explicar_estilo.ipynb&quot; -p MODELO &quot;$MODELO&quot; -p N_EJEMPLOS &quot;$N_EJEMPLOS&quot; -p N_FRASES 500 -p EPOCAS 2 -p FORMATO facil" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>A3: 208 s para 60 frases
+B3 {&#x27;pct_ajustes_sentido_correcto&#x27;: 100.0, &#x27;pct_ajustes_sentido_contrario&#x27;: 0.0, &#x27;pct_frases_con_alucinacion&#x27;: 18.3, &#x27;pct_frases_espanol_longitud_ok&#x27;: 100.0, &#x27;pct_frases_perfectas&#x27;: 81.7, &#x27;s_por_frase&#x27;: 3.74}
+Entrenamiento: 933 s, 250 pasos, 3.73 s por paso de 4 ejemplos
+Adaptador: 7.06 MB | memoria pico del proceso: 2887.0 MB</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>Pocas frases y 1 época es la configuración de CI: las cifras de clase salen con 500 frases y 2 épocas.</li><li>El 05 también reescribe figuras de <span class="mono">img/</span>: <span class="mono">git restore img/</span> antes de hacer commit.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p05-tabla.webp" data-alt="Notebook 05: métricas de A3 y B3 y gráfico comparativo" title="Clic para ampliar"><img src="img/p05-tabla.webp" alt="Notebook 05: métricas de A3 y B3 y gráfico comparativo" style="max-height:215px"></button><figcaption>Notebook 05: métricas de A3 y B3 y gráfico comparativo</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>B3: <b>100 %</b> de sentido correcto y <b>0 %</b> en sentido contrario; A3: 40,7 % y 39,5 %.</li><li><b>81,7 %</b> de frases perfectas (A3: 0 %).</li><li>Pero <b>18,3 %</b> de frases con algún ajuste inventado.</li></ul></div>
+  <figure class="cap"><button class="capa" data-src="img/05_curva_perdida.png" data-alt="Notebook 05: curva de pérdida de B3 (escala logarítmica)" title="Clic para ampliar"><img src="img/05_curva_perdida.png" alt="Notebook 05: curva de pérdida de B3 (escala logarítmica)" style="max-height:130px"></button><figcaption>Notebook 05: curva de pérdida de B3 (escala logarítmica)</figcaption></figure></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Tabla comparativa"
+ data-notes="Pregunta para el grupo antes de revelar: de estas versiones, ¿cuáles son peores que contestar siempre la media? Respuesta: A y B, las dos del LLM sin ayuda. La regresión de MobileNet apenas mejora, y la de las 27 estadísticas de color gana de largo. La tabla de la derecha pone coste al lado del error: C_color entrena en unos seis segundos y pesa casi nada. La fila 2c es una cita del estudio técnico, no se mide en el notebook.">
+<p class="kick">C · Los tres actos juntos</p><h1>Todas las versiones, <b>frente a contestar la media</b></h1>
+
+<div class="split" style="grid-template-columns:1.15fr .85fr">
+ <div class="col">
+  <div class="card"><h3>Error al leer los ajustes · MAE normalizado, 0 = perfecto</h3><div class="bars"><div class="brow"><span class="bn"><b>Media</b> (contestar siempre la media)</span><span class="bt"><i class="b ref" style="width:51.8%"></i></span><span class="bv">0,259</span></div><div class="brow"><span class="bn"><b>A</b> · SmolVLM sin entrenar</span><span class="bt"><i class="b mal" style="width:86.6%"></i></span><span class="bv">0,433</span></div><div class="brow"><span class="bn"><b>B</b> · SmolVLM con LoRA</span><span class="bt"><i class="b mal" style="width:62.0%"></i></span><span class="bv">0,310</span></div><div class="brow"><span class="bn"><b>2c</b> · estadísticas en el prompt + LoRA</span><span class="bt"><i class="b bien" style="width:48.8%"></i></span><span class="bv">0,244</span></div><div class="brow"><span class="bn"><b>C</b> · MobileNetV3-small + Ridge</span><span class="bt"><i class="b bien" style="width:45.8%"></i></span><span class="bv">0,229</span></div><div class="brow"><span class="bn"><b>C_color</b> · 27 estadísticas + Ridge</span><span class="bt"><i class="b bien" style="width:30.2%"></i></span><span class="bv"><b>0,151</b></span></div><div class="brow"><span class="bn"><b>D</b> · Reinhard (sin aprendizaje)</span><span class="bt"></span><span class="bv">no aplica: no predice ajustes</span></div></div>
+  <p class="small" style="margin-top:8px"><span class="dot mal"></span> peor que la media · <span class="dot ref"></span> la media · <span class="dot bien"></span> mejor que la media</p></div>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Solo <b>C_color</b> gana con claridad: 0,151 frente a 0,259, en segundos y sin LLM.</li><li>2c es el único LLM que mejora la media, por <b>0,015</b>, con 60 fotos de test y una sola semilla.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p04-error.webp" data-alt="Notebook 04: error por ajuste de cada versión" title="Clic para ampliar"><img src="img/p04-error.webp" alt="Notebook 04: error por ajuste de cada versión" style="max-height:150px"></button><figcaption>Notebook 04: error por ajuste de cada versión</figcaption></figure>
+  <div class="card"><h3>Qué pesa cada versión</h3><table class="tbl"><tr><th>Versión</th><th>Entrenar</th><th>Tamaño</th></tr><tr><td>A</td><td>0 s</td><td>493,9 MB</td></tr><tr><td>B</td><td>1123 s</td><td>adaptador 7,06 MB</td></tr><tr><td>C</td><td>7,1 s</td><td>9,71 MB</td></tr><tr><td>C_color</td><td>5,9 s</td><td>0,001 MB</td></tr></table>
+  <p class="small" style="margin-top:6px">Fuente: tabla del notebook 04 (tiempo de B = 530 s de preparación + 593 s de entrenamiento).</p></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Acto 1 en detalle"
+ data-notes="Esta es la diapositiva de la desconfianza. Tres medidas: cuántas respuestas distintas escribe, cuánto varían sus números frente a los reales, y si los sigue. En contraste la desviación del modelo es 0,013 cuando la real es 0,250. La captura es del bloque de salida del estudio técnico que lleva el notebook 03. Idea para llevarse: la pérdida de entrenamiento y el formato perfecto no prueban nada sin una línea base.">
+<p class="kick">C · Acto 1</p><h1>B aprende el <b>formato</b>, no la tarea</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr">
+ <div class="col">
+  <div class="card"><h3>Qué se midió</h3><ul class="list"><li><b>A</b> (sin entrenar): 55 % de JSON válido y <b>5 respuestas distintas</b> en 60 fotos; las 60 repiten exposición 0,7 y temperatura −1, los extremos del prompt.</li><li><b>B</b> (LoRA): 100 % de JSON válido, pero solo <b>15 respuestas distintas</b>; dos casi iguales cubren 41 de las 60 fotos.</li><li>Sus números <b>no siguen a los reales</b>: correlaciones entre −0,04 y 0,19.</li></ul></div>
+  <figure class="cap"><button class="capa" data-src="img/03_curva_perdida.png" data-alt="Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)" title="Clic para ampliar"><img src="img/03_curva_perdida.png" alt="Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)" style="max-height:150px"></button><figcaption>Notebook 03: curva de pérdida de la LoRA (baja y se queda plana)</figcaption></figure>
+  <div class="callout">La pérdida bajó casi seis veces (2,758 → 0,479) y aun así el modelo no hace la tarea. Una curva bonita no demuestra nada; la <b>métrica contra la verdad</b> sí.</div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p03-diagnostico.webp" data-alt="Notebook 03: diagnóstico, aprende el formato y no la tarea" title="Clic para ampliar"><img src="img/p03-diagnostico.webp" alt="Notebook 03: diagnóstico, aprende el formato y no la tarea" style="max-height:400px"></button><figcaption>Notebook 03: diagnóstico, aprende el formato y no la tarea</figcaption></figure></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Panel de transferencia"
+ data-notes="Cada fila es una pareja: la referencia, el contenido al que se copia el estilo, el objetivo (cómo debería quedar, porque conocemos los ajustes) y las versiones. Debajo de cada salida, su diferencia de color con el objetivo. D copia los colores de la referencia entera y por eso en la fila 1 tiñe de verde amarillento al perrito. Insista en la fila 1: el panel no se retoca, se muestra también lo que sale mal.">
+<p class="kick">C · Acto 2</p><h1>Copiar el estilo de una foto a otra: <b>el panel</b></h1>
+
+<div class="split" style="grid-template-columns:1.25fr .75fr">
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/04_panel_transferencia.png" data-alt="Notebook 04: panel de transferencia de estilo de todas las versiones" title="Clic para ampliar"><img src="img/04_panel_transferencia.png" alt="Notebook 04: panel de transferencia de estilo de todas las versiones" style="max-height:440px"></button><figcaption>Notebook 04: panel de transferencia de estilo de todas las versiones</figcaption></figure></div>
+ <div class="col">
+  <div class="card"><h3>ΔE medio con el objetivo (menor es mejor)</h3><table class="tbl"><tr><th>Versión</th><th>ΔE</th></tr><tr><td>objetivo</td><td>0,000</td></tr><tr><td>sin cambio</td><td>14,413</td></tr><tr><td>A</td><td>22,206</td></tr><tr><td>B</td><td>15,986</td></tr><tr><td>C</td><td>13,212</td></tr><tr><td><b>C_color</b></td><td><b>7,500</b></td></tr><tr><td>D (Reinhard)</td><td>14,367</td></tr></table></div>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>A y B</b>: tono casi igual en todas las filas; no siguen a la referencia.</li><li><b>C_color</b> se parece al objetivo en las filas 2, 3 y 4 (ΔE 6,8; 4,4; 5,1).</li><li>En la fila 1 <b>todas</b> quedan en ΔE ≥ 19: un resultado malo también se enseña.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Acto 3: A3 frente a B3"
+ data-notes="Compare las dos columnas de LLM. Sin entrenar, con un ejemplo en el prompt, el modelo imita en vez de entender: escribe la frase del ejemplo para cualquier JSON y sigue escribiendo el prompt, por eso el 0 % en español y longitud. Con LoRA y quinientas frases acierta el sentido de todo. El fallo que queda es la alucinación, y la advertencia final es de método: mida siempre contra una verdad y no se fíe de una sola ejecución.">
+<p class="kick">C · Acto 3</p><h1>Explicar con palabras: <b>100 % de sentido correcto</b></h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr">
+ <div class="col">
+  <div class="card"><h3>60 JSON de test que ningún modelo ha visto</h3><table class="tbl"><tr><th>Métrica</th><th>Reglas (techo)</th><th>A3 · un ejemplo</th><th>B3 · LoRA</th></tr><tr><td>Ajustes en el sentido correcto</td><td>100 %</td><td>40,7 %</td><td><b>100 %</b></td></tr><tr><td>Ajustes en sentido contrario</td><td>0 %</td><td>39,5 %</td><td><b>0 %</b></td></tr><tr><td>Frases con alucinación</td><td>0 %</td><td>58,3 %</td><td>18,3 %</td></tr><tr><td>En español y longitud razonable</td><td>100 %</td><td>0 %</td><td><b>100 %</b></td></tr><tr><td>Frases perfectas</td><td>100 %</td><td>0 %</td><td><b>81,7 %</b></td></tr><tr><td>Segundos por frase</td><td>–</td><td>3,46</td><td>3,74</td></tr></table></div>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>B3 se entrenó con <b>500 frases</b> fabricadas, 2 épocas y 933 s; la pérdida de validación bajó de 2,464 a 0,032.</li><li>Aquí el fine-tuning <b>sí</b> funciona: la tarea es de lenguaje.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/05_comparacion.png" data-alt="Notebook 05: reglas, A3 y B3 en las cuatro métricas" title="Clic para ampliar"><img src="img/05_comparacion.png" alt="Notebook 05: reglas, A3 y B3 en las cuatro métricas" style="max-height:190px"></button><figcaption>Notebook 05: reglas, A3 y B3 en las cuatro métricas</figcaption></figure>
+  <div class="card falla"><h3>Fluido no es correcto</h3><ul class="list"><li>El 18,3 % de las frases de B3 mencionan un ajuste que no se tocó.</li><li>Esa cifra varió entre ejecuciones: <b>10,0 %, 15,0 % y 18,3 %</b>. No te fíes de una sola corrida.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Ejemplos de frases"
+ data-notes="Lea en voz alta el primer ejemplo. A3 escribe la frase de su propio ejemplo del prompt y después repite el prompt; B3 redacta la frase correcta. El segundo recuadro es el caso que enseña por qué fluido no es correcto: la exposición no se tocó, intensidad real 0,00, y aun así la frase empieza por «más oscura». Fíjese también en que la concordancia incorrecta de «Estilo más oscura» viene de nuestra propia plantilla de reglas: B3 copia incluso los defectos de lo que le enseñamos.">
+<p class="kick">C · Acto 3 · respuestas reales</p><h1>Lo que escribe cada modelo, <b>tal cual</b></h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr">
+ <div class="col">
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>AJUSTES : {&quot;exposicion&quot;: 0.45, &quot;temperatura&quot;: 0.5, &quot;tinte&quot;: 0.03, &quot;contraste&quot;: 1.35, &quot;saturacion&quot;: 1.69}
+OBJETIVO: Para copiar este estilo, se sube bastante la exposición, se sube bastante la temperatura, se sube bastante el contraste y se sube bastante la saturación.
+A3      : La referencia es más luminosa, más magenta, con menos contraste y más saturada: se sube bastante la exposición, se lleva el tinte bastante hacia el magenta, … Ejemplo: Cambios: exposicion: sube bastante; …
+B3      : La referencia es más luminosa, más cálida, con más contraste y más saturada: se sube bastante la exposición, se sube bastante la temperatura, se sube bastante el contraste y se sube bastante la saturación.</pre></div>
+  <div class="realbox pq"><div class="rk">Una alucinación de B3 · notebook 05, análisis del apartado 5</div><pre>Se inventa «exposicion» (intensidad real +0.00):
+Estilo más oscura, más fría, más magenta, con más contraste y menos saturada. Cambios: se baja un poco la temperatura, se lleva el tinte un poco hacia el magenta, se sube bastante el contraste y se baja bastante la saturación.</pre></div>
+  <figure class="cap"><button class="capa" data-src="img/p05-alucinaciones.webp" data-alt="Notebook 05: análisis de las alucinaciones de B3" title="Clic para ampliar"><img src="img/p05-alucinaciones.webp" alt="Notebook 05: análisis de las alucinaciones de B3" style="max-height:190px"></button><figcaption>Notebook 05: análisis de las alucinaciones de B3</figcaption></figure>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p05-ejemplos.webp" data-alt="Notebook 05: ejemplos de frases del objetivo, A3 y B3" title="Clic para ampliar"><img src="img/p05-ejemplos.webp" alt="Notebook 05: ejemplos de frases del objetivo, A3 y B3" style="max-height:300px"></button><figcaption>Notebook 05: ejemplos de frases del objetivo, A3 y B3</figcaption></figure>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>A3</b> escribe la misma frase en los seis ejemplos y luego el eco «Ejemplo: Cambios: …»: no mira el JSON.</li><li><b>B3</b> acierta el sentido de los seis; cinco son perfectas.</li><li>La alucinación suena natural: «Estilo más oscura…» con exposición casi nula (+0,00).</li></ul></div></div>
+</div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="MLflow: produccion y descartado"
+ data-notes="El resultado de un experimento no queda en una tabla suelta: queda registrado. C_color se guarda como modelo del registro con el alias produccion; el adaptador LoRA de B se guarda como candidato descartado, con una etiqueta que dice por qué. Un resultado negativo bien medido también es un resultado. Enlace con S3: el alias es lo que en el laboratorio de MLflow se anticipó para este bloque. El 05 deja además sus dos runs, A3 y B3, en la misma base.">
+<p class="kick">C · Registro de modelos</p><h1>El ganador y el <b>candidato descartado</b></h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="term"><div class="bar"><em>Terminal · tras ejecutar el 03 y el 04</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>mlflow ui --backend-store-uri &quot;sqlite:///$ESTILO_TRABAJO/mlflow.db&quot;</code><button class="cp" data-t="mlflow ui --backend-store-uri &quot;sqlite:///$ESTILO_TRABAJO/mlflow.db&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="realbox pq"><div class="rk">Salida real · notebook ejecutado con la configuración de clase (300 fotos) · 20 y 21/11/2026</div><pre>Versión ganadora (menor ΔE medio con el objetivo): C_color
+Runs creados en esta ejecución: [&#x27;A_zero_shot&#x27;, &#x27;C_mobilenet_ridge&#x27;, &#x27;C_color_ridge&#x27;, &#x27;D_reinhard&#x27;, &#x27;2c_estadisticas_lora&#x27;, &#x27;comparativa&#x27;]
+estilo-color-ridge v1: alias «produccion» (MAE normalizado 0.151)
+estilo-lora-adaptador v1: alias «descartado»</pre></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">database is locked</span>: otra ventana de MLflow tiene la base abierta; ciérrala.</li></ul></div>
+ </div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/p04-mlflow.webp" data-alt="Notebook 04: alias «produccion» y «descartado» en MLflow" title="Clic para ampliar"><img src="img/p04-mlflow.webp" alt="Notebook 04: alias «produccion» y «descartado» en MLflow" style="max-height:50px"></button><figcaption>Notebook 04: alias «produccion» y «descartado» en MLflow</figcaption></figure>
+  <div class="card"><h3>Qué verás en la interfaz</h3><ul class="list"><li><b>Experiments</b>: los runs <span class="mono">A_zero_shot</span>, <span class="mono">B_lora</span>, <span class="mono">C_mobilenet_ridge</span>, <span class="mono">C_color_ridge</span>, <span class="mono">D_reinhard</span>, <span class="mono">2c_estadisticas_lora</span> y <span class="mono">comparativa</span>.</li><li><b>Models</b>: <span class="mono">estilo-color-ridge</span> con el alias <b><span class="mono">produccion</span></b> y <span class="mono">estilo-lora-adaptador</span> con el alias <b><span class="mono">descartado</span></b> y el motivo en una etiqueta.</li></ul></div>
+  <div class="callout">Una aplicación cargaría <span class="mono">models:/estilo-color-ridge@produccion</span>: cambiar de modelo es <b>mover el alias</b>, no tocar la aplicación.</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="El pipeline"
+ data-notes="Recuerde el grafo con la pizarra o con este esquema. Pregunta: ¿qué notebooks pueden correr a la vez? Los que solo necesitan los datos: el 02, el 03, el 04 en su etapa C y D, y el 05. El workflow no copia los notebooks a scripts: ejecuta los mismos que se han leído. Y un aviso desde ya: los parámetros del CI son pequeños a propósito, de modo que las cifras del run no se comparan con las de clase.">
+<p class="kick">D · Actions · la idea</p><h1>Cada notebook es un <b>job</b></h1>
+
+<div class="card" style="padding:10px 14px"><pre class="code light">0 · Pruebas ─► 1 · Preparar (00) ─► 2 · Datos (01) ─┬─► 3a · Zero-shot, A (02) ───────────┐
+                                                    ├─► 3b · LoRA, B (03) ────────────────┼─► 4 · Comparar (04) ─┐
+                                                    ├─► 3c · Base C y Reinhard D (04) ────┘                      ├─► 5 · Resumen
+                                                    └─► 3d · Acto 3, explicar (05) ───────────────────────────────┘</pre></div>
+<div class="split" style="grid-template-columns:.8fr 1.2fr;margin-top:10px">
+ <div class="col">
+  <div class="callout">Los cuatro jobs 3a, 3b, 3c y 3d tienen el mismo <span class="mono">needs: datos</span>: <b>corren a la vez</b>. Los dos últimos esperan: <span class="mono">comparar</span> a 3a, 3b y 3c; <span class="mono">resumen</span> a <span class="mono">comparar</span> y a <span class="mono">explicar</span>.</div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Cuatro ideas</h3><ul class="list"><li><b>Job</b>: un trabajo del workflow, en una máquina nueva (<span class="mono">ubuntu-latest</span>, sin GPU). <span class="mono">needs:</span> dice de qué otro depende.</li><li><b>papermill</b>: ejecuta el notebook e inyecta parámetros; la copia ejecutada se sube siempre (<span class="mono">if: always()</span>).</li><li><b>Artefactos</b>: lo que un job produce lo sube y el siguiente lo baja. <b>Caché</b>: el modelo y las fotos no se bajan en cada job.</li><li><b>Parámetros pequeños</b> (60 fotos, 2 épocas): comprueban que el pipeline funciona; las conclusiones se sacan con la configuración de clase.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Crear la rama lab/"
+ data-notes="El disparador del workflow es un push a una rama lab barra barra. Si el alumno crea la rama con otro nombre, no pasa nada y es la causa más típica de que no aparezca ningún run. Avise también de que el fork puede traer Actions desactivado: el texto exacto del botón de activación no se ha verificado, así que diga solo que hay que aceptar el aviso de la pestaña Actions.">
+<p class="kick">D · Actions · paso 1 de 4</p><h1>Una rama que <b>empiece por <span class="mono">lab/</span></b></h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <div class="term"><div class="bar"><em>Terminal · Codespace</em><button class="cp cpall" data-t="git switch develop
+git pull
+git switch -c lab/extra-estilo-llm">⧉ Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span><code>git switch develop</code><button class="cp" data-t="git switch develop" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git pull</code><button class="cp" data-t="git pull" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git switch -c lab/extra-estilo-llm</code><button class="cp" data-t="git switch -c lab/extra-estilo-llm" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="card"><h3>Antes de empezar</h3><ul class="list"><li>Antes, entra en la pestaña <b>Actions</b> de tu fork: en los forks puede venir desactivado. Si ves un aviso que pide activar los workflows, acéptalo.</li><li>Tu fork debe tener la carpeta del extra en la rama de la que partes.</li></ul></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Sin terminal (solo la web de GitHub)</h3><ul class="list"><li>En tu fork, en el selector de ramas elige <span class="mono">develop</span>, escribe <span class="mono">lab/extra-estilo-llm</span> y crea la rama a partir de <span class="mono">develop</span>.</li></ul></div>
+  <div class="callout">El nombre <b>debe empezar por <span class="mono">lab/</span></b>: es lo que escucha el disparador del workflow (<span class="mono">push</span> a <span class="mono">lab/**</span>). Con otro nombre, no se lanza nada.</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Copiar el workflow"
+ data-notes="La ruta del archivo es lo que más falla: tiene que ser punto github barra workflows barra extra-estilo-llm.yml, en la raíz del repositorio y no dentro de la carpeta del extra. Hay dos rutas equivalentes. Desde la web: botón Raw, copiar, Add file, Create new file, pegar y commit en la rama lab. Desde la terminal: la orden con mkdir y cp. Si el develop del alumno todavía no tiene el extra, el plan B es bajar el YAML de la rama del profesor con curl.">
+<p class="kick">D · Actions · paso 2 de 4</p><h1>Copiar el YAML a <b>.github/workflows/</b></h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="card"><h3>Ruta A · en la web de GitHub</h3><ul class="list"><li>En el repositorio, abre <span class="mono">extra-estilo-llm.yml</span> y pulsa <b>Raw</b>; selecciona todo y copia.</li><li>Ya en tu rama <span class="mono">lab/extra-estilo-llm</span>: <b>Add file → Create new file</b>.</li><li>Nombre, exactamente: <span class="mono">.github/workflows/extra-estilo-llm.yml</span> (al teclear las <span class="mono">/</span> GitHub crea las carpetas).</li><li>Pega el contenido y <b>Commit changes…</b> directamente en la rama <span class="mono">lab/extra-estilo-llm</span>, no en <span class="mono">develop</span>.</li></ul></div>
+  <div class="callout">No teclees el YAML a mano: la <b>sangría se rompe</b>. Cópialo con <b>Raw</b>.</div>
+ </div>
+ <div class="col">
+  <div class="term"><div class="bar"><em>Ruta B · terminal, desde la raíz del repositorio</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>mkdir -p .github/workflows &amp;&amp; cp 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/extra-estilo-llm.yml .github/workflows/</code><button class="cp" data-t="mkdir -p .github/workflows &amp;&amp; cp 01-Sesiones/S4-Orquestacion-y-CI-CD/extra-estilo-llm/extra-estilo-llm.yml .github/workflows/" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">cp</span> dice que no existe: tu <span class="mono">develop</span> aún no tiene el extra. Descárgalo de la rama del profesor:</li></ul></div>
+  <div class="term"><div class="bar"><em>Plan B · descargar el YAML</em></div><div class="tls"><div class="tln"><span class="ps">$</span><code>curl -fsSL -o .github/workflows/extra-estilo-llm.yml https://raw.githubusercontent.com/helicr/curso-ml-ia-desarrollo-produccion/lab/extra-estilo-llm/.github/workflows/extra-estilo-llm.yml</code><button class="cp" data-t="curl -fsSL -o .github/workflows/extra-estilo-llm.yml https://raw.githubusercontent.com/helicr/curso-ml-ia-desarrollo-produccion/lab/extra-estilo-llm/.github/workflows/extra-estilo-llm.yml" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <p class="small">La ruta del archivo es exacta: con el punto inicial, en la <b>raíz</b> y no dentro de la carpeta del extra.</p>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Commit y push"
+ data-notes="Orden de los cuatro pasos: git status para ver el archivo nuevo, git add de la ruta exacta, commit y push con la opción -u. A partir de ese push arranca el workflow. Si Actions estaba desactivado en el fork y se activa después, hay que hacer otro push para que se lance. El lanzamiento manual existe, pero el botón Run workflow solo aparece cuando el archivo está en la rama principal.">
+<p class="kick">D · Actions · paso 3 de 4</p><h1>Commit y <b>push</b>: ahí arranca el run</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr">
+ <div class="col">
+  <div class="term"><div class="bar"><em>Terminal · en la rama lab/extra-estilo-llm</em><button class="cp cpall" data-t="git status
+git add .github/workflows/extra-estilo-llm.yml
+git commit -m &quot;Extra S4: estilo de color con un LLM en GitHub Actions&quot;
+git push -u origin lab/extra-estilo-llm">⧉ Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span><code>git status</code><button class="cp" data-t="git status" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git add .github/workflows/extra-estilo-llm.yml</code><button class="cp" data-t="git add .github/workflows/extra-estilo-llm.yml" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git commit -m &quot;Extra S4: estilo de color con un LLM en GitHub Actions&quot;</code><button class="cp" data-t="git commit -m &quot;Extra S4: estilo de color con un LLM en GitHub Actions&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git push -u origin lab/extra-estilo-llm</code><button class="cp" data-t="git push -u origin lab/extra-estilo-llm" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">git status</span> muestra solo <span class="mono">.github/workflows/extra-estilo-llm.yml</span> como archivo nuevo.</li><li>Tras el <span class="mono">push</span>, el run aparece en la pestaña <b>Actions</b> (si activaste Actions en el fork <b>después</b> del push, haz otro push).</li></ul></div>
+ </div>
+ <div class="col">
+  <div class="card falla"><h3>Si falla</h3><ul class="list"><li>git pide nombre y correo: configúralos una vez y repite el commit.</li></ul></div>
+  <div class="term"><div class="bar"><em>Solo la primera vez</em><button class="cp cpall" data-t="git config user.name &quot;Tu nombre&quot;
+git config user.email &quot;tu-correo&quot;">⧉ Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span><code>git config user.name &quot;Tu nombre&quot;</code><button class="cp" data-t="git config user.name &quot;Tu nombre&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div><div class="tln"><span class="ps">$</span><code>git config user.email &quot;tu-correo&quot;</code><button class="cp" data-t="git config user.email &quot;tu-correo&quot;" title="Copiar" aria-label="Copiar la orden">⧉</button></div></div></div>
+  <div class="callout">Un run por cada <span class="mono">push</span> a <span class="mono">lab/**</span>. También se puede lanzar a mano con <b>Run workflow</b>, pero el botón solo aparece si el archivo está en la rama principal del fork.</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Grafo y resumen"
+ data-notes="Capturas del run real 44854247545, rama lab barra extra-estilo-llm, del 21 de noviembre. Pregunta: ¿qué job tarda más? El 3b, el fine-tuning con LoRA. Y, sobre la tabla del resumen: ¿qué conclusión sacáis del LLM? Ninguna: son 60 fotos, 13 de test y 2 épocas, y solo prueban que el pipeline funciona. Las conclusiones se sacan con los notebooks de clase.">
+<p class="kick">D · Actions · paso 4 de 4</p><h1>Ver el <b>grafo</b> y el <b>resumen</b> del run</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/x01-grafo-actions.webp" data-alt="Pestaña Actions: grafo del run, Success, 14 m 10 s, 13 artefactos" title="Clic para ampliar"><img src="img/x01-grafo-actions.webp" alt="Pestaña Actions: grafo del run, Success, 14 m 10 s, 13 artefactos" style="max-height:330px"></button><figcaption>Pestaña Actions: grafo del run, Success, 14 m 10 s, 13 artefactos</figcaption></figure></div>
+ <div class="col capcol"><figure class="cap"><button class="capa" data-src="img/x02-resumen-actions.webp" data-alt="Pestaña Actions: resumen del run con la tabla comparativa" title="Clic para ampliar"><img src="img/x02-resumen-actions.webp" alt="Pestaña Actions: resumen del run con la tabla comparativa" style="max-height:330px"></button><figcaption>Pestaña Actions: resumen del run con la tabla comparativa</figcaption></figure></div>
+</div>
+<div class="split" style="grid-template-columns:1fr 1fr;margin-top:10px">
+ <div class="card"><h3>Haz esto</h3><ul class="list"><li>Pestaña <b>Actions</b> → <b>Extra S4 · estilo de color con un LLM</b> → el run de tu commit → <b>Summary</b>.</li><li>9 cajas: las dos primeras en cadena, cuatro a la vez, y al final las dos últimas.</li><li>Clic en <b>3b · Fine-tuning LoRA</b> y despliega el paso <b>Ejecutar 03_fine_tuning_lora.ipynb</b>: verás la barra de papermill celda a celda.</li></ul></div>
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Run real 44854247545, rama <span class="mono">lab/extra-estilo-llm</span>: <b>Success, 14 min 10 s, 13 artefactos</b>.</li><li>El <b>cuello de botella</b> es el 3b (LoRA), el job más largo.</li><li>El resumen lo escribe el job <b>5 · Resumen</b> con las dos tablas (actos 1-2 y acto 3).</li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Tiempos y artefactos"
+ data-notes="La tabla es la del run real. Si se suman los jobs en serie salen más de 20 minutos; el run entero fue de 14 minutos y 10 segundos porque 3a, 3b, 3c y 3d corren a la vez. Aprovechar para insistir en la diferencia entre el tiempo de clase del 03, 24 minutos con 300 fotos, y el del CI, menos de 6 minutos con 60 fotos y 2 épocas. Los artefactos de notebook se suben aunque falle el job, y eso permite abrir el notebook y ver en qué celda se rompió.">
+<p class="kick">D · Actions · tiempos reales</p><h1>El run 44854247545: <b>14 min 10 s</b></h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="card"><h3>Tiempo real de cada job (21/11/2026)</h3><table class="tbl"><tr><th>Job</th><th>Duración</th><th>Notebook</th></tr><tr><td>0 · Pruebas (sin modelos)</td><td>31 s</td><td>pytest</td></tr><tr><td>1 · Preparar entorno</td><td>2 min 1 s</td><td>00</td></tr><tr><td>2 · Datos fabricados</td><td>2 min 45 s</td><td>01</td></tr><tr><td>3a · Zero-shot, A</td><td>3 min 32 s</td><td>02</td></tr><tr><td><b>3b · Fine-tuning LoRA, B</b></td><td><b>5 min 52 s</b></td><td>03</td></tr><tr><td>3c · Base C y Reinhard D</td><td>1 min 49 s</td><td>04 · <span class="mono">c_d</span></td></tr><tr><td>3d · Acto 3, explicar</td><td>5 min 23 s</td><td>05</td></tr><tr><td>4 · Comparar y transferir</td><td>2 min 41 s</td><td>04 · <span class="mono">completo</span></td></tr><tr><td>5 · Resumen</td><td>6 s</td><td>–</td></tr><tr><td><b>Run completo</b></td><td><b>14 min 10 s</b></td><td>3a, 3b, 3c y 3d en paralelo</td></tr></table></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Descargar artefactos</h3><ul class="list"><li>Entra en el <b>Summary</b> del run y baja a la sección de artefactos (13).</li><li>Descarga <b><span class="mono">comparacion</span></b> (tabla CSV/JSON y panel PNG) y <b><span class="mono">nb-04-comparar</span></b> (el notebook 04 ejecutado).</li><li>Los artefactos caducan a los <b>3 días</b> (<span class="mono">retention-days: 3</span>).</li></ul></div>
+  <div class="card"><h3>Los 13 artefactos</h3><p class="small"><span class="mono">nb-00-preparar</span>, <span class="mono">nb-01-datos</span>, <span class="mono">datos</span>, <span class="mono">nb-02-zero-shot</span>, <span class="mono">metricas-a</span>, <span class="mono">nb-03-lora</span>, <span class="mono">adaptador-lora</span>, <span class="mono">nb-04-c-d</span>, <span class="mono">metricas-c-d</span>, <span class="mono">nb-05</span>, <span class="mono">explicacion</span>, <span class="mono">nb-04-comparar</span> y <span class="mono">comparacion</span>. Los <span class="mono">nb-*</span> son cada notebook ya ejecutado.</p></div>
+  <div class="callout">Tus tiempos serán <b>parecidos, no iguales</b>: dependen de la máquina y de si las cachés están calientes (el primer run descarga el modelo y las fotos).</div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Si no aparece en Actions"
+ data-notes="Esta es la diapositiva de la víspera de clase y del diagnóstico: cuatro comprobaciones por orden. Las tres primeras explican casi todos los casos en los que no aparece ningún run: la ruta del archivo, el nombre de la rama frente al disparador y Actions activado en el fork. El respaldo es siempre el run verde del profesor. Estas comprobaciones salen de lo que falló en la sesión del 20 de noviembre y del run real del 21.">
+<p class="kick">D · Actions · antes de clase</p><h1>Antes de clase y <b>si no aparece en Actions</b></h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr">
+ <div class="col">
+  <div class="card falla"><h3>No aparece ningún run: comprueba por orden</h3><ul class="list"><li>¿Está el archivo en <b><span class="mono">.github/workflows/extra-estilo-llm.yml</span></b> (ruta exacta, con el punto inicial y en la raíz)?</li><li>¿El nombre de la rama <b>empieza por <span class="mono">lab/</span></b>, como pide el disparador <span class="mono">lab/**</span>?</li><li>¿<b>Actions está activado</b> en el fork?</li><li>¿El YAML es válido? GitHub muestra el error de sintaxis. Si se pegó mal, copia de nuevo con <b>Raw</b>, sin retocar.</li></ul></div>
+  <div class="card"><h3>Dos casos más</h3><ul class="list"><li>Activaste Actions <b>después</b> del push: haz un push nuevo.</li><li>«Run workflow» no aparece: el archivo no está en la rama principal; usa el disparador por rama <span class="mono">lab/**</span>.</li></ul></div>
+ </div>
+ <div class="col">
+  <div class="card"><h3>La víspera (profesor)</h3><ul class="list"><li>El workflow está en su ruta exacta y hay un <b>run de prueba en verde</b> con su enlace guardado como respaldo.</li><li>La pestaña Actions muestra el workflow y el run verde de respaldo está abierto en otra pestaña.</li></ul></div>
+  <div class="card"><h3>Si falla un job</h3><ul class="list"><li>Lee el <b>primer paso en rojo</b>: ahí está el error.</li><li>Los jobs siguientes salen <b>skipped</b>: no tienen nada que leer.</li><li>Descarga el artefacto <span class="mono">nb-…</span> de ese job para ver en qué celda se rompió.</li><li>Avisos que <b>no</b> son fallo: «Node.js 20 is deprecated» y los de Hugging Face sobre peticiones sin autenticar.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="D" data-min="1" data-title="Autoevaluación"
+ data-notes="Lea cada pregunta y deje unos segundos antes de desplegar la respuesta. La primera resume el acto 1; las otras tres, la parte de GitHub Actions. Para quien quiera repetirlo solo: README.md recoge los tres actos, los resultados y el glosario, y guia-pipeline.md el recorrido de Actions paso a paso.">
+<p class="kick">Cierre</p><h1>Cuatro preguntas para llevarte</h1>
+
+<div class="grid2">
+<div class="card"><h3>1. ¿Por qué B, con 100 % de JSON válido, es peor que contestar siempre la media?</h3><details><summary>Ver la respuesta</summary><p class="small">Porque escribir el <b>formato</b> y acertar el <b>contenido</b> son cosas distintas: B repite casi la misma respuesta para fotos muy distintas (error 0,310 frente a 0,259). Por eso se mide primero la línea base.</p></details></div><div class="card"><h3>2. ¿Por qué los jobs 3a, 3b, 3c y 3d corren a la vez?</h3><details><summary>Ver la respuesta</summary><p class="small">Porque los cuatro tienen <span class="mono">needs: datos</span> y nada más.</p></details></div><div class="card"><h3>3. ¿Qué artefacto abrirías para ver en qué celda falló el 03?</h3><details><summary>Ver la respuesta</summary><p class="small"><span class="mono">nb-03-lora</span>: el notebook ejecutado se sube siempre, con <span class="mono">if: always()</span>.</p></details></div><div class="card"><h3>4. ¿Por qué la tabla del run de Actions no sirve para decidir si el LLM es mejor que la línea base?</h3><details><summary>Ver la respuesta</summary><p class="small">Con 13 fotos de test y 2 épocas solo prueba que el pipeline funciona; las conclusiones salen de los notebooks con 300 fotos.</p></details></div></div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div id="idxgrid"></div></div>
+<div id="zoom" role="dialog" aria-label="Captura ampliada"><img alt=""><p></p></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado"></span>
+  <button class="part" data-p="A">La idea</button><button class="part" data-p="B">Paso a paso</button><button class="part" data-p="C">Resultados</button><button class="part" data-p="D">Actions</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S4">⌂ S4</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo recorrido está en README.md y guia-pipeline.md.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "La idea", "B": "Paso a paso", "C": "Resultados", "D": "Actions"}, INICIO=0;
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S4 · Extra: un LLM y el estilo de color</span><span><b>${esc(PARTES[s.dataset.part])}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+let cur=0;
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();
+  try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N;
+  $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL;
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Previsto: '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur))}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part])} · ${s.dataset.min} min · min ${INICIO+cum[i]}</small>${i+1}. ${esc(s.dataset.title)}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tog('#index',false);go(+b.dataset.i)});
+function tog(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>tog('#index'); $('#bnotes').onclick=()=>tog('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+const zoom=$('#zoom');
+function cerrarZoom(){zoom.classList.remove('on');$('#zoom img').removeAttribute('src')}
+zoom.addEventListener('click',cerrarZoom);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))return; if(e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key;
+  if(k==='Escape'){if(zoom.classList.contains('on')){cerrarZoom();return}tog('#index',false);tog('#notes',false);return}
+  if(zoom.classList.contains('on'))return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A|SUMMARY)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O')tog('#index'); else if(k==='s'||k==='S')tog('#notes'); else if(k==='f'||k==='F')$('#bfull').click();
+});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.capa'); if(z){$('#zoom img').src=z.dataset.src;$('#zoom img').alt=z.dataset.alt;$('#zoom p').textContent=z.dataset.alt+' · clic o Esc para cerrar';zoom.classList.add('on');return}
+  const b=e.target.closest('.cp'); if(!b)return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const tx=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓ Copiado':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=tx},1200)});
+fit(); const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>

@@ -19,6 +19,10 @@ data/raw/online_retail_ii/
 # Modelos, MLflow y reportes generados (el pipeline los vuelve a crear)
 models/*.joblib
 models/*.json
+# ...salvo la versión en producción: models/referencia.json SÍ se versiona (ia_mlops/produccion.py)
+!models/referencia.json
+# ...y su historial (lo lee la pestaña «Versiones» del panel y se actualiza en el mismo pull request): models/historial_versiones.json SÍ se versiona
+!models/historial_versiones.json
 models/modelo_mlflow/
 models/mlflow.db
 models/mlartifacts/

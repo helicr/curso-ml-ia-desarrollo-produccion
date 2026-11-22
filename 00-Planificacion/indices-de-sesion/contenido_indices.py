@@ -210,6 +210,8 @@ SESIONES = [
              'notebooks ejecutados y pipeline en GitHub Actions con un run real en verde (21/11/2026).',
         enlaces=[
             instructor('README de S4', f'{S4}/README.md'),
+            deck('Extra: un LLM y el estilo de color (diapositivas paso a paso)', f'{S4}/extra-estilo-llm/index.html',
+                 '60 min. Instalar, ejecutar cada notebook (órdenes para copiar), los tres actos con sus cifras y capturas reales, y orquestarlo en GitHub Actions.', volver=True),
             alumno('Extra: un LLM y el estilo de color (tres actos)', f'{S4}/extra-estilo-llm/README.md',
                    'El LLM lee el estilo y falla, la línea base gana, el LLM lo explica con LoRA; notebooks y pipeline en GitHub Actions.'),
             alumno('Extra: el pipeline en GitHub Actions (guía)', f'{S4}/extra-estilo-llm/guia-pipeline.md'),

@@ -1,5 +1,5 @@
 # Requisitos del extra «LLM de visión que copia el estilo de color» (S4).
-# Para qué sirven: lo que usan los notebooks 00 a 04 del extra y el módulo comun_estilo.py
+# Para qué sirven: lo que usan los notebooks 00 a 05 del extra y el paquete estilo/
 # (carga del modelo de visión, LoRA, métricas, comparación con la línea base).
 # Van APARTE de los requisitos del proyecto base del curso: no se mezclan con ellos.
 #

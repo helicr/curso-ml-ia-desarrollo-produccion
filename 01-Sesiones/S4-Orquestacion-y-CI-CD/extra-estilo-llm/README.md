@@ -63,6 +63,8 @@ Los tiempos son de los notebooks ejecutados con la configuración de clase (300 
 
 Fuente: `INFORME.md` del estudio técnico (tabla «Tiempos, tamaños y memoria») y los avisos de tiempo de los propios notebooks. En clase se llevan ejecutados el 03 y el 05 y solo se recorren.
 
+**Orden obligatorio:** el 04 lee las predicciones del 02 y del 03 (y busca el run `B_lora` en MLflow) en la **misma carpeta de trabajo** (`ESTILO_TRABAJO`): ejecuta antes el 01, el 02 y el 03. El 05 solo necesita el 01. Las **diapositivas** del extra están en [`index.html`](index.html) (26 diapositivas, 60 min, órdenes para copiar y capturas de las salidas reales).
+
 ## Requisitos
 
 - **Hardware:** CPU, sin GPU. Memoria pico medida: 2747 MB en el 03 y 2887 MB en el 05 (con 500 frases). Se recomiendan unos 8 GB de RAM (mínimo previsto, sin verificar) y ~2 GB de disco para las descargas.

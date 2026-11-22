@@ -1,0 +1,55 @@
+# El servicio de producción COMPLETO para la demo de punta a punta: la API del modelo + la interfaz con el PANEL, en modo demo.
+# Es el compose de S2 (compose.yaml) con tres añadidos para que el panel tenga algo que enseñar:
+#   1) la interfaz arranca con CURSO_DEMO=1 (puede simular una compra nueva sin tocar la base del proyecto);
+#   2) se monta la última campaña del lote (reports/campana) para la pestaña «Lote»;
+#   3) se montan la ficha de la versión en producción (models/referencia.json) y su historial para la pestaña «Versiones».
+#
+# ANTES de levantarlo hay que dejar tres cosas en 04-Proyecto-Base (el compose NO las crea):
+#   python -m ia_mlops.operacional     # la base operacional (la fuente)
+#   python -m ia_mlops.pipeline        # el modelo (models/) y la base analítica (data/processed/curso.db)
+#   python -m ia_mlops.explotacion     # el lote: reports/campana/ y la tabla fs_produccion dentro de curso.db (la que lee «bajo demanda»)
+#
+# Desde la carpeta del proyecto (04-Proyecto-Base):
+#   docker compose -f deploy/docker/compose-produccion.yaml up --build -d    # construye la API y la interfaz desde este repositorio
+#   docker compose -f deploy/docker/compose-produccion.yaml ps               # estado y salud de cada servicio
+#   docker compose -f deploy/docker/compose-produccion.yaml down             # para y borra contenedores y red (la copia de demo se pierde: es lo previsto)
+#
+# Panel: http://127.0.0.1:8090/panel   (en Codespaces: pestaña «Puertos» -> 8090)
+#
+# USAR LA IMAGEN PUBLICADA EN GHCR EN VEZ DE CONSTRUIRLA (la que publica nueva-version.yml; su etiqueta está en models/referencia.json):
+#   export IMAGEN_API=ghcr.io/<propietario-en-minusculas>/retencion-api:<etiqueta>
+#   docker compose -f deploy/docker/compose-produccion.yaml up -d --pull always --no-build
+# Sin IMAGEN_API se usa (y se construye) retencion-api:local.
+#
+# Las rutas relativas de este archivo se resuelven desde ESTA carpeta (deploy/docker): por eso el contexto es ../..
+name: retencion-produccion
+
+services:
+  api:                                   # el nombre del servicio es su nombre en la red: la interfaz la llama en http://api:8080
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: ${IMAGEN_API:-retencion-api:local}     # con IMAGEN_API, la imagen publicada; sin ella, la que se construye aquí
+    # Sin «ports»: la API NO se publica fuera. Solo la interfaz, dentro de la red, puede llamarla.
+
+  interfaz:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/interfaz.Dockerfile
+    image: retencion-interfaz:local
+    ports:
+      - "8090:8090"                      # equipo:contenedor -> http://127.0.0.1:8090/panel
+    environment:
+      CURSO_URL_API: http://api:8080     # la API por su NOMBRE de servicio (127.0.0.1 dentro del contenedor sería la propia interfaz)
+      CURSO_DEMO: "1"                    # modo demo: trabaja sobre una COPIA de la base y habilita /demo/compra y /demo/reiniciar
+      CURSO_CAMPANA: /campana            # carpeta donde el panel busca la última campaña (campana_AAAA-MM-DD.csv y .json)
+    volumes:
+      - ../../data/processed:/datos:ro   # la base del proyecto, SOLO LECTURA: el modo demo la COPIA a /tmp y escribe en la copia
+      - ../../reports/campana:/campana:ro                                   # la campaña del lote, solo lectura
+      - ../../models/referencia.json:/app/models/referencia.json:ro         # la versión en producción (pestaña «Versiones»)
+      - ../../models/historial_versiones.json:/app/models/historial_versiones.json:ro   # su historial
+    tmpfs:
+      - /tmp                             # aquí vive la copia de demo (escribible para el usuario sin privilegios); se borra al parar
+    depends_on:
+      api:
+        condition: service_healthy       # espera a que el HEALTHCHECK de la API diga «sano» antes de arrancar

@@ -1,0 +1,185 @@
+# Prueba de humo de la PRODUCCIÓN COMPLETA: la API del modelo y la interfaz con el panel, levantadas con docker compose.
+# Comprueba, con Docker real y curl, lo que enseña el laboratorio de S4:
+#   · el panel responde y enseña la última campaña del lote;
+#   · los modos «bajo demanda» y «online» dan la MISMA probabilidad para un cliente mientras no llegan datos nuevos;
+#   · al simular una compra nueva, «online» cambia y «bajo demanda» no (hasta que el lote recalcule fs_produccion);
+#   · la pestaña «Versiones» coincide con models/referencia.json.
+#
+# Se copia en:  .github/workflows/validar-produccion.yml  (en la raíz de tu copia del repositorio)
+#
+# CUÁNDO SE EJECUTA
+#   · push a una rama lab/**, SOLO si cambia la interfaz, el compose de producción o este workflow;
+#   · a mano: Actions -> «Validar la producción completa» -> Run workflow.
+name: Validar la producción completa
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['lab/**']
+    paths:
+      - '04-Proyecto-Base/ia_mlops/interfaz/**'
+      - '04-Proyecto-Base/deploy/docker/compose-produccion.yaml'
+      - '.github/workflows/validar-produccion.yml'
+
+# Mínimo imprescindible: leer el repositorio.
+permissions:
+  contents: read
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  COMPOSE: deploy/docker/compose-produccion.yaml
+  SALIDAS: salidas-produccion          # carpeta (dentro de 04-Proyecto-Base) donde se guarda cada respuesta
+
+defaults:
+  run:
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  produccion:
+    name: API + interfaz + panel (compose)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+
+      - name: Datos, modelo y lote (operacional + pipeline + explotacion)
+        # Deja lo que el compose NO crea: models/, data/processed/curso.db con fs_produccion y reports/campana/.
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          python -m ia_mlops.explotacion
+          mkdir -p "$SALIDAS"
+          ls reports/campana
+          # Estos archivos se montan en la interfaz: si faltan, Docker crearía carpetas con su nombre y el panel fallaría de forma rara.
+          test -f models/referencia.json && test -f models/historial_versiones.json && test -f data/processed/curso.db
+
+      - name: Levantar el compose (construye la API y la interfaz)
+        run: docker compose -f "$COMPOSE" up --build -d
+
+      - name: Esperar a que la interfaz esté lista (/listo)
+        run: |
+          for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:8090/listo -o "$SALIDAS/00-listo.json" && break; sleep 2; done
+          cat "$SALIDAS/00-listo.json"; echo
+          docker compose -f "$COMPOSE" ps --format 'table {{.Service}}\t{{.Status}}\t{{.Ports}}' | tee "$SALIDAS/00-compose-ps.txt"
+          # La API no se publica: desde el equipo no se llega (desde la interfaz sí, por su nombre).
+          if curl -fsS --max-time 3 http://127.0.0.1:8080/salud; then echo "MAL: la API está publicada"; exit 1; fi
+
+      - name: El panel responde y enseña la campaña del lote
+        run: |
+          test "$(curl -s -o "$SALIDAS/01-panel.html" -w '%{http_code}' http://127.0.0.1:8090/panel)" = "200"
+          curl -fsS http://127.0.0.1:8090/panel/lote -o "$SALIDAS/02-panel-lote.json"
+          python - <<'PY'
+          import json, os
+          d = json.load(open(os.environ['SALIDAS'] + '/02-panel-lote.json', encoding='utf-8'))
+          assert d['disponible'] is True, f"el panel no ve la campaña: {d}"
+          assert d['filas'] > 0 and d['primeros'], d
+          print('Campaña:', d['archivo'], '|', d['filas'], 'clientes')
+          # El cliente de la prueba: el primero de la lista (el que más probablemente vuelve a comprar), que está en fs_produccion.
+          open(os.environ['SALIDAS'] + '/cliente.txt', 'w').write(str(int(d['primeros'][0]['cliente_id'])))
+          PY
+
+      - name: Bajo demanda y online dan la misma probabilidad (aún no hay compras nuevas)
+        run: |
+          ID=$(cat "$SALIDAS/cliente.txt")
+          curl -fsS "http://127.0.0.1:8090/bajo-demanda/$ID" -o "$SALIDAS/03-bajo-demanda-antes.json"
+          curl -fsS "http://127.0.0.1:8090/online/$ID"       -o "$SALIDAS/04-online-antes.json"
+          python - <<'PY'
+          import json, os
+          s = os.environ['SALIDAS']
+          bd = json.load(open(s + '/03-bajo-demanda-antes.json', encoding='utf-8'))
+          on = json.load(open(s + '/04-online-antes.json', encoding='utf-8'))
+          print('bajo demanda:', bd['probabilidad'], '| corte', bd['corte'])
+          print('online      :', on['probabilidad'], '| corte', on['corte'])
+          assert bd['corte'] == on['corte'], 'los dos modos deberían usar el mismo corte mientras no haya compras nuevas'
+          assert abs(bd['probabilidad'] - on['probabilidad']) < 1e-9, 'bajo demanda y online deberían coincidir'
+          print('Coinciden: leer las variables de la FS o calcularlas al vuelo da lo mismo.')
+          PY
+
+      - name: Simular una compra - online cambia y bajo demanda no
+        run: |
+          ID=$(cat "$SALIDAS/cliente.txt")
+          curl -fsS -X POST http://127.0.0.1:8090/demo/compra -H 'content-type: application/json' \
+               -d "{\"cliente_id\": $ID, \"importe\": 120.5, \"unidades\": 3}" -o "$SALIDAS/05-demo-compra.json"
+          curl -fsS "http://127.0.0.1:8090/bajo-demanda/$ID" -o "$SALIDAS/06-bajo-demanda-despues.json"
+          curl -fsS "http://127.0.0.1:8090/online/$ID"       -o "$SALIDAS/07-online-despues.json"
+          curl -fsS http://127.0.0.1:8090/modos              -o "$SALIDAS/08-modos.json"
+          python - <<'PY'
+          import json, os
+          s = os.environ['SALIDAS']
+          cargar = lambda n: json.load(open(f'{s}/{n}.json', encoding='utf-8'))
+          bd0, on0 = cargar('03-bajo-demanda-antes'), cargar('04-online-antes')
+          bd1, on1 = cargar('06-bajo-demanda-despues'), cargar('07-online-despues')
+          print('bajo demanda:', bd0['probabilidad'], '->', bd1['probabilidad'])
+          print('online      :', on0['probabilidad'], '->', on1['probabilidad'])
+          assert bd1['probabilidad'] == bd0['probabilidad'], 'bajo demanda no debe cambiar: lee la FS de ayer'
+          assert abs(on1['probabilidad'] - on0['probabilidad']) > 1e-9, 'online debe notar la compra nueva'
+          assert cargar('08-modos')['compras_demo'] == 1
+          print('Online ve la compra nueva; bajo demanda no, hasta que el lote recalcule fs_produccion.')
+          PY
+
+      - name: La pestaña Versiones coincide con models/referencia.json
+        run: |
+          curl -fsS http://127.0.0.1:8090/panel/versiones -o "$SALIDAS/09-panel-versiones.json"
+          python - <<'PY'
+          import json, os
+          d = json.load(open(os.environ['SALIDAS'] + '/09-panel-versiones.json', encoding='utf-8'))
+          ref = json.load(open('models/referencia.json', encoding='utf-8'))
+          assert d['error_produccion'] is None, d['error_produccion']
+          assert d['produccion'] == ref, 'el panel debe enseñar la referencia.json del repositorio'
+          print(f"Versión en producción: v{ref['version']} · {ref['etiqueta_imagen']}")
+          print('El modelo que sirve la API coincide con la referencia:', d['coinciden'])
+          if d['aviso']:
+              print('Aviso del panel:', d['aviso'])
+          PY
+
+      - name: Registros (si algo falla)
+        if: failure()
+        run: docker compose -f "$COMPOSE" logs --tail 60 || true
+
+      - name: Escribir el resumen del run
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os
+          s = os.environ['SALIDAS']
+          def cargar(n):
+              try:
+                  return json.load(open(f'{s}/{n}.json', encoding='utf-8'))
+              except (OSError, json.JSONDecodeError):
+                  return None
+          print('## Producción completa: API + interfaz + panel')
+          print()
+          lote, versiones = cargar('02-panel-lote'), cargar('09-panel-versiones')
+          bd0, on0, bd1, on1 = (cargar(n) for n in ('03-bajo-demanda-antes', '04-online-antes', '06-bajo-demanda-despues', '07-online-despues'))
+          if lote and lote.get('disponible'):
+              print(f"- Campaña en el panel: `{lote['archivo']}` ({lote['filas']} clientes)")
+          if versiones and versiones.get('produccion'):
+              print(f"- Versión en producción: v{versiones['produccion']['version']} (`{versiones['produccion']['etiqueta_imagen']}`)")
+          if bd0 and on0:
+              print()
+              print('| Cliente | Modo | Antes de la compra | Después de la compra |')
+              print('|---|---|---|---|')
+              print(f"| {bd0['cliente_id']} | bajo demanda | {bd0['probabilidad']:.6f} | {bd1['probabilidad']:.6f} |" if bd1 else f"| {bd0['cliente_id']} | bajo demanda | {bd0['probabilidad']:.6f} | (sin dato) |")
+              print(f"| {on0['cliente_id']} | online | {on0['probabilidad']:.6f} | {on1['probabilidad']:.6f} |" if on1 else f"| {on0['cliente_id']} | online | {on0['probabilidad']:.6f} | (sin dato) |")
+          print()
+          print('Las respuestas completas están en el artefacto **respuestas-produccion**.')
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: respuestas-produccion
+          retention-days: 7
+          path: 04-Proyecto-Base/salidas-produccion/
+
+      - name: Bajar el compose
+        if: always()
+        run: docker compose -f "$COMPOSE" down || true
