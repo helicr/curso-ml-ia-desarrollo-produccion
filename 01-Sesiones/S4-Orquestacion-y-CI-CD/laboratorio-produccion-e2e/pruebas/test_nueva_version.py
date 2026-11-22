@@ -66,6 +66,21 @@ def test_los_archivos_existen_y_son_yaml_validos(nueva, rollback):
     assert True in nueva and 'on' not in nueva       # PyYAML lee `on:` como True (YAML 1.1): hay que saberlo para leer los disparadores
 
 
+def test_los_trabajos_sin_checkout_no_heredan_la_carpeta_del_proyecto(nueva, rollback):
+    # Si el workflow fija defaults.run.working-directory y un trabajo no descarga el repositorio, esa carpeta no existe
+    # en su máquina y el primer «run» falla (pasó en el ensayo del 22/11/2026 con «publicar»).
+    for wf in (nueva, rollback):
+        carpeta = ((wf.get('defaults') or {}).get('run') or {}).get('working-directory')
+        if not carpeta or carpeta == '.':
+            continue
+        for nombre, job in wf['jobs'].items():
+            usa_checkout = any(str(p.get('uses', '')).startswith('actions/checkout') for p in job.get('steps', []))
+            tiene_run = any('run' in p for p in job.get('steps', []))
+            if tiene_run and not usa_checkout:
+                propia = ((job.get('defaults') or {}).get('run') or {}).get('working-directory')
+                assert propia is not None, f'{nombre}: no descarga el repositorio pero hereda working-directory={carpeta}'
+
+
 def test_solo_se_dispara_a_mano(nueva, rollback):
     assert set(disparadores(rollback)) == {'workflow_dispatch'}, 'un rollback nunca se dispara solo'
     # La versión nueva se lanza a mano; además, SOLO para ensayarla sin la rama principal, con un push a ramas lab/nueva-version/**.
