@@ -719,7 +719,11 @@ def comparar_con_referencia(informe, referencia, tolerancia=None):
         if c['diferencia'] < -tolerancia - 1e-12:
             caidas.append(f'{m} {c["candidata"]:.2f} frente a {c["referencia"]:.2f} ({c["diferencia"]:+.2f})')
     if caidas:
-        return Decision('rechazada', 'Empeora más que la tolerancia de ' + f'{tolerancia:g}: ' + '; '.join(caidas) + '. No se publica.', tolerancia, False, [], comparadas)
+        if tolerancia < 0:   # tolerancia negativa = exigir una mejora mínima (el ensayo «rechazo»), como en ia_mlops/produccion.py
+            motivo = f'No mejora lo exigido (al menos {-tolerancia:+g}, tolerancia de {tolerancia:g}): '
+        else:
+            motivo = f'Empeora más que la tolerancia de {tolerancia:g}: '
+        return Decision('rechazada', motivo + '; '.join(caidas) + '. No se publica.', tolerancia, False, [], comparadas)
     resumen = '; '.join(f'{m} {c["candidata"]:.2f} frente a {c["referencia"]:.2f} ({c["diferencia"]:+.2f})' for m, c in comparadas.items())
     return Decision('aceptada', f'{resumen}: dentro de la tolerancia de {tolerancia:g} y sin fallos de seguridad. Puede pasar a la aprobación.', tolerancia, False, [], comparadas)
 
