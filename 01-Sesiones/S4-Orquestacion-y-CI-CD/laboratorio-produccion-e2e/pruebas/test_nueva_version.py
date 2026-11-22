@@ -82,7 +82,10 @@ def test_los_trabajos_sin_checkout_no_heredan_la_carpeta_del_proyecto(nueva, rol
 
 
 def test_solo_se_dispara_a_mano(nueva, rollback):
-    assert set(disparadores(rollback)) == {'workflow_dispatch'}, 'un rollback nunca se dispara solo'
+    dr = disparadores(rollback)   # a mano; y SOLO para ensayarlo, push a ramas lab/rollback/**
+    assert 'workflow_dispatch' in dr and set(dr) <= {'workflow_dispatch', 'push'}
+    if 'push' in dr:
+        assert all(r.startswith('lab/rollback/') for r in dr['push'].get('branches') or ['x']), 'el rollback solo se ensaya desde ramas lab/rollback/'
     # La versión nueva se lanza a mano; además, SOLO para ensayarla sin la rama principal, con un push a ramas lab/nueva-version/**.
     d = disparadores(nueva)
     assert set(d) <= {'workflow_dispatch', 'push'} and 'workflow_dispatch' in d

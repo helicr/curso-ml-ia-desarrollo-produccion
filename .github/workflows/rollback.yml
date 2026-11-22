@@ -27,6 +27,11 @@ name: Rollback de la versión del modelo
 # la rama y el PR. Requiere el mismo permiso de Actions para crear PR que nueva-version.yml (CONFIGURAR-REPOSITORIO.md).
 # =====================================================================================================================
 on:
+  # ENSAYO (sin la rama principal): un push a lab/rollback/<nombre> lo lanza sobre esa rama (que debe contener la referencia
+  # a la que se quiere volver atrás). Con «sin-comprobar» en el nombre NO se comprueba que la imagen exista en GHCR.
+  # Lanzado a mano (workflow_dispatch), mandan las entradas.
+  push:
+    branches: ['lab/rollback/**']
   workflow_dispatch:
     inputs:
       version:
@@ -57,7 +62,7 @@ jobs:
       packages: read          # para comprobar que la imagen existe en GHCR
     env:
       VERSION_PEDIDA: ${{ inputs.version }}
-      COMPROBAR_IMAGEN: ${{ inputs.comprobar_imagen }}
+      COMPROBAR_IMAGEN: ${{ (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar'))) }}
       BASE: ${{ github.ref_name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       FICHA: 04-Proyecto-Base/models/referencia.json
@@ -105,7 +110,7 @@ jobs:
           cat "$GITHUB_OUTPUT"
 
       - name: Comprobar que la imagen existe en GHCR
-        if: inputs.comprobar_imagen
+        if: (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar')))
         env:
           ETIQUETA_IMAGEN: ${{ steps.buscar.outputs.etiqueta }}
         run: |
