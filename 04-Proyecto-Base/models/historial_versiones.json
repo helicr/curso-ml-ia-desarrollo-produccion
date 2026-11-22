@@ -9,6 +9,17 @@
       "auc_test": 0.747092830088378,
       "entrenado_en": "2026-11-13T17:04:12",
       "aprobado_en": "2026-11-22T13:26:32",
+      "estado": "anterior"
+    },
+    {
+      "version": 2,
+      "etiqueta_imagen": "retencion-api:v2-3521a0421905ba28",
+      "huella_datos": "3521a0421905ba28",
+      "modelo": "regresion_logistica",
+      "fuente_datos": "completo",
+      "auc_test": 0.7955923755921499,
+      "entrenado_en": "2026-11-22T14:11:49",
+      "aprobado_en": "2026-11-22T15:16:06",
       "estado": "produccion"
     }
   ]

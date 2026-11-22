@@ -1,27 +1,28 @@
 {
   "esquema": 1,
-  "version": 1,
-  "etiqueta_imagen": "retencion-api:v1-35a94deb4e04ab4a",
-  "huella_datos": "35a94deb4e04ab4a",
+  "version": 2,
+  "etiqueta_imagen": "retencion-api:v2-3521a0421905ba28",
+  "huella_datos": "3521a0421905ba28",
   "modelo": "regresion_logistica",
   "metrica_principal": "auc",
   "metricas_test": {
-    "auc": 0.747092830088378,
-    "precision_media": 0.6589308511435474,
-    "tasa_base": 0.404,
-    "aciertos_en_el_10_mejor": 0.88
+    "auc": 0.7955923755921499,
+    "precision_media": 0.734684669020836,
+    "tasa_base": 0.3802803000394789,
+    "aciertos_en_el_10_mejor": 0.8993089832181639
   },
   "metricas_valid": {
-    "auc": 0.6982009925558312,
-    "precision_media": 0.7363814293452662,
-    "tasa_base": 0.45614035087719296,
-    "aciertos_en_el_10_mejor": 0.9090909090909091
+    "auc": 0.7855363799887698,
+    "precision_media": 0.7113448289408169,
+    "tasa_base": 0.3512854609929078,
+    "aciertos_en_el_10_mejor": 0.88470066518847
   },
   "cortes_test": [
     "2011-06-01",
     "2011-09-01"
   ],
-  "entrenado_en": "2026-11-13T17:04:12",
-  "aprobado_en": "2026-11-22T13:26:32",
-  "mlflow_version_registrada": null
+  "entrenado_en": "2026-11-22T14:11:49",
+  "aprobado_en": "2026-11-22T15:16:06",
+  "mlflow_version_registrada": null,
+  "fuente_datos": "completo"
 }
