@@ -441,6 +441,11 @@ jobs:
     permissions:
       contents: read
       packages: write
+    # Este trabajo NO descarga el repositorio (solo usa la imagen ya probada): la carpeta 04-Proyecto-Base no existe aquí,
+    # así que trabaja en la raíz. Sin esta línea falla al arrancar (visto en el ensayo del 22/11/2026, run 45028846520).
+    defaults:
+      run:
+        working-directory: .
     env:
       ETIQUETA: ${{ needs.entrenar.outputs.etiqueta }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
