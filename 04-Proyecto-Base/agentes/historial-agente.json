@@ -3,7 +3,7 @@
   "versiones": [
     {
       "version": 1,
-      "estado": "anterior",
+      "estado": "produccion",
       "etiqueta_imagen": "interfaz-agente:v1-e90daa8a20bef846",
       "huella_agente": "e90daa8a20bef846",
       "llm": "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M",
@@ -14,11 +14,11 @@
         "respuestas_correctas": 0.76
       },
       "generado_en": "2026-11-22T20:46:31",
-      "ejecucion": null
+      "ejecucion": "https://github.com/helicr/curso-ml-ia-desarrollo-produccion/actions/runs/45278456252"
     },
     {
       "version": 2,
-      "estado": "produccion",
+      "estado": "retirada",
       "etiqueta_imagen": "interfaz-agente:v2-68d30075097172de",
       "huella_agente": "68d30075097172de",
       "llm": "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M",
