@@ -1,22 +1,22 @@
 {
   "esquema": 1,
-  "version": 1,
-  "huella_agente": "e90daa8a20bef846",
+  "version": 2,
+  "huella_agente": "68d30075097172de",
   "huella_preguntas": "fbdddc9aecd09eb0",
   "llm": "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M",
   "preguntas": 25,
   "omitidas": 0,
   "metricas": {
-    "acierto_herramienta": 0.8,
-    "acierto_argumentos": 0.7,
-    "sin_inventar": 0.96,
-    "comprobaciones_ok": 0.84,
+    "acierto_herramienta": 0.9,
+    "acierto_argumentos": 0.8,
+    "sin_inventar": 1.0,
+    "comprobaciones_ok": 0.92,
     "trampas_superadas": 0.8571,
-    "respuestas_correctas": 0.76,
-    "latencia_p50_s": 19.236,
-    "latencia_p95_s": 104.937,
-    "pasos_medios": 1.56,
-    "cifras_inventadas": 1
+    "respuestas_correctas": 0.84,
+    "latencia_p50_s": 15.685,
+    "latencia_p95_s": 88.326,
+    "pasos_medios": 1.6,
+    "cifras_inventadas": 0
   },
   "conteos": {
     "preguntas": 25,
@@ -31,15 +31,13 @@
   "por_categoria": {
     "normal": {
       "preguntas": 11,
-      "correctas": 7,
+      "correctas": 9,
       "fallidas": [
         "n03",
-        "n08",
-        "n10",
         "n11"
       ],
-      "acierto_herramienta": 0.7273,
-      "sin_inventar": 0.9091
+      "acierto_herramienta": 0.8182,
+      "sin_inventar": 1.0
     },
     "trampa": {
       "preguntas": 6,
@@ -61,13 +59,13 @@
       "preguntas": 3,
       "correctas": 2,
       "fallidas": [
-        "m02"
+        "m03"
       ],
-      "acierto_herramienta": 0.0,
+      "acierto_herramienta": 1.0,
       "sin_inventar": 1.0
     }
   },
   "criticas_falladas": [],
-  "generado_en": "2026-11-22T20:46:31",
+  "generado_en": "2026-11-22T21:11:22",
   "nota": "Medido con temperatura 0 y semilla fija sobre las preguntas de oro; con tan pocas preguntas cada una vale varios puntos: la tolerancia de la puerta es provisional."
 }
