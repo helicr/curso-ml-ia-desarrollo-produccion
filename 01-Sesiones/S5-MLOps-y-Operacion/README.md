@@ -16,4 +16,4 @@ Consolidar repositorio, informe y demostración.
 ## Evidencia
 Entrega posterior a S5: viernes 11 de diciembre, a las 10:00 (hora de Perú).
 
-Laboratorio y materiales completos: pendientes de implementación y validación.
+Laboratorio y materiales: **ya hay** el laboratorio de agentes (`laboratorio-agentes/`: guía paso a paso, diapositivas, `CONFIGURAR-REPOSITORIO.md` y cuatro workflows de GitHub Actions ensayados el 22 y 23/11/2026; el extra de dos agentes solo está planteado). **Siguen pendientes** de implementación y validación la parte de MLOps clásico (deriva, alias `champion` del modelo de retención y costes), la teoría, la tarea y la evidencia.

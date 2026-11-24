@@ -1,0 +1,10 @@
+# Lo que añade la capa de agente de S5 (ia_mlops/agente): el servidor MCP «mcp-retencion» y su cliente de pruebas.
+# Se instala ENCIMA de requirements-dev.txt (pandas, scikit-learn, mlflow, fastapi, httpx, pytest...), que no se toca:
+#     pip install -r requirements-dev.txt -r requirements-agente.txt
+# Las funciones de herramientas.py y sus pruebas de nivel 1 NO necesitan este archivo; solo el servidor y las pruebas de nivel 2 (test_servidor_mcp.py,
+# que se omiten con un aviso si falta «mcp»).
+# SDK oficial de Model Context Protocol (FastMCP incluido). Probada la 1.30.0 el 22/11/2026 con Python 3.11 en Windows; trae anyio, httpx, pydantic,
+# starlette y uvicorn, que ya están en las versiones de requirements-api.txt (pip check sin conflictos).
+# FIJADA a la 1.x a propósito: servidor_mcp.py usa `from mcp.server.fastmcp import FastMCP` y las pruebas el cliente con camelCase (inputSchema, isError).
+# En la 2.x (p. ej. 2.3.0) ese import ya no existe (es mcp.server.mcpserver.MCPServer) y el cliente usa snake_case: no subir de versión sin migrar el código.
+mcp==1.30.0

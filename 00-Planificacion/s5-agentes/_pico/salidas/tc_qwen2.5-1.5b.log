@@ -1,0 +1,54 @@
+﻿qwen2.5-1.5b 0 0 lista_del_dia -> [] False False 2.37
+qwen2.5-1.5b 0 1 lista_del_dia -> [] False False 4.31
+qwen2.5-1.5b 0 2 puntuar_online -> [] False False 3.12
+qwen2.5-1.5b 0 3 puntuar_online -> ['puntuar_online'] True True 1.65
+qwen2.5-1.5b 0 4 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 1.89
+qwen2.5-1.5b 0 5 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 2.44
+qwen2.5-1.5b 0 6 version_en_produccion -> [] False False 3.32
+qwen2.5-1.5b 0 7 version_en_produccion -> [] False False 4.61
+qwen2.5-1.5b 0 8 por_que -> [] False False 15.13
+qwen2.5-1.5b 0 9 por_que -> [] False False 7.97
+qwen2.5-1.5b 0 10 None -> [] True True 5.21
+qwen2.5-1.5b 0 11 None -> [] True True 7.64
+qwen2.5-1.5b 1 0 lista_del_dia -> [] False False 3.99
+qwen2.5-1.5b 1 1 lista_del_dia -> [] False False 6.67
+qwen2.5-1.5b 1 2 puntuar_online -> [] False False 6.55
+qwen2.5-1.5b 1 3 puntuar_online -> ['puntuar_online'] True True 4.49
+qwen2.5-1.5b 1 4 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 4.61
+qwen2.5-1.5b 1 5 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 4.5
+qwen2.5-1.5b 1 6 version_en_produccion -> [] False False 5.67
+qwen2.5-1.5b 1 7 version_en_produccion -> [] False False 4.55
+qwen2.5-1.5b 1 8 por_que -> [] False False 12.62
+qwen2.5-1.5b 1 9 por_que -> [] False False 4.93
+qwen2.5-1.5b 1 10 None -> [] True True 3.33
+qwen2.5-1.5b 1 11 None -> [] True True 3.89
+qwen2.5-1.5b 2 0 lista_del_dia -> [] False False 3.08
+qwen2.5-1.5b 2 1 lista_del_dia -> [] False False 3.5
+qwen2.5-1.5b 2 2 puntuar_online -> [] False False 5.13
+qwen2.5-1.5b 2 3 puntuar_online -> ['puntuar_online'] True True 2.23
+qwen2.5-1.5b 2 4 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 3.74
+qwen2.5-1.5b 2 5 puntuar_bajo_demanda -> ['puntuar_bajo_demanda'] True True 2.9
+qwen2.5-1.5b 2 6 version_en_produccion -> [] False False 5.02
+qwen2.5-1.5b 2 7 version_en_produccion -> [] False False 4.7
+qwen2.5-1.5b 2 8 por_que -> [] False False 13.21
+qwen2.5-1.5b 2 9 por_que -> [] False False 7.34
+qwen2.5-1.5b 2 10 None -> [] True True 4.93
+qwen2.5-1.5b 2 11 None -> [] True True 6.74
+{
+ "modelo": "hf.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M",
+ "etiqueta": "qwen2.5-1.5b",
+ "semilla": 42,
+ "temperatura": 0,
+ "repeticiones": 3,
+ "carga_y_primera_llamada_s": 10.58,
+ "herramienta_correcta_pct": 30.0,
+ "args_correctos_pct": 30.0,
+ "json_valido_pct": 100.0,
+ "trampas_ok_de_2": 2,
+ "consistencia_entre_repeticiones_pct": 100.0,
+ "latencia_p50_s": 4.58,
+ "latencia_p95_s": 12.77,
+ "tokens_completion_medios": 48.2,
+ "tokens_por_s_medio_aprox": 9.8,
+ "memoria_pico_proceso_ollama_MiB": 1369
+}

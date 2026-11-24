@@ -379,7 +379,7 @@ def test_sin_bom_y_en_utf8(nombre):
 @pytest.mark.parametrize('nombre', ['generar.py', 'index.html', 'guia.md', 'CONFIGURAR-REPOSITORIO.md'])
 def test_sin_rutas_personales_ni_credenciales(nombre):
     texto = (AQUI / nombre).read_text(encoding='utf-8')
-    assert 'C:\\Users' not in texto and 'AppData' not in texto and 'BK70827' not in texto
+    assert 'C:\\Users' not in texto and 'AppData' not in texto and not re.search(r'\bBK\d{5}\b', texto)
     assert not re.search(r'[\w.]+@[\w-]+\.(com|es|org)', texto)
     assert not re.search(r'(token|password|contraseña)\s*[:=]\s*\S{6,}', texto, re.I)
     assert not re.search(r'ghp_|github_pat_', texto)

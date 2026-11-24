@@ -16,6 +16,7 @@ Endpoints:
   GET  /modos                 ¿modo demo?, «ahora», último corte de fs_produccion
   POST /demo/compra           {"cliente_id": 12346, "importe": 120.5, "unidades": 3}   solo con CURSO_DEMO=1 (copia de la base)
   POST /demo/reiniciar        vacía las compras simuladas                                solo con CURSO_DEMO=1
+  POST /asistente             {"pregunta": "..."} -> respuesta del agente y herramientas usadas   (CURSO_LLM=falso|ollama; ver asistente.py)
 
 Errores: 422 si la petición no tiene sentido · 503 si no hay modelo, no responde la API o falta la base de datos.
 
@@ -36,6 +37,7 @@ from .. import config
 from ..api.registro import configurar as configurar_registro, registrar
 from ..api.servicio import ModeloNoDisponible
 from . import pagina
+from .asistente import registrar_asistente
 from .consulta import MAXIMO_IDS, Consulta, PeticionNoValida
 from .modos import Modos, NoEncontrado, preparar_copia_demo
 from .panel import registrar_panel
@@ -163,6 +165,7 @@ def crear_app(ruta_db=None, url_api=None, carpeta_modelo=None, demo=None):
         return modos.reiniciar()
 
     registrar_panel(app, consulta)      # GET /panel y /panel/* (ver panel.py)
+    registrar_asistente(app)            # POST /asistente (la pestaña «Asistente»; ver asistente.py)
     return app
 
 

@@ -1,0 +1,67 @@
+# PROPUESTA SIN PROBAR (T00 no la ejecutó). Para ensayarla en T07 en una rama lab/agente/<escenario>.
+# Objetivo: medir en un runner estándar si Ollama + Qwen2.5-3B (o 1.5B) caben y cuánto tardan.
+name: agente-evaluar-pico
+on:
+  workflow_dispatch:
+    inputs:
+      modelo:
+        description: "Modelo GGUF de Hugging Face (el registro de Ollama puede estar bloqueado en redes corporativas, en Actions no)"
+        default: "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M"
+
+jobs:
+  medir:
+    runs-on: ubuntu-latest        # ¿4 vCPU / 16 GB en repo público? Confirmar con el paso «hardware».
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: hardware
+        run: |
+          nproc; free -m; df -h /
+          lscpu | grep -E "Model name|Flags" | head -2 | cut -c1-120
+
+      - name: Caché de modelos
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: ollama-${{ inputs.modelo }}
+
+      - name: Instalar Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh     # pendiente: fijar versión (OLLAMA_VERSION=...)
+          ollama --version
+
+      - name: Servir y descargar modelo
+        run: |
+          nohup ollama serve > ollama.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:11434/api/tags && break; sleep 1; done
+          /usr/bin/time -v ollama pull "${{ inputs.modelo }}" 2> pull.time || true
+          ollama list
+
+      - name: Dependencias
+        run: pip install openai httpx psutil "mlflow==3.18.0" "mcp<2"   # decisión pendiente: mcp<2 o mcp>=2 (ver INFORME)
+
+      - name: Medir tool calling
+        env:
+          PICO_BASE: http://127.0.0.1:11434   # el script del pico usa 11435 y serve.pid; adaptar antes de usar
+        run: |
+          # python medir_tool_calling.py "${{ inputs.modelo }}" runner 3
+          echo "adaptar medir_tool_calling.py: puerto (OLLAMA_HOST) y PID (pgrep -f 'ollama serve')"
+
+      - name: Memoria y resumen
+        if: always()
+        run: |
+          free -m
+          { echo "### Runner"; nproc; free -m; tail -n 5 ollama.log; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pico-runner
+          path: |
+            ollama.log
+            pull.time
+            salidas/

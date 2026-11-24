@@ -4,6 +4,7 @@
   Bajo demanda  variables leídas de fs_produccion (las de ayer) -> probabilidad
   Online        variables calculadas ahora; con el modo demo, «Simular una compra nueva» y la comparación con bajo demanda y lote
   Versiones     la versión en producción (models/referencia.json) frente al modelo que sirve ahora, y el historial si existe
+  Asistente     el agente de S5 (POST /asistente, ver asistente.py): pregunta, respuesta y herramientas usadas
 
 Endpoints auxiliares (JSON; el resto de datos salen de /bajo-demanda, /online, /modos y /demo/*):
   GET /panel/lote                  resumen de la última campaña y sus 20 primeros clientes   ({"disponible": false, ...} si no hay)
@@ -199,6 +200,15 @@ dt{color:var(--suave)}dd{margin:0}
 ol{margin:6px 0 0;padding-left:22px}
 code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
 .pie{color:var(--suave);font-size:.84rem;margin-top:12px}
+textarea#a-pregunta{font:inherit;width:100%;min-height:72px;padding:8px;border:1px solid var(--borde);border-radius:6px;resize:vertical;color:var(--texto);background:#fff}
+.ejemplos{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:0 0 12px}
+.ejemplos button{text-align:left}
+.respuesta{border:1px solid var(--borde);border-radius:8px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+details.herr{border:1px solid var(--borde);border-radius:8px;padding:8px 12px;margin-top:12px}
+details.herr summary{cursor:pointer;font-weight:600}
+.herr .una{margin-top:10px;padding-top:8px;border-top:1px solid var(--borde)}
+.herr .que{color:var(--suave);font-size:.84rem;margin-top:4px}
+.herr pre{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.4 ui-monospace,Consolas,monospace;background:var(--fondo-suave);border-radius:6px;padding:6px 8px}
 </style>
 </head>
 <body>
@@ -211,6 +221,7 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
   <button role="tab" id="t-demanda" data-p="demanda" aria-selected="false">Bajo demanda</button>
   <button role="tab" id="t-online" data-p="online" aria-selected="false">Online</button>
   <button role="tab" id="t-versiones" data-p="versiones" aria-selected="false">Versiones</button>
+  <button role="tab" id="t-asistente" data-p="asistente" aria-selected="false">Asistente</button>
 </nav>
 
 <section class="pestana activa" id="p-lote" role="tabpanel">
@@ -246,6 +257,23 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
 
 <section class="pestana" id="p-versiones" role="tabpanel">
   <div id="v-contenido">Cargando…</div>
+</section>
+
+<section class="pestana" id="p-asistente" role="tabpanel">
+  <p class="nota">El asistente es un <b>agente</b>: un LLM que decide qué herramienta llamar (la lista del día, puntuar a un cliente, la versión en producción, el porqué de una cifra), lee lo que devuelve y contesta. Las preguntas <b>no se guardan</b>. Con <code>CURSO_LLM=falso</code> no hay LLM real: contesta un guion que enseña los datos sin redactarlos.</p>
+  <div class="aviso" id="a-aviso"><b>Ojo con el sentido de la probabilidad:</b> es la de <b>VOLVER A COMPRAR</b> en 90 días, no la de abandonar. Un 80 % es un cliente que probablemente vuelva; un 10 %, uno que probablemente no.</div>
+  <label for="a-pregunta">Pregunta</label>
+  <textarea id="a-pregunta" maxlength="1000" placeholder="Escribe una pregunta o elige un ejemplo"></textarea>
+  <div class="fila" style="margin-top:8px"><button class="b principal" id="a-ir">Preguntar</button></div>
+  <h2>Ejemplos</h2>
+  <div class="ejemplos">
+    <button class="b" data-q="Dame los 5 clientes a los que llamar hoy y un guion para cada uno.">Dame los 5 clientes a los que llamar hoy y un guion para cada uno.</button>
+    <button class="b" data-q="El cliente 12670 acaba de comprar, ¿cuánto ha cambiado su probabilidad de volver a comprar?">El cliente 12670 acaba de comprar, ¿cuánto ha cambiado su probabilidad de volver a comprar?</button>
+    <button class="b" data-q="¿Qué versión del modelo está en producción y desde cuándo?">¿Qué versión del modelo está en producción y desde cuándo?</button>
+    <button class="b" data-q="¿Por qué el 12670 sale alto?">¿Por qué el 12670 sale alto?</button>
+  </div>
+  <div id="a-msg"></div>
+  <div id="a-salida"></div>
 </section>
 
 <p class="pie">Panel sin recursos externos. Los datos salen de la propia interfaz: <code>/panel/lote</code>, <code>/panel/versiones</code>, <code>/bajo-demanda</code>, <code>/online</code>, <code>/modos</code>.</p>
@@ -402,11 +430,35 @@ async function cargarVersiones() {
   } catch (e) { c.innerHTML = `<div class="error">${esc(e.message)}</div>`; }
 }
 
+// ---- asistente (las preguntas no se guardan: ni en el servidor ni en el navegador)
+async function preguntar() {
+  const q = $('a-pregunta').value.trim(), m = $('a-msg'), s = $('a-salida');
+  s.innerHTML = ''; m.innerHTML = '';
+  if (!q) { m.innerHTML = '<div class="aviso">Escribe una pregunta o elige un ejemplo.</div>'; return; }
+  $('a-ir').disabled = true; m.innerHTML = '<div class="nota">Pensando… con un LLM real puede tardar un minuto.</div>';
+  try {
+    const r = await pedir('/asistente', {pregunta: q});
+    m.innerHTML = '';
+    const llm = r.llm ? (r.llm.tipo === 'ollama' ? 'Ollama · ' + esc(r.llm.modelo) : 'LLM ' + esc(r.llm.tipo)) : '';
+    let h = `<div class="respuesta" id="a-respuesta">${esc(r.respuesta) || '(respuesta vacía)'}</div>`;
+    if (!r.terminado) h += '<div class="aviso" style="margin-top:12px">El agente se cortó por el límite de pasos sin terminar.</div>';
+    h += `<p class="pie">${llm} · ${esc(r.pasos)} paso(s) · ${esc(r.latencia_ms)} ms · skills: ${r.skills && r.skills.length ? r.skills.map(esc).join(', ') : 'ninguna'}</p>`;
+    h += `<details class="herr" id="a-herramientas"><summary>Herramientas usadas (${r.herramientas.length})</summary>` +
+      (r.herramientas.length ? r.herramientas.map(x => `<div class="una"><b>${esc(x.nombre)}</b>${x.error ? ' <span class="chip baja">error</span>' : ''}` +
+        `<div class="que">Argumentos</div><pre>${esc(x.argumentos == null ? '—' : JSON.stringify(x.argumentos))}</pre><div class="que">Resultado (resumido)</div><pre>${esc(x.resultado)}</pre></div>`).join('')
+        : '<p class="que">No usó ninguna herramienta.</p>') + '</details>';
+    s.innerHTML = h;
+  } catch (e) { m.innerHTML = `<div class="error">${esc(e.message)}</div>`; }
+  $('a-ir').disabled = false;
+}
+$('a-ir').addEventListener('click', preguntar);
+document.querySelectorAll('.ejemplos button').forEach(b => b.addEventListener('click', () => { $('a-pregunta').value = b.dataset.q; preguntar(); }));
+
 // ---- arranque: el botón de demo solo existe si /modos dice demo=true
 (async () => {
   try { MODOS = await pedir('/modos'); $('o-demo').hidden = !MODOS.demo; } catch (e) { $('o-demo').hidden = true; }
   const p = (location.hash || '#lote').slice(1);
-  abrir(['lote', 'demanda', 'online', 'versiones'].includes(p) ? p : 'lote');
+  abrir(['lote', 'demanda', 'online', 'versiones', 'asistente'].includes(p) ? p : 'lote');
 })();
 </script>
 </body>

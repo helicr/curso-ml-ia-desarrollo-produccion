@@ -1,0 +1,9 @@
+﻿mcp 2.3.0 modo v2
+arranque+initialize_s 6.26
+herramientas ['lista_del_dia', 'version_en_produccion']
+schema lista_del_dia {'properties': {'n': {'default': 5, 'title': 'N', 'type': 'integer'}}, 'type': 'object', 'title': 'lista_del_diaArguments'}
+call_tool_s 0.846
+resultado ['{\n  "cliente_id": 12670,\n  "prob": 0.9\n}', '{\n  "cliente_id": 12671,\n  "prob": 0.85\n}'] structured: {'result': [{'cliente_id': 12670, 'prob': 0.9}, {'cliente_id': 12671, 'prob': 0.85}]}
+version ['retencion-v7']
+recursos ['referencia://modelo']
+recurso {"modelo": "retencion", "auc": 0.77}

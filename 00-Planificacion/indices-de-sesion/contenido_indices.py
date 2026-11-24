@@ -239,7 +239,21 @@ SESIONES = [
     dict(
         id='S5', titulo='MLOps y operación', horas='4 h', carpeta=S5, estado=SOLO_README, esperados=TODOS,
         resumen='Versionado con alias de MLflow, deriva, monitoreo, registros y alertas, seguridad, rollback y costes. Tarea: repositorio, informe y demostración.',
-        enlaces=[instructor('README de S5', f'{S5}/README.md')],
+        nota='Preparado por ahora: el laboratorio de agentes (carpeta laboratorio-agentes/: servidor MCP, un LLM local con Ollama, el agente con trazas '
+             'en MLflow, skills, evaluación con 25 preguntas de oro y despliegue en GitHub con puerta de calidad, aprobación y rollback; '
+             'cuatro workflows ensayados en GitHub Actions el 22 y 23/11/2026). Sin verificar: el compose con Ollama en Docker, el agente en un Codespace '
+             'y el extra de dos agentes (solo planteado). Falta por preparar la parte de MLOps clásico: deriva, alias champion del modelo de retención y costes.',
+        enlaces=[
+            instructor('README de S5', f'{S5}/README.md'),
+            deck('Laboratorio de agentes (diapositivas)', f'{S5}/laboratorio-agentes/index.html',
+                 '30 diapositivas: servidor MCP, LLM local, agente y trazas, skills, evaluación con 25 preguntas de oro y despliegue en GitHub; capturas de runs reales.', volver=True),
+            alumno('Laboratorio de agentes: guía paso a paso', f'{S5}/laboratorio-agentes/guia.md', 'L1 a L6 con cada orden, qué debes ver y si falla; el extra, solo planteado.'),
+            alumno('Configurar el repositorio para los workflows del agente', f'{S5}/laboratorio-agentes/CONFIGURAR-REPOSITORIO.md', 'Remite a la configuración de S4 y explica lo nuevo.'),
+            alumno('Workflow: CI del agente (LLM falso y humo)', f'{S5}/laboratorio-agentes/agente-ci.yml'),
+            alumno('Workflow: evaluar con el LLM real', f'{S5}/laboratorio-agentes/agente-evaluar.yml'),
+            alumno('Workflow: nueva versión del agente', f'{S5}/laboratorio-agentes/agente-nueva-version.yml'),
+            alumno('Workflow: rollback del agente', f'{S5}/laboratorio-agentes/agente-rollback.yml'),
+        ],
     ),
 ]
 

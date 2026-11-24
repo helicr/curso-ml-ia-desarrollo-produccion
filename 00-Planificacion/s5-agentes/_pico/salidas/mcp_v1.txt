@@ -1,0 +1,20 @@
+﻿python.exe : Processing request of type ListToolsRequest
+En línea: 5 Carácter: 1
++ & $p1 -I "$d\cliente_mcp_pico.py" v1 2>&1 | Tee-Object "$d\salidas\mc ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Processing requ...istToolsRequest:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Processing request of type CallToolRequest
+Processing request of type CallToolRequest
+Processing request of type ListResourcesRequest
+Processing request of type ReadResourceRequest
+mcp 1.30.0 modo v1
+arranque+initialize_s 3.2
+herramientas ['lista_del_dia', 'version_en_produccion']
+schema lista_del_dia {'properties': {'n': {'default': 5, 'title': 'N', 'type': 'integer'}}, 'title': 'lista_del_diaArguments', 'type': 'object'}
+call_tool_s 0.015
+resultado ['{\n  "cliente_id": 12670,\n  "prob": 0.9\n}', '{\n  "cliente_id": 12671,\n  "prob": 0.85\n}'] structured: {'result': [{'cliente_id': 12670, 'prob': 0.9}, {'cliente_id': 12671, 'prob': 0.85}]}
+version ['retencion-v7']
+recursos ['referencia://modelo']
+recurso {"modelo": "retencion", "auc": 0.77}

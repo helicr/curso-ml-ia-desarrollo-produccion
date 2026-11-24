@@ -1,0 +1,217 @@
+name: Agente · Evaluar con el LLM real
+# =====================================================================================================================
+# QUÉ HACE  (a mano: Actions > «Agente · Evaluar con el LLM real» > Run workflow; o push a lab/agente-evaluar/**)
+#
+#   Niveles 4 y 5 de la pirámide del agente: pasa las PREGUNTAS DE ORO (agentes/preguntas_oro.json: 25, con trampas y
+#   pruebas de seguridad) por el agente con un LLM REAL, local, que corre DENTRO del runner con Ollama (sin claves ni coste).
+#   Mide, compara con la referencia del agente en producción y deja el rastro en MLflow.
+#
+#     evaluar  (un solo trabajo, con estos pasos)
+#       datos ─► Ollama (instalar, servir, modelo) ─► evaluar ─► resumen ─► comparar con la referencia ─► artefactos
+#
+#   · Decisión de la puerta de calidad (`python -m ia_mlops.agente.evaluacion comparar`), igual que en S4:
+#       igual      misma huella de agente (prompt + modelo + skills) que la referencia: verde, nada nuevo que publicar.
+#       aceptada   no cae más que la tolerancia (0,10, provisional) ni falla una pregunta de seguridad: verde.
+#       rechazada  cae más que la tolerancia, o falla una pregunta CRÍTICA (siempre, sin tolerancia): el trabajo sale en ROJO.
+#     Código de salida de `comparar`: 0 igual o aceptada · 1 rechazada · 2 error (preguntas distintas, falta un archivo).
+#   · Artefactos: «evaluacion-agente» (el JSON de la evaluación y el de la decisión) y «mlflow-agente» (la base SQLite de
+#     MLflow y la carpeta mlruns con trazas y métricas: se abre en local con `mlflow ui --backend-store-uri sqlite:///mlflow.db`).
+#   · Resumen del run: la tabla de métricas, la de cada categoría de preguntas y la decisión.
+#
+# OLLAMA EN EL RUNNER  (propuesta del pico técnico T00; ejecutado en Actions el 22/11/2026, run 45067018776: verde en 15 min 30 s, evaluación 780 s, ~4 GB usados de 16)
+#   · Instalación: el script oficial  `curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION=0.40.17 sh`.  La 0.40.17 es la que
+#     se midió en el pico (en Windows, zip portátil) y la que funcionó en el runner con este script (run 45067018776). El compose del
+#     proyecto fija la imagen 0.40.16 (perfil ollama, sin verificar): conviene alinearlas.
+#   · El servidor lo arrancamos nosotros (`ollama serve`) con OLLAMA_MODELS en una carpeta nuestra: así sabemos qué guarda la caché.
+#     (El script de instalación en Linux también registra un servicio de systemd que usaría otra carpeta; por eso se para antes.)
+#   · TIEMPOS Y MEMORIA, medidos: en el runner (run 45067018776) la evaluación de las 25 preguntas tardó 780 s y la máquina
+#     tenía ~4 GB usados de 16 (paso «Memoria»). En el portátil del pico (14 hilos, sin GPU): unos 14 minutos, ≈ 2,4 GB de RAM
+#     en pico para Qwen2.5-3B Q4_K_M (2,1 GB de disco). Son una referencia, no una promesa: cada run y cada máquina varían.
+#   · EL MODELO: por defecto  hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M  (el mismo que en clase y que usa la referencia del agente:
+#     misma huella). En el runner de GitHub el nombre corto  qwen2.5:3b  debería bajar del registro de Ollama sin problema, pero
+#     es OTRO fichero de pesos (otro empaquetado): saldría OTRA huella y otras métricas, y la comparación con la referencia no sería justa.
+#     Si algún día quieres probarlo, cambia el valor por defecto de «modelo» a  qwen2.5:3b  (y mide de nuevo la referencia).
+#   · La caché de Actions guarda la carpeta de modelos entre ejecuciones: la primera descarga ≈ 2 GB; las siguientes, la restauran.
+#   · OLLAMA_CONTEXT_LENGTH=8192: con el contexto por defecto, las 5 herramientas + las skills + el historial se quedan cortos.
+#   · MLFLOW_ENABLE_ASYNC_TRACE_LOGGING=false: la traza queda escrita al terminar el span (si no, a veces no se ve en el mismo proceso).
+#
+# EL TIEMPO LÍMITE (timeout-minutes) ES GENEROSO A PROPÓSITO: en un portátil de 14 hilos, 25 preguntas tardaron ~14 min; en un
+#   runner de 4 vCPU puede ser de 2 a 4 veces más, más la instalación y la descarga. 120 min es un tope de seguridad, no una
+#   previsión: cuando se mida el tiempo real en Actions se afina. (GitHub corta cualquier trabajo a las 6 h.)
+#
+# ENSAYO: un push a  lab/agente-evaluar/<nombre>  lo lanza sobre esa rama. A mano (workflow_dispatch) mandan las entradas.
+#
+# CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/agente-evaluar.yml  de TU repositorio (ver CONFIGURAR-REPOSITORIO.md).
+# SIN SECRETOS: solo permiso de lectura; el LLM es local, no hay claves.
+# =====================================================================================================================
+on:
+  push:
+    branches: ['lab/agente-evaluar/**']
+  workflow_dispatch:
+    inputs:
+      modelo:
+        description: "Modelo de Ollama. Por defecto el GGUF de Hugging Face que se usa en clase (misma huella que la referencia)"
+        type: string
+        default: "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M"
+        # Alternativa (otro empaquetado, otra huella): qwen2.5:3b
+      tolerancia:
+        description: "Cuánto puede empeorar el acierto de herramienta o «sin inventar» (vacío = 0.10 de evaluacion.py). Negativo = exigencia de mejora"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+# Una evaluación a la vez por rama (cada una ocupa un runner entero durante un buen rato); la segunda espera, no cancela.
+concurrency:
+  group: agente-evaluar-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  MLFLOW_ENABLE_ASYNC_TRACE_LOGGING: "false"
+  OLLAMA_CONTEXT_LENGTH: "8192"
+  OLLAMA_VERSION: "0.40.17"
+  MODELO: ${{ inputs.modelo || 'hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M' }}
+  TOLERANCIA_ENTRADA: ${{ inputs.tolerancia || '' }}
+  CURSO_LLM_MODELO: ${{ inputs.modelo || 'hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M' }}   # el que lee ClienteOllama
+  CURSO_LLM_URL: http://127.0.0.1:11434/v1                                                  # el puerto por defecto de Ollama
+  CURSO_MLFLOW_URI: sqlite:///${{ github.workspace }}/04-Proyecto-Base/mlflow-agente/mlflow.db
+  LAB: 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-agentes
+
+defaults:
+  run:
+    shell: bash
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  evaluar:
+    name: "Evaluar el agente con Ollama y comparar con la referencia"
+    runs-on: ubuntu-latest
+    timeout-minutes: 120          # tope generoso (ver la cabecera); en el run 45067018776 el trabajo tardó 15 min 27 s
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-*.txt
+
+      - name: Instalar dependencias fijadas (proyecto + agente)
+        run: |
+          python -m pip install -r requirements-dev.txt -r requirements-agente.txt
+          python -m pip install -e . --no-deps
+
+      - name: Hardware del runner (para medir, no para decidir)
+        run: |
+          nproc; free -m; df -h / | tail -n 1
+          lscpu | grep -E "Model name" | head -n 1
+
+      - name: Comprobar las entradas
+        run: |
+          if [ -n "$TOLERANCIA_ENTRADA" ]; then
+            valida=0
+            python -c 'import sys; v = float(sys.argv[1]); assert -1 <= v <= 1' "$TOLERANCIA_ENTRADA" 2> /dev/null || valida=1
+            if [ "$valida" = "1" ]; then
+              echo "::error title=Entrada no válida::tolerancia debe ser un número entre -1 y 1 (recibido: $TOLERANCIA_ENTRADA)"
+              exit 1
+            fi
+          fi
+          echo "modelo = $MODELO"
+
+      # Los mismos datos que usan validar-produccion.yml y puntuar-lote.yml de S4: la base operacional, el pipeline (que entrena el
+      # modelo de retención y llena curso.db) y el lote (reports/campana, de donde lee `lista_del_dia`). Con la muestra del repositorio.
+      - name: Datos, modelo de retención y lote (operacional + pipeline + explotacion)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          python -m ia_mlops.explotacion
+          mkdir -p mlflow-agente
+
+      - name: Caché de los modelos de Ollama
+        uses: actions/cache@v4
+        with:
+          path: ~/ollama-modelos
+          key: ollama-modelos-${{ env.MODELO }}-v1          # un modelo distinto = otra caché
+
+      - name: Instalar Ollama (versión fijada) y arrancar el servidor
+        run: |
+          curl -fsSL https://ollama.com/install.sh | OLLAMA_VERSION="$OLLAMA_VERSION" sh
+          ollama --version
+          sudo systemctl stop ollama 2> /dev/null || true        # el servicio que instala el script usaría otra carpeta de modelos
+          mkdir -p "$HOME/ollama-modelos"
+          OLLAMA_MODELS="$HOME/ollama-modelos" nohup ollama serve > "$RUNNER_TEMP/ollama.log" 2>&1 &
+          for _ in $(seq 1 60); do curl -sf http://127.0.0.1:11434/api/tags > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:11434/api/tags > /dev/null || { echo "::error title=Ollama no arranca::mira ollama.log en los artefactos"; cat "$RUNNER_TEMP/ollama.log"; exit 1; }
+
+      - name: Descargar el modelo (con la caché, solo comprueba)
+        run: |
+          inicio=$(date +%s)
+          ollama pull "$MODELO"
+          ollama list
+          echo "Descarga o comprobación: $(( $(date +%s) - inicio )) s" | tee -a "$RUNNER_TEMP/tiempos.txt"
+
+      # Evalúa con el LLM real. `evaluar` devuelve 0 aunque salgan malas métricas: la decisión es el paso siguiente.
+      - name: Evaluar el agente (25 preguntas de oro con Ollama + servidor MCP)
+        run: |
+          inicio=$(date +%s)
+          python -m ia_mlops.agente.evaluacion evaluar --llm ollama --json evaluacion.json | tee "$RUNNER_TEMP/evaluar.txt"
+          echo "Evaluación: $(( $(date +%s) - inicio )) s" | tee -a "$RUNNER_TEMP/tiempos.txt"
+
+      - name: Memoria que usó Ollama (a medir)
+        if: always()
+        run: |
+          free -m | tee "$RUNNER_TEMP/memoria.txt"
+          ps -C ollama -o rss,cmd | head -n 5 | tee -a "$RUNNER_TEMP/memoria.txt" || true
+
+      # El resumen se escribe aunque la comparación falle: es lo primero que lee quien abre la ejecución.
+      - name: Resumen de la evaluación (métricas y categorías)
+        if: always() && hashFiles('04-Proyecto-Base/evaluacion.json') != ''
+        run: |
+          python "../${LAB}/resumen_evaluacion.py" --informe evaluacion.json --referencia agentes/referencia-agente.json >> "$GITHUB_STEP_SUMMARY"
+          { echo; echo "### Tiempos y memoria (a medir; no son una promesa)"; echo; echo '```'; cat "$RUNNER_TEMP/tiempos.txt" "$RUNNER_TEMP/memoria.txt" 2> /dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      # La puerta de calidad. Rojo si la decisión es «rechazada» (código 1) o si no se puede comparar (código 2).
+      - name: Comparar con agentes/referencia-agente.json (la puerta de calidad)
+        run: |
+          args=(--resultados evaluacion.json --json decision.json)
+          if [ -n "$TOLERANCIA_ENTRADA" ]; then args+=(--tolerancia "$TOLERANCIA_ENTRADA"); fi
+          codigo=0
+          python -m ia_mlops.agente.evaluacion comparar "${args[@]}" | tee /tmp/comparar.txt || codigo=$?
+          { echo; echo "### Decisión de la puerta de calidad"; echo; sed 's/^/    /' /tmp/comparar.txt; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$codigo" = "1" ]; then
+            echo "::error title=Agente rechazado::$(tail -n 1 /tmp/comparar.txt)"
+          elif [ "$codigo" != "0" ]; then
+            echo "::error title=No se pudo comparar::$(tail -n 1 /tmp/comparar.txt)"
+          fi
+          exit "$codigo"
+
+      - name: Guardar los informes (evaluación y decisión)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluacion-agente
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            04-Proyecto-Base/evaluacion.json
+            04-Proyecto-Base/decision.json
+
+      - name: Guardar MLflow (base SQLite y carpeta mlruns con trazas y métricas)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-agente
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            04-Proyecto-Base/mlflow-agente
+            04-Proyecto-Base/mlruns
+
+      - name: Registro de Ollama (si algo falla)
+        if: failure()
+        run: tail -n 60 "$RUNNER_TEMP/ollama.log" || true

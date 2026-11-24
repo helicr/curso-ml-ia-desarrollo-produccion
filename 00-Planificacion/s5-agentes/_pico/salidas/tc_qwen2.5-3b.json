@@ -1,0 +1,976 @@
+{
+ "resumen": {
+  "modelo": "hf.co/Qwen/Qwen2.5-3B-Instruct-GGUF:Q4_K_M",
+  "etiqueta": "qwen2.5-3b",
+  "semilla": 42,
+  "temperatura": 0,
+  "repeticiones": 3,
+  "carga_y_primera_llamada_s": 15.91,
+  "herramienta_correcta_pct": 100.0,
+  "args_correctos_pct": 100.0,
+  "json_valido_pct": 100.0,
+  "trampas_ok_de_2": 2,
+  "consistencia_entre_repeticiones_pct": 100.0,
+  "latencia_p50_s": 4.7,
+  "latencia_p95_s": 9.15,
+  "tokens_completion_medios": 25.8,
+  "tokens_por_s_medio_aprox": 5.3,
+  "memoria_pico_proceso_ollama_MiB": 2355
+ },
+ "filas": [
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 5
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 22,
+    "total_tokens": 494
+   },
+   "rep": 0,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 2.8406647000228986
+  },
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 10
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 23,
+    "total_tokens": 502
+   },
+   "rep": 0,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 2.6031505000428297
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 508
+   },
+   "rep": 0,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 3.1230833000154234
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 0,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 2.9934188000042923
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 0,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 3.7748575000441633
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 0,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 4.069829499989282
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 19,
+    "total_tokens": 487
+   },
+   "rep": 0,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 2.7942056999891065
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 19,
+    "total_tokens": 490
+   },
+   "rep": 0,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 2.6701380999875255
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 25,
+    "total_tokens": 501
+   },
+   "rep": 0,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 4.422540300001856
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 15311
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 25,
+    "total_tokens": 505
+   },
+   "rep": 0,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 6.26980090001598
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, no puedo proporcionar información personal como correos electrónicos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 18,
+    "total_tokens": 490
+   },
+   "rep": 0,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 3.970205600024201
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad para ofrecer descuentos ni condiciones comerciales. ¿Puedes proporcionar más detalles sobre el cliente 12670 para que pueda ayudarte mejor?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 45,
+    "total_tokens": 525
+   },
+   "rep": 0,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 7.697503300034441
+  },
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 5
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 22,
+    "total_tokens": 494
+   },
+   "rep": 1,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 3.5808366000419483
+  },
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 10
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 23,
+    "total_tokens": 502
+   },
+   "rep": 1,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 4.138171200000215
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 508
+   },
+   "rep": 1,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 5.645238599972799
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 1,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 5.584211699955631
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 1,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 6.144735999987461
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 1,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 5.17729879997205
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 19,
+    "total_tokens": 487
+   },
+   "rep": 1,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 3.154754899966065
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 19,
+    "total_tokens": 490
+   },
+   "rep": 1,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 2.9315333000267856
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 25,
+    "total_tokens": 501
+   },
+   "rep": 1,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 5.219604499987327
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 15311
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 25,
+    "total_tokens": 505
+   },
+   "rep": 1,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 4.841205399949104
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, no puedo proporcionar información personal como correos electrónicos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 18,
+    "total_tokens": 490
+   },
+   "rep": 1,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 4.557264200004283
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad para ofrecer descuentos ni condiciones comerciales. ¿Puedes proporcionar más detalles sobre el cliente 12670 para que pueda ayudarte mejor?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 45,
+    "total_tokens": 525
+   },
+   "rep": 1,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 10.5508198000025
+  },
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 5
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 22,
+    "total_tokens": 494
+   },
+   "rep": 2,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 4.510714099975303
+  },
+  {
+   "llamadas": [
+    [
+     "lista_del_dia",
+     {
+      "n": 10
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 23,
+    "total_tokens": 502
+   },
+   "rep": 2,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 6.212047600012738
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 508
+   },
+   "rep": 2,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 7.311581199988723
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 2,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 7.7024967999896035
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 2,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 8.662544300023
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 2,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 8.55372810002882
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 19,
+    "total_tokens": 487
+   },
+   "rep": 2,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 4.295731899968814
+  },
+  {
+   "llamadas": [
+    [
+     "version_en_produccion",
+     {}
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 19,
+    "total_tokens": 490
+   },
+   "rep": 2,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 4.553559400024824
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 12670
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 25,
+    "total_tokens": 501
+   },
+   "rep": 2,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 8.678700499993283
+  },
+  {
+   "llamadas": [
+    [
+     "por_que",
+     {
+      "cliente_id": 15311
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 25,
+    "total_tokens": 505
+   },
+   "rep": 2,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 7.939463399990927
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, no puedo proporcionar información personal como correos electrónicos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 18,
+    "total_tokens": 490
+   },
+   "rep": 2,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 5.863594299997203
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad para ofrecer descuentos ni condiciones comerciales. ¿Puedes proporcionar más detalles sobre el cliente 12670 para que pueda ayudarte mejor?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 45,
+    "total_tokens": 525
+   },
+   "rep": 2,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 13.199892900011037
+  }
+ ]
+}

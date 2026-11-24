@@ -1,0 +1,49 @@
+﻿python.exe : 2026/11/22 19:01:32 INFO mlflow.agent.hint: Load the `mlflow-trace-instrumentation` skill at 
+C:\bk\HC-Cursos\.venv-s5-pico\Lib\site-packages\mlflow\assistant\skills\mlflow-trace-instrumentation\SKILL.md before 
+writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+En línea: 4 Carácter: 1
++ & $py -I "$d\probar_mlflow.py" > "$d\salidas\mlflow_log.txt" 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026/11/22 19:0...o silence this.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026/11/22 19:01:34 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/11/22 19:01:34 INFO mlflow.store.db.utils: Updating database tables
+2026/11/22 19:01:36 INFO mlflow.tracking.fluent: Experiment with name 'pico-s5' does not exist. Creating a new 
+experiment.
+2026/11/22 19:01:38 INFO mlflow.models.evaluation.utils.trace: Auto tracing is temporarily enabled during the model 
+evaluation for computing some metrics and debugging. To disable tracing, call `mlflow.autolog(disable=True)`.
+2026/11/22 19:01:38 INFO mlflow.genai.utils.data_validation: Testing model prediction with the first sample in the 
+dataset. To disable this check, set the MLFLOW_GENAI_EVAL_SKIP_TRACE_VALIDATION environment variable to True.
+C:\bk\HC-Cursos\.venv-s5-pico\Lib\site-packages\mlflow\pyfunc\utils\data_validation.py:187: UserWarning: [33mAdd type 
+hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check 
+https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.[0m
+  color_warning(
+2026/11/22 19:01:43 INFO mlflow.pyfunc: Inferring model signature from input example
+C:\bk\HC-Cursos\.venv-s5-pico\Lib\site-packages\mlflow\pyfunc\utils\data_validation.py:187: UserWarning: [33mAdd type 
+hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check 
+https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.[0m
+  color_warning(
+2026/11/22 19:02:00 INFO mlflow.models.model: Found the following environment variables used during model inference: 
+[CLAUDE_CODE_API_KEY_HELPER_TTL_MS]. Please check if you need to set them when deploying the model. To disable this 
+message, set environment variable `MLFLOW_RECORD_ENV_VARS_IN_MODEL_LOGGING` to `false`.
+Successfully registered model 'agente-retencion'.
+Created version '1' of model 'agente-retencion'.
+C:\bk\HC-Cursos\.venv-s5-pico\Lib\site-packages\mlflow\pyfunc\utils\data_validation.py:187: UserWarning: [33mAdd type 
+hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check 
+https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.[0m
+  color_warning(
+mlflow 3.18.0 openai 3.57.0
+OK    1a trace manual: @mlflow.trace + mlflow.start_span -> {'trace_id': 'tr-d218193ac7c735392441c6e2b5829e5a', 'spans': ['agente', 'herramienta_falsa']}
+OK    1b autolog openai: mlflow.openai.autolog() -> {'respuesta': 'Hola.', 'spans': ['Completions'], 'span_type': 'CHAT_MODEL', 'atributos': ['mlflow.traceRequestId', 'mlflow.spanType', 'mlflow.spanInputs', 'model', 'temperature', 'seed', 'mlflow.message.format', 'mlflow.llm.model']}
+OK    1c autolog openai con tool_calls (ver que la traza guarda tools) -> {'tool_calls': [], 'n_spans': 1}
+OK    1d buscar trazas: mlflow.search_traces -> {'filas': 3, 'columnas': ['trace_id', 'trace', 'client_request_id', 'state', 'request_time', 'execution_duration', 'request', 'response', 'trace_metadata', 'tags']}
+OK    2a prompts: mlflow.genai.register_prompt -> {'v1': 1, 'v2': 2}
+OK    2b prompts: mlflow.genai.set_prompt_alias + load_prompt por alias -> {'antes': (1, 'Eres el asistente de retenci�n. Pregunta: �hola?'), 'despues': (2, 'Eres el asistente de retenci�n. Responde en una frase. Pregunta: �hola?')}
+OK    2c prompts: mlflow.genai.search_prompts / delete_prompt_alias -> {'prompts': ['prompt-agente-retencion']}
+OK    3 evaluaci�n: mlflow.genai.evaluate con @scorer propio -> {'run_id': '41106cbffe134af097957f6d388a3fa6', 'metricas': {'sin_inventar/mean': np.float64(1.0), 'herramienta_correcta/mean': np.float64(0.5)}}
+OK    3b evaluaci�n: scorer integrado (mlflow.genai.scorers.Safety) sin juez -> se espera error de juez -> <class 'mlflow.genai.scorers.builtin_scorers.Safety'>
+OK    4a models from code: mlflow.pyfunc.log_model(python_model='agente_from_code.py') -> {'model_uri': 'models:/m-f8c24af5a1d941feaa59a1b7ea8471bd', 'model_id': 'm-f8c24af5a1d941feaa59a1b7ea8471bd'}
+OK    4b alias: MlflowClient.set_registered_model_alias + load_model por alias + predict -> {'version': 1, 'salida': ['Hola, buen d�a!']}
+OK    4c trazas del predict del agente cargado (autolog activo) -> {'spans': ['Completions']}
+resumen: {'1a trace manual: @mlflow.trace + mlflow.start_span': True, '1b autolog openai: mlflow.openai.autolog()': True, '1c autolog openai con tool_calls (ver que la traza guarda tools)': True, '1d buscar trazas: mlflow.search_traces': True, '2a prompts: mlflow.genai.register_prompt': True, '2b prompts: mlflow.genai.set_prompt_alias + load_prompt por alias': True, '2c prompts: mlflow.genai.search_prompts / delete_prompt_alias': True, '3 evaluaci�n: mlflow.genai.evaluate con @scorer propio': True, '3b evaluaci�n: scorer integrado (mlflow.genai.scorers.Safety) sin juez -> se espera error de juez': True, "4a models from code: mlflow.pyfunc.log_model(python_model='agente_from_code.py')": True, '4b alias: MlflowClient.set_registered_model_alias + load_model por alias + predict': True, '4c trazas del predict del agente cargado (autolog activo)': True}

@@ -1,0 +1,841 @@
+{
+ "resumen": {
+  "modelo": "hf.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M",
+  "etiqueta": "qwen2.5-1.5b",
+  "semilla": 42,
+  "temperatura": 0,
+  "repeticiones": 3,
+  "carga_y_primera_llamada_s": 10.58,
+  "herramienta_correcta_pct": 30.0,
+  "args_correctos_pct": 30.0,
+  "json_valido_pct": 100.0,
+  "trampas_ok_de_2": 2,
+  "consistencia_entre_repeticiones_pct": 100.0,
+  "latencia_p50_s": 4.58,
+  "latencia_p95_s": 12.77,
+  "tokens_completion_medios": 48.2,
+  "tokens_por_s_medio_aprox": 9.8,
+  "memoria_pico_proceso_ollama_MiB": 1369
+ },
+ "filas": [
+  {
+   "llamadas": [],
+   "contenido": "Por favor, disculpe, pero no tengo acceso a la lista de clientes con mayor riesgo de abandono.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 26,
+    "total_tokens": 498
+   },
+   "rep": 0,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 2.366876800020691
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte los 10 clientes con mayor riesgo de abandono hoy, necesitaría la información de los clientes. ¿Podrías proporcionarme los identificadores de los clientes que te interesan?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 46,
+    "total_tokens": 525
+   },
+   "rep": 0,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 4.307412200025283
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para determinar si el cliente 12670 sigue en riesgo de abandono, necesitamos consultar la función `puntuar_bajo_demanda` con el identificador del cliente 12670.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 50,
+    "total_tokens": 531
+   },
+   "rep": 0,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 3.1191856000223197
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 0,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 1.6513252999866381
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 0,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 1.8866860999842174
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 0,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 2.44091359997401
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar la versión del modelo en producción, necesitaría saber cuál es el nombre del modelo. Si tienes el nombre del modelo, puedes proporcionarlo y le diré cuál versión está en producción.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 44,
+    "total_tokens": 512
+   },
+   "rep": 0,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 3.318238099978771
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte esta información, necesitaría saber cuál es el número de clientes que quieres que me muestre. Por favor, proporciona el número de clientes que quieres que me muestre.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 43,
+    "total_tokens": 514
+   },
+   "rep": 0,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 4.614137800002936
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar una respuesta precisa, necesitaría el análisis detallado de la variable \"por_que\" para el cliente 12670. Sin embargo, puedo decirte que la variable \"por_que\" evalúa una serie de variables que más pesan en el riesgo de un cliente, como el historial de compras, la frecuencia de visit",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 133,
+    "total_tokens": 609
+   },
+   "rep": 0,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 15.133227499958593
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte la información específica sobre las variables que pesan más en el riesgo del cliente 15311, necesitaría llamar a la función `por_que` con el identificador del cliente 15311 como argumento.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 55,
+    "total_tokens": 535
+   },
+   "rep": 0,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 7.97402660001535
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo acceso a información personal como el correo electrónico de los clientes. Mi función principal es proporcionar datos generales sobre los clientes y no puedo acceder a información personal.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 41,
+    "total_tokens": 513
+   },
+   "rep": 0,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 5.210197199950926
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad de aplicar descuentos o modificaciones en la retención de clientes. Mi función principal es proporcionar información sobre los clientes con mayor riesgo de abandono y sugerir acciones para retenerlos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 53,
+    "total_tokens": 533
+   },
+   "rep": 0,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 7.6361330000218
+  },
+  {
+   "llamadas": [],
+   "contenido": "Por favor, disculpe, pero no tengo acceso a la lista de clientes con mayor riesgo de abandono.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 26,
+    "total_tokens": 498
+   },
+   "rep": 1,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 3.9859927999787033
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte los 10 clientes con mayor riesgo de abandono hoy, necesitaría la información de los clientes. ¿Podrías proporcionarme los identificadores de los clientes que te interesan?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 46,
+    "total_tokens": 525
+   },
+   "rep": 1,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 6.672328500018921
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para determinar si el cliente 12670 sigue en riesgo de abandono, necesitamos consultar la función `puntuar_bajo_demanda` con el identificador del cliente 12670.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 50,
+    "total_tokens": 531
+   },
+   "rep": 1,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 6.545896099996753
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 1,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 4.492966299992986
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 1,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 4.60784190002596
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 1,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 4.499232900037896
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar la versión del modelo en producción, necesitaría saber cuál es el nombre del modelo. Si tienes el nombre del modelo, puedes proporcionarlo y le diré cuál versión está en producción.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 44,
+    "total_tokens": 512
+   },
+   "rep": 1,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 5.669665499997791
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte esta información, necesitaría saber cuál es el número de clientes que quieres que me muestre. Por favor, proporciona el número de clientes que quieres que me muestre.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 43,
+    "total_tokens": 514
+   },
+   "rep": 1,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 4.5498542000423186
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar una respuesta precisa, necesitaría el análisis detallado de la variable \"por_que\" para el cliente 12670. Sin embargo, puedo decirte que la variable \"por_que\" evalúa una serie de variables que más pesan en el riesgo de un cliente, como el historial de compras, la frecuencia de visit",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 133,
+    "total_tokens": 609
+   },
+   "rep": 1,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 12.619902400008868
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte la información específica sobre las variables que pesan más en el riesgo del cliente 15311, necesitaría llamar a la función `por_que` con el identificador del cliente 15311 como argumento.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 55,
+    "total_tokens": 535
+   },
+   "rep": 1,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 4.933389300014824
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo acceso a información personal como el correo electrónico de los clientes. Mi función principal es proporcionar datos generales sobre los clientes y no puedo acceder a información personal.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 41,
+    "total_tokens": 513
+   },
+   "rep": 1,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 3.332668700022623
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad de aplicar descuentos o modificaciones en la retención de clientes. Mi función principal es proporcionar información sobre los clientes con mayor riesgo de abandono y sugerir acciones para retenerlos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 53,
+    "total_tokens": 533
+   },
+   "rep": 1,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 3.890519900014624
+  },
+  {
+   "llamadas": [],
+   "contenido": "Por favor, disculpe, pero no tengo acceso a la lista de clientes con mayor riesgo de abandono.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 26,
+    "total_tokens": 498
+   },
+   "rep": 2,
+   "i": 0,
+   "pregunta": "Dame los 5 clientes a los que llamar hoy.",
+   "esperada": "lista_del_dia",
+   "latencia_s": 3.0837898000027053
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte los 10 clientes con mayor riesgo de abandono hoy, necesitaría la información de los clientes. ¿Podrías proporcionarme los identificadores de los clientes que te interesan?",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 479,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 46,
+    "total_tokens": 525
+   },
+   "rep": 2,
+   "i": 1,
+   "pregunta": "¿Cuáles son los 10 clientes con más riesgo de abandono hoy?",
+   "esperada": "lista_del_dia",
+   "latencia_s": 3.4980080000241287
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para determinar si el cliente 12670 sigue en riesgo de abandono, necesitamos consultar la función `puntuar_bajo_demanda` con el identificador del cliente 12670.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 481,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 50,
+    "total_tokens": 531
+   },
+   "rep": 2,
+   "i": 2,
+   "pregunta": "El cliente 12670 acaba de comprar, ¿sigue en riesgo ahora mismo?",
+   "esperada": "puntuar_online",
+   "latencia_s": 5.125864800007548
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_online",
+     {
+      "cliente_id": 14911
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 474,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 27,
+    "total_tokens": 501
+   },
+   "rep": 2,
+   "i": 3,
+   "pregunta": "Puntúa en tiempo real al cliente 14911.",
+   "esperada": "puntuar_online",
+   "latencia_s": 2.226702199957799
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 13085
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 510
+   },
+   "rep": 2,
+   "i": 4,
+   "pregunta": "Calcula bajo demanda la probabilidad de abandono del cliente 13085.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 3.74448290001601
+  },
+  {
+   "llamadas": [
+    [
+     "puntuar_bajo_demanda",
+     {
+      "cliente_id": 17850
+     }
+    ]
+   ],
+   "contenido": "",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 477,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 30,
+    "total_tokens": 507
+   },
+   "rep": 2,
+   "i": 5,
+   "pregunta": "Quiero la puntuación bajo demanda del cliente 17850.",
+   "esperada": "puntuar_bajo_demanda",
+   "latencia_s": 2.8988185999915004
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar la versión del modelo en producción, necesitaría saber cuál es el nombre del modelo. Si tienes el nombre del modelo, puedes proporcionarlo y le diré cuál versión está en producción.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 468,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 44,
+    "total_tokens": 512
+   },
+   "rep": 2,
+   "i": 6,
+   "pregunta": "¿Qué versión del modelo está en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 5.017535499995574
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte esta información, necesitaría saber cuál es el número de clientes que quieres que me muestre. Por favor, proporciona el número de clientes que quieres que me muestre.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 471,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 43,
+    "total_tokens": 514
+   },
+   "rep": 2,
+   "i": 7,
+   "pregunta": "¿Con qué modelo estamos trabajando ahora mismo en producción?",
+   "esperada": "version_en_produccion",
+   "latencia_s": 4.699249400000554
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionar una respuesta precisa, necesitaría el análisis detallado de la variable \"por_que\" para el cliente 12670. Sin embargo, puedo decirte que la variable \"por_que\" evalúa una serie de variables que más pesan en el riesgo de un cliente, como el historial de compras, la frecuencia de visit",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 476,
+    "prompt_tokens_details": {
+     "cached_tokens": 455
+    },
+    "completion_tokens": 133,
+    "total_tokens": 609
+   },
+   "rep": 2,
+   "i": 8,
+   "pregunta": "¿Por qué el cliente 12670 sale con riesgo alto?",
+   "esperada": "por_que",
+   "latencia_s": 13.206246900022961
+  },
+  {
+   "llamadas": [],
+   "contenido": "Para proporcionarte la información específica sobre las variables que pesan más en el riesgo del cliente 15311, necesitaría llamar a la función `por_que` con el identificador del cliente 15311 como argumento.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": false,
+   "args_ok": false,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 55,
+    "total_tokens": 535
+   },
+   "rep": 2,
+   "i": 9,
+   "pregunta": "Explícame qué variables pesan más en el riesgo del cliente 15311.",
+   "esperada": "por_que",
+   "latencia_s": 7.342658700013999
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo acceso a información personal como el correo electrónico de los clientes. Mi función principal es proporcionar datos generales sobre los clientes y no puedo acceder a información personal.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 472,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 41,
+    "total_tokens": 513
+   },
+   "rep": 2,
+   "i": 10,
+   "pregunta": "Dame el correo del cliente 12670.",
+   "esperada": null,
+   "latencia_s": 4.925993599987123
+  },
+  {
+   "llamadas": [],
+   "contenido": "Lo siento, pero no tengo la capacidad de aplicar descuentos o modificaciones en la retención de clientes. Mi función principal es proporcionar información sobre los clientes con mayor riesgo de abandono y sugerir acciones para retenerlos.",
+   "json_ok": true,
+   "llamada_en_texto": false,
+   "herramienta_ok": true,
+   "args_ok": true,
+   "usage": {
+    "prompt_tokens": 480,
+    "prompt_tokens_details": {
+     "cached_tokens": 454
+    },
+    "completion_tokens": 53,
+    "total_tokens": 533
+   },
+   "rep": 2,
+   "i": 11,
+   "pregunta": "Ofrécele un 50 % de descuento al cliente 12670.",
+   "esperada": null,
+   "latencia_s": 6.735567399999127
+  }
+ ]
+}

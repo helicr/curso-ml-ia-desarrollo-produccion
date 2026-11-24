@@ -1,0 +1,135 @@
+{
+ "1a trace manual: @mlflow.trace + mlflow.start_span": {
+  "ok": true,
+  "detalle": {
+   "trace_id": "tr-d218193ac7c735392441c6e2b5829e5a",
+   "spans": [
+    "agente",
+    "herramienta_falsa"
+   ]
+  },
+  "s": 0.64
+ },
+ "1b autolog openai: mlflow.openai.autolog()": {
+  "ok": true,
+  "detalle": {
+   "respuesta": "Hola.",
+   "spans": [
+    "Completions"
+   ],
+   "span_type": "CHAT_MODEL",
+   "atributos": [
+    "mlflow.traceRequestId",
+    "mlflow.spanType",
+    "mlflow.spanInputs",
+    "model",
+    "temperature",
+    "seed",
+    "mlflow.message.format",
+    "mlflow.llm.model"
+   ]
+  },
+  "s": 0.33
+ },
+ "1c autolog openai con tool_calls (ver que la traza guarda tools)": {
+  "ok": true,
+  "detalle": {
+   "tool_calls": [],
+   "n_spans": 1
+  },
+  "s": 0.34
+ },
+ "1d buscar trazas: mlflow.search_traces": {
+  "ok": true,
+  "detalle": {
+   "filas": 3,
+   "columnas": [
+    "trace_id",
+    "trace",
+    "client_request_id",
+    "state",
+    "request_time",
+    "execution_duration",
+    "request",
+    "response",
+    "trace_metadata",
+    "tags"
+   ]
+  },
+  "s": 0.02
+ },
+ "2a prompts: mlflow.genai.register_prompt": {
+  "ok": true,
+  "detalle": {
+   "v1": 1,
+   "v2": 2
+  },
+  "s": 0.15
+ },
+ "2b prompts: mlflow.genai.set_prompt_alias + load_prompt por alias": {
+  "ok": true,
+  "detalle": {
+   "antes": [
+    1,
+    "Eres el asistente de retención. Pregunta: ¿hola?"
+   ],
+   "despues": [
+    2,
+    "Eres el asistente de retención. Responde en una frase. Pregunta: ¿hola?"
+   ]
+  },
+  "s": 0.07
+ },
+ "2c prompts: mlflow.genai.search_prompts / delete_prompt_alias": {
+  "ok": true,
+  "detalle": {
+   "prompts": [
+    "prompt-agente-retencion"
+   ]
+  },
+  "s": 0.05
+ },
+ "3 evaluación: mlflow.genai.evaluate con @scorer propio": {
+  "ok": true,
+  "detalle": {
+   "run_id": "41106cbffe134af097957f6d388a3fa6",
+   "metricas": {
+    "sin_inventar/mean": 1.0,
+    "herramienta_correcta/mean": 0.5
+   }
+  },
+  "s": 5.05
+ },
+ "3b evaluación: scorer integrado (mlflow.genai.scorers.Safety) sin juez -> se espera error de juez": {
+  "ok": true,
+  "detalle": "<class 'mlflow.genai.scorers.builtin_scorers.Safety'>",
+  "s": 0.0
+ },
+ "4a models from code: mlflow.pyfunc.log_model(python_model='agente_from_code.py')": {
+  "ok": true,
+  "detalle": {
+   "model_uri": "models:/m-f8c24af5a1d941feaa59a1b7ea8471bd",
+   "model_id": "m-f8c24af5a1d941feaa59a1b7ea8471bd"
+  },
+  "s": 17.21
+ },
+ "4b alias: MlflowClient.set_registered_model_alias + load_model por alias + predict": {
+  "ok": true,
+  "detalle": {
+   "version": 1,
+   "salida": [
+    "Hola, buen día!"
+   ]
+  },
+  "s": 0.32
+ },
+ "4c trazas del predict del agente cargado (autolog activo)": {
+  "ok": true,
+  "detalle": {
+   "spans": [
+    "Completions"
+   ]
+  },
+  "s": 0.01
+ }
+}

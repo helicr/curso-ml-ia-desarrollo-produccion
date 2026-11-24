@@ -243,7 +243,7 @@ def test_autoevaluacion_de_cuatro_preguntas(html):
 
 def test_sin_rutas_personales_ni_credenciales(html):
     for texto in (html, (AQUI / 'generar.py').read_text(encoding='utf-8')):
-        assert 'C:\\Users' not in texto and 'AppData' not in texto and 'BK70827' not in texto
+        assert 'C:\\Users' not in texto and 'AppData' not in texto and not re.search(r'\bBK\d{5}\b', texto)
         assert not re.search(r'[\w.]+@[\w-]+\.(com|es|org)', texto)
         assert not re.search(r'(token|password|contraseña)\s*[:=]', texto, re.I)
         assert not re.search(r'ghp_|github_pat_', texto)

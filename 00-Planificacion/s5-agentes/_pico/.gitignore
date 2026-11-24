@@ -1,0 +1,6 @@
+# Almacenes locales de MLflow del pico (binarios, se regeneran con los scripts): nunca al repo.
+# Las cifras del pico están en INFORME.md y en salidas/*.json, que sí se suben.
+*.db
+mlruns/
+mlartifacts/
+__pycache__/
