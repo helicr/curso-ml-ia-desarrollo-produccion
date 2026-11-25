@@ -210,9 +210,28 @@ SESIONES = [
              '(carpeta laboratorio-produccion-e2e/: lote diario, bajo demanda, online con variables al vuelo, panel, versión nueva con '
              'aprobación y rollback, ensayados en GitHub Actions el 22/11/2026) y el extra «Un LLM y el estilo de color» (carpeta extra-estilo-llm/): '
              'notebooks ejecutados y pipeline en GitHub Actions con un run real en verde (21/11/2026). '
-             'Falta por preparar el resto de la sesión (la migración a GCP en vivo; su material previo está en S3).',
+             'Ya ejecutado y borrado el 25/11/2026 en la cuenta de Google Cloud del curso: las cinco prácticas en Google Cloud '
+             '(carpeta practicas-gcp/, con sus diapositivas paso a paso, salidas y capturas reales) y el laboratorio «Cloud Journey» '
+             '(carpeta laboratorio-cloud-journey/: la API en Cloud Run desde GitHub Actions sin claves, el modelo en Vertex AI y el borrado). '
+             'Preparada: la clase «De on-premise a la nube» (carpeta clase-onpremise-a-nube/). Sin verificar: clonar el fork de un alumno en Cloud Shell, '
+             'el coste y el tiempo exacto del endpoint de Vertex.',
         enlaces=[
             instructor('README de S4', f'{S4}/README.md'),
+            deck('Clase: de on-premise a la nube (diapositivas)', f'{S4}/clase-onpremise-a-nube/index.html',
+                 '29 diapositivas: on-premise frente a nube, IaaS/PaaS/SaaS, los hiperescalares y sus servicios equivalentes, Google Cloud '
+                 '(jerarquía, IAM, WIF), servicios para el curso (Cloud Run, GKE, Dataproc, Vertex AI, Gemini), nuestro Cloud Journey '
+                 'AS-IS → TO-BE, costes y región; con fuentes.', volver=True),
+            alumno('Clase: de on-premise a la nube (texto)', f'{S4}/clase-onpremise-a-nube/guia.md', 'Lo mismo en prosa, con las notas y las fuentes.'),
+            alumno('Prácticas en Google Cloud (crear → probar → borrar)', f'{S4}/practicas-gcp/README.md',
+                   'Docker + Artifact Registry + Cloud Run, Kubernetes en GKE, Spark en Dataproc, el modelo en Vertex AI y Gemini; '
+                   'cada una con crear.sh, probar.sh y borrar.sh para Cloud Shell.'),
+            deck('Prácticas en Google Cloud, paso a paso (diapositivas)', f'{S4}/practicas-gcp/index.html',
+                 '27 diapositivas para el alumnado: por práctica, qué se aprende, qué crea, las órdenes para copiar en Cloud Shell, la salida y la captura reales, '
+                 'los fallos que de verdad tuvimos y el borrado; costes y lecciones.', volver=True),
+            deck('Laboratorio Cloud Journey: la API en Google Cloud sin claves (diapositivas)', f'{S4}/laboratorio-cloud-journey/index.html',
+                 '29 diapositivas: preparar Google Cloud, variables de GitHub, desplegar con aprobación, probar la URL, el modelo en Vertex AI y borrar todo; '
+                 'run real y capturas de la consola.', volver=True),
+            alumno('Laboratorio Cloud Journey: guía paso a paso', f'{S4}/laboratorio-cloud-journey/guia.md', 'Cada orden, qué debes ver y si falla; lo mismo que las diapositivas, en texto.'),
             deck('Laboratorio de cierre: producción e2e del caso Retail (diapositivas)', f'{S4}/laboratorio-produccion-e2e/index.html',
                  '26 diapositivas: los tres modos de explotación, el panel, configurar el repositorio, versión nueva con puerta de calidad y aprobación, y rollback; capturas de runs reales.', volver=True),
             alumno('Laboratorio de cierre: guía paso a paso', f'{S4}/laboratorio-produccion-e2e/guia.md', 'Cada orden, qué debes ver y si falla.'),

@@ -1,0 +1,136 @@
+name: Cloud Journey · desplegar la API en Google Cloud
+# =====================================================================================================================
+# QUÉ HACE (S4, Cloud Journey: de GitHub/GHCR a Google Cloud)
+#
+#   1 · construir   Entrena el modelo (datos de muestra del repositorio), construye la imagen de la API y la PRUEBA
+#                   en el runner (/salud, /listo, /modelo y una predicción). Si algo falla, no se publica nada.
+#   2 · desplegar   Espera la APROBACIÓN en el environment «produccion» (Review deployments), entra en Google Cloud
+#                   SIN CLAVES (Workload Identity Federation), sube la imagen a Artifact Registry y la despliega en
+#                   Cloud Run con una cuenta de servicio sin permisos. Después prueba la URL pública.
+#
+# DÓNDE SE COPIA: .github/workflows/desplegar-gcp.yml
+# QUÉ NECESITA (una vez; ver CONFIGURAR-GCP.md):
+#   · en Google Cloud: el script preparar-gcp-s4.sh (APIs, cuentas de servicio, WIF, presupuesto) y el repositorio
+#     «curso» de Artifact Registry;
+#   · en GitHub: las VARIABLES (no secretos) GCP_PROYECTO, GCP_REGION, GCP_PROVEEDOR_WIF, GCP_CUENTA_DESPLIEGUE,
+#     GCP_CUENTA_SERVICIO, y el environment «produccion» con revisores (el de S4).
+# SIN SECRETOS: GitHub pide a Google un token de corta vida con su propia identidad OIDC (permiso id-token: write).
+# =====================================================================================================================
+on:
+  # ENSAYO sin la rama principal: un push a lab/cloud-journey/<lo-que-sea> lo lanza. A mano: Run workflow.
+  push:
+    branches: ['lab/cloud-journey/**']
+  workflow_dispatch:
+
+concurrency:
+  group: gcp-despliegue          # dos despliegues a la vez al mismo servicio no tienen sentido
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SERVICIO: retencion-api
+  REPO_AR: curso
+
+jobs:
+  construir:
+    name: 1 · Construir y probar la imagen
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: 04-Proyecto-Base
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-dev.txt
+      - name: Instalar el proyecto
+        run: |
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -e . --no-deps
+      - name: Datos y modelo (lo que copia el Dockerfile)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          ls models/modelo_mlflow models/metadatos.json
+      - name: Construir la imagen
+        run: |
+          docker build --label "org.opencontainers.image.revision=${GITHUB_SHA}" -f deploy/docker/Dockerfile -t "$SERVICIO:prueba" .
+          docker image ls "$SERVICIO:prueba" --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
+      - name: Probar el contenedor en el runner (/salud, /listo, /modelo y una predicción)
+        run: |
+          docker run -d --name api -p 8080:8080 "$SERVICIO:prueba"
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/listo > /dev/null 2>&1 && break; sleep 2; done
+          curl -fsS http://127.0.0.1:8080/salud; echo
+          curl -fsS http://127.0.0.1:8080/modelo; echo
+          curl -fsS -X POST http://127.0.0.1:8080/predecir -H 'content-type: application/json' -d @tests/datos/cliente_ejemplo.json; echo
+          docker rm -f api
+      - name: Guardar la imagen probada para el siguiente trabajo
+        run: docker save "$SERVICIO:prueba" | gzip > /tmp/imagen.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: imagen
+          path: /tmp/imagen.tar.gz
+          retention-days: 1
+
+  desplegar:
+    name: 2 · Publicar en Artifact Registry y desplegar en Cloud Run (con aprobación)
+    needs: construir
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: produccion         # aquí se para hasta que un revisor lo apruebe (Review deployments)
+    permissions:
+      contents: read
+      id-token: write               # para que GitHub pida a Google el token de corta vida (WIF): sin claves
+    defaults:
+      run:
+        working-directory: .        # este trabajo no descarga el repositorio: no puede heredar 04-Proyecto-Base (lección de S4)
+    env:
+      IMAGEN: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROYECTO }}/curso/retencion-api:${{ github.sha }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: imagen
+          path: /tmp
+      - name: Cargar la imagen probada (la misma, no otra parecida)
+        run: |
+          gunzip -c /tmp/imagen.tar.gz | docker load
+          docker tag "$SERVICIO:prueba" "$IMAGEN"
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.GCP_CUENTA_DESPLIEGUE }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Subir la imagen a Artifact Registry
+        run: |
+          gcloud auth configure-docker "${{ vars.GCP_REGION }}-docker.pkg.dev" --quiet
+          docker push "$IMAGEN"
+      - name: Desplegar en Cloud Run
+        id: desplegar
+        run: |
+          gcloud run deploy "$SERVICIO" --image="$IMAGEN" --region="${{ vars.GCP_REGION }}" \
+            --service-account="${{ vars.GCP_CUENTA_SERVICIO }}" --port=8080 --memory=1Gi --cpu=1 \
+            --min-instances=0 --max-instances=1 --allow-unauthenticated --quiet
+          url=$(gcloud run services describe "$SERVICIO" --region="${{ vars.GCP_REGION }}" --format='value(status.url)')
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Probar el servicio en Cloud Run
+        env:
+          URL: ${{ steps.desplegar.outputs.url }}
+        run: |
+          for _ in $(seq 1 20); do curl -fsS "$URL/listo" > /dev/null 2>&1 && break; sleep 3; done
+          curl -fsS "$URL/salud"; echo
+          curl -fsS "$URL/modelo"; echo
+          {
+            echo "## Desplegada en Cloud Run"
+            echo
+            echo "- Imagen: \`$IMAGEN\`"
+            echo "- URL: $URL"
+            echo "- Cuenta de servicio del servicio: \`${{ vars.GCP_CUENTA_SERVICIO }}\` (sin permisos)"
+            echo "- Entrada en Google Cloud **sin claves** (Workload Identity Federation)"
+          } >> "$GITHUB_STEP_SUMMARY"

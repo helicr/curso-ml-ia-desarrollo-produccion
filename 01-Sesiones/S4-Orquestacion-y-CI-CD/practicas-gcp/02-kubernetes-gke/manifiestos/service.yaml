@@ -1,0 +1,19 @@
+# Service = un nombre y una IP estables DELANTE de los pods (que nacen y mueren con IPs distintas).
+# ClusterIP: solo accesible dentro del clúster. Se llega desde Cloud Shell con `kubectl port-forward` (sin IP publica ni balanceador de pago).
+# Para exponerlo a Internet bastaria `type: LoadBalancer`, pero crea una IP publica con coste: no se hace en esta practica.
+apiVersion: v1
+kind: Service
+metadata:
+  name: retencion-api
+  namespace: curso
+  labels:
+    app: retencion-api
+    curso: ml-ia
+spec:
+  type: ClusterIP
+  selector:
+    app: retencion-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

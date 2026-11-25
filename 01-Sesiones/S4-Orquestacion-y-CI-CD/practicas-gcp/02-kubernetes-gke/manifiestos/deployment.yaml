@@ -1,0 +1,57 @@
+# Deployment = «quiero N copias (pods) de esta imagen y que siempre haya N». Basado en 04-Proyecto-Base/deploy/kubernetes/deployment.yaml.
+# __IMAGEN__ lo sustituye crear.sh por la imagen de Artifact Registry (la de la practica 01).
+#
+# Diferencias con el laboratorio de kind (a proposito):
+#   * replicas: 1 al empezar (en Autopilot se paga por lo que piden los pods); en probar.sh se escala a 2 para verlo.
+#   * resources: Autopilot fija los limites iguales a lo que pides, asi que se piden valores razonables y iguales.
+#   * La imagen no se carga a mano (kind load): el nodo la DESCARGA de Artifact Registry.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retencion-api
+  namespace: curso
+  labels:
+    app: retencion-api
+    curso: ml-ia
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retencion-api
+  template:
+    metadata:
+      labels:
+        app: retencion-api
+        curso: ml-ia
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: __IMAGEN__
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CURSO_LOG_NIVEL
+              value: INFO
+          readinessProbe:          # ¿puede recibir trafico? si da 503 (sin modelo), el Service no le manda peticiones
+            httpGet:
+              path: /listo
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:           # ¿sigue vivo? si deja de responder, Kubernetes reinicia el contenedor
+            httpGet:
+              path: /salud
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi

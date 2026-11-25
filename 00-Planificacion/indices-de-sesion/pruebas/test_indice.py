@@ -81,8 +81,8 @@ def test_estado_solo_readme_es_verdad(i, s):
         # Un extra (carpeta «extra-*») puede adelantarse a la sesión sin que la sesión esté preparada; el índice lo dice en su nota.
         # Igual un laboratorio («laboratorio-*») que se adelanta, p. ej. el de cierre de S4.
         hay_extra = any(a.startswith('extra-') for a in archivos)
-        hay_lab = any(a.startswith('laboratorio-') for a in archivos)
-        archivos = {a for a in archivos if not a.startswith(('extra-', 'laboratorio-'))}
+        hay_lab = any(a.startswith(('laboratorio-', 'clase-', 'practicas-')) for a in archivos)
+        archivos = {a for a in archivos if not a.startswith(('extra-', 'laboratorio-', 'clase-', 'practicas-'))}
         if hay_extra:
             assert 'extra' in (s.get('nota') or ''), f'{s["id"]} tiene una carpeta extra-*: dilo en su «nota» de contenido_indices.py'
         if hay_lab:

@@ -1,0 +1,7 @@
+# Un espacio de nombres propio: todo lo de la practica vive aqui y no se mezcla con nada mas.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: curso
+  labels:
+    curso: ml-ia
