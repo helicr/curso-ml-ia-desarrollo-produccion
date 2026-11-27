@@ -132,6 +132,16 @@ bash preparar-gcp-s4.sh
 
 **Si falla.** `PERMISSION_DENIED` al vincular la facturación: tu cuenta no administra esa cuenta de facturación. Un error en un bloque **detiene** el script: corrige y vuelve a ejecutarlo; lo que ya existe no se vuelve a crear.
 
+**Si lo repites un día después de borrarlo.** Visto el 26/11/2026: el bloque 5 daba `ERROR: (gcloud.iam.workload-identity-pools.providers.create-oidc) NOT_FOUND: Requested entity was not found`. Google **no borra del todo** un pool de identidades ni su proveedor: los guarda **30 días** en estado `DELETED` y no deja reutilizar el nombre. El script de esta carpeta ya lo detecta y los restaura solo (verás «estaba borrado: lo restauro»). Si usas una copia antigua del script, se hace a mano en Cloud Shell:
+
+```bash
+gcloud iam workload-identity-pools describe github --location=global --format='value(state)'
+gcloud iam workload-identity-pools undelete github --location=global
+gcloud iam workload-identity-pools providers undelete github --workload-identity-pool=github --location=global
+```
+
+El primer comando debe decir `DELETED`; después de los otros dos, `ACTIVE`. Repite entonces el script.
+
 ### 3.3 Qué dejó hecho el script
 
 | Bloque | Qué hace | Por qué |

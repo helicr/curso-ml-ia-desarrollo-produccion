@@ -10,7 +10,7 @@ Después se comprueba que Spark da lo mismo que un cálculo local en Python (par
 
 - **Tiempo estimado:** 15-25 min (estimado, sin medir; un lote suele tardar minutos por arrancar y terminar).
 - **Coste aproximado:** sin dato ([Dataproc sin servidor](https://cloud.google.com/dataproc-serverless/pricing) cobra por recursos y tiempo del lote; el dato es pequeño, 22 117 líneas).
-- **Región:** `southamerica-west1` para el bucket y el lote. **Dataproc sin servidor en Santiago: sin verificar.** Si falla por región, `export CURSO_REGION_SPARK=southamerica-east1` y repite (el bucket se crea en esa región).
+- **Región:** `southamerica-west1` para el bucket y el lote. **Dataproc sin servidor funcionó en Santiago** (probado el 25/11/2026 en la cuenta del curso). Si en tu cuenta falla por región, `export CURSO_REGION_SPARK=southamerica-east1` y repite (el bucket se crea en esa región).
 - **Runtime:** `2.3` (LTS, soporte hasta 2027/11/26, [tabla oficial](https://docs.cloud.google.com/dataproc-serverless/docs/concepts/versions/spark-runtime-versions)). El runtime por defecto es 2.2 y el más reciente es 4.0.
 
 ## Qué crea
@@ -19,6 +19,7 @@ Después se comprueba que Spark da lo mismo que un cálculo local en Python (par
 | Bucket de Cloud Storage (sin acceso público) | `project-curso-ml-ia-curso-ml-dataproc` |
 | Lote de Dataproc sin servidor | `curso-ventas-AAAAMMDD-HHMMSS` (etiqueta `curso=ml-ia`) |
 | Rol `roles/dataproc.worker` a la cuenta de Compute por defecto | solo si no lo tenía; `borrar.sh` lo quita (marca local en `~/.curso-ml-gcp/`) |
+| **Dos buckets que crea Dataproc él solo** | `dataproc-staging-<región>-<nº de proyecto>-…` y `dataproc-temp-…`: no los crea `crear.sh`, y quedan con restos del lote. `borrar.sh` los borra **solo si ya no queda ningún lote ni clúster de Dataproc en la región** (son compartidos por todo el Dataproc del proyecto) |
 
 Red: el lote usa la subred `default` de la región; Dataproc sin servidor activa en ella el acceso privado a las APIs de Google ([documentación](https://docs.cloud.google.com/dataproc-serverless/docs/concepts/network)). Si la organización no tiene red `default`, ver «Si falla».
 
@@ -31,7 +32,7 @@ Red: el lote usa la subred `default` de la región; Dataproc sin servidor activa
 ## Qué debes ver
 - `exportar_datos.py`: `22117 lineas exportadas` (con la muestra del repositorio; si ejecutas con otros datos, otra cifra).
 - `probar.sh`: `estado: SUCCEEDED`; en `salida/por_pais/` y `salida/rfm/` un fichero `part-….csv` (+ `_SUCCESS`); la tabla de países ordenada por monto; y `OK: N paises; facturas, clientes y monto coinciden con el calculo local.`
-- `borrar.sh`: sin lotes y sin el bucket.
+- `borrar.sh`: sin lotes, sin el bucket de la práctica y sin los dos buckets `dataproc-staging-…` / `dataproc-temp-…` (la última lista debe decir «ningun bucket de la practica ni de Dataproc»). Si tu proyecto tiene otros lotes o clústeres de Dataproc, los deja y lo avisa.
 
 ## Si falla
 | Síntoma | Causa probable | Qué hacer |

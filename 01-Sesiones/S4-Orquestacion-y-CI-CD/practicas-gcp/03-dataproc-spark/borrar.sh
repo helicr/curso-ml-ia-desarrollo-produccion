@@ -20,6 +20,26 @@ else
   echo "No existe (nada que borrar)."
 fi
 
+aviso "Buckets que Dataproc crea por su cuenta (dataproc-staging-… y dataproc-temp-…)"
+# Dataproc sin servidor crea él solo DOS buckets por proyecto y región, que no son de crear.sh (visto el 26/11/2026: seguían vivos,
+# con restos del lote, tras borrar la práctica). Son compartidos por todo el Dataproc del proyecto: se borran SOLO si ya no queda
+# ningún lote ni clúster de Dataproc en la región (nadie más los usa); si queda alguno, se dejan y se avisa.
+OTROS_LOTES="$( { gcloud dataproc batches list --project "$PROYECTO" --region "$REGION_SPARK" --format 'value(name)' 2>/dev/null || true; } | grep -c . || true )"
+CLUSTERES="$( { gcloud dataproc clusters list --project "$PROYECTO" --region "$REGION_SPARK" --format 'value(clusterName)' 2>/dev/null || true; } | grep -c . || true )"
+if [ "$OTROS_LOTES" = "0" ] && [ "$CLUSTERES" = "0" ]; then
+  BUCKETS_DATAPROC="$(gcloud storage buckets list --project "$PROYECTO" --format 'value(name)' | grep -E "^dataproc-(staging|temp)-${REGION_SPARK}-" || true)"
+  if [ -n "$BUCKETS_DATAPROC" ]; then
+    for B in $BUCKETS_DATAPROC; do
+      echo "Borro gs://$B"
+      gcloud storage rm -r "gs://$B" --project "$PROYECTO"
+    done
+  else
+    echo "No hay buckets de Dataproc (nada que borrar)."
+  fi
+else
+  echo "Quedan lotes ($OTROS_LOTES) o clústeres ($CLUSTERES) de Dataproc: no toco sus buckets."
+fi
+
 aviso "Rol $ROL_WORKER (solo si lo concedio crear.sh)"
 if [ -f "$MARCA_ROL" ]; then
   CUENTA="$(cat "$MARCA_ROL")"
@@ -34,4 +54,4 @@ rm -rf "$TRABAJO"
 
 aviso "Lo que queda (debe estar vacio)"
 gcloud dataproc batches list --project "$PROYECTO" --region "$REGION_SPARK" || true
-gcloud storage buckets list --project "$PROYECTO" --format 'value(name)' | grep "$NOMBRE_BUCKET" || echo "(ningun bucket $NOMBRE_BUCKET)"
+gcloud storage buckets list --project "$PROYECTO" --format 'value(name)' | grep -E "$NOMBRE_BUCKET|^dataproc-(staging|temp)-" || echo "(ningun bucket de la practica ni de Dataproc)"

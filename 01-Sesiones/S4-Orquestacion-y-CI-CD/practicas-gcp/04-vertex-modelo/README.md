@@ -48,7 +48,7 @@ Con el cliente `activo`, la petición es `{"instances": [[35.0, 6.0, 1250.4, 208
 
 ## Qué debes ver
 - `crear.sh`: `scikit-learn 1.6.1 … AUC valid = 0.69xx` junto al `AUC valid del modelo del proyecto … 0.6982` (casi iguales), `Created Vertex AI endpoint`, y al desplegar `Deployed a model to the endpoint`.
-- `probar.sh`: una respuesta `predictions` con un valor por cliente. **Lo esperado (sin verificar):** el contenedor pre-construido llama a `predict()` y devuelve la **clase** (0 o 1), no la probabilidad; `comparar_respuesta.py` la compara con la clase del modelo en local y muestra también su probabilidad. Si el contenedor devolviera probabilidades, también lo acepta. Para servir la probabilidad desde Vertex haría falta un contenedor propio (rutina de predicción personalizada); no se hace aquí.
+- `probar.sh`: una respuesta `predictions` con un valor por cliente. **Comprobado el 25/11/2026 (laboratorio Cloud Journey):** el contenedor pre-construido llama a `predict()` y devuelve la **clase** (0 o 1), no la probabilidad; `comparar_respuesta.py` la compara con la clase del modelo en local y muestra también su probabilidad. Si el contenedor devolviera probabilidades, también lo acepta. Para servir la probabilidad desde Vertex haría falta un contenedor propio (rutina de predicción personalizada); no se hace aquí.
 - `borrar.sh`: `undeploy`, endpoint y modelo borrados, bucket fuera, y los listados `ai endpoints list` y `ai models list` vacíos.
 
 ## Si falla

@@ -274,10 +274,21 @@ def test_preparar_imprime_las_cinco_variables_y_limita_wif_al_repositorio():
     assert 'projects add-iam-policy-binding' in s and 'SA_SERVICIO@$PROYECTO.iam.gserviceaccount.com" \\\n    --role="$ROL"' not in s
 
 
-def test_preparar_es_copia_literal_del_script_validado():
-    # el script validado el 25/11/2026 se copia tal cual: sus 74 líneas y su huella de contenido no cambian
+def test_preparar_distingue_activo_de_borrado_y_conserva_lo_validado():
+    # El 25/11/2026 se ejecutó entero (73 líneas) en la cuenta del curso. El 26/11 se vio que, un día después de borrarlo todo, un
+    # pool de WIF en estado DELETED respondía a «describe»: el script lo daba por existente y create-oidc fallaba con NOT_FOUND.
+    # Ahora mira el ESTADO y restaura lo borrado (93 líneas). Ejecutado de verdad el 26/11: con todo ACTIVE («ya existe», FIN · todo
+    # listo). Los bloques DELETED NO se han ejecutado a través del script (solo sus órdenes, a mano: pool y proveedor quedaron ACTIVE).
     s = PREPARAR.read_bytes()
-    assert s.count(b'\n') == 73 and not s.startswith(b'\xef\xbb\xbf') and b'\r' not in s
+    assert not s.startswith(b'\xef\xbb\xbf') and b'\r' not in s
+    t = s.decode('utf-8')
+    for clave in ("--format='value(state)'", 'case "$ESTADO_POOL"', 'case "$ESTADO_PROV"', 'workload-identity-pools undelete',
+                  'providers undelete', 'providers update-oidc', 'DELETED)'):
+        assert clave in t, clave
+    # lo validado el 25/11 sigue ahí
+    for linea in ('gcloud billing projects link', 'roles/artifactregistry.writer', 'roles/run.admin', 'roles/iam.workloadIdentityUser',
+                  'gcloud billing budgets create', 'GCP_PROVEEDOR_WIF=', 'FIN · todo listo'):
+        assert linea in t, linea
 
 
 def test_borrar_es_idempotente_no_borra_el_proyecto_ni_sa_curso_ml_ia_y_lista_lo_que_queda():

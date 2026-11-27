@@ -10,6 +10,18 @@ Todas las órdenes se ejecutan desde la carpeta del proyecto:
 cd 04-Proyecto-Base
 ```
 
+## 0. Traer lo último de `develop`
+
+Un Codespace **no se actualiza solo**: si el profesor ha publicado cambios después de crearlo, tráelos antes de empezar.
+
+```bash
+git fetch origin
+git status -sb          # debe decir «behind N»
+git pull origin develop
+```
+
+Si `develop` no existe en tu fork, lo hiciste con «Copy the `main` branch only» (ver `CONFIGURAR-REPOSITORIO.md`, apartado 0). Si alguna orden de `curl` de esta página no te funciona en tu portátil con Windows, mira las variantes para `cmd` y PowerShell 5.1 en la guía, apartado 4.1.
+
 ## 1. Preparar los datos y el modelo
 
 El compose no crea los datos: se dejan antes con tres órdenes.

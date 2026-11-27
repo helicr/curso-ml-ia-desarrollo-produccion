@@ -45,13 +45,33 @@ gcloud iam service-accounts add-iam-policy-binding "$SA_SERVICIO@$PROYECTO.iam.g
 echo "  roles/iam.serviceAccountUser sobre $SA_SERVICIO (para desplegar el servicio con esa identidad)"
 
 paso "5 · Federación de identidades para GitHub Actions (sin claves)"
-gcloud iam workload-identity-pools describe "$POOL" --location=global >/dev/null 2>&1 || \
-  gcloud iam workload-identity-pools create "$POOL" --location=global --display-name="GitHub Actions"
-gcloud iam workload-identity-pools providers describe "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global >/dev/null 2>&1 || \
-  gcloud iam workload-identity-pools providers create-oidc "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global \
-    --display-name="GitHub" --issuer-uri="https://token.actions.githubusercontent.com" \
-    --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref" \
-    --attribute-condition="assertion.repository=='$REPO_GITHUB'"
+# Un pool o un proveedor BORRADO sigue respondiendo a «describe» (estado DELETED) durante 30 días y su nombre no se puede
+# reutilizar: por eso se mira el ESTADO y no solo si responde. Visto el 26/11/2026 al repetir el laboratorio un día después de
+# borrarlo: el script daba por bueno el pool borrado y «create-oidc» fallaba con NOT_FOUND.
+ESTADO_POOL="$(gcloud iam workload-identity-pools describe "$POOL" --location=global --format='value(state)' 2>/dev/null || true)"
+case "$ESTADO_POOL" in
+  ACTIVE) echo "  El pool $POOL ya existe." ;;
+  DELETED)
+    echo "  El pool $POOL estaba borrado (Google lo guarda 30 días): lo restauro."
+    gcloud iam workload-identity-pools undelete "$POOL" --location=global --format='value(name)' >/dev/null ;;
+  *) gcloud iam workload-identity-pools create "$POOL" --location=global --display-name="GitHub Actions" ;;
+esac
+
+ESTADO_PROV="$(gcloud iam workload-identity-pools providers describe "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global --format='value(state)' 2>/dev/null || true)"
+case "$ESTADO_PROV" in
+  ACTIVE) echo "  El proveedor $PROVEEDOR ya existe." ;;
+  DELETED)
+    echo "  El proveedor $PROVEEDOR estaba borrado: lo restauro."
+    gcloud iam workload-identity-pools providers undelete "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global --format='value(name)' >/dev/null
+    sleep 5 ;;
+  *) gcloud iam workload-identity-pools providers create-oidc "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global \
+       --display-name="GitHub" --issuer-uri="https://token.actions.githubusercontent.com" \
+       --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.ref=assertion.ref" \
+       --attribute-condition="assertion.repository=='$REPO_GITHUB'" ;;
+esac
+# Un proveedor restaurado conserva la condición de ANTES: se pone la de ahora (por si ahora es otro repositorio).
+gcloud iam workload-identity-pools providers update-oidc "$PROVEEDOR" --workload-identity-pool="$POOL" --location=global \
+  --attribute-condition="assertion.repository=='$REPO_GITHUB'" --format='value(name)' >/dev/null
 gcloud iam service-accounts add-iam-policy-binding "$SA_DESPLIEGUE@$PROYECTO.iam.gserviceaccount.com" \
   --role=roles/iam.workloadIdentityUser \
   --member="principalSet://iam.googleapis.com/projects/$NUMERO/locations/global/workloadIdentityPools/$POOL/attribute.repository/$REPO_GITHUB" \

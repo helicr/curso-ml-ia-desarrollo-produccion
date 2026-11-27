@@ -715,6 +715,7 @@ def construir():
         'Lee el **primer paso en rojo**: ahí está el error.',
         'Los jobs siguientes salen **skipped**: no tienen nada que leer.',
         'Descarga el artefacto `nb-…` de ese job para ver en qué celda se rompió.',
+        'En local: «No module named torch» = falta `python -m pip install -r requisitos-extra-estilo.txt` con el Python del kernel; `ConnectError` = proxy, usa el Codespace; el 03 y el 05 se leen sin ejecutar.',
         'Avisos que **no** son fallo: «Node.js 20 is deprecated» y los de Hugging Face sobre peticiones sin autenticar.'])}</div>
  </div>
 </div>''',

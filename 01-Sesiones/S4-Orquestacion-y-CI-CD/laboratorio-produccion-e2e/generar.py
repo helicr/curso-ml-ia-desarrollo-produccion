@@ -289,7 +289,9 @@ def construir():
         'Los cuatro: `puntuar-lote.yml`, `validar-produccion.yml`, `nueva-version.yml` y `rollback.yml`.',
         'El `cp` copia los cuatro de una vez (llaves de bash); en otra terminal, cópialos uno a uno.']) + si_falla([
         '`cp: cannot stat …`: tu fork no tiene la carpeta del laboratorio; haz **Sync fork** o copia cada YAML con «Copiar el archivo».',
-        'Sin Actions activado en el fork no aparecerá ningún run: pestaña Actions del fork.']) + '''
+        'Sin Actions activado en el fork no aparecerá ningún run: pestaña Actions del fork.',
+        'El fork debe hacerse con «Copy the `main` branch only» **desmarcado**: si no, no tiene `develop` y fallan «Create codespace on develop» y `git switch develop`.',
+        'Un Codespace no se actualiza solo: `git fetch origin`, `git status -sb` (debe decir «behind N») y `git pull origin develop`.']) + '''
  </div></div>''',
           'Preparación. Dos formas de tener los cuatro YAML: copiarlos de la carpeta del laboratorio, o abrir cada uno y pegarlo. El push se deja para después de configurar el repositorio: así el primer push lanza el lote y la validación y ya hay environment. Que nadie trabaje en el repositorio del curso: tiene que ser su fork, o no podrán subir.')
 
@@ -298,14 +300,14 @@ def construir():
  <div class="col">
   <div class="card"><h3>A · El environment <span class="mono">produccion</span></h3><ol class="ol sm">
    <li><b>Settings</b> › <b>Environments</b> › <b>New environment</b></li>
-   <li>Nombre exacto: <span class="mono">produccion</span> (sin tilde)</li>
+   <li>Nombre exacto: <span class="mono">produccion</span> (sin tilde; no <span class="mono">prod</span>)</li>
    <li>Marca <b>Required reviewers</b> y añádete a ti mismo</li>
    <li><b>Save protection rules</b></li></ol></div>
   <div class="card"><h3>B · Permiso para abrir PR</h3><ol class="ol sm">
    <li><b>Settings</b> › <b>Actions</b> › <b>General</b> › <b>Workflow permissions</b></li>
    <li>Marca <b>Allow GitHub Actions to create and approve pull requests</b></li>
    <li><b>Save</b></li></ol></div>
-  <div class="callout">Sin A, la publicación <b>no espera</b> a nadie. Sin B, el último paso falla.</div>
+  <div class="callout">Sin A (o con otro nombre), la publicación <b>no espera</b> a nadie. Sin B, el último paso falla.</div>
  </div>
  <div class="capcol">{rotulo_capturas(['cfg-01-environments.webp', 'cfg-02-environment-revisores.webp', 'cfg-03-actions-permisos.webp', 'cfg-04-workflow-permissions.webp'])}
   <div class="thumbs t2">{cap('cfg-01-environments.webp', 175)}{cap('cfg-02-environment-revisores.webp', 175)}{cap('cfg-03-actions-permisos.webp', 175)}{cap('cfg-04-workflow-permissions.webp', 175)}</div>
@@ -321,6 +323,7 @@ def construir():
         ['`schedule`', '**todos los días a las 05:17 UTC** (`cron: \'17 5 * * *\'`); un minuto «raro» a propósito, porque a las horas en punto GitHub va cargado'],
         ['`workflow_dispatch`', '**Run workflow** a mano, con tres entradas: `capacidad` (0.10 = el 10 %), `corte` e `imagen` (construir o ghcr)'],
         ['`push` a `lab/**`', 'solo si cambia el workflow o `explotacion.py`: así se prueba sin esperar al día siguiente']]) + '''</div>
+  <div class="callout">El push arranca <b>dos</b> runs: «Puntuar por lotes» (3 cajas) y «Validar la producción completa» (1 caja). No es un error. Si el push se rechaza con <b>non-fast-forward</b>, la rama ya existe en ese repositorio: no hagas <span class="mono">git pull</span> ni <span class="mono">--force</span>; renómbrala con <span class="mono">git branch -m lab/produccion-e2e lab/produccion-e2e-2</span>.</div>
   <div class="callout"><b>En un fork, el <span class="mono">schedule</span> viene desactivado</b>. Se lanza con Run workflow; y Run workflow solo aparece si el workflow está en la rama por defecto: por eso en el laboratorio se dispara con el <b>push</b>.</div>
  </div>
  <div class="col">

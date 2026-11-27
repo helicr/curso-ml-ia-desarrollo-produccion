@@ -9,7 +9,10 @@ Antes de nada, copia a tu repositorio los workflows de este laboratorio (no hace
 | `nueva-version.yml` | `.github/workflows/nueva-version.yml` |
 | `rollback.yml` | `.github/workflows/rollback.yml` |
 
-## 0. Activar las Actions (solo en un *fork*)
+## 0. Hacer el fork con `develop` y activar las Actions (solo en un *fork*)
+
+**Al crear el fork, desmarca «Copy the `main` branch only».** Todo el material del laboratorio está en la rama `develop`; si el fork solo copia `main`, no tendrá `develop` y fallarán «Create codespace on develop» y `git switch develop`. Si ya lo hiciste así, entra en tu fork, **Code** › ramas › **View all branches** y, si `develop` no está, prueba **Sync fork**; si no aparece, borra el fork y rehazlo con la casilla desmarcada.
+
 
 Los workflows de un fork **vienen desactivados**. En la pestaña **Actions** de tu fork pulsa el botón verde **«I understand my workflows, go ahead and enable them»** (el texto exacto puede cambiar). Los `schedule` (la puntuación diaria por lotes) tampoco corren solos en un fork: se lanzan a mano con **Run workflow**.
 
@@ -18,7 +21,7 @@ Los workflows de un fork **vienen desactivados**. En la pestaña **Actions** de 
 Es lo que hace que la publicación **espere a una persona**.
 
 1. **Settings** > **Environments** > **New environment**.
-2. Nombre exactamente `produccion` (sin tilde, en minúsculas) > **Configure environment**.
+2. Nombre exactamente `produccion` (sin tilde, en minúsculas; **no** `prod`) > **Configure environment**.
 3. Marca **Required reviewers** y añade a quien deba aprobar (en tu fork, **tú mismo**).
 4. Guarda con **Save protection rules**.
 

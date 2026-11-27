@@ -71,6 +71,33 @@ Fuente: `INFORME.md` del estudio técnico (tabla «Tiempos, tamaños y memoria»
 - **Software:** Python 3.11 y las versiones fijadas en [`requisitos-extra-estilo.txt`](requisitos-extra-estilo.txt) (`torch`/`torchvision` en CPU, `transformers`, `peft`, `accelerate`, `mlflow`, `scikit-learn`, `scikit-image`…). Van aparte de los requisitos del proyecto base.
 - **Descargas:** el modelo SmolVLM-256M-Instruct (493,9 MB), MobileNetV3-small (9,8 MB) y las fotos de Oxford-IIIT Pet (~792 MB).
 
+## Si falla (al ejecutar los notebooks en tu ordenador o en un Codespace)
+
+**`ModuleNotFoundError: No module named 'torch'` en el notebook 00.** El kernel que usa el notebook no tiene las librerías del extra: van **aparte** de las del proyecto base y no se instalan con ellas. Instálalas con **el mismo Python que usa el kernel**:
+
+```bash
+python -m pip install -r requisitos-extra-estilo.txt
+```
+
+Para saber qué Python es, ejecuta en una celda `import sys; print(sys.executable)` y usa esa ruta en lugar de `python`. Después **reinicia el kernel** y comprueba, en una celda:
+
+```python
+import torch; print(torch.__version__)
+```
+
+Debe imprimir `2.15.0+cpu`. En un portátil con proxy corporativo, `pip` puede rechazar el certificado: añade `--cert <ruta-del-bundle-de-certificados>` a la orden de `pip`.
+
+**`ConnectError` al bajar el modelo de Hugging Face.** En una red corporativa con proxy, la descarga del modelo falla. Usa un **Codespace** (sin proxy). En su terminal:
+
+```bash
+conda activate env-ia-mlops
+python -m pip install -r requisitos-extra-estilo.txt
+```
+
+y elige como kernel del notebook `env-ia-mlops` (`/opt/conda/envs/env-ia-mlops/bin/python`).
+
+**Los notebooks 03 y 05 tardan mucho.** El 03 (LoRA) tarda unos 24 min y el 05 unos 23 min, en un portátil de 12 núcleos; en un Codespace de 2 núcleos pesan aún más (sin dato de cuánto). No hace falta ejecutarlos: **se pueden leer sin ejecutar**, porque se entregan con sus salidas guardadas. Si quieres ver que funcionan, la alternativa es el **pipeline de GitHub Actions** ([`guia-pipeline.md`](guia-pipeline.md)), que los ejecuta con parámetros pequeños.
+
 ## Orquestación en GitHub Actions
 
 Los mismos notebooks se ejecutan como pipeline: cada notebook es un job, con `needs:`, artefactos y caché. La guía [`guia-pipeline.md`](guia-pipeline.md) explica el grafo, el guion de clase y los pasos del alumno; el control previo está en [`checklist-actions.md`](checklist-actions.md) y el workflow en [`extra-estilo-llm.yml`](extra-estilo-llm.yml).

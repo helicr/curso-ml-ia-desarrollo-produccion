@@ -158,6 +158,7 @@ Resultados del run (con parámetros de CI: 60 fotos, 58 parejas útiles —por q
 | Quieres saber en qué celda se rompió un notebook | — | Descarga el artefacto `nb-…` de ese job (se sube siempre, con `if: always()`) y ábrelo |
 | Falla el job de pruebas con un `ModuleNotFoundError` | **Incidencia real del 21/11/2026:** faltaba `scikit-learn` en la instalación del job de pruebas | Añadir el paquete que falta al `pip install` del job `pruebas` (en el workflow ya está corregido) |
 | Falla la descarga de las fotos (error HTTP) en el job 2 | **Incidencia real del 21/11/2026:** la descarga de Oxford-IIIT Pet con `urllib` de Python devolvió un error HTTP en el runner | El workflow ya descarga el tar con `curl` antes del notebook y lo guarda en la caché. Si lo ves en tu fork, comprueba que ese paso está en tu copia |
+| Quieres ejecutar los notebooks en tu ordenador o Codespace y fallan (`No module named 'torch'`, `ConnectError` de Hugging Face) o tardan demasiado (el 03, unos 24 min; el 05, unos 23 min) | Las librerías del extra van aparte de las del proyecto; una red con proxy corporativo bloquea la descarga del modelo; en un Codespace de 2 núcleos pesan | Este pipeline los ejecuta por ti (parámetros pequeños). Si los quieres en local, mira «Si falla» del [`README.md`](README.md) |
 
 Avisos que **no** son un fallo: «Node.js 20 is deprecated» en las acciones `@v4` y los avisos de Hugging Face sobre peticiones sin autenticar.
 

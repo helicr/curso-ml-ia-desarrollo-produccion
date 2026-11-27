@@ -335,3 +335,16 @@ def test_la_explicacion_del_llm_usa_pesos_exactos():
         pesos, prob = e.pesos_exactos(modelo, meta['variables'], valores)
         real = float(modelo.predict_proba(pd.DataFrame([valores], columns=meta['variables']).astype(float))[0, 1])
         assert len(pesos) == 13 and abs(prob - real) < 1e-9
+
+# ------------------------------------------------------------------------------------------------------ Dataproc: buckets propios
+def test_borrar_de_dataproc_quita_los_buckets_que_crea_dataproc_solo_si_no_queda_nada():
+    """Visto el 26/11/2026: Dataproc sin servidor crea dataproc-staging-… y dataproc-temp-… por su cuenta y borrar.sh no los quitaba.
+    Son compartidos por todo el Dataproc del proyecto: solo se borran si ya no queda ningún lote ni clúster en la región."""
+    sh = _texto(BASE / '03-dataproc-spark' / 'borrar.sh')
+    assert 'dataproc-(staging|temp)-' in sh
+    ordenes = ' '.join(_ordenes(sh))
+    assert 'dataproc batches list' in ordenes and 'dataproc clusters list' in ordenes
+    assert 'OTROS_LOTES" = "0"' in ordenes and 'CLUSTERES" = "0"' in ordenes     # la salvaguarda
+    assert 'storage rm -r "gs://$B"' in ordenes
+    readme = _texto(BASE / '03-dataproc-spark' / 'README.md')
+    assert 'dataproc-staging' in readme and 'compartidos' in readme

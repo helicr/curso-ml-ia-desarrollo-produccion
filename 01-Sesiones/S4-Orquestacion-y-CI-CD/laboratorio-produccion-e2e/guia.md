@@ -44,6 +44,8 @@ Los tres usan **la misma versión** del modelo y, mientras no llegan datos nuevo
 
 En tu fork, abre un Codespace **desde tu fork**, en `develop`. En un fork, entra antes en la pestaña **Actions** y acepta el aviso para activar los workflows (el texto exacto puede cambiar).
 
+> **Al hacer el fork, desmarca «Copy the `main` branch only».** Todo el material de este laboratorio está en la rama `develop`. Si dejas esa casilla marcada, tu fork solo tendrá `main`: no existirá `develop` y fallarán «Create codespace on develop» y `git switch develop`.
+
 ```bash
 git switch develop
 git pull
@@ -61,6 +63,17 @@ git commit -m "Laboratorio de cierre de S4: workflows de producción"
 **Si falla.**
 - `cp: cannot stat …`: tu fork no tiene la carpeta del laboratorio. Haz **Sync fork** en GitHub y `git pull`, o abre cada YAML y pega su contenido.
 - Si tu terminal no entiende las llaves `{a,b}`, copia los cuatro archivos de uno en uno.
+- `git switch develop` dice `invalid reference: develop`, o «Create codespace on develop» no ofrece esa rama: tu fork se hizo con «Copy the `main` branch only» y no tiene `develop`. Dos soluciones:
+  1. **Traer `develop` al fork que ya tienes:** en GitHub, en tu fork, pestaña **Code** › desplegable de ramas › **View all branches**. Si `develop` no está, pulsa **Sync fork** › **Update branch** en `main`; si sigue sin aparecer, usa la solución 2. (Sin dato: no se ha probado en este laboratorio qué opción de GitHub crea `develop` en un fork ya hecho.)
+  2. **Rehacer el fork:** **Settings** › al final, **Delete this repository** (solo si no tiene nada tuyo que quieras conservar) y vuelve a hacer el fork con «Copy the `main` branch only» **desmarcado**.
+- **Un Codespace no se actualiza solo.** Si el profesor ha publicado cambios en `develop` después de crear tu Codespace, no los verás hasta que los traigas:
+  ```bash
+  git fetch origin
+  git status -sb          # debe decir «behind N» (N commits por detrás)
+  git pull origin develop
+  ```
+  En un fork, antes haz **Sync fork** en GitHub si `origin/develop` no avanza.
+- `&&` no existe en **Windows PowerShell 5.1**: encadena con `;` o lanza las órdenes una a una. Y las llaves `{a,b}` del `cp` son de bash: en PowerShell o `cmd`, copia los archivos de uno en uno.
 
 ---
 
@@ -79,8 +92,10 @@ Detalle y capturas en [`CONFIGURAR-REPOSITORIO.md`](CONFIGURAR-REPOSITORIO.md). 
 
 **Qué debes ver.** En **Settings › Environments**, `produccion` con «1 protection rule»; en **Workflow permissions**, la casilla marcada.
 
+> **El nombre es exactamente `produccion`**, en minúsculas y sin tilde: no vale `prod`, `Produccion` ni `producción`. El workflow pide un *environment* con ese nombre; si no lo encuentra, GitHub **crea uno nuevo sin revisores** y el despliegue **no pide aprobación**: publica directamente.
+
 **Si falla (casos que pasaron en los ensayos).**
-- Si el *environment* **no existe** (o no tiene revisores), GitHub lo crea solo **sin revisores** y el trabajo de publicación **no espera**: publica directamente. Vuelve a este paso.
+- Si el *environment* **no existe**, se llama de otra forma (por ejemplo `prod`) o no tiene revisores, GitHub lo crea solo **sin revisores** y el trabajo de publicación **no espera**: publica directamente. Vuelve a este paso, comprueba el nombre en **Settings › Environments** y corrígelo o créalo con el nombre exacto.
 - Sin el permiso de PR, el **último paso** (abrir el pull request) **falla**.
 
 ---
@@ -98,7 +113,7 @@ Detalle y capturas en [`CONFIGURAR-REPOSITORIO.md`](CONFIGURAR-REPOSITORIO.md). 
 git push -u origin lab/produccion-e2e
 ```
 
-Este push lanza **dos** workflows: **Puntuar por lotes** y **Validar la producción completa** (también cambia su YAML). Mírales en la pestaña **Actions**.
+Este push lanza **dos** workflows: **Puntuar por lotes** y **Validar la producción completa** (también cambia su YAML). Mírales en la pestaña **Actions**. Al subir los cuatro workflows arrancan solos **dos runs**: «Puntuar por lotes» con **3 cajas** (trabajos) y «Validar la producción completa» con **1 caja**. No es un error: son dos workflows distintos y el segundo hace todo en un solo trabajo.
 
 ![Puntuar por lotes en verde](img/gh-10-run-lote.webp)
 
@@ -111,6 +126,12 @@ Este push lanza **dos** workflows: **Puntuar por lotes** y **Validar la producci
 Run nº 45026646944 de **Validar la producción completa**: verde, un trabajo de **133 s** (total 2 m 16 s). Levanta API + interfaz con `docker compose` en Actions y comprueba los tres modos con `curl`.
 
 **Si falla.**
+- **`git push` rechazado con `! [rejected] … (non-fast-forward)`** (o «fetch first»). *Non-fast-forward* significa que la rama del servidor tiene commits que la tuya no tiene (o historias distintas), así que Git no puede «avanzar» la rama remota sin pisarla. Pasa si empujas a un repositorio donde **ya existe una rama con ese nombre**: en el repositorio del profesor `lab/produccion-e2e` y `lab/cloud-journey/despliegue` ya existen (ramas de ensayo); en el **fork de un alumno** no existen, así que allí no debería pasar. **No hagas `git pull` ni `git push --force`:** el primero mezclaría el trabajo ajeno con el tuyo y el segundo borraría el del otro. La solución es **cambiar el nombre de tu rama** conservando el prefijo:
+  ```bash
+  git branch -m lab/produccion-e2e lab/produccion-e2e-2
+  git push -u origin lab/produccion-e2e-2
+  ```
+  El prefijo importa porque los workflows solo arrancan con ciertos nombres: las ramas del laboratorio empiezan por `lab/` (`lab/produccion-e2e-2` vale); las de escenario, por `lab/nueva-version/` y `lab/rollback/`; las del Cloud Journey, por `lab/cloud-journey/`. Si renombras la rama base, usa el nombre nuevo donde la guía dice `lab/produccion-e2e` (por ejemplo en `git switch lab/produccion-e2e-2` del apartado 5.1). Y si te falla una rama de escenario, añade `-2` al final de su nombre (`lab/nueva-version/muestra-2`): conserva el nombre del escenario, que es lo que lee el workflow.
 - No aparece ningún run: Actions sin activar en el fork, o la rama no empieza por `lab/`.
 - «Puntuar por lotes» solo se lanza con el push si ese push cambia el workflow (o `explotacion.py`). Si ya lo habías subido, hazlo desde **Actions › Run workflow** (requiere el workflow en la rama por defecto) o cambia una línea del YAML.
 
@@ -154,6 +175,31 @@ curl -s -X POST http://127.0.0.1:8090/demo/reiniciar
 ```
 
 (El cliente 12670 es del lote del 2011-12-10 de las capturas; si el tuyo es otro, usa uno de la pestaña **Lote**.)
+
+**Si tu terminal no es bash** (por ejemplo, el portátil con Windows, fuera del Codespace). Las órdenes de arriba usan sintaxis de bash: `ID=12670`, `$ID`, comillas simples y, en otras guías, `; echo`. No funcionan igual en `cmd` ni en PowerShell. Variantes equivalentes (con el cliente escrito a mano):
+
+- **Windows `cmd`:** sin `; echo`, sin comillas simples y con el JSON entre comillas dobles escapando las interiores con `\"`.
+
+  ```bat
+  curl -s http://127.0.0.1:8090/bajo-demanda/12670
+  curl -s http://127.0.0.1:8090/online/12670
+  curl -s -X POST http://127.0.0.1:8090/demo/compra -H "content-type: application/json" -d "{\"cliente_id\": 12670, \"importe\": 120.5, \"unidades\": 3}"
+  curl -s -X POST http://127.0.0.1:8090/demo/reiniciar
+  ```
+
+- **Windows PowerShell 5.1:** escribe **`curl.exe`**, no `curl`: en 5.1 `curl` es un alias de `Invoke-WebRequest`, que tiene otros parámetros y falla con `-s` o `-X`. El JSON va entre comillas simples con `\"` por dentro (PowerShell 5.1 pasa las comillas dobles a los programas externos de forma poco fiable), y `$id` es una variable de PowerShell.
+
+  ```powershell
+  $id = 12670
+  curl.exe -s http://127.0.0.1:8090/bajo-demanda/$id
+  curl.exe -s http://127.0.0.1:8090/online/$id
+  curl.exe -s -X POST http://127.0.0.1:8090/demo/compra -H "content-type: application/json" -d '{\"cliente_id\": 12670, \"importe\": 120.5, \"unidades\": 3}'
+  curl.exe -s -X POST http://127.0.0.1:8090/demo/reiniciar
+  ```
+
+  En PowerShell 5.1 el operador `&&` **no existe** (es un error de sintaxis): usa `;` para encadenar, o una orden por línea.
+
+*Sin verificar con `curl.exe` real:* el paso de las comillas en `cmd` y en PowerShell 5.1 se comprobó con un programa que imprime los argumentos recibidos, no contra el panel.
 
 **Qué debes ver.** Antes de la compra, bajo demanda y online dan la **misma** `probabilidad` y el mismo `corte`. Después, **bajo demanda no cambia** (lee la tabla de ayer) y **online cambia** (suma la compra). La compra se guarda en una **copia** de la base dentro del contenedor, nunca en la del proyecto; el último `curl` deja la demo como al principio.
 
@@ -212,6 +258,8 @@ git push -u origin lab/nueva-version/completo-rechazo
 git switch lab/produccion-e2e && git switch -c lab/nueva-version/completo
 git push -u origin lab/nueva-version/completo
 ```
+
+(Si en el apartado 3 tuviste que renombrar tu rama base, por ejemplo a `lab/produccion-e2e-2`, usa ese nombre en los `git switch`. Si algún `git push` de estas ramas se rechaza con `non-fast-forward`, es el mismo caso: la rama ya existe en ese repositorio; no hagas `git pull` ni `--force`, renómbrala añadiendo `-2` y conserva el prefijo `lab/nueva-version/` o `lab/rollback/`.)
 
 (El `git switch lab/produccion-e2e` inicial deja claro desde qué rama sale cada una. Crear una rama es un push y dispara el workflow aunque apunte al mismo commit.)
 
