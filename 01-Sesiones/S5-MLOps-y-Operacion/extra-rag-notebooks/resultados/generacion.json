@@ -1,0 +1,103 @@
+{
+  "modelo_llm": "Qwen/Qwen2.5-0.5B-Instruct",
+  "modelo_embeddings": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "k": 4,
+  "max_nuevos": 64,
+  "segundos_carga_llm": 0.916,
+  "cobertura_media_sin": 0.0,
+  "cobertura_media_con": 0.5833333333333333,
+  "latencia_media_sin_s": 46.685824999999994,
+  "latencia_media_con_s": 31.29185,
+  "detalle": [
+    {
+      "id": "q11",
+      "tipo": "hecho",
+      "pregunta": "¿Cuántos días laborables de vacaciones tiene un empleado de NubeAndina y qué es el cierre andino?",
+      "respuesta_sin_rag": "Un empleado de NubeAndina puede tener 15 días de vacaciones totales. El cierre andino se refiere al proceso de cancelación de las horas extras que se realizan en el trabajo por parte de los empleados.",
+      "respuesta_con_rag": "Un empleado de NubeAndina tiene 22 días laborables de vacaciones al año. El cierre andino de 2026 se comunica cada enero y no es un puente móvil elegido por la persona.",
+      "fuentes": [
+        "nubeandina-vacaciones-y-trabajo",
+        "nubeandina-vacaciones-y-trabajo",
+        "nubeandina-vacaciones-y-trabajo",
+        "nubeandina-vacaciones-y-trabajo"
+      ],
+      "cobertura_sin": 0.0,
+      "cobertura_con": 0.3333333333333333,
+      "latencia_sin_s": 77.8466,
+      "latencia_con_s": 94.2098,
+      "latencia_recuperacion_s": 1.0048,
+      "latencia_generacion_s": 93.205,
+      "hechos": [
+        "22 días laborables",
+        "3 días",
+        "julio"
+      ]
+    },
+    {
+      "id": "q13",
+      "tipo": "hecho",
+      "pregunta": "¿Quién es la Delegada de Protección de Datos de NubeAndina y cuál es la longitud mínima de las contraseñas?",
+      "respuesta_sin_rag": "La Delegada de Protección de Datos de NubeAndina es María José García. La longitud mínima de las contraseñas que se deben utilizar para acceder a esta función es de 12 caracteres.",
+      "respuesta_con_rag": "Longitud mínima de contraseña: 14 caracteres.",
+      "fuentes": [
+        "nubeandina-datos-y-seguridad",
+        "nubeandina-datos-y-seguridad",
+        "nubeandina-datos-y-seguridad",
+        "nubeandina-datos-y-seguridad"
+      ],
+      "cobertura_sin": 0.0,
+      "cobertura_con": 0.5,
+      "latencia_sin_s": 69.5577,
+      "latencia_con_s": 29.4238,
+      "latencia_recuperacion_s": 1.0855,
+      "latencia_generacion_s": 28.3382,
+      "hechos": [
+        "Elena Quispe",
+        "14"
+      ]
+    },
+    {
+      "id": "q03",
+      "tipo": "hecho",
+      "pregunta": "¿Cómo se llama la imagen Docker de la API de ejemplo y en qué puerto escucha?",
+      "respuesta_sin_rag": "La imagen Docker de la API de ejemplo está llamada \"docker\" y está configurada para escuchar en el puerto 80.",
+      "respuesta_con_rag": "retencion-api:local",
+      "fuentes": [
+        "guia-docker",
+        "guia-docker",
+        "guia-kubernetes",
+        "guia-docker"
+      ],
+      "cobertura_sin": 0.0,
+      "cobertura_con": 0.5,
+      "latencia_sin_s": 38.001,
+      "latencia_con_s": 0.6555,
+      "latencia_recuperacion_s": 0.0241,
+      "latencia_generacion_s": 0.6314,
+      "hechos": [
+        "retencion-api:local",
+        "8080"
+      ]
+    },
+    {
+      "id": "q19",
+      "tipo": "no_esta",
+      "pregunta": "¿Cuál es el número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas?",
+      "respuesta_sin_rag": "El número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas es 0123456789.",
+      "respuesta_con_rag": "No encuentro esa información en los documentos.",
+      "fuentes": [
+        "nubeandina-empresa",
+        "nubeandina-empresa",
+        "nubeandina-empresa",
+        "curso-reglamento"
+      ],
+      "cobertura_sin": 0.0,
+      "cobertura_con": 1.0,
+      "latencia_sin_s": 1.338,
+      "latencia_con_s": 0.8783,
+      "latencia_recuperacion_s": 0.0143,
+      "latencia_generacion_s": 0.864,
+      "hechos": []
+    }
+  ]
+}

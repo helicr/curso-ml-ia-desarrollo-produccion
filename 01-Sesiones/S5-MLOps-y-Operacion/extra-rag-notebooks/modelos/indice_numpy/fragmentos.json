@@ -1,0 +1,1157 @@
+[
+  {
+    "id": "curso-avance-3::#0",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "# Guía de entrega del Avance 3\n\nEl Avance 3 del curso *De Modelo a Producción* concentra el registro de experimentos\ncon MLflow y la integración continua con GitHub Actions. Esta guía detalla fechas,\nformato y evidencias. Es un material original del taller.\n\n## Fecha y canal\n\nEl Avance 3 se entrega el **viernes de la semana 4**, antes de las **23:59 hora de Lima**\n(UTC-5). El único canal válido es",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 400,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "curso-avance-3::#1",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "emana 4**, antes de las **23:59 hora de Lima**\n(UTC-5). El único canal válido es Google Classroom, en la tarea titulada\n«S3 · Tarea — Avance 3». No se aceptan envíos por correo, Drive compartido sin enlace\nen Classroom, ni mensajes privados.\n\nSi Classroom presenta una incidencia justificada, el equipo escribe al docente *antes*\nde la hora de cierre y adjunta una captura del error. En ese caso",
+    "orden": 1,
+    "inicio": 320,
+    "fin": 715,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "curso-avance-3::#2",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "cente *antes*\nde la hora de cierre y adjunta una captura del error. En ese caso excepcional se puede\nusar un enlace de repositorio como respaldo, nunca como sustituto silencioso.\n\n## Formato del PDF\n\n- Extensión máxima: **8 páginas**, más una portada.\n- Tipo de archivo: PDF. No se admite DOCX ni un enlace suelto a un cuaderno.\n- Nombre del archivo: `Avance3_Apellido1_Apellido2.pdf`.\n- La portada",
+    "orden": 2,
+    "inicio": 636,
+    "fin": 1034,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "curso-avance-3::#3",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "cuaderno.\n- Nombre del archivo: `Avance3_Apellido1_Apellido2.pdf`.\n- La portada incluye: nombre del curso, número de equipo, integrantes, enlace al\n  *fork* y hash del commit evaluado (los primeros 7 caracteres bastan).\n\nLa plantilla recomendada está en `01-Sesiones/S3-Despliegue-y-Redes-Neuronales/evidencias/plantilla-avance-3.md`\ndel repositorio oficial, rama `develop`.\n\n## Evidencias",
+    "orden": 3,
+    "inicio": 955,
+    "fin": 1344,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 389
+    }
+  },
+  {
+    "id": "curso-avance-3::#4",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "/plantilla-avance-3.md`\ndel repositorio oficial, rama `develop`.\n\n## Evidencias mínimas\n\nEl PDF debe incluir, en este orden:\n\n1. Objetivo del experimento y hipótesis (qué se compara y por qué).\n2. Captura del experimento MLflow llamado **`retencion-clientes`**, con al menos dos\n   *runs* etiquetados (por ejemplo `baseline` y `candidato`).\n3. El *tracking URI* usado en el laboratorio, que por",
+    "orden": 4,
+    "inicio": 1265,
+    "fin": 1659,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "curso-avance-3::#5",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "baseline` y `candidato`).\n3. El *tracking URI* usado en el laboratorio, que por defecto es `http://127.0.0.1:5000`.\n4. El modelo registrado en el Model Registry de MLflow con el alias **`champion`**.\n5. El identificador del workflow de GitHub Actions: **`ci-retencion.yml`**. Debe\n   aparecer una captura de una ejecución en verde (o una explicación de un fallo\n   corregido, con la ejecución",
+    "orden": 5,
+    "inicio": 1580,
+    "fin": 1972,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 392
+    }
+  },
+  {
+    "id": "curso-avance-3::#6",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "jecución en verde (o una explicación de un fallo\n   corregido, con la ejecución posterior en verde).\n6. Cobertura de pruebas: el umbral del flujo de CI es **80 %**. Si la cobertura queda\n   por debajo, el Avance 3 se considera incompleto.\n7. Una sección breve de «lo que no funcionó» (media página). No se penaliza un\n   problema bien documentado; se penaliza ocultarlo.\n\n## Qué no es necesario\n\nNo",
+    "orden": 6,
+    "inicio": 1893,
+    "fin": 2291,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "curso-avance-3::#7",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "problema bien documentado; se penaliza ocultarlo.\n\n## Qué no es necesario\n\nNo hace falta un clúster real de Kubernetes en este avance. El manifiesto de ejemplo\ny `kind` se trabajan en la sesión de despliegue, pero no son evidencia obligatoria del\nAvance 3. Tampoco se exige GPU ni un servicio de pago de MLflow en la nube.\n\n## Criterios de rúbrica (resumen)\n\n- Trazabilidad (commit, experimento,",
+    "orden": 7,
+    "inicio": 2212,
+    "fin": 2609,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "curso-avance-3::#8",
+    "doc_id": "curso-avance-3",
+    "titulo": "Guía de entrega del Avance 3",
+    "texto": "nube.\n\n## Criterios de rúbrica (resumen)\n\n- Trazabilidad (commit, experimento, alias `champion`): 8 puntos.\n- Calidad del análisis de los *runs*: 6 puntos.\n- CI en verde y cobertura ≥ 80 %: 4 puntos.\n- Claridad del PDF: 2 puntos.\n\nTotal del avance: 20 puntos, que luego ponderan el 25 % de la nota del curso.",
+    "orden": 8,
+    "inicio": 2530,
+    "fin": 2839,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 308
+    }
+  },
+  {
+    "id": "curso-reglamento::#0",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "# Reglamento del Curso Taller: De Modelo a Producción (UNTRM)\n\nEste documento describe las normas académicas del curso taller *De Modelo a Producción*,\nimpartido en la Universidad Nacional Toribio Rodríguez de Mendoza (UNTRM). Es un texto\ndidáctico original, pensado para los laboratorios de recuperación de información. No\nsustituye un reglamento oficial de la universidad.\n\n## Identificación\n\n-",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 396,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 396
+    }
+  },
+  {
+    "id": "curso-reglamento::#1",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "ón. No\nsustituye un reglamento oficial de la universidad.\n\n## Identificación\n\n- Nombre: Curso Taller: De Modelo a Producción.\n- Código interno de aula: MLOps-UNTRM-2026.\n- Sesiones: SESION 0 a SESION 5 (seis sesiones en total).\n- Repositorio oficial de materiales: `https://github.com/helicr/curso-ml-ia-desarrollo-produccion`.\n- Rama de trabajo del curso: `develop`. La rama `main` solo conserva el",
+    "orden": 1,
+    "inicio": 317,
+    "fin": 716,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "curso-reglamento::#2",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "ccion`.\n- Rama de trabajo del curso: `develop`. La rama `main` solo conserva el commit inicial.\n- Aula virtual: Google Classroom del curso. Las entregas de los estudiantes se suben ahí,\n  nunca por correo electrónico.\n\n## Calificación y asistencia\n\nLa nota se expresa en la escala de 0 a 20. La calificación mínima de aprobación es **11**.\nLa asistencia mínima exigida es del **70 %** de las",
+    "orden": 2,
+    "inicio": 637,
+    "fin": 1028,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 391
+    }
+  },
+  {
+    "id": "curso-reglamento::#3",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "ma de aprobación es **11**.\nLa asistencia mínima exigida es del **70 %** de las sesiones. Quien no alcance ese umbral\nno puede presentar el trabajo final, salvo causa justificada comunicada al docente con\nal menos 48 horas de antelación.\n\nLa nota final se calcula así:\n\n- Avance 1 (entorno y repositorio): 15 %.\n- Avance 2 (API y contenedor): 20 %.\n- Avance 3 (registro de experimentos y CI): 25 %.\n-",
+    "orden": 3,
+    "inicio": 949,
+    "fin": 1349,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "curso-reglamento::#4",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "2 (API y contenedor): 20 %.\n- Avance 3 (registro de experimentos y CI): 25 %.\n- Trabajo final (despliegue y defensa): 30 %.\n- Participación en laboratorio: 10 %.\n\nNo hay examen escrito presencial. La defensa del trabajo final dura 12 minutos por equipo\n(8 de exposición y 4 de preguntas).\n\n## Equipos y repositorio de cada estudiante\n\nLos equipos son de 2 o 3 personas. No se aceptan equipos de 4.",
+    "orden": 4,
+    "inicio": 1269,
+    "fin": 1667,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "curso-reglamento::#5",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "cada estudiante\n\nLos equipos son de 2 o 3 personas. No se aceptan equipos de 4. Cada equipo mantiene un\n*fork* del repositorio oficial y trabaja en su propia rama. El docente no revisa copias\nenviadas por WhatsApp ni capturas sueltas: hace falta un enlace al repositorio y el PDF\nen Classroom.\n\nSe recomienda Codespaces o un entorno local con CPU. No es obligatorio disponer de GPU.\n\n## Conducta",
+    "orden": 5,
+    "inicio": 1588,
+    "fin": 1983,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "curso-reglamento::#6",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "ces o un entorno local con CPU. No es obligatorio disponer de GPU.\n\n## Conducta académica\n\nEl uso de asistentes de código está permitido si el equipo es capaz de explicar cada\narchivo entregado. Copiar un proyecto completo de otro equipo anula esa entrega. Los\nsecretos (tokens, contraseñas, claves de nube) no deben subirse al repositorio: se usan\nvariables de entorno o un gestor de secretos.\n\n##",
+    "orden": 6,
+    "inicio": 1904,
+    "fin": 2302,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "curso-reglamento::#7",
+    "doc_id": "curso-reglamento",
+    "titulo": "Reglamento del Curso Taller: De Modelo a Producción (UNTRM)",
+    "texto": "birse al repositorio: se usan\nvariables de entorno o un gestor de secretos.\n\n## Contacto\n\nEl canal oficial de anuncios es Classroom. El docente responde consultas de laboratorio\nen un plazo orientativo de 24 horas en días lectivos. Las dudas sobre una entrega que\ncierra un viernes deben plantearse, como tarde, el jueves a las 18:00 hora de Lima.",
+    "orden": 7,
+    "inicio": 2223,
+    "fin": 2570,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 347
+    }
+  },
+  {
+    "id": "guia-docker::#0",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "# Guía de Docker para el laboratorio de retención\n\nEsta guía resume cómo empaquetar la API del proyecto de retención de clientes en un\ncontenedor, pensada para ejecutarse en un portátil con CPU. Es un texto original del\ncurso. No reproduce documentación ajena.\n\n## Idea central\n\nUna **imagen** es una receta inmutable (capas de sistema de archivos más metadatos).\nUn **contenedor** es un proceso que",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 399,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "guia-docker::#1",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "apas de sistema de archivos más metadatos).\nUn **contenedor** es un proceso que arranca a partir de esa imagen. Si la receta es\nbuena, el mismo artefacto corre en el portátil, en Codespaces y, más adelante, en un\nPod de Kubernetes.\n\n## La imagen de ejemplo\n\nEn el repositorio del curso la API de ejemplo se publica con este nombre local:\n\n```\nretencion-api:local\n```\n\nEl Dockerfile vive en",
+    "orden": 1,
+    "inicio": 320,
+    "fin": 709,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 389
+    }
+  },
+  {
+    "id": "guia-docker::#2",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "lica con este nombre local:\n\n```\nretencion-api:local\n```\n\nEl Dockerfile vive en `deploy/docker/Dockerfile`. La construcción se lanza **desde la\nraíz del repositorio**, no desde la carpeta `deploy/docker/`, para que el contexto\nincluya el código y el `lock` de dependencias:\n\n```\ndocker build -f deploy/docker/Dockerfile -t retencion-api:local .\n```\n\nEl contenedor expone el puerto **8080**. El",
+    "orden": 2,
+    "inicio": 630,
+    "fin": 1023,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-docker::#3",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "rfile -t retencion-api:local .\n```\n\nEl contenedor expone el puerto **8080**. El servicio (Uvicorn) atiende `0.0.0.0:8080`.\nEl *healthcheck* de la imagen consulta la ruta **`/salud`**. Si esa ruta no responde\ncon éxito, el orquestador no debe enviar tráfico a esa réplica.\n\n## Buenas prácticas que usamos en el taller\n\n1. **Caché de capas.** Se copia primero el archivo de bloqueo de dependencias y se",
+    "orden": 3,
+    "inicio": 944,
+    "fin": 1344,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "guia-docker::#4",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "**Caché de capas.** Se copia primero el archivo de bloqueo de dependencias y se\n   instalan paquetes; el código de la aplicación se copia después. Así un cambio en\n   un `.py` no invalida la capa pesada de librerías.\n2. **Usuario no root.** El proceso de la API no corre como administrador dentro del\n   contenedor.\n3. **Una responsabilidad.** Esta imagen sirve la API. El seguimiento de",
+    "orden": 4,
+    "inicio": 1264,
+    "fin": 1652,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 387
+    }
+  },
+  {
+    "id": "guia-docker::#5",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "enedor.\n3. **Una responsabilidad.** Esta imagen sirve la API. El seguimiento de experimentos\n   (MLflow) y la base de datos no se meten en el mismo contenedor en el laboratorio.\n4. **Etiquetas explícitas.** Evitamos `latest` como única etiqueta cuando guardamos\n   un artefacto que vamos a desplegar.\n\n## Arranque local (comprobación)\n\n```\ndocker run --rm -p 8080:8080",
+    "orden": 5,
+    "inicio": 1573,
+    "fin": 1941,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 368
+    }
+  },
+  {
+    "id": "guia-docker::#6",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "desplegar.\n\n## Arranque local (comprobación)\n\n```\ndocker run --rm -p 8080:8080 retencion-api:local\n```\n\nComprobaciones útiles, en otra terminal:\n\n- Documentación interactiva: `http://127.0.0.1:8080/docs`.\n- Salud: `http://127.0.0.1:8080/salud`.\n- Predicción por lotes: `POST /predecir_lote` (el cuerpo es un JSON con filas).\n\n`docker logs`, `docker exec` e `docker inspect` sirven para diagnosticar.",
+    "orden": 6,
+    "inicio": 1862,
+    "fin": 2262,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "guia-docker::#7",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "las).\n\n`docker logs`, `docker exec` e `docker inspect` sirven para diagnosticar. `docker history`\nmuestra las capas y ayuda a ver si el caché se está aprovechando.\n\n## Codespaces y el 404 en `/docs`\n\nSi abres la API en GitHub Codespaces y el navegador muestra 404, revisa la pestaña\nPORTS: el puerto 8080 debe estar reenviado y, si hace falta, con visibilidad pública.\nUn 404 en `*.app.github.dev`",
+    "orden": 7,
+    "inicio": 2182,
+    "fin": 2579,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "guia-docker::#8",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "enviado y, si hace falta, con visibilidad pública.\nUn 404 en `*.app.github.dev` casi nunca significa que Uvicorn esté «mal instalado»;\ncasi siempre es un tema de reenvío o de que el proceso no está escuchando en `0.0.0.0`.\n\n## Límites de este laboratorio\n\nNo usamos un registro privado obligatorio. Para el Avance 2 basta la imagen local\n`retencion-api:local` y las evidencias de construcción,",
+    "orden": 8,
+    "inicio": 2500,
+    "fin": 2893,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-docker::#9",
+    "doc_id": "guia-docker",
+    "titulo": "Guía de Docker para el laboratorio de retención",
+    "texto": "2 basta la imagen local\n`retencion-api:local` y las evidencias de construcción, arranque y `/salud`. El paso\na un registro (Artifact Registry, por ejemplo) se discute en la sesión de despliegue\nen la nube, no es un prerrequisito de Docker en el portátil.",
+    "orden": 9,
+    "inicio": 2814,
+    "fin": 3068,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 254
+    }
+  },
+  {
+    "id": "guia-github-actions::#0",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "# GitHub Actions en el curso (CI de la API de retención)\n\nEste documento fija el convenio de integración continua del taller. Es un texto\noriginal. El objetivo es que cada *push* a la rama de trabajo ejecute pruebas y mida\ncobertura sin que nadie tenga que acordarse de correrlas a mano.\n\n## El workflow\n\nEl archivo se llama **`ci-retencion.yml`** y vive en `.github/workflows/`. El\nnombre del",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 393,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-github-actions::#1",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "o se llama **`ci-retencion.yml`** y vive en `.github/workflows/`. El\nnombre del workflow (campo `name`) es `CI retención`. Corre en **`ubuntu-latest`**.\n\nDisparadores:\n\n- `push` a las ramas `develop` y `main` del *fork* del equipo.\n- `pull_request` hacia `develop`.\n\nNo disparamos despliegue automático a producción en este curso. CI valida; el\ndespliegue se discute aparte y, si existe, es otro",
+    "orden": 1,
+    "inicio": 314,
+    "fin": 709,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "guia-github-actions::#2",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "en este curso. CI valida; el\ndespliegue se discute aparte y, si existe, es otro workflow.\n\n## Trabajos\n\nEl workflow tiene un único trabajo llamado `test-and-lint` que, en este orden:\n\n1. Reserva el repositorio (`actions/checkout`).\n2. Instala Python 3.12.\n3. Instala dependencias desde el archivo de bloqueo del proyecto.\n4. Ejecuta el linter acordado en clase (Ruff).\n5. Ejecuta la batería de",
+    "orden": 2,
+    "inicio": 630,
+    "fin": 1023,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-github-actions::#3",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "oyecto.\n4. Ejecuta el linter acordado en clase (Ruff).\n5. Ejecuta la batería de pruebas con `pytest`.\n6. Calcula cobertura. El umbral mínimo es **80 %**. Por debajo, el trabajo falla.\n\nNo se construye la imagen Docker en cada *push* en la versión básica del laboratorio,\npara no alargar la cola ni exigir un registro. Quien quiera añadir un trabajo\n`build-image` puede hacerlo como extra, no es",
+    "orden": 3,
+    "inicio": 944,
+    "fin": 1338,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "guia-github-actions::#4",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "o. Quien quiera añadir un trabajo\n`build-image` puede hacerlo como extra, no es obligatorio para el Avance 3.\n\n## Secretos\n\nEl workflow de CI del laboratorio no necesita secretos de nube. Si más adelante se\nañade un despliegue, los secretos viven en la configuración del repositorio, nunca\nen el YAML. Un token pegado en `ci-retencion.yml` es un fallo grave de la rúbrica.\n\n## Cómo se evidencia en el",
+    "orden": 4,
+    "inicio": 1259,
+    "fin": 1659,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "guia-github-actions::#5",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "`ci-retencion.yml` es un fallo grave de la rúbrica.\n\n## Cómo se evidencia en el Avance 3\n\nEn el PDF se incluye una captura de una ejecución en verde del workflow `CI retención`\nsobre el commit evaluado, y se indica la cobertura obtenida (número concreto, no un\n«pasó»). Si la primera ejecución falló, se documenta la causa y la ejecución\nposterior en verde. Eso suma; esconder el fallo no.\n\n##",
+    "orden": 5,
+    "inicio": 1579,
+    "fin": 1973,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-github-actions::#6",
+    "doc_id": "guia-github-actions",
+    "titulo": "GitHub Actions en el curso (CI de la API de retención)",
+    "texto": "la causa y la ejecución\nposterior en verde. Eso suma; esconder el fallo no.\n\n## Relación con Codespaces y el portátil\n\nLas mismas pruebas deben poder correrse en local (`pytest` con cobertura) y en\nCodespaces. CI no es un entorno mágico distinto: si solo pasa en la máquina de un\nintegrante, el workflow lo delatará. Esa es precisamente su utilidad.",
+    "orden": 6,
+    "inicio": 1894,
+    "fin": 2243,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 349
+    }
+  },
+  {
+    "id": "guia-kubernetes::#0",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "# Kubernetes, Pods, GKE y OpenShift (guía breve del curso)\n\nEsta guía sitúa los conceptos de orquestación que aparecen en el taller. Es un texto\noriginal, deliberadamente corto, para consultar hechos concretos del laboratorio.\n\n## De un contenedor a un Pod\n\nDocker nos sirve para construir y probar `retencion-api:local` en el portátil. Cuando\nqueremos varias réplicas, reinicios automáticos y una IP",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 400,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "guia-kubernetes::#1",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "en el portátil. Cuando\nqueremos varias réplicas, reinicios automáticos y una IP estable de servicio, entra\nen juego un orquestador.\n\nEn Kubernetes, la unidad mínima de despliegue es el **Pod**. Un Pod encapsula uno o\nmás contenedores que comparten red y, si se configura, volúmenes. En nuestro ejemplo,\nel Pod lleva un solo contenedor: la API de retención, escuchando en el puerto 8080.\n\nUn",
+    "orden": 1,
+    "inicio": 320,
+    "fin": 711,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 390
+    }
+  },
+  {
+    "id": "guia-kubernetes::#2",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "leva un solo contenedor: la API de retención, escuchando en el puerto 8080.\n\nUn **Deployment** declara el estado deseado. En el manifiesto de ejemplo del curso,\nel Deployment de la API tiene **2 réplicas**. Si un Pod cae, el ReplicaSet arranca\notro. Un **Service** de tipo ClusterIP expone esas réplicas dentro del clúster en el\npuerto 8080.\n\n## Laboratorio local: kind, no un clúster real\n\nEn el",
+    "orden": 2,
+    "inicio": 632,
+    "fin": 1028,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 396
+    }
+  },
+  {
+    "id": "guia-kubernetes::#3",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "úster en el\npuerto 8080.\n\n## Laboratorio local: kind, no un clúster real\n\nEn el aula practicamos con **kind** (Kubernetes in Docker) sobre la máquina del\nestudiante o en WSL. No es obligatorio un clúster gestionado para aprobar el\nlaboratorio de orquestación. El flujo típico es:\n\n1. Construir la imagen `retencion-api:local`.\n2. Cargarla en kind (`kind load docker-image retencion-api:local`).\n3.",
+    "orden": 3,
+    "inicio": 949,
+    "fin": 1346,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "guia-kubernetes::#4",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": ":local`.\n2. Cargarla en kind (`kind load docker-image retencion-api:local`).\n3. Aplicar el manifiesto de Deployment y Service.\n4. Comprobar que las dos réplicas responden en `/salud`.\n\n## GKE y OpenShift, en una frase cada uno\n\n**GKE** (Google Kubernetes Engine) es el servicio gestionado de Kubernetes en Google\nCloud. El curso lo menciona como destino posible de producción, no como requisito",
+    "orden": 4,
+    "inicio": 1267,
+    "fin": 1661,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "guia-kubernetes::#5",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "oud. El curso lo menciona como destino posible de producción, no como requisito del\nAvance 3.\n\n**OpenShift** es una plataforma de Red Hat construida sobre Kubernetes, con una\nconsola, rutas y políticas de seguridad más opinadas (por ejemplo, suelen evitar que\nlos contenedores corran como root, algo que ya anticipamos en el Dockerfile).\n\nLa diferencia práctica para el estudiante: el manifiesto de",
+    "orden": 5,
+    "inicio": 1582,
+    "fin": 1980,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "guia-kubernetes::#6",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "en el Dockerfile).\n\nLa diferencia práctica para el estudiante: el manifiesto de Kubernetes estándar suele\nabrir la puerta a ambos; OpenShift puede exigir ajustes de seguridad y de rutas. GKE\nse acerca más a Kubernetes «vainilla», con integraciones de IAM y de balanceo de Google.\n\n## Convenio de nombres del material de ejemplo\n\n- Deployment: `retencion-api`.\n- Service: `retencion-api-svc`.\n-",
+    "orden": 6,
+    "inicio": 1901,
+    "fin": 2294,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "guia-kubernetes::#7",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "al de ejemplo\n\n- Deployment: `retencion-api`.\n- Service: `retencion-api-svc`.\n- *Namespace* de laboratorio: `curso-mlops`.\n- Sonda de lectura (*readiness*): HTTP GET a `/salud` en el puerto 8080.\n- Recursos de ejemplo por contenedor: 250 milicores de CPU y 256 Mi de memoria como\n  petición, con un límite de 512 Mi.\n\n## Lo que no haremos en el taller\n\nNo configuraremos un *service mesh*. No es",
+    "orden": 7,
+    "inicio": 2215,
+    "fin": 2610,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "guia-kubernetes::#8",
+    "doc_id": "guia-kubernetes",
+    "titulo": "Kubernetes, Pods, GKE y OpenShift (guía breve del curso)",
+    "texto": "## Lo que no haremos en el taller\n\nNo configuraremos un *service mesh*. No es obligatorio un Ingress público en kind.\nNo se pide un clúster de producción real para la nota. Si un equipo quiere desplegar\nen GKE, el nombre de proyecto y las credenciales son responsabilidad del equipo y no\ndeben subirse al repositorio.",
+    "orden": 8,
+    "inicio": 2531,
+    "fin": 2850,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 317
+    }
+  },
+  {
+    "id": "guia-mlflow::#0",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "# Guía de MLflow en el laboratorio\n\nMLflow es la herramienta que usamos en el curso para dejar rastro de los experimentos:\nparámetros, métricas, artefactos y, más adelante, un modelo registrado. Este texto es\noriginal del taller y describe el convenio del aula, no un manual completo del producto.\n\n## Qué problema resuelve\n\nEntrenar un modelo sin registro es como cocinar sin anotar la receta. A la",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 399,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "guia-mlflow::#1",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "lve\n\nEntrenar un modelo sin registro es como cocinar sin anotar la receta. A la semana no\nsabemos con qué tasa de aprendizaje, con qué umbral ni con qué archivo de datos se\nobtuvo «aquel» resultado. MLflow guarda esa receta de forma reproducible.\n\n## Convenio del curso\n\n- *Tracking URI* por defecto en el portátil: **`http://127.0.0.1:5000`**.\n- Nombre del experimento: **`retencion-clientes`**.\n-",
+    "orden": 1,
+    "inicio": 320,
+    "fin": 718,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "guia-mlflow::#2",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "http://127.0.0.1:5000`**.\n- Nombre del experimento: **`retencion-clientes`**.\n- En el Model Registry, el modelo que el equipo declara como listo para la API lleva\n  el alias **`champion`**. Un candidato en evaluación puede llevar el alias `challenger`.\n- Cada *run* debe tener un nombre legible (`baseline`, `sin-clase-desbalanceada`,\n  `umbral-0.35`, etc.). Un hash suelto sin comentario no ayuda al",
+    "orden": 2,
+    "inicio": 639,
+    "fin": 1039,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "guia-mlflow::#3",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "esbalanceada`,\n  `umbral-0.35`, etc.). Un hash suelto sin comentario no ayuda al revisor.\n\nPara levantar la interfaz en el laboratorio:\n\n```\nmlflow ui --backend-store-uri sqlite:///mlruns.db --port 5000\n```\n\nEl navegador se abre en `http://127.0.0.1:5000`. Si el puerto está ocupado, no cambies\nde URI en silencio: documenta el puerto real en el PDF del Avance 3.\n\n## Qué se registra en cada",
+    "orden": 3,
+    "inicio": 959,
+    "fin": 1350,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 391
+    }
+  },
+  {
+    "id": "guia-mlflow::#4",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "o: documenta el puerto real en el PDF del Avance 3.\n\n## Qué se registra en cada *run*\n\nComo mínimo:\n\n- Parámetros: tipo de modelo, hiperparámetros relevantes, semilla (en este curso la\n  semilla por defecto es 42), versión del conjunto de datos.\n- Métricas: *recall* de la clase positiva, *precision*, F1 y, si aplica, el área bajo\n  la curva PR. En retención, un accuracy alto puede esconder que no",
+    "orden": 4,
+    "inicio": 1271,
+    "fin": 1670,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "guia-mlflow::#5",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "l área bajo\n  la curva PR. En retención, un accuracy alto puede esconder que no detectamos bajas.\n- Artefactos: matriz de confusión, un pequeño informe en Markdown y el bundle del\n  modelo (por ejemplo con `mlflow.sklearn.log_model`).\n\nNo registres un secreto ni un volcado de datos personales de clientes.\n\n## De un *run* a la API\n\nLa API del proyecto no debería cargar un pickle suelto con un",
+    "orden": 5,
+    "inicio": 1591,
+    "fin": 1985,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "guia-mlflow::#6",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "n *run* a la API\n\nLa API del proyecto no debería cargar un pickle suelto con un nombre mágico. El\nconvenio es: la API apunta al alias `champion` del registro (o a una copia versionada\nexportada desde ese alias). Así, promover un modelo es cambiar el alias, no reescribir\na mano una ruta en el servidor.\n\n## Errores frecuentes en el aula\n\n1. Levantar MLflow en un directorio distinto al del proyecto y",
+    "orden": 6,
+    "inicio": 1906,
+    "fin": 2306,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "guia-mlflow::#7",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "entes en el aula\n\n1. Levantar MLflow en un directorio distinto al del proyecto y «perder» los *runs*.\n2. Olvidar fijar el experimento (`mlflow.set_experiment(\"retencion-clientes\")`) y\n   dejarlo todo en `Default`.\n3. Registrar el modelo pero no asignar el alias `champion`.\n4. Apuntar el *tracking URI* a un servicio remoto de pago que el equipo no va a\n   poder demostrar en la defensa. En este",
+    "orden": 7,
+    "inicio": 2226,
+    "fin": 2621,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 395
+    }
+  },
+  {
+    "id": "guia-mlflow::#8",
+    "doc_id": "guia-mlflow",
+    "titulo": "Guía de MLflow en el laboratorio",
+    "texto": "remoto de pago que el equipo no va a\n   poder demostrar en la defensa. En este avance, local basta.\n\n## Relación con el resto del curso\n\nMLflow no sustituye a Git. El código y la configuración van al repositorio; las\nmétricas y los artefactos pesados van al *tracking store*. Tampoco sustituye a\nDocker: el modelo campeón se empaqueta después en `retencion-api:local`.",
+    "orden": 8,
+    "inicio": 2542,
+    "fin": 2911,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 368
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#0",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "# NubeAndina: política de datos, privacidad y seguridad\n\nPolítica interna de la empresa ficticia NubeAndina S.A.C. Define dónde pueden vivir\nlos datos de clientes, cómo se autentican las personas y a quién se consulta en caso\nde duda. Las cifras y nombres son inventados y sirven como hechos recuperables.\n\n## Residencia de los datos\n\nLos datos de clientes y de cooperativas **no pueden salir de la",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 398,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 398
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#1",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "a de los datos\n\nLos datos de clientes y de cooperativas **no pueden salir de la región\n`southamerica-west1`** de Google Cloud (Santiago). Está prohibido copiar conjuntos de\nproducción a un portátil, a un Codespace personal o a una región de Estados Unidos\n«porque el modelo entrena más rápido». Para experimentos se usa un conjunto\nanonimizado llamado **`cosechanet-lab-2026`**, publicado en el",
+    "orden": 1,
+    "inicio": 319,
+    "fin": 713,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#2",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "usa un conjunto\nanonimizado llamado **`cosechanet-lab-2026`**, publicado en el bucket interno\n`gs://nubeandina-lab-anon`.\n\nLas copias de seguridad se replican dentro de la misma región, en otra zona. No hay\nréplica transoceánica de datos de clientes.\n\n## Responsable de protección de datos\n\nLa Delegada de Protección de Datos (DPO) es **Elena Quispe**. El correo interno de\nconsulta es",
+    "orden": 2,
+    "inicio": 634,
+    "fin": 1020,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 385
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#3",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "Protección de Datos (DPO) es **Elena Quispe**. El correo interno de\nconsulta es `privacidad@nubeandina.example` (dominio de ejemplo, no real). Una\nsolicitud de acceso o de borrado de una cooperativa se responde en un plazo máximo\nde **15 días laborables**.\n\nNo se envían ficheros de clientes por correo, ni siquiera a un integrante del equipo.\nSe comparte un acceso temporal en el proyecto de GCP,",
+    "orden": 3,
+    "inicio": 941,
+    "fin": 1338,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#4",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "un integrante del equipo.\nSe comparte un acceso temporal en el proyecto de GCP, con caducidad de 24 horas y\nregistro en la bitácora.\n\n## Contraseñas y acceso\n\n- Longitud mínima de contraseña: **14 caracteres**.\n- Rotación: cada **180 días**.\n- El segundo factor es obligatorio para cualquier cuenta que toque GCP, GitHub de la\n  empresa o *Huella*.\n- Está prohibido reutilizar la contraseña de",
+    "orden": 4,
+    "inicio": 1259,
+    "fin": 1652,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#5",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "GitHub de la\n  empresa o *Huella*.\n- Está prohibido reutilizar la contraseña de NubeAndina en servicios personales.\n\nLas claves de servicio de GCP no se guardan en el repositorio. Viven en el gestor\ninterno de secretos. Un secreto filtrado se rota el mismo día y se notifica a Elena\nQuispe y a Pedro Villanueva.\n\n## Modelos y trazabilidad\n\nUn modelo que se sirva en `gke-prod-andina-01` debe tener un",
+    "orden": 5,
+    "inicio": 1573,
+    "fin": 1973,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#6",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "los y trazabilidad\n\nUn modelo que se sirva en `gke-prod-andina-01` debe tener un identificador de\nexperimento, un conjunto de datos versionado y un alias de registro (`champion` o\nequivalente). No se despliegan cuadernos sueltos como servicio de producción.\n\nEstá prohibido enviar datos reales de cooperativas a una API pública de un proveedor\n(aunque sea «solo para probar un prompt»). Para generar",
+    "orden": 6,
+    "inicio": 1893,
+    "fin": 2292,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#7",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "pública de un proveedor\n(aunque sea «solo para probar un prompt»). Para generar texto se usa un modelo\ninterno o un entorno acordado, con registros de entrada y salida sin campos\ndirectamente identificativos.\n\n## Incidencias\n\nUna sospecha de filtración se reporta en menos de una hora al canal `#seguridad` y\na la DPO. El simulacro anual de incidente se hace en **noviembre**. El de 2026",
+    "orden": 7,
+    "inicio": 2213,
+    "fin": 2600,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 387
+    }
+  },
+  {
+    "id": "nubeandina-datos-y-seguridad::#8",
+    "doc_id": "nubeandina-datos-y-seguridad",
+    "titulo": "NubeAndina: política de datos, privacidad y seguridad",
+    "texto": "a la DPO. El simulacro anual de incidente se hace en **noviembre**. El de 2026 está\nprevisto para el **12 de noviembre**.\n\nCualquier cifra distinta (por ejemplo, «las contraseñas se rotan cada 30 días» o\n«los datos pueden estar en `us-east1`») no pertenece a esta política.",
+    "orden": 8,
+    "inicio": 2521,
+    "fin": 2795,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 273
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#0",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "# NubeAndina: ficha de la empresa (caso ficticio del curso)\n\nNubeAndina es una empresa **ficticia** creada para los laboratorios del curso. Todos\nlos nombres, cifras y políticas de este corpus son inventados. Si un modelo de\nlenguaje «recuerda» otra fundación, otro número de empleados u otra sede, está\nalucinando: la fuente de verdad es este documento y los que lo acompañan.\n\n## Datos generales\n\n-",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 400,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#1",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "uente de verdad es este documento y los que lo acompañan.\n\n## Datos generales\n\n- Razón social: NubeAndina S.A.C.\n- Fundación: **marzo de 2019** en **Chachapoyas** (Amazonas, Perú).\n- Sede principal: Jr. Amazonas 450, Chachapoyas.\n- Oficina comercial: San Isidro, Lima (abierta en 2023).\n- Plantilla: **142 empleados** a 30 de septiembre de 2026.\n- Actividad: consultoría y productos de analítica para",
+    "orden": 1,
+    "inicio": 320,
+    "fin": 720,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#2",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "30 de septiembre de 2026.\n- Actividad: consultoría y productos de analítica para cooperativas agrarias y\n  pequeñas financieras de la sierra y la selva norte.\n- Producto bandera: la plataforma **CosechaNet**, que estima demanda y merma de\n  productos agrícolas perecederos.\n\n## Organización\n\nLa empresa tiene cuatro áreas: Ingeniería, Datos y modelos, Operaciones de cliente y\nAdministración. El área",
+    "orden": 2,
+    "inicio": 640,
+    "fin": 1040,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#3",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "s: Ingeniería, Datos y modelos, Operaciones de cliente y\nAdministración. El área de Datos y modelos tiene 18 personas y es la dueña del\nmodelo de retención de cooperativas, que no debe confundirse con el proyecto\nacadémico de retención de clientes del curso (aunque se parezcan los nombres).\n\nLa directora de Datos se llama **Maritza Huamán**. El responsable de Ingeniería es\n**Pedro Villanueva**. La",
+    "orden": 3,
+    "inicio": 960,
+    "fin": 1360,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 400
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#4",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "ama **Maritza Huamán**. El responsable de Ingeniería es\n**Pedro Villanueva**. La presidencia ejecutiva la ocupa **Rosa Lescano**, cofundadora.\n\n## Infraestructura\n\nNubeAndina despliega en Google Cloud. El clúster de producción se llama\n**`gke-prod-andina-01`**, en la región **`southamerica-west1`** (Santiago). No hay\nclúster de producción en `us-central1`. El entorno de preproducción se",
+    "orden": 4,
+    "inicio": 1280,
+    "fin": 1669,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 389
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#5",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": ". No hay\nclúster de producción en `us-central1`. El entorno de preproducción se llama\n`gke-pre-andina-01`, en la misma región.\n\nEl presupuesto de nube acordado es de **1 200 USD al mes por equipo** de producto.\nCualquier previsión que supere esa cifra necesita aprobación de Administración con\ncinco días laborables de antelación.\n\nEl horario laboral de referencia es **08:00 a 17:00, hora de Lima",
+    "orden": 5,
+    "inicio": 1590,
+    "fin": 1987,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#6",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "antelación.\n\nEl horario laboral de referencia es **08:00 a 17:00, hora de Lima (UTC-5)**. Los\nservicios de producción se consideran en horario de atención al cliente de 07:00 a\n21:00. Fuera de esa franja, las incidencias se escalan al turno de guardia, que no\ncoincide con el horario laboral general.\n\n## Qué no es NubeAndina\n\nNo es una empresa cotizada, no tiene oficinas en Europa y no usa",
+    "orden": 6,
+    "inicio": 1908,
+    "fin": 2300,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 391
+    }
+  },
+  {
+    "id": "nubeandina-empresa::#7",
+    "doc_id": "nubeandina-empresa",
+    "titulo": "NubeAndina: ficha de la empresa (caso ficticio del curso)",
+    "texto": "es NubeAndina\n\nNo es una empresa cotizada, no tiene oficinas en Europa y no usa OpenShift en\nproducción (sí Kubernetes en GKE). Cualquier afirmación en sentido contrario no\nestá en este corpus.",
+    "orden": 7,
+    "inicio": 2221,
+    "fin": 2414,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 193
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#0",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "# NubeAndina: vacaciones, presencialidad y trabajo remoto\n\nPolítica interna de la empresa ficticia NubeAndina S.A.C. Solo aplica a este caso\ndidáctico. Las cifras son deliberadamente específicas para que se pueda comprobar\nsi una respuesta está fundada en el texto o inventada.\n\n## Vacaciones anuales\n\nCada empleado de jornada completa tiene **22 días laborables** de vacaciones al año.\nA ellos se",
+    "orden": 0,
+    "inicio": 0,
+    "fin": 397,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 397
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#1",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "jornada completa tiene **22 días laborables** de vacaciones al año.\nA ellos se suman **3 días** de **«cierre andino»** en **julio**, fijos para toda la\nempresa: no descuentan del saldo de 22 días. El cierre andino de 2026 se comunica\ncada enero; no es un puente móvil elegido por la persona.\n\nLas vacaciones de más de cinco días laborables seguidos se solicitan con **15 días\nnaturales** de",
+    "orden": 1,
+    "inicio": 318,
+    "fin": 709,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 390
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#2",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "más de cinco días laborables seguidos se solicitan con **15 días\nnaturales** de antelación en el sistema interno *Huella*. Las de uno o dos días, con\n48 horas. No se pueden acumular más de **8 días** de un año para el siguiente, y\nsolo con visto bueno de Administración.\n\nEl personal con menos de seis meses en la empresa devenga vacaciones, pero no puede\ntomar más de 5 días hasta cumplir ese",
+    "orden": 2,
+    "inicio": 630,
+    "fin": 1023,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#3",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "empresa devenga vacaciones, pero no puede\ntomar más de 5 días hasta cumplir ese semestre, salvo el cierre andino, que sí\ndisfruta todo el mundo.\n\n## Trabajo remoto\n\nEl máximo de trabajo remoto es de **3 días por semana**, siempre con acuerdo escrito\ndel responsable directo en *Huella*. No existe la modalidad 100 % remota como\ncontrato estándar. Los lunes de la primera semana de cada mes son",
+    "orden": 3,
+    "inicio": 944,
+    "fin": 1337,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 393
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#4",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "% remota como\ncontrato estándar. Los lunes de la primera semana de cada mes son presenciales en la\nsede que corresponda (Chachapoyas o Lima) para la reunión de planificación.\n\nExcepción: el equipo de guardia de producción no puede hacer remoto el día que le\ntoca la guardia nocturna siguiente, para reducir el solape de fatiga y desplazamientos.\n\n## Permisos breves\n\nHay **2 días** al año de permiso",
+    "orden": 4,
+    "inicio": 1258,
+    "fin": 1657,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 399
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#5",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "fatiga y desplazamientos.\n\n## Permisos breves\n\nHay **2 días** al año de permiso por gestiones personales (DNI, notaría, trámites\nbancarios), no acumulables. Las citas médicas de menos de cuatro horas no descuentan\nvacaciones si se avisa el día laborable anterior.\n\n## Viajes a campo\n\nQuien viaje a una cooperativa cliente por más de dos noches recibe un día hábil de\ndescanso al regreso, que no",
+    "orden": 5,
+    "inicio": 1578,
+    "fin": 1972,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 394
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#6",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "liente por más de dos noches recibe un día hábil de\ndescanso al regreso, que no descuenta vacaciones. El viaje se registra en *Huella*\ncomo «desplazamiento CosechaNet».\n\n## Lo que esta política no dice\n\nNo hay paga extra de vacaciones no disfrutadas al cierre del año (se intentan\nplanificar). No hay viernes de verano con jornada reducida. Si un asistente afirma\nque NubeAndina ofrece 30 días de",
+    "orden": 6,
+    "inicio": 1893,
+    "fin": 2289,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 396
+    }
+  },
+  {
+    "id": "nubeandina-vacaciones-y-trabajo::#7",
+    "doc_id": "nubeandina-vacaciones-y-trabajo",
+    "titulo": "NubeAndina: vacaciones, presencialidad y trabajo remoto",
+    "texto": "o con jornada reducida. Si un asistente afirma\nque NubeAndina ofrece 30 días de vacaciones, trabajo remoto ilimitado o «viernes\nlibre», está inventando: no aparece en este documento.",
+    "orden": 7,
+    "inicio": 2210,
+    "fin": 2392,
+    "estrategia": "solape",
+    "metadatos": {
+      "tamano": 400,
+      "solape": 80,
+      "n_caracteres": 182
+    }
+  }
+]

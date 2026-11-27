@@ -243,13 +243,15 @@ def test_cada_ruta_citada_existe(doc):
 
 def test_extras_de_s5_y_su_estado(doc):
     s5 = SES / 'S5-MLOps-y-Operacion'
-    for extra in ('extra-mcp-notebooks', 'extra-composer-batch', 'extra-vertex-champion'):
+    for extra in ('extra-mcp-notebooks', 'extra-destilacion-notebooks', 'extra-rag-notebooks', 'extra-composer-batch', 'extra-vertex-champion'):
         assert (s5 / extra).is_dir(), extra
     li = {a: b for a, b in re.findall(r'<li><span class="mono ruta" data-ruta="([^"]+)">(.*?)</li>', doc, re.S) if '/S5-MLOps-y-Operacion/extra-' in a}
-    assert len(li) == 3
+    assert len(li) == 5
     assert 'en preparación' in li['01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch']
     assert 'en preparación' in li['01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion']
     assert 'sin verificar' in li['01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks']
+    assert 'sin verificar' in li['01-Sesiones/S5-MLOps-y-Operacion/extra-destilacion-notebooks']
+    assert 'sin verificar' in li['01-Sesiones/S5-MLOps-y-Operacion/extra-rag-notebooks']
     # sus propios README dicen que no está todo verificado
     assert 'Sin verificar' in leer('01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion/README.md') or 'sin verificar' in leer('01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion/README.md')
     assert 'sin verificar' in leer('01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/README.md').lower()

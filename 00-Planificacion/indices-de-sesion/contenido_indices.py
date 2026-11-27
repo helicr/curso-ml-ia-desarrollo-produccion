@@ -269,7 +269,7 @@ SESIONES = [
         nota='Preparado por ahora: el laboratorio de agentes (carpeta laboratorio-agentes/: servidor MCP, un LLM local con Ollama, el agente con trazas '
              'en MLflow, skills, evaluación con 25 preguntas de oro y despliegue en GitHub con puerta de calidad, aprobación y rollback; '
              'cuatro workflows ensayados en GitHub Actions el 22 y 23/11/2026). Sin verificar: el compose con Ollama en Docker, el agente en un Codespace '
-             'y el extra de dos agentes (solo planteado). Extra opcional: dos servidores MCP solo con notebooks (carpeta extra-mcp-notebooks/; BigQuery probado en Cloud Shell el 26/11/2026, los notebooks no en un Codespace). El MLOps clásico (deriva, alias champion y alerta) tiene su laboratorio, ensayado en GitHub Actions el 26/11/2026; los costes se explican en la teoría.',
+             'y el extra de dos agentes (solo planteado). Extra opcional: dos servidores MCP solo con notebooks (carpeta extra-mcp-notebooks/; BigQuery probado en Cloud Shell el 26/11/2026, los notebooks no en un Codespace). También extras de destilación de modelos (v1 y v2, extra-destilacion-notebooks/) y de RAG (extra-rag-notebooks/), con salidas de una ejecución en CPU; sin verificar en Windows ni en un Codespace. El MLOps clásico (deriva, alias champion y alerta) tiene su laboratorio, ensayado en GitHub Actions el 26/11/2026; los costes se explican en la teoría.',
         enlaces=[
             instructor('README de S5', f'{S5}/README.md'),
             instructor('Guion de la jornada del 27/11 (maratón): replicar repositorios, Dockerfiles, Actions de S4, recap de S4 y S5', f'{S5}/guion-jornada-27-11.md', 'Orden, qué decir, qué teclear, qué debes ver y si falla; sin recortes de tiempo.'),
@@ -308,6 +308,23 @@ SESIONES = [
             deck('Extra MCP · laboratorio de la interfaz web (diapositivas)', f'{S5}/extra-mcp-notebooks/ui/index_slides.html',
                  '25 diapositivas tipo laboratorio, ~57 min: arrancar la interfaz paso a paso (cmd, PowerShell, Codespace), recorrido por las cinco pestañas con 17 capturas reales, 8 ataques SQL, promover y volver el alias, traza MCP y ejercicios; el chat con qwen2.5:0.5b se muestra tal cual, con sus fallos.', volver=True),
             alumno('Extra MCP · interfaz web que une los dos MCP y un LLM (README)', f'{S5}/extra-mcp-notebooks/ui/README.md', 'FastAPI en local, cinco pestañas: cliente, ¿y si…?, chat con el LLM, explorador MCP con SQL vigilado y modelo con alias; traza en vivo. 46 pruebas; BigQuery y Codespace sin verificar.'),
+            alumno('Extra destilación · README (v1 y v2, ejecutado en CPU)', f'{S5}/extra-destilacion-notebooks/README.md', 'Profesor y estudiante en CPU: MNIST, DistilBERT→GRU (v1) y TinyBERT (v2, sí se promociona). Salidas guardadas; sin verificar en Windows ni en un Codespace.'),
+            alumno('Extra destilación 00 · introducción y setup', f'{S5}/extra-destilacion-notebooks/notebooks/00-introduccion-y-setup.ipynb'),
+            alumno('Extra destilación 01 · softmax y temperatura', f'{S5}/extra-destilacion-notebooks/notebooks/01-teoria-softmax-temperatura.ipynb'),
+            alumno('Extra destilación 02 · MNIST (v1)', f'{S5}/extra-destilacion-notebooks/notebooks/02-destilacion-mnist-mlp.ipynb'),
+            alumno('Extra destilación 03 · sentimiento con DistilBERT (v1)', f'{S5}/extra-destilacion-notebooks/notebooks/03-destilacion-bert-sentimiento.ipynb'),
+            alumno('Extra destilación 04 · comparativa y producción (v1)', f'{S5}/extra-destilacion-notebooks/notebooks/04-comparativa-y-produccion.ipynb'),
+            alumno('Extra destilación 05 · ejercicios (v1)', f'{S5}/extra-destilacion-notebooks/notebooks/05-ejercicios.ipynb'),
+            alumno('Extra destilación 06 · sentimiento con TinyBERT (v2)', f'{S5}/extra-destilacion-notebooks/notebooks/06-destilacion-v2-sentimiento.ipynb'),
+            alumno('Extra destilación 07 · comparativa v1 frente a v2', f'{S5}/extra-destilacion-notebooks/notebooks/07-comparativa-v1-vs-v2.ipynb'),
+            alumno('Extra RAG · README (ejecutado en CPU)', f'{S5}/extra-rag-notebooks/README.md', 'Embeddings, troceado, BM25/densa/híbrida y un LLM pequeño en CPU, con y sin RAG. Corpus propio en español; salidas guardadas; sin verificar en Windows ni en un Codespace.'),
+            alumno('Extra RAG 00 · introducción y setup', f'{S5}/extra-rag-notebooks/notebooks/00-introduccion-y-setup.ipynb'),
+            alumno('Extra RAG 01 · embeddings y similitud', f'{S5}/extra-rag-notebooks/notebooks/01-embeddings-y-similitud.ipynb'),
+            alumno('Extra RAG 02 · troceado e indexado', f'{S5}/extra-rag-notebooks/notebooks/02-chunking-e-indexado.ipynb'),
+            alumno('Extra RAG 03 · recuperación y búsqueda', f'{S5}/extra-rag-notebooks/notebooks/03-recuperacion-y-busqueda.ipynb'),
+            alumno('Extra RAG 04 · generación con LLM local', f'{S5}/extra-rag-notebooks/notebooks/04-generacion-con-llm-local.ipynb'),
+            alumno('Extra RAG 05 · pipeline y evaluación', f'{S5}/extra-rag-notebooks/notebooks/05-pipeline-completo-y-evaluacion.ipynb'),
+            alumno('Extra RAG 06 · ejercicios', f'{S5}/extra-rag-notebooks/notebooks/06-ejercicios.ipynb'),
             deck('Extra: del champion de MLflow a un endpoint de Vertex AI desde Actions (diapositivas)', f'{S5}/extra-vertex-champion/index.html',
                  '30 diapositivas tipo laboratorio: imagen de predicción propia que devuelve la probabilidad, manifiesto con etiquetas MLflow↔Vertex, scripts de Cloud Shell (subir, desplegar con canario, probar, volver, borrar) y tres workflows de Actions; 216 pruebas con gcloud y docker simulados; Vertex, Docker y Actions reales sin verificar.', volver=True),
             alumno('Extra Vertex · README (qué está probado y qué no)', f'{S5}/extra-vertex-champion/README.md'),

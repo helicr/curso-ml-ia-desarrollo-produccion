@@ -1,0 +1,89 @@
+{
+  "estrategia": "solape",
+  "tamano": 400,
+  "solape": 80,
+  "modelo_embeddings": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "n_documentos": 9,
+  "n_fragmentos": 77,
+  "dim": 384,
+  "segundos_embeber": 9.128,
+  "resumenes_estrategias": [
+    {
+      "n_fragmentos": 67,
+      "n_documentos": 9,
+      "estrategia": "fijo",
+      "longitud_media": 358.55223880597015,
+      "longitud_mediana": 396.0,
+      "longitud_min": 10,
+      "longitud_max": 400,
+      "por_documento": {
+        "curso-avance-3": 8,
+        "curso-reglamento": 7,
+        "guia-docker": 8,
+        "guia-github-actions": 6,
+        "guia-kubernetes": 8,
+        "guia-mlflow": 8,
+        "nubeandina-datos-y-seguridad": 8,
+        "nubeandina-empresa": 7,
+        "nubeandina-vacaciones-y-trabajo": 7
+      },
+      "nombre": "fijo"
+    },
+    {
+      "n_fragmentos": 77,
+      "n_documentos": 9,
+      "estrategia": "solape",
+      "longitud_media": 382.4935064935065,
+      "longitud_mediana": 395.0,
+      "longitud_min": 182,
+      "longitud_max": 400,
+      "por_documento": {
+        "curso-avance-3": 9,
+        "curso-reglamento": 8,
+        "guia-docker": 10,
+        "guia-github-actions": 7,
+        "guia-kubernetes": 9,
+        "guia-mlflow": 9,
+        "nubeandina-datos-y-seguridad": 9,
+        "nubeandina-empresa": 8,
+        "nubeandina-vacaciones-y-trabajo": 8
+      },
+      "nombre": "solape"
+    },
+    {
+      "n_fragmentos": 87,
+      "n_documentos": 9,
+      "estrategia": "parrafos",
+      "longitud_media": 282.4367816091954,
+      "longitud_mediana": 284.0,
+      "longitud_min": 32,
+      "longitud_max": 400,
+      "por_documento": {
+        "curso-avance-3": 10,
+        "curso-reglamento": 8,
+        "guia-docker": 10,
+        "guia-github-actions": 8,
+        "guia-kubernetes": 11,
+        "guia-mlflow": 11,
+        "nubeandina-datos-y-seguridad": 11,
+        "nubeandina-empresa": 9,
+        "nubeandina-vacaciones-y-trabajo": 9
+      },
+      "nombre": "parrafos"
+    }
+  ],
+  "consulta_demo": "¿Cuántos días de vacaciones tiene un empleado de NubeAndina?",
+  "ids_numpy": [
+    "nubeandina-vacaciones-y-trabajo::#0",
+    "nubeandina-vacaciones-y-trabajo::#7",
+    "nubeandina-vacaciones-y-trabajo::#6",
+    "nubeandina-vacaciones-y-trabajo::#2"
+  ],
+  "ids_faiss": [
+    "nubeandina-vacaciones-y-trabajo::#0",
+    "nubeandina-vacaciones-y-trabajo::#7",
+    "nubeandina-vacaciones-y-trabajo::#6",
+    "nubeandina-vacaciones-y-trabajo::#2"
+  ],
+  "coinciden": true
+}

@@ -1,0 +1,10 @@
+# Entornos y cachés (los pesos de Hugging Face se vuelven a descargar)
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+cache-hf/
+.DS_Store
+
+# Los índices ligeros de modelos/indice_faiss/ y modelos/indice_numpy/ sí van en el repositorio

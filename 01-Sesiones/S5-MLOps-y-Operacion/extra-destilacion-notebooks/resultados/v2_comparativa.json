@@ -1,0 +1,141 @@
+{
+  "ablacion": [
+    {
+      "variante": "Profesor DistilBERT (SST-2)",
+      "exactitud": 0.9106,
+      "hueco_vs_profesor_puntos": 0.0,
+      "parametros": 66955010,
+      "p95_lote_ms": 127.35,
+      "calidad_ok": true,
+      "notas": "referencia; no se promociona a sí mismo"
+    },
+    {
+      "variante": "v1 GRU duro (3 000 frases)",
+      "exactitud": 0.6502,
+      "hueco_vs_profesor_puntos": 26.03,
+      "parametros": 2003586,
+      "p95_lote_ms": 2.77,
+      "calidad_ok": false,
+      "notas": "v1: red desde cero, etiquetas duras"
+    },
+    {
+      "variante": "v1 GRU destilado (3 000 frases)",
+      "exactitud": 0.6743,
+      "hueco_vs_profesor_puntos": 23.62,
+      "parametros": 2003586,
+      "p95_lote_ms": 2.8,
+      "calidad_ok": false,
+      "notas": "v1: misma red, etiquetas blandas; no llega a la puerta de calidad"
+    },
+    {
+      "variante": "Sonda: BERT L-4 H-256 duro, 16 000, 2 épocas",
+      "exactitud": 0.8073,
+      "hueco_vs_profesor_puntos": 10.32,
+      "parametros": 11171074,
+      "p95_lote_ms": NaN,
+      "calidad_ok": false,
+      "notas": "mismo régimen de datos casi, pero el punto de partida no es TinyBERT"
+    },
+    {
+      "variante": "Sonda: BERT L-4 H-256 destilado, 16 000, 2 épocas",
+      "exactitud": 0.805,
+      "hueco_vs_profesor_puntos": 10.55,
+      "parametros": 11171074,
+      "p95_lote_ms": NaN,
+      "calidad_ok": false,
+      "notas": "mismo régimen de datos casi, pero el punto de partida no es TinyBERT"
+    },
+    {
+      "variante": "v2 TinyBERT duro (20 000 frases)",
+      "exactitud": 0.8842,
+      "hueco_vs_profesor_puntos": 2.64,
+      "parametros": 14350874,
+      "p95_lote_ms": 16.55,
+      "calidad_ok": true,
+      "notas": "v2: transformer pequeño ya preentrenado, etiquetas duras"
+    },
+    {
+      "variante": "v2 TinyBERT destilado fp32",
+      "exactitud": 0.883,
+      "hueco_vs_profesor_puntos": 2.75,
+      "parametros": 14350874,
+      "p95_lote_ms": 16.6,
+      "calidad_ok": true,
+      "notas": "v2: mismas iniciales, T=3, alpha=0.5"
+    },
+    {
+      "variante": "v2 TinyBERT destilado int8",
+      "exactitud": 0.8589,
+      "hueco_vs_profesor_puntos": 5.16,
+      "parametros": 14350874,
+      "p95_lote_ms": 15.22,
+      "calidad_ok": false,
+      "notas": "cuantización dinámica: en esta CPU baja la exactitud y no entra en la puerta de calidad"
+    },
+    {
+      "variante": "v2 TinyBERT duro int8",
+      "exactitud": 0.8589,
+      "hueco_vs_profesor_puntos": 5.16,
+      "parametros": 14350874,
+      "p95_lote_ms": 15.21,
+      "calidad_ok": false,
+      "notas": "misma caída de calidad al cuantizar; no se promociona"
+    },
+    {
+      "variante": "v2 TinyBERT duro fp32 (oficial)",
+      "exactitud": 0.8842,
+      "hueco_vs_profesor_puntos": 2.64,
+      "parametros": 14350874,
+      "p95_lote_ms": 16.55,
+      "calidad_ok": true,
+      "notas": "mayor exactitud entre las variantes que cumplen las dos puertas"
+    }
+  ],
+  "decisiones": [
+    {
+      "serie": "v1 (ejercicio 5)",
+      "hueco_puntos": 23.62,
+      "aceleracion_p95": 166.63,
+      "cumple_calidad": false,
+      "cumple_latencia": true,
+      "decision": "NO PROMOCIONAR",
+      "protocolo": "p95/lote con lotes distintos (16 vs 32); no es el protocolo de la v2"
+    },
+    {
+      "serie": "v2 oficial (estudiante_duro, fp32, lote 16)",
+      "hueco_puntos": 2.64,
+      "aceleracion_p95": 7.69,
+      "cumple_calidad": true,
+      "cumple_latencia": true,
+      "decision": "PROMOCIONAR",
+      "protocolo": "mismo lote 16, 4 hilos, p95 del lote profesor fp32 vs estudiante_duro fp32"
+    },
+    {
+      "serie": "v2 fp32, lote 16",
+      "hueco_puntos": 2.64,
+      "aceleracion_p95": 7.69,
+      "cumple_calidad": true,
+      "cumple_latencia": true,
+      "decision": "PROMOCIONAR",
+      "protocolo": "mismo protocolo de la v2, otra variante"
+    },
+    {
+      "serie": "v2 int8, lote 1",
+      "hueco_puntos": 5.16,
+      "aceleracion_p95": 3.87,
+      "cumple_calidad": false,
+      "cumple_latencia": false,
+      "decision": "NO PROMOCIONAR",
+      "protocolo": "mismo protocolo de la v2, otra variante"
+    }
+  ],
+  "oficial": {
+    "hueco_puntos": 2.6376163193938984,
+    "aceleracion_p95": 7.693201415528523,
+    "max_hueco_puntos": 4.0,
+    "min_aceleracion": 5.0,
+    "cumple_calidad": true,
+    "cumple_latencia": true,
+    "decision": "PROMOCIONAR"
+  }
+}

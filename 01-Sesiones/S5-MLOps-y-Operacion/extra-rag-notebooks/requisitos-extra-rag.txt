@@ -1,0 +1,31 @@
+# Requisitos del extra «RAG en notebooks» (S5), cuadernos 00-06.
+# Van APARTE de los requisitos del proyecto base del curso: instálalos encima del entorno
+# env-ia-mlops, o en un entorno nuevo, con el mismo Python que use el kernel:
+#   pip install -r requisitos-extra-rag.txt
+# Entorno validado en CPU (Python 3.12, PyTorch solo CPU). El índice extra es necesario
+# para que pip encuentre la rueda pinada como torch==...+cpu.
+#
+# En Windows, si prefieres, instala torch primero:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requisitos-extra-rag.txt
+# (en ese caso puedes comentar la línea de torch de este archivo).
+#
+--extra-index-url https://download.pytorch.org/whl/cpu
+accelerate==1.16.0
+faiss-cpu==1.16.0
+huggingface-hub==2.5.0
+ipykernel==7.4.0
+ipywidgets==8.1.9
+jupyter==1.1.1
+matplotlib==3.11.2
+nbconvert==7.17.2
+notebook==7.6.5
+numpy==2.5.4
+pandas==3.1.1
+rank-bm25==0.2.2
+safetensors==0.8.0
+scikit-learn==1.9.1
+sentence-transformers==6.3.0
+torch==2.15.0+cpu
+tqdm==4.70.1
+transformers==5.24.1

@@ -1,0 +1,219 @@
+{
+  "problema": "sst2-tinybert-v2",
+  "profesor": "distilbert-base-uncased-finetuned-sst-2-english",
+  "estudiante": "huawei-noah/TinyBERT_General_4L_312D",
+  "semilla": 42,
+  "dispositivo": "cpu",
+  "hilos": {
+    "intra_op": 4,
+    "interop": 1
+  },
+  "temperature": 3.0,
+  "alpha": 0.5,
+  "lr": 5e-05,
+  "n_train": 20000,
+  "n_test": 872,
+  "max_len": 64,
+  "epochs": 2,
+  "modo_rapido": true,
+  "exactitud_profesor": 0.9105504751205444,
+  "puerta_calidad": 0.8705504751205444,
+  "variante_oficial": "estudiante_duro",
+  "modelos": {
+    "profesor": {
+      "ruta": "distilbert-base-uncased-finetuned-sst-2-english",
+      "parametros": 66955010,
+      "exactitud": 0.9105504751205444,
+      "latencia_ms_lote_media": 126.76382492500124,
+      "latencia_ms_lote_p50": 125.62169750162866,
+      "latencia_ms_lote_p95": 127.35454024550563,
+      "latencia_ms_por_ejemplo_media": 7.922739057812578,
+      "latencia_ms_por_ejemplo_p95": 7.959658765344102,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 16,
+      "latencia_b1": {
+        "ms_lote_media": 14.36759306670865,
+        "ms_lote_p50": 14.357210999150993,
+        "ms_lote_p95": 14.46026039593562,
+        "ms_por_ejemplo_media": 14.36759306670865,
+        "ms_por_ejemplo_p95": 14.46026039593562,
+        "n_reps": 30,
+        "tamano_lote": 1
+      }
+    },
+    "estudiante_duro": {
+      "ruta": "modelos/v2_estudiante_duro.pt",
+      "parametros": 14350874,
+      "tamano_mb": 54.77189350128174,
+      "exactitud": 0.8841743119266054,
+      "exactitud_int8": 0.8589449541284404,
+      "latencia_ms_lote_media": 16.705106024164706,
+      "latencia_ms_lote_p50": 16.406652499426855,
+      "latencia_ms_lote_p95": 16.554166902278663,
+      "latencia_ms_por_ejemplo_media": 1.0440691265102942,
+      "latencia_ms_por_ejemplo_p95": 1.0346354313924164,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 16,
+      "latencia_int8_b16": {
+        "ms_lote_media": 15.14258837505622,
+        "ms_lote_p50": 15.130873998714378,
+        "ms_lote_p95": 15.209973550372524,
+        "ms_por_ejemplo_media": 0.9464117734410138,
+        "ms_por_ejemplo_p95": 0.9506233468982828,
+        "n_reps": 40,
+        "tamano_lote": 16
+      },
+      "latencia_fp32_b1": {
+        "ms_lote_media": 3.8498704988645236,
+        "ms_lote_p50": 3.6201564980729017,
+        "ms_lote_p95": 3.6585583504347596,
+        "ms_por_ejemplo_media": 3.8498704988645236,
+        "ms_por_ejemplo_p95": 3.6585583504347596,
+        "n_reps": 30,
+        "tamano_lote": 1
+      },
+      "latencia_int8_b1": {
+        "ms_lote_media": 3.683630832529161,
+        "ms_lote_p50": 3.6677925018011592,
+        "ms_lote_p95": 3.7369006484368583,
+        "ms_por_ejemplo_media": 3.683630832529161,
+        "ms_por_ejemplo_p95": 3.7369006484368583,
+        "n_reps": 30,
+        "tamano_lote": 1
+      }
+    },
+    "estudiante_destilado": {
+      "ruta": "modelos/v2_estudiante_destilado.pt",
+      "parametros": 14350874,
+      "tamano_mb": 54.77233123779297,
+      "exactitud": 0.8830275229357798,
+      "exactitud_int8": 0.8589449541284404,
+      "latencia_ms_lote_media": 16.49872892503481,
+      "latencia_ms_lote_p50": 16.432017502665985,
+      "latencia_ms_lote_p95": 16.60136984864948,
+      "latencia_ms_por_ejemplo_media": 1.0311705578146757,
+      "latencia_ms_por_ejemplo_p95": 1.0375856155405925,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 16,
+      "latencia_int8_b16": {
+        "ms_lote_media": 15.13397225025983,
+        "ms_lote_p50": 15.135072000703076,
+        "ms_lote_p95": 15.219195396639407,
+        "ms_por_ejemplo_media": 0.9458732656412394,
+        "ms_por_ejemplo_p95": 0.9511997122899629,
+        "n_reps": 40,
+        "tamano_lote": 16
+      },
+      "latencia_fp32_b1": {
+        "ms_lote_media": 3.611143067003771,
+        "ms_lote_p50": 3.605711997806793,
+        "ms_lote_p95": 3.6891947012918536,
+        "ms_por_ejemplo_media": 3.611143067003771,
+        "ms_por_ejemplo_p95": 3.6891947012918536,
+        "n_reps": 30,
+        "tamano_lote": 1
+      },
+      "latencia_int8_b1": {
+        "ms_lote_media": 3.664029399806168,
+        "ms_lote_p50": 3.6692235044029076,
+        "ms_lote_p95": 3.7163430475629866,
+        "ms_por_ejemplo_media": 3.664029399806168,
+        "ms_por_ejemplo_p95": 3.7163430475629866,
+        "n_reps": 30,
+        "tamano_lote": 1
+      }
+    }
+  },
+  "historial": {
+    "estudiante_duro": [
+      {
+        "epoca": 1,
+        "train_acc": 0.8396,
+        "train_loss": 0.3717380296885967,
+        "test_acc": 0.8841743119266054,
+        "seg": 187.18033425799513
+      },
+      {
+        "epoca": 2,
+        "train_acc": 0.91035,
+        "train_loss": 0.2328515546604991,
+        "test_acc": 0.8795871559633027,
+        "seg": 373.895653638996
+      }
+    ],
+    "estudiante_destilado": [
+      {
+        "epoca": 1,
+        "train_acc": 0.841,
+        "train_loss": 1.1274682074308395,
+        "test_acc": 0.8772935779816514,
+        "seg": 187.19806317700568
+      },
+      {
+        "epoca": 2,
+        "train_acc": 0.91105,
+        "train_loss": 0.5923284943863749,
+        "test_acc": 0.8830275229357798,
+        "seg": 375.5768103060036
+      }
+    ]
+  },
+  "puertas": {
+    "oficial_int8_lote16": {
+      "hueco_puntos": 5.160552099210403,
+      "aceleracion_p95": 8.373094129567797,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": false,
+      "cumple_latencia": true,
+      "decision": "NO PROMOCIONAR"
+    },
+    "fp32_lote16": {
+      "hueco_puntos": 2.6376163193938984,
+      "aceleracion_p95": 7.693201415528523,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": true,
+      "cumple_latencia": true,
+      "decision": "PROMOCIONAR"
+    },
+    "int8_lote1": {
+      "hueco_puntos": 5.160552099210403,
+      "aceleracion_p95": 3.8695865253962083,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": false,
+      "cumple_latencia": false,
+      "decision": "NO PROMOCIONAR"
+    },
+    "duro_int8_lote16": {
+      "hueco_puntos": 5.160552099210403,
+      "aceleracion_p95": 8.373094129567797,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": false,
+      "cumple_latencia": true,
+      "decision": "NO PROMOCIONAR"
+    },
+    "destilado_int8_lote16": {
+      "hueco_puntos": 5.160552099210403,
+      "aceleracion_p95": 8.368020577068558,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": false,
+      "cumple_latencia": true,
+      "decision": "NO PROMOCIONAR"
+    },
+    "oficial": {
+      "hueco_puntos": 2.6376163193938984,
+      "aceleracion_p95": 7.693201415528523,
+      "max_hueco_puntos": 4.0,
+      "min_aceleracion": 5.0,
+      "cumple_calidad": true,
+      "cumple_latencia": true,
+      "decision": "PROMOCIONAR"
+    }
+  },
+  "precision_oficial": "fp32",
+  "nota_oficial": "La variante oficial es TinyBERT duro fp32, lote 16, 4 hilos. int8 baja la exactitud de 88.42% a 85.89% (hueco 5.16 > 4) y apenas recorta latencia (8.37× vs 7.69×). El destilado fp32 también cumpliría (88.30%, hueco 2.75)."
+}

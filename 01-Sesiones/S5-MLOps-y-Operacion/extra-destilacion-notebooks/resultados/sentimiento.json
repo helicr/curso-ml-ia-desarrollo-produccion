@@ -1,0 +1,131 @@
+{
+  "problema": "sst2-distilbert-a-gru",
+  "profesor": "distilbert-base-uncased-finetuned-sst-2-english",
+  "semilla": 42,
+  "dispositivo": "cpu",
+  "temperature": 3.0,
+  "alpha": 0.7,
+  "n_train": 3000,
+  "n_test": 872,
+  "max_len": 64,
+  "modelos": {
+    "profesor": {
+      "ruta": "distilbert-base-uncased-finetuned-sst-2-english",
+      "parametros": 66955010,
+      "tamano_mb": null,
+      "exactitud": 0.9105504587155964,
+      "exactitud_train": 0.9866666666666667,
+      "n": 872,
+      "latencia_ms_lote_media": 139.10942530128523,
+      "latencia_ms_lote_p50": 127.71678500575945,
+      "latencia_ms_lote_p95": 233.251669198944,
+      "latencia_ms_por_ejemplo_media": 8.694339081330327,
+      "latencia_n_reps": 20,
+      "latencia_tamano_lote": 16
+    },
+    "estudiante_duro": {
+      "ruta": "modelos/sentimiento_estudiante_duro.pt",
+      "parametros": 2003586,
+      "tamano_mb": 7.648153305053711,
+      "exactitud": 0.6502293577981652,
+      "perdida_ce": 0.8162359885119517,
+      "n": 872,
+      "latencia_ms_lote_media": 2.533756900265871,
+      "latencia_ms_lote_p50": 2.481194998836145,
+      "latencia_ms_lote_p95": 2.7669622963003344,
+      "latencia_ms_por_ejemplo_media": 0.07917990313330847,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 32
+    },
+    "estudiante_destilado": {
+      "ruta": "modelos/sentimiento_estudiante_destilado.pt",
+      "parametros": 2003586,
+      "tamano_mb": 7.6482954025268555,
+      "exactitud": 0.6743119266055045,
+      "perdida_ce": 1.197930276940722,
+      "n": 872,
+      "latencia_ms_lote_media": 2.573078375280602,
+      "latencia_ms_lote_p50": 2.484857501258375,
+      "latencia_ms_lote_p95": 2.7996626482490674,
+      "latencia_ms_por_ejemplo_media": 0.08040869922751881,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 32
+    }
+  },
+  "historial": {
+    "estudiante_duro": [
+      {
+        "epoca": 1,
+        "train_perdida": 0.691654405593872,
+        "train_exactitud": 0.547,
+        "test_exactitud": 0.5114678899082569,
+        "test_perdida": 0.6927707561659157
+      },
+      {
+        "epoca": 2,
+        "train_perdida": 0.6495898537635804,
+        "train_exactitud": 0.624,
+        "test_exactitud": 0.5905963302752294,
+        "test_perdida": 0.666879936642603
+      },
+      {
+        "epoca": 3,
+        "train_perdida": 0.5613723128636678,
+        "train_exactitud": 0.706,
+        "test_exactitud": 0.6089449541284404,
+        "test_perdida": 0.6596182333220035
+      },
+      {
+        "epoca": 4,
+        "train_perdida": 0.4498970137437185,
+        "train_exactitud": 0.791,
+        "test_exactitud": 0.6376146788990825,
+        "test_perdida": 0.6738173961639404
+      },
+      {
+        "epoca": 5,
+        "train_perdida": 0.3210259506305059,
+        "train_exactitud": 0.866,
+        "test_exactitud": 0.6502293577981652,
+        "test_perdida": 0.8162359885119517
+      }
+    ],
+    "estudiante_destilado": [
+      {
+        "epoca": 1,
+        "train_perdida": 2.8375070190429685,
+        "train_exactitud": 0.5526666666666666,
+        "test_exactitud": 0.5137614678899083,
+        "test_perdida": 0.7144552961401983
+      },
+      {
+        "epoca": 2,
+        "train_perdida": 2.649980044682821,
+        "train_exactitud": 0.631,
+        "test_exactitud": 0.6055045871559633,
+        "test_perdida": 0.7275182194666031
+      },
+      {
+        "epoca": 3,
+        "train_perdida": 2.2226648801167808,
+        "train_exactitud": 0.7153333333333334,
+        "test_exactitud": 0.6490825688073395,
+        "test_perdida": 0.8900891061222881
+      },
+      {
+        "epoca": 4,
+        "train_perdida": 1.6939676440556843,
+        "train_exactitud": 0.793,
+        "test_exactitud": 0.6410550458715596,
+        "test_perdida": 0.9344818493641844
+      },
+      {
+        "epoca": 5,
+        "train_perdida": 1.2063814078966777,
+        "train_exactitud": 0.8626666666666667,
+        "test_exactitud": 0.6743119266055045,
+        "test_perdida": 1.197930276940722
+      }
+    ]
+  }
+}

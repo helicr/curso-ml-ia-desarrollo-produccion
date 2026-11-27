@@ -1,0 +1,458 @@
+{
+  "problema": "mnist-mlp",
+  "semilla": 42,
+  "dispositivo": "cpu",
+  "temperature": 4.0,
+  "alpha": 0.5,
+  "dropout_profesor": 0.2,
+  "dropout_estudiante": 0.0,
+  "n_train_profesor": 30000,
+  "n_train_estudiante": 400,
+  "n_test": 5000,
+  "modelos": {
+    "profesor": {
+      "ruta": "modelos/mnist_profesor.pt",
+      "anchos": [
+        784,
+        256,
+        128,
+        10
+      ],
+      "parametros": 235146,
+      "tamano_mb": 0.9004297256469727,
+      "exactitud": 0.9692,
+      "perdida_ce": 0.09997302664518357,
+      "n": 5000,
+      "latencia_ms_lote_media": 0.0768217501899926,
+      "latencia_ms_lote_p50": 0.07639549949089997,
+      "latencia_ms_lote_p95": 0.08090910087048542,
+      "latencia_ms_por_ejemplo_media": 0.0012003398467186344,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 64
+    },
+    "estudiante_duro": {
+      "ruta": "modelos/mnist_estudiante_duro.pt",
+      "anchos": [
+        784,
+        32,
+        10
+      ],
+      "parametros": 25450,
+      "tamano_mb": 0.10001468658447266,
+      "exactitud": 0.8412,
+      "perdida_ce": 0.5228062124490738,
+      "n": 5000,
+      "latencia_ms_lote_media": 0.023179549862106796,
+      "latencia_ms_lote_p50": 0.022623000404564664,
+      "latencia_ms_lote_p95": 0.024423246213700622,
+      "latencia_ms_por_ejemplo_media": 0.0003621804665954187,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 64
+    },
+    "estudiante_destilado": {
+      "ruta": "modelos/mnist_estudiante_destilado.pt",
+      "anchos": [
+        784,
+        32,
+        10
+      ],
+      "parametros": 25450,
+      "tamano_mb": 0.10012340545654297,
+      "exactitud": 0.8638,
+      "perdida_ce": 0.5020283769607544,
+      "n": 5000,
+      "latencia_ms_lote_media": 0.022741024804417975,
+      "latencia_ms_lote_p50": 0.02268800380988978,
+      "latencia_ms_lote_p95": 0.023886700364528224,
+      "latencia_ms_por_ejemplo_media": 0.00035532851256903086,
+      "latencia_n_reps": 40,
+      "latencia_tamano_lote": 64
+    }
+  },
+  "historial": {
+    "profesor": [
+      {
+        "epoca": 1,
+        "train_perdida": 0.3698140002568563,
+        "train_exactitud": 0.8860333333333333,
+        "test_exactitud": 0.951,
+        "test_perdida": 0.164114238768816
+      },
+      {
+        "epoca": 2,
+        "train_perdida": 0.17032139727274576,
+        "train_exactitud": 0.9475333333333333,
+        "test_exactitud": 0.962,
+        "test_perdida": 0.12893817580640315
+      },
+      {
+        "epoca": 3,
+        "train_perdida": 0.12309692545036476,
+        "train_exactitud": 0.9608666666666666,
+        "test_exactitud": 0.9614,
+        "test_perdida": 0.12315694660320878
+      },
+      {
+        "epoca": 4,
+        "train_perdida": 0.10073179339170456,
+        "train_exactitud": 0.968,
+        "test_exactitud": 0.9692,
+        "test_perdida": 0.09997302664518357
+      }
+    ],
+    "estudiante_duro": [
+      {
+        "epoca": 1,
+        "train_perdida": 2.1445816469192507,
+        "train_exactitud": 0.2375,
+        "test_exactitud": 0.4526,
+        "test_perdida": 1.8771477241516112
+      },
+      {
+        "epoca": 2,
+        "train_perdida": 1.6597936725616456,
+        "train_exactitud": 0.52,
+        "test_exactitud": 0.5796,
+        "test_perdida": 1.5088998714447022
+      },
+      {
+        "epoca": 3,
+        "train_perdida": 1.2805250835418702,
+        "train_exactitud": 0.73,
+        "test_exactitud": 0.7216,
+        "test_perdida": 1.2093390338897705
+      },
+      {
+        "epoca": 4,
+        "train_perdida": 0.9903082251548767,
+        "train_exactitud": 0.8125,
+        "test_exactitud": 0.7568,
+        "test_perdida": 1.0055127153396606
+      },
+      {
+        "epoca": 5,
+        "train_perdida": 0.7728853034973144,
+        "train_exactitud": 0.855,
+        "test_exactitud": 0.7896,
+        "test_perdida": 0.8523051290512085
+      },
+      {
+        "epoca": 6,
+        "train_perdida": 0.6272604155540467,
+        "train_exactitud": 0.8775,
+        "test_exactitud": 0.7998,
+        "test_perdida": 0.7575799685478211
+      },
+      {
+        "epoca": 7,
+        "train_perdida": 0.5256664144992829,
+        "train_exactitud": 0.8975,
+        "test_exactitud": 0.8088,
+        "test_perdida": 0.7052091362953186
+      },
+      {
+        "epoca": 8,
+        "train_perdida": 0.4578547763824463,
+        "train_exactitud": 0.905,
+        "test_exactitud": 0.8096,
+        "test_perdida": 0.6604343312263489
+      },
+      {
+        "epoca": 9,
+        "train_perdida": 0.4019437968730927,
+        "train_exactitud": 0.9125,
+        "test_exactitud": 0.8198,
+        "test_perdida": 0.6299847383975983
+      },
+      {
+        "epoca": 10,
+        "train_perdida": 0.3561171889305115,
+        "train_exactitud": 0.9275,
+        "test_exactitud": 0.8218,
+        "test_perdida": 0.6118782522201538
+      },
+      {
+        "epoca": 11,
+        "train_perdida": 0.31692359209060667,
+        "train_exactitud": 0.9425,
+        "test_exactitud": 0.8298,
+        "test_perdida": 0.5970849191665649
+      },
+      {
+        "epoca": 12,
+        "train_perdida": 0.28250509142875674,
+        "train_exactitud": 0.955,
+        "test_exactitud": 0.8354,
+        "test_perdida": 0.5725791211605072
+      },
+      {
+        "epoca": 13,
+        "train_perdida": 0.25082303166389464,
+        "train_exactitud": 0.9575,
+        "test_exactitud": 0.839,
+        "test_perdida": 0.55694140458107
+      },
+      {
+        "epoca": 14,
+        "train_perdida": 0.22568809151649474,
+        "train_exactitud": 0.965,
+        "test_exactitud": 0.8364,
+        "test_perdida": 0.5637393442630768
+      },
+      {
+        "epoca": 15,
+        "train_perdida": 0.20580770030617715,
+        "train_exactitud": 0.97,
+        "test_exactitud": 0.84,
+        "test_perdida": 0.5445512100696563
+      },
+      {
+        "epoca": 16,
+        "train_perdida": 0.18456699550151826,
+        "train_exactitud": 0.9725,
+        "test_exactitud": 0.8374,
+        "test_perdida": 0.5437640966415406
+      },
+      {
+        "epoca": 17,
+        "train_perdida": 0.16951620757579802,
+        "train_exactitud": 0.975,
+        "test_exactitud": 0.8406,
+        "test_perdida": 0.5356505602836609
+      },
+      {
+        "epoca": 18,
+        "train_perdida": 0.15350864589214325,
+        "train_exactitud": 0.985,
+        "test_exactitud": 0.8434,
+        "test_perdida": 0.5321163572311401
+      },
+      {
+        "epoca": 19,
+        "train_perdida": 0.139341499209404,
+        "train_exactitud": 0.9825,
+        "test_exactitud": 0.8424,
+        "test_perdida": 0.5277343327999116
+      },
+      {
+        "epoca": 20,
+        "train_perdida": 0.12804832816123962,
+        "train_exactitud": 0.9875,
+        "test_exactitud": 0.8416,
+        "test_perdida": 0.5263564103126526
+      },
+      {
+        "epoca": 21,
+        "train_perdida": 0.11621129021048546,
+        "train_exactitud": 0.9875,
+        "test_exactitud": 0.8434,
+        "test_perdida": 0.5204804866313935
+      },
+      {
+        "epoca": 22,
+        "train_perdida": 0.10779541224241257,
+        "train_exactitud": 0.99,
+        "test_exactitud": 0.8438,
+        "test_perdida": 0.5186500289678574
+      },
+      {
+        "epoca": 23,
+        "train_perdida": 0.0980568614602089,
+        "train_exactitud": 0.9925,
+        "test_exactitud": 0.8472,
+        "test_perdida": 0.5175169773101806
+      },
+      {
+        "epoca": 24,
+        "train_perdida": 0.09158272624015808,
+        "train_exactitud": 0.9975,
+        "test_exactitud": 0.843,
+        "test_perdida": 0.5242906959295273
+      },
+      {
+        "epoca": 25,
+        "train_perdida": 0.08371339738368988,
+        "train_exactitud": 1.0,
+        "test_exactitud": 0.8412,
+        "test_perdida": 0.5228062124490738
+      }
+    ],
+    "estudiante_destilado": [
+      {
+        "epoca": 1,
+        "train_perdida": 9.24949680328369,
+        "train_exactitud": 0.2025,
+        "test_exactitud": 0.3658,
+        "test_perdida": 1.8799022819519042
+      },
+      {
+        "epoca": 2,
+        "train_perdida": 8.110148239135743,
+        "train_exactitud": 0.4625,
+        "test_exactitud": 0.4204,
+        "test_perdida": 1.5821783433914185
+      },
+      {
+        "epoca": 3,
+        "train_perdida": 6.973695316314697,
+        "train_exactitud": 0.54,
+        "test_exactitud": 0.5914,
+        "test_perdida": 1.288150963973999
+      },
+      {
+        "epoca": 4,
+        "train_perdida": 5.96735803604126,
+        "train_exactitud": 0.6975,
+        "test_exactitud": 0.6728,
+        "test_perdida": 1.0587494520187377
+      },
+      {
+        "epoca": 5,
+        "train_perdida": 5.064054794311524,
+        "train_exactitud": 0.755,
+        "test_exactitud": 0.7142,
+        "test_perdida": 0.8868563325881959
+      },
+      {
+        "epoca": 6,
+        "train_perdida": 4.276799831390381,
+        "train_exactitud": 0.79,
+        "test_exactitud": 0.7548,
+        "test_perdida": 0.7638894167900085
+      },
+      {
+        "epoca": 7,
+        "train_perdida": 3.601694974899292,
+        "train_exactitud": 0.84,
+        "test_exactitud": 0.796,
+        "test_perdida": 0.6558316952705383
+      },
+      {
+        "epoca": 8,
+        "train_perdida": 3.0522867679595946,
+        "train_exactitud": 0.885,
+        "test_exactitud": 0.8142,
+        "test_perdida": 0.6010016118526459
+      },
+      {
+        "epoca": 9,
+        "train_perdida": 2.6052013206481934,
+        "train_exactitud": 0.9,
+        "test_exactitud": 0.824,
+        "test_perdida": 0.5726117051124573
+      },
+      {
+        "epoca": 10,
+        "train_perdida": 2.266343002319336,
+        "train_exactitud": 0.9025,
+        "test_exactitud": 0.8282,
+        "test_perdida": 0.5536012152433395
+      },
+      {
+        "epoca": 11,
+        "train_perdida": 2.004153323173523,
+        "train_exactitud": 0.9125,
+        "test_exactitud": 0.833,
+        "test_perdida": 0.5380105738162995
+      },
+      {
+        "epoca": 12,
+        "train_perdida": 1.7818553447723389,
+        "train_exactitud": 0.92,
+        "test_exactitud": 0.837,
+        "test_perdida": 0.5366995914459228
+      },
+      {
+        "epoca": 13,
+        "train_perdida": 1.6148006296157837,
+        "train_exactitud": 0.9175,
+        "test_exactitud": 0.8426,
+        "test_perdida": 0.5407460240364075
+      },
+      {
+        "epoca": 14,
+        "train_perdida": 1.4873773193359374,
+        "train_exactitud": 0.9325,
+        "test_exactitud": 0.8486,
+        "test_perdida": 0.5235147349119187
+      },
+      {
+        "epoca": 15,
+        "train_perdida": 1.3766115713119507,
+        "train_exactitud": 0.9375,
+        "test_exactitud": 0.8504,
+        "test_perdida": 0.5202209865808487
+      },
+      {
+        "epoca": 16,
+        "train_perdida": 1.2869187688827515,
+        "train_exactitud": 0.935,
+        "test_exactitud": 0.8512,
+        "test_perdida": 0.5279359262466431
+      },
+      {
+        "epoca": 17,
+        "train_perdida": 1.1962067556381226,
+        "train_exactitud": 0.94,
+        "test_exactitud": 0.8568,
+        "test_perdida": 0.5156751565933227
+      },
+      {
+        "epoca": 18,
+        "train_perdida": 1.1300669717788696,
+        "train_exactitud": 0.9525,
+        "test_exactitud": 0.8586,
+        "test_perdida": 0.5026374260902404
+      },
+      {
+        "epoca": 19,
+        "train_perdida": 1.0680147838592529,
+        "train_exactitud": 0.955,
+        "test_exactitud": 0.8582,
+        "test_perdida": 0.5143849730491639
+      },
+      {
+        "epoca": 20,
+        "train_perdida": 1.023070740699768,
+        "train_exactitud": 0.9425,
+        "test_exactitud": 0.8604,
+        "test_perdida": 0.513751610147953
+      },
+      {
+        "epoca": 21,
+        "train_perdida": 0.9602994632720947,
+        "train_exactitud": 0.96,
+        "test_exactitud": 0.865,
+        "test_perdida": 0.5055460106611251
+      },
+      {
+        "epoca": 22,
+        "train_perdida": 0.9226541090011596,
+        "train_exactitud": 0.9625,
+        "test_exactitud": 0.8634,
+        "test_perdida": 0.5064649993181228
+      },
+      {
+        "epoca": 23,
+        "train_perdida": 0.8800459909439087,
+        "train_exactitud": 0.9625,
+        "test_exactitud": 0.8612,
+        "test_perdida": 0.5140005138635635
+      },
+      {
+        "epoca": 24,
+        "train_perdida": 0.8413354969024658,
+        "train_exactitud": 0.9625,
+        "test_exactitud": 0.8646,
+        "test_perdida": 0.5026794553756714
+      },
+      {
+        "epoca": 25,
+        "train_perdida": 0.8216715621948242,
+        "train_exactitud": 0.9675,
+        "test_exactitud": 0.8638,
+        "test_perdida": 0.5020283769607544
+      }
+    ]
+  }
+}

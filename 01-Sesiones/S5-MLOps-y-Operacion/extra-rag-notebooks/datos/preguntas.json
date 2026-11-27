@@ -1,0 +1,147 @@
+{
+  "descripcion": "Conjunto pequeño y hecho a mano para evaluar recuperación y fidelidad. Los hechos deben aparecer literalmente (o con variación mínima) en la respuesta fundada.",
+  "preguntas": [
+    {
+      "id": "q01",
+      "pregunta": "¿Cuál es la calificación mínima de aprobación del curso De Modelo a Producción y qué asistencia mínima se exige?",
+      "docs_relevantes": ["curso-reglamento"],
+      "hechos": ["11", "70"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q02",
+      "pregunta": "¿Hasta qué hora y en qué canal se entrega el Avance 3, y cuál es la extensión máxima del PDF?",
+      "docs_relevantes": ["curso-avance-3"],
+      "hechos": ["23:59", "8 páginas"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q03",
+      "pregunta": "¿Cómo se llama la imagen Docker de la API de ejemplo y en qué puerto escucha?",
+      "docs_relevantes": ["guia-docker"],
+      "hechos": ["retencion-api:local", "8080"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q04",
+      "pregunta": "¿Qué ruta consulta el healthcheck de la imagen de la API?",
+      "docs_relevantes": ["guia-docker"],
+      "hechos": ["/salud"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q05",
+      "pregunta": "¿Cuál es el tracking URI por defecto de MLflow en el laboratorio y cómo se llama el experimento?",
+      "docs_relevantes": ["guia-mlflow"],
+      "hechos": ["http://127.0.0.1:5000", "retencion-clientes"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q06",
+      "pregunta": "¿Qué alias se asigna en el Model Registry de MLflow al modelo que la API debe servir?",
+      "docs_relevantes": ["guia-mlflow", "curso-avance-3"],
+      "hechos": ["champion"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q07",
+      "pregunta": "En el manifiesto de ejemplo de Kubernetes, ¿cuántas réplicas tiene el Deployment de la API y cómo se llama el namespace del laboratorio?",
+      "docs_relevantes": ["guia-kubernetes"],
+      "hechos": ["2 réplicas", "curso-mlops"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q08",
+      "pregunta": "¿Cómo se llama el archivo del workflow de GitHub Actions, en qué sistema corre y cuál es el umbral de cobertura?",
+      "docs_relevantes": ["guia-github-actions", "curso-avance-3"],
+      "hechos": ["ci-retencion.yml", "ubuntu-latest", "80"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q09",
+      "pregunta": "¿En qué año y ciudad se fundó NubeAndina y cuántos empleados tenía a 30 de septiembre de 2026?",
+      "docs_relevantes": ["nubeandina-empresa"],
+      "hechos": ["2019", "Chachapoyas", "142"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q10",
+      "pregunta": "¿Cómo se llama el clúster de producción de NubeAndina y en qué región de Google Cloud está?",
+      "docs_relevantes": ["nubeandina-empresa", "nubeandina-datos-y-seguridad"],
+      "hechos": ["gke-prod-andina-01", "southamerica-west1"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q11",
+      "pregunta": "¿Cuántos días laborables de vacaciones tiene un empleado de NubeAndina y qué es el cierre andino?",
+      "docs_relevantes": ["nubeandina-vacaciones-y-trabajo"],
+      "hechos": ["22 días laborables", "3 días", "julio"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q12",
+      "pregunta": "¿Cuántos días de trabajo remoto por semana permite NubeAndina como máximo?",
+      "docs_relevantes": ["nubeandina-vacaciones-y-trabajo"],
+      "hechos": ["3 días"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q13",
+      "pregunta": "¿Quién es la Delegada de Protección de Datos de NubeAndina y cuál es la longitud mínima de las contraseñas?",
+      "docs_relevantes": ["nubeandina-datos-y-seguridad"],
+      "hechos": ["Elena Quispe", "14"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q14",
+      "pregunta": "¿Cada cuántos días se rotan las contraseñas en NubeAndina y dónde está prohibido sacar los datos de clientes?",
+      "docs_relevantes": ["nubeandina-datos-y-seguridad"],
+      "hechos": ["180 días", "southamerica-west1"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q15",
+      "pregunta": "¿Cuál es el presupuesto mensual de nube por equipo en NubeAndina y cómo se llama su producto bandera?",
+      "docs_relevantes": ["nubeandina-empresa"],
+      "hechos": ["1 200", "CosechaNet"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q16",
+      "pregunta": "¿NubeAndina tiene oficinas en Europa y usa OpenShift en producción?",
+      "docs_relevantes": ["nubeandina-empresa"],
+      "hechos": ["no tiene oficinas en Europa", "no usa OpenShift"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q17",
+      "pregunta": "¿Cuál es la fecha del simulacro anual de incidente de seguridad de NubeAndina en 2026?",
+      "docs_relevantes": ["nubeandina-datos-y-seguridad"],
+      "hechos": ["12 de noviembre"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q18",
+      "pregunta": "¿Qué rama del repositorio oficial del curso se usa como rama de trabajo?",
+      "docs_relevantes": ["curso-reglamento"],
+      "hechos": ["develop"],
+      "tipo": "hecho"
+    },
+    {
+      "id": "q19",
+      "pregunta": "¿Cuál es el número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas?",
+      "docs_relevantes": [],
+      "hechos": [],
+      "tipo": "no_esta",
+      "respuesta_esperada": "No está en el corpus; el sistema debería abstenerse."
+    },
+    {
+      "id": "q20",
+      "pregunta": "¿Qué sueldo cobra la directora de Datos de NubeAndina?",
+      "docs_relevantes": ["nubeandina-empresa"],
+      "hechos": [],
+      "tipo": "no_esta",
+      "respuesta_esperada": "El documento nombra a Maritza Huamán, pero no publica su sueldo. Debe abstenerse de inventar una cifra."
+    }
+  ]
+}

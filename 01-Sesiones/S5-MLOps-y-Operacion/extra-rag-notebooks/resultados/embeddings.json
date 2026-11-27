@@ -1,0 +1,11 @@
+{
+  "modelo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "dim": 384,
+  "n_frases": 16,
+  "segundos_carga": 3.528,
+  "segundos_codificar": 1.863,
+  "varianza_pca": [
+    0.14081180095672607,
+    0.11201239377260208
+  ]
+}

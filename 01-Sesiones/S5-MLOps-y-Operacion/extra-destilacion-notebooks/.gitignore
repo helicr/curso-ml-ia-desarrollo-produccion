@@ -1,0 +1,15 @@
+# Entornos, cachés y datos que se regeneran al ejecutar los cuadernos
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+cache-hf/
+datos/mnist/
+datos/sst2/
+.DS_Store
+
+# Pesos grandes que se regeneran al ejecutar los cuadernos 03 (GRU) y 06 (TinyBERT)
+modelos/sentimiento_estudiante_duro.pt
+modelos/sentimiento_estudiante_destilado.pt
+modelos/v2_estudiante_*.pt

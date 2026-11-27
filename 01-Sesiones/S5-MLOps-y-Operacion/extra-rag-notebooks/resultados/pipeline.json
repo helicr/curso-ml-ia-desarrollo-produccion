@@ -1,0 +1,61 @@
+{
+  "k": 4,
+  "estudio_chunk": [
+    {
+      "tamano_chunk": 200,
+      "n_fragmentos": 203,
+      "recall@5": 1.0,
+      "mrr": 0.9444444444444444
+    },
+    {
+      "tamano_chunk": 400,
+      "n_fragmentos": 77,
+      "recall@5": 1.0,
+      "mrr": 0.9074074074074073
+    },
+    {
+      "tamano_chunk": 800,
+      "n_fragmentos": 37,
+      "recall@5": 1.0,
+      "mrr": 0.9074074074074076
+    }
+  ],
+  "estudio_k": [
+    {
+      "k": 1,
+      "recall": 0.8333333333333334,
+      "mrr": 0.8333333333333334
+    },
+    {
+      "k": 2,
+      "recall": 0.9444444444444444,
+      "mrr": 0.8888888888888888
+    },
+    {
+      "k": 3,
+      "recall": 1.0,
+      "mrr": 0.9074074074074073
+    },
+    {
+      "k": 5,
+      "recall": 1.0,
+      "mrr": 0.9074074074074073
+    },
+    {
+      "k": 8,
+      "recall": 1.0,
+      "mrr": 0.9074074074074073
+    }
+  ],
+  "generacion_previa": {
+    "cobertura_media_sin": 0.0,
+    "cobertura_media_con": 0.5833333333333333,
+    "modelo_llm": "Qwen/Qwen2.5-0.5B-Instruct"
+  },
+  "fidelidad_breve": {
+    "n": 3,
+    "cobertura_media": 0.611111111111111,
+    "n_ok": 1,
+    "latencia_media_s": 1.3732333333333333
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "comparativa": [
+    {
+      "problema": "MNIST / MLP",
+      "modelo": "profesor",
+      "parametros": 235146,
+      "tamano_mb": 0.9004297256469727,
+      "exactitud_test": 0.9692,
+      "ms_por_ejemplo": 0.0012003398467186344,
+      "ms_lote_p95": 0.08090910087048542,
+      "tamano_lote_latencia": 64,
+      "dispositivo": "cpu",
+      "temperature": 4.0,
+      "alpha": 0.5
+    },
+    {
+      "problema": "MNIST / MLP",
+      "modelo": "estudiante_duro",
+      "parametros": 25450,
+      "tamano_mb": 0.10001468658447266,
+      "exactitud_test": 0.8412,
+      "ms_por_ejemplo": 0.0003621804665954187,
+      "ms_lote_p95": 0.024423246213700622,
+      "tamano_lote_latencia": 64,
+      "dispositivo": "cpu",
+      "temperature": 4.0,
+      "alpha": 0.5
+    },
+    {
+      "problema": "MNIST / MLP",
+      "modelo": "estudiante_destilado",
+      "parametros": 25450,
+      "tamano_mb": 0.10012340545654297,
+      "exactitud_test": 0.8638,
+      "ms_por_ejemplo": 0.00035532851256903086,
+      "ms_lote_p95": 0.023886700364528224,
+      "tamano_lote_latencia": 64,
+      "dispositivo": "cpu",
+      "temperature": 4.0,
+      "alpha": 0.5
+    },
+    {
+      "problema": "SST-2 / DistilBERT→GRU",
+      "modelo": "profesor",
+      "parametros": 66955010,
+      "tamano_mb": NaN,
+      "exactitud_test": 0.9105504587155964,
+      "ms_por_ejemplo": 8.694339081330327,
+      "ms_lote_p95": 233.251669198944,
+      "tamano_lote_latencia": 16,
+      "dispositivo": "cpu",
+      "temperature": 3.0,
+      "alpha": 0.7
+    },
+    {
+      "problema": "SST-2 / DistilBERT→GRU",
+      "modelo": "estudiante_duro",
+      "parametros": 2003586,
+      "tamano_mb": 7.648153305053711,
+      "exactitud_test": 0.6502293577981652,
+      "ms_por_ejemplo": 0.07917990313330847,
+      "ms_lote_p95": 2.7669622963003344,
+      "tamano_lote_latencia": 32,
+      "dispositivo": "cpu",
+      "temperature": 3.0,
+      "alpha": 0.7
+    },
+    {
+      "problema": "SST-2 / DistilBERT→GRU",
+      "modelo": "estudiante_destilado",
+      "parametros": 2003586,
+      "tamano_mb": 7.6482954025268555,
+      "exactitud_test": 0.6743119266055045,
+      "ms_por_ejemplo": 0.08040869922751881,
+      "ms_lote_p95": 2.7996626482490674,
+      "tamano_lote_latencia": 32,
+      "dispositivo": "cpu",
+      "temperature": 3.0,
+      "alpha": 0.7
+    }
+  ],
+  "resumen": [
+    {
+      "problema": "MNIST / MLP",
+      "acc_profesor": 0.9692,
+      "acc_estudiante_duro": 0.8412,
+      "acc_estudiante_destilado": 0.8638,
+      "hueco_destilado_vs_profesor": -0.10539999999999994,
+      "mejora_vs_duro": 0.022600000000000064,
+      "params_profesor": 235146,
+      "params_estudiante": 25450,
+      "ratio_params_est/prof": 0.10823063118232927,
+      "aceleracion_latencia_prof/est": 3.3781129412896194
+    },
+    {
+      "problema": "SST-2 / DistilBERT→GRU",
+      "acc_profesor": 0.9105504587155964,
+      "acc_estudiante_duro": 0.6502293577981652,
+      "acc_estudiante_destilado": 0.6743119266055045,
+      "hueco_destilado_vs_profesor": -0.23623853211009183,
+      "mejora_vs_duro": 0.02408256880733939,
+      "params_profesor": 66955010,
+      "params_estudiante": 2003586,
+      "ratio_params_est/prof": 0.029924362642914995,
+      "aceleracion_latencia_prof/est": 108.12684653347563
+    }
+  ],
+  "remeidiciones": [
+    {
+      "problema": "mnist",
+      "modelo": "profesor",
+      "ms_lote_media": 0.13168749919714173,
+      "ms_lote_p50": 0.13096849943394773,
+      "ms_lote_p95": 0.14467939945461694,
+      "ms_por_ejemplo_media": 0.0020576171749553396,
+      "n_reps": 40,
+      "tamano_lote": 64
+    },
+    {
+      "problema": "mnist",
+      "modelo": "estudiante_duro",
+      "ms_lote_media": 0.03041332402062835,
+      "ms_lote_p50": 0.029975995857967064,
+      "ms_lote_p95": 0.0338069465215085,
+      "ms_por_ejemplo_media": 0.000475208187822318,
+      "n_reps": 40,
+      "tamano_lote": 64
+    },
+    {
+      "problema": "mnist",
+      "modelo": "estudiante_destilado",
+      "ms_lote_media": 0.03086480010097148,
+      "ms_lote_p50": 0.030066999897826463,
+      "ms_lote_p95": 0.03500995262584183,
+      "ms_por_ejemplo_media": 0.00048226250157767936,
+      "n_reps": 40,
+      "tamano_lote": 64
+    }
+  ]
+}

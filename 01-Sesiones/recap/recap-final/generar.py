@@ -928,11 +928,13 @@ def construir_s5():
     slide('5', 1, 'S5 · Ahora lo puedes explicar', 'Ahora lo puedes explicar · ir más allá', 'S5 · Ahora lo puedes explicar',
           explicar('Un modelo en producción se vigila, se versiona y se puede deshacer; un agente es un sistema más: se prueba, se evalúa y se aprueba.',
                    [(f'{S5}/extra-mcp-notebooks', 'sin verificar', 'dos servidores MCP con notebooks; ejecutados en Windows, sin probar en Codespace ni con un LLM real'),
+                    (f'{S5}/extra-destilacion-notebooks', 'sin verificar', 'destilación v1 y v2 en notebooks; ejecutados en CPU, sin probar en Windows ni en un Codespace'),
+                    (f'{S5}/extra-rag-notebooks', 'sin verificar', 'RAG en notebooks con LLM local; ejecutados en CPU, sin probar en Windows ni en un Codespace'),
                     (f'{S5}/extra-composer-batch', 'en preparación', 'lote con Airflow en Cloud Composer; sin verificar en Google Cloud'),
                     (f'{S5}/extra-vertex-champion', 'en preparación', 'del alias champion a un endpoint de Vertex AI; sin verificar en Google Cloud'),
                     (f'{S5}/clase-fundamentos-ia-agentes', 'ok', '41 diapositivas con 12 capturas de la consola y un glosario')]),
-          nota('La frase de cierre técnico: vigilar, versionar y poder deshacer. Y los extras: uno ya disponible aunque con partes sin verificar (MCP), dos en preparación (Composer y Vertex), y la clase de fundamentos de IA y agentes.',
-               'Los extras de Composer y Vertex se probaron con simulaciones (un Airflow falso, un gcloud simulado): lo dice su README. Hasta probarlos en Google Cloud real, están «en preparación».',
+          nota('La frase de cierre técnico: vigilar, versionar y poder deshacer. Y los extras: MCP, destilación y RAG ya disponibles aunque con partes sin verificar, dos en preparación (Composer y Vertex), y la clase de fundamentos de IA y agentes.',
+               'Destilación y RAG se ejecutaron en CPU con las salidas guardadas; falta probarlos en Windows y en un Codespace. Composer y Vertex se probaron con simulaciones: lo dice su README. Hasta probarlos en Google Cloud real, están «en preparación».',
                '¿Qué extra te gustaría ver terminado primero?'))
 # ----------------------------------------------------------------------------------------------------------------------
 # 3 · El salto completo

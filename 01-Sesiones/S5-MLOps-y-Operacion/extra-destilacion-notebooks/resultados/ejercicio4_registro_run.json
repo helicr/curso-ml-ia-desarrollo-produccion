@@ -1,0 +1,22 @@
+{
+  "params": {
+    "profesor_id": "distilbert-base-uncased-finetuned-sst-2-english",
+    "estudiante_arquitectura": "embedding-gru-bidireccional",
+    "temperature": 3.0,
+    "alpha": 0.7,
+    "semilla": 42,
+    "n_train": 3000,
+    "n_test": 872,
+    "max_len": 64,
+    "dispositivo": "cpu"
+  },
+  "metrics": {
+    "acc_profesor": 0.9105504587155964,
+    "acc_estudiante_duro": 0.6502293577981652,
+    "acc_estudiante_destilado": 0.6743119266055045,
+    "ms_por_ejemplo_profesor": 8.694339081330327,
+    "ms_por_ejemplo_estudiante_destilado": 0.08040869922751881,
+    "params_profesor": 66955010,
+    "params_estudiante": 2003586
+  }
+}
