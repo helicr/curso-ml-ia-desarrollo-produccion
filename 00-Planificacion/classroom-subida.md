@@ -29,7 +29,7 @@ Un **tema** por sesión. Dentro: materiales (PDF) y, en S1, la tarea con su rúb
 | Tarea | Avance en S2 · Bank Marketing (caso propio) | `02-Proyecto-Transversal/enunciado/README.md` (no está en PDF todavía) |
 
 ### Temas S2 a S5
-Sin materiales todavía (solo README). Crear los temas vacíos para fijar el orden.
+S2 a S5 ya tienen material en el repositorio (ver el README de cada sesión); falta decidir qué se sube a Classroom y generar sus PDF. Crear los temas para fijar el orden.
 
 ## Descripciones sugeridas
 - **S0 · tarea:** «Completa el diagnóstico de 12 comprobaciones, comunica los bloqueos con el comando y la salida, y lee el enunciado del caso de Bank Marketing (`02-Proyecto-Transversal/enunciado/README.md`) y `bank-additional-names.txt`. Comprueba la huella del archivo. No adelantes el entrenamiento.»

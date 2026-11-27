@@ -5,6 +5,56 @@ Las diapositivas con dibujos y capturas están en [`index.html`](index.html); lo
 
 **Qué se probó.** Docker: bloque 4 de S2 en el Codespace del curso (12/11/2026), salvo `docker push`. kind y kubectl: la práctica completa en el Codespace (13/11/2026; kind v0.27.0, Kubernetes v1.32.2, kubectl v1.37.2). **GKE y Artifact Registry: sin ejecutar**; los comandos salen de la documentación oficial de Google (consultada el 13/11/2026).
 
+## Secuencia completa en un Codespace nuevo
+Secuencia validada por el profesor (Codespace de 2 núcleos). Las salidas exactas **no las ejecutó el autor de la guía**; lo esperado sale del código y de los manifiestos.
+```bash
+# 0. Desde la raíz del repositorio: ¿está todo? Debe dar cinco [OK   ] y «Fallos: 0»
+bash .devcontainer/verificar.sh        # si falla: bash .devcontainer/postcreate.sh (y «Codespaces: Rebuild Container» si faltan docker/kubectl)
+git pull origin develop
+cd 04-Proyecto-Base
+# 1. Datos y modelo (models/ no viene en el repositorio)
+python -m ia_mlops.operacional
+python -m ia_mlops.pipeline
+ls models/modelo_mlflow models/metadatos.json
+# 2. Imagen (el punto final es obligatorio)
+docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker image ls retencion-api
+# 3. Clúster
+kind get clusters
+kind create cluster --name curso
+kubectl get nodes                      # curso-control-plane en Ready
+# 4. Meter la imagen en el clúster
+kind load docker-image retencion-api:local --name curso
+docker exec curso-control-plane crictl images | grep retencion
+# 5. Desplegar
+kubectl apply -f deploy/kubernetes/
+kubectl rollout status deployment/retencion-api --timeout=180s
+kubectl get pods
+# 6. Probar
+kubectl port-forward service/retencion-api 8080:80 &
+curl http://127.0.0.1:8080/listo       # {"estado":"listo"}
+curl -s -X POST http://127.0.0.1:8080/predecir -H "Content-Type: application/json" -d @tests/datos/cliente_ejemplo.json   # probabilidad 0.8278…
+# 7. Limpiar
+pkill -f "kubectl port-forward"
+kind delete cluster --name curso
+docker rmi retencion-api:local
+```
+**El orden importa:** modelo → imagen → clúster → carga → `apply`. Sin modelo falla el build; sin imagen falla `kind load`; sin clúster fallan `kind load` y `kubectl`; sin carga, los pods quedan en `ImagePullBackOff`. `kubectl apply` solo crea el Deployment y el Service: no construye la imagen, no crea el clúster ni carga la imagen.
+
+**Mirar dentro** (opcional): `docker run --rm -it retencion-api:local bash` y dentro `pwd`, `ls -la`, `ls models`, `cat models/metadatos.json`, `id` (uid=10001, no root), `python --version`, `pip list | grep -i -E "fastapi|uvicorn|scikit-learn|pandas|mlflow"`, `exit`. Desde fuera: `docker history retencion-api:local` (el `pip install` es la capa más grande: por eso las dependencias se copian antes que el código) y `docker image inspect retencion-api:local --format '{{.Config.User}} · {{.Config.ExposedPorts}} · {{.Config.Cmd}} · {{.Size}}'`. **Dentro de un pod:** `kubectl exec -it deployment/retencion-api -- bash`, `ls /app`, `id`, `exit`.
+
+**Windows (curl desde tu ordenador):** en `cmd`, sin `; echo`, JSON con `\"` y sin comillas simples; en PowerShell 5.1, `curl.exe`.
+
+| Fallo | Causa | Arreglo |
+|---|---|---|
+| `docker buildx build requires 1 argument` | Falta el punto final (contexto) | Añade ` .` al `docker build` |
+| `COPY failed … models/modelo_mlflow` | No se entrenó el modelo | `python -m ia_mlops.pipeline` |
+| `image: "retencion-api:local" not present locally` | `kind load` sin imagen construida | Construye y repite `kind load` |
+| `ImagePullBackOff` | La imagen no está en el nodo | `kind load …` y `kubectl rollout restart deployment/retencion-api` |
+| Puerto 8080 ocupado | Un `uvicorn` o un `port-forward` previo | Páralo (`pkill -f "kubectl port-forward"`) |
+| `kind` no encontrado / clúster `curso` ya existe | Codespace sin preparar / práctica anterior | `bash .devcontainer/postcreate.sh` · `kind delete cluster --name curso` |
+| `curl` falla en Windows | Comillas de `cmd` | `\"` y sin comillas simples; `curl.exe` en PowerShell |
+
 ## Vocabulario en una línea
 | Palabra | Qué es |
 |---|---|
@@ -61,7 +111,7 @@ Las diapositivas con dibujos y capturas están en [`index.html`](index.html); lo
 | Cambiar la imagen (a mano) | `kubectl set image deployment/retencion-api api=IMAGEN` |
 | Deshacer el último despliegue | `kubectl rollout undo deployment/retencion-api` |
 | Historial | `kubectl rollout history deployment/retencion-api` |
-| Entrar en un pod | `kubectl exec -it POD -- sh` |
+| Entrar en un pod | `kubectl exec -it POD -- sh` (o `deployment/retencion-api -- bash`) |
 | Ayuda de un campo del YAML | `kubectl explain deployment.spec.template.spec.containers` |
 
 Abreviaturas: `po` pods · `deploy` deployments · `rs` replicasets · `svc` services · `ep` endpoints.

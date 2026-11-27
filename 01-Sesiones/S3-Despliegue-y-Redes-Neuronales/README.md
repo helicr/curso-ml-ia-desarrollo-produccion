@@ -37,7 +37,7 @@ Al terminar, la persona asistente puede:
 ## Material del plan previo (se reutiliza en S4)
 - `practica/guia-laboratorio.md` y `practica/ensayo-local/`: guía de la migración y salidas reales del ensayo local de la migración (sin GCP).
 - `teoria/README.md` y `slides/`: borradores de teoría y presentación de la migración.
-- `index.html`: índice de la sesión generado con `00-Planificacion/indices-de-sesion/generar_indices.py`; **todavía describe el plan previo** y hay que regenerarlo con el contenido nuevo.
+- `index.html`: índice de la sesión, generado con `00-Planificacion/indices-de-sesion/generar_indices.py` (regenerado el 27/11/2026 con el contenido actual).
 - Guía de referencia: [`03-Entorno/guias/migracion-on-premise-a-gcp.md`](../../03-Entorno/guias/migracion-on-premise-a-gcp.md).
 
 ## Qué está validado y qué no

@@ -24,7 +24,7 @@ Marca cada punto cuando lo hayas comprobado tú. «Hecho» significa comprobado 
 - [ ] **PDF:** se generaron con Edge (no con Chrome) y `pandoc` instalado vía `pip`; el script los da por correctos. Abrir al menos la presentación de S0 (31 páginas) y la de S1 en un visor y mirar las diapositivas 28 y 29.
 - [ ] **D01 (guion alumno y profesor):** abrir uno de los botones «Abrir en VS Code» y comprobar que VS Code se abre con el proyecto (solo funciona si el repositorio está en `C:\cursos\curso-ml-ia-desarrollo-produccion`).
 - [ ] **D01:** los dos HTML no tienen PDF; decidir si se suben tal cual o convertidos.
-- [ ] **S2 a S5:** solo README; no hay materiales que subir.
+- [ ] **S2 a S5:** ya tienen material en el repositorio (ver el README de cada sesión), pero aún no hay PDF ni propuesta de qué se sube a Classroom para ellas: decidirlo.
 
 ## Repositorio
 - [ ] **Commit:** hay unos 50 archivos modificados sin commitear (texto, diapositivas, PDF, índices, Codespace, guiones). Decidir si se hace uno o varios commits.

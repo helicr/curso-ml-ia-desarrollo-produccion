@@ -24,4 +24,4 @@ Entorno comprobado antes de S1.
 - Instalación previa (solo Windows): `03-Entorno/guia-instalacion/index.html` y `03-Entorno/scripts/instalar_entorno.ps1`.
 - Equipo listo para S1, para copiar y pegar: `slides/instalacion/index.html` (27 diapositivas: instalación en orden, entorno desde `environment.yml`, pruebas y verificador, con las salidas reales) y su versión en texto `practica/guia-rapida-entorno-s0-s1.md`. Se generan desde `slides/instalacion/contenido.py` con `generar.py`; `capturar.py` renueva las salidas reales y `comprobar_diseno.py` revisa el diseño.
 
-S1 está completa; S2–S5 solo tienen README (pendientes de implementación y validación).
+Las sesiones S1 a S5 tienen ya su material (teoría, laboratorios con diapositivas, tarea y rúbrica); el estado de cada una está en su propio README.

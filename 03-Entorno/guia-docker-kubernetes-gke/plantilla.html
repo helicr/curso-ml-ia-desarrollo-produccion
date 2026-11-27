@@ -299,7 +299,7 @@ spec:
   <div class="g2">
     <div class="card"><h3>Necesitas</h3><ul class="l s">
       <li>El <b>Codespace del curso</b> abierto (guía de Codespaces). Trae <code>kind</code> v0.27.0 y <code>kubectl</code> v1.37.2.</li>
-      <li>La imagen construida (bloque 4 de S2): <code>docker image ls retencion-api</code> debe listar <code>retencion-api:local</code>.</li>
+      <li>La imagen construida (bloque 4 de S2): <code>docker image ls retencion-api</code> debe listar <code>retencion-api:local</code>. ¿Codespace nuevo o sin imagen? Haz primero las tres diapositivas «Preparación» (P1 a P3).</li>
       <li>La terminal en <code>04-Proyecto-Base</code> con <code>(env-ia-mlops)</code>.</li></ul></div>
     <div class="card"><h3>Lo que tardó (Codespace de 2 núcleos)</h3><table class="t">
       <tr><td>Crear el clúster</td><td>1 min 4 s</td></tr><tr><td>Cargar la imagen en el clúster</td><td>42 s</td></tr>
@@ -312,11 +312,144 @@ kubectl version --client</pre>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Práctica</span></div>
 </section>
 
+<section class="slide" data-title="Preparación 1 · Codespace nuevo" data-notes="Secuencia validada por el profesor en un Codespace nuevo de 2 núcleos (semana del 17/11/2026). Un Codespace nuevo trae las herramientas pero no el modelo ni siempre lo último de develop. Las salidas exactas de esta diapositiva no las ejecutó el autor de la guía: se describe lo que verificar.sh imprime según su código.">
+  <div class="kick">B · Preparación <span class="tag doc">Secuencia del profesor · salidas no ejecutadas por el autor</span></div>
+  <h1><span class="paso">P1</span> Un Codespace nuevo: comprobar y actualizar</h1>
+  <div class="g2">
+    <div>
+<pre class="cmd"><span class="c"># En la terminal del Codespace, en la RAÍZ del repositorio (bash)</span>
+bash .devcontainer/verificar.sh
+git pull origin develop
+cd 04-Proyecto-Base</pre>
+      <div class="card ok" style="margin-top:12px"><h3>Qué debes ver</h3><p class="small">Cinco líneas <code>[OK   ]</code> (docker, hello, kind, kubectl, python) y al final <code>Fallos: 0</code>.</p></div>
+      <div class="card bad" style="margin-top:12px"><h3>Si falla</h3><p class="small">Alguna <code>[FALLA]</code>: <code>bash .devcontainer/postcreate.sh</code> y repite <code>verificar.sh</code>. Si faltan <code>docker</code> o <code>kubectl</code>: paleta de comandos (<b>F1</b>) → <b>Codespaces: Rebuild Container</b>.</p></div>
+    </div>
+    <div class="card"><h3>Qué trae un Codespace nuevo</h3><ul class="l s">
+      <li><b>Docker</b> (feature docker-in-docker) y <b>kubectl</b> (feature kubectl-helm-minikube).</li>
+      <li><b>kind</b> v0.27.0 y el entorno <code>env-ia-mlops</code>: los instala <code>postcreate.sh</code>.</li>
+      <li><b>No trae el modelo</b>: <code>models/</code> está en <code>.gitignore</code>. Hay que entrenarlo (siguiente diapositiva).</li>
+      <li><b>No siempre trae lo último</b> de <code>develop</code>: por eso el <code>git pull</code>.</li></ul></div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación 1</span></div>
+</section>
+
+<section class="slide" data-title="Preparación 2 · Datos y modelo" data-notes="El modelo no viene en el repositorio. El pipeline recorre raw, master, fs, ml y modelo. operacional solo simula el sistema de origen y el pipeline lo crea si falta; se deja por claridad. Sin models/modelo_mlflow el docker build falla en el COPY.">
+  <div class="kick">B · Preparación <span class="tag doc">Secuencia del profesor · salidas no ejecutadas por el autor</span></div>
+  <h1><span class="paso">P2</span> Crear los datos y entrenar el modelo</h1>
+<pre class="cmd"><span class="c"># Terminal del Codespace, en 04-Proyecto-Base, con (env-ia-mlops)</span>
+python -m ia_mlops.operacional
+python -m ia_mlops.pipeline
+ls models/modelo_mlflow models/metadatos.json</pre>
+  <div class="g2" style="margin-top:12px">
+    <div class="card"><h3>Qué hace cada orden</h3><ul class="l s">
+      <li><code>operacional</code>: simula el sistema de origen (la base de datos de la empresa). Si te lo saltas, el pipeline lo crea.</li>
+      <li><code>pipeline</code>: raw → master → fs → ml → <b>modelo</b>. Deja <code>models/modelo_mlflow/</code> y <code>models/metadatos.json</code>.</li></ul></div>
+    <div class="card ok"><h3>Qué debes ver</h3><p class="small"><code>ls</code> lista el contenido de <code>models/modelo_mlflow</code> (MLmodel, model.pkl, etc.) y <code>models/metadatos.json</code>, sin «No such file». En la prueba de S2 el pipeline tardó unos 31 s.</p>
+      <h3 style="margin-top:8px;color:var(--bad)">Si falla</h3><p class="small">«No such file or directory» en <code>ls</code>: el pipeline no terminó; repítelo y lee su último error. Sin esta carpeta, el <code>docker build</code> da <code>COPY failed … models/modelo_mlflow</code>.</p></div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación 2</span></div>
+</section>
+
+<section class="slide" data-title="Preparación 3 · Construir la imagen" data-notes="El punto final es el contexto de construcción: la carpeta cuyos archivos puede ver docker build. Sin él, docker buildx build requires 1 argument. El build se hizo en la validación de S2 (78 s).">
+  <div class="kick">B · Preparación <span class="tag doc">Secuencia del profesor · salidas no ejecutadas por el autor</span></div>
+  <h1><span class="paso">P3</span> Construir la imagen</h1>
+<pre class="cmd"><span class="c"># Terminal del Codespace, en 04-Proyecto-Base</span>
+docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker image ls retencion-api</pre>
+  <div class="g2" style="margin-top:12px">
+    <div class="card warn"><h3>El punto final es obligatorio</h3><p class="small">Es el <b>contexto</b>: la carpeta de la que Docker toma los archivos (<code>.</code> = la actual). Sin él: <code>docker buildx build requires 1 argument</code>.</p></div>
+    <div class="card ok"><h3>Qué debes ver</h3><p class="small">Al final del build, <code>naming to docker.io/library/retencion-api:local</code>, y <code>docker image ls retencion-api</code> con una fila <code>retencion-api  local</code>. En la validación de S2: build de 78 s e imagen de 826 MB (Docker 29: DISK USAGE 826 MB, CONTENT SIZE 183 MB).</p></div>
+  </div>
+  <div class="card bad" style="margin-top:12px"><h3>Si falla</h3><p class="small"><code>COPY failed … models/modelo_mlflow</code>: no entrenaste (vuelve a P2). Tabla completa en «Si algo falla».</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación 3</span></div>
+</section>
+
+<section class="slide" data-title="Dockerfile línea a línea" data-notes="Imagen = receta empaquetada; contenedor = esa receta en ejecución. Cada instrucción del Dockerfile genera una capa. Por eso las dependencias se copian y se instalan ANTES que el código: el código cambia cada día, las dependencias casi nunca, y así la capa grande del pip install se reutiliza de la caché.">
+  <div class="kick">A · Conceptos · el archivo real</div>
+  <h1>El Dockerfile, línea a línea</h1>
+  <div class="g21">
+<pre class="cmd" style="font-size:12.5px;line-height:1.4">FROM python:3.11-slim                       <span class="c"># (1)</span>
+ENV PYTHONUNBUFFERED=1 CURSO_MODELOS=/app/models   <span class="c"># (2) recortado</span>
+WORKDIR /app                                <span class="c"># (3)</span>
+COPY requirements-api.lock .                <span class="c"># (4)</span>
+RUN pip install -r requirements-api.lock    <span class="c"># (5)</span>
+COPY ia_mlops/ ia_mlops/                    <span class="c"># (6)</span>
+COPY models/modelo_mlflow/ models/modelo_mlflow/
+COPY models/metadatos.json models/metadatos.json
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin apiuser
+USER 10001                                  <span class="c"># (7)</span>
+EXPOSE 8080
+CMD ["uvicorn", "ia_mlops.api.app:app", "--host", "0.0.0.0", "--port", "8080"]   <span class="c"># (8)</span></pre>
+    <ul class="l s">
+      <li><b>(1)</b> Punto de partida: Python 3.11 sobre un Linux pequeño.</li>
+      <li><b>(2)</b> Variables de entorno; <code>CURSO_MODELOS</code> dice dónde buscar el modelo.</li>
+      <li><b>(3)</b> Carpeta de trabajo dentro de la imagen.</li>
+      <li><b>(4-5)</b> Las <b>dependencias primero</b>: esta capa solo se rehace si cambia el <code>.lock</code>. Es la capa más grande.</li>
+      <li><b>(6)</b> Después, tu código y el modelo (lo que cambia más a menudo).</li>
+      <li><b>(7)</b> Sin root: usuario 10001.</li>
+      <li><b>(8)</b> Qué se ejecuta al arrancar el contenedor.</li></ul>
+  </div>
+  <div class="card" style="margin-top:10px"><p class="small"><b>Imagen</b> = la receta ya empaquetada, de solo lectura. <b>Contenedor</b> (en Kubernetes, <b>pod</b>) = esa imagen <b>en ejecución</b>. De una imagen salen tantos como quieras. (Versión recortada del Dockerfile: faltan <code>HEALTHCHECK</code> y alguna variable.)</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
+<section class="slide" data-title="Mirar dentro de la imagen" data-notes="Opcional pero a los alumnos les gusta. Lo que se espera ver sale del Dockerfile (usuario 10001, WORKDIR /app, Python 3.11, uvicorn en CMD). Las salidas exactas no las ejecutó el autor de la guía; las versiones de las librerías dependen del archivo .lock.">
+  <div class="kick">B · Preparación · opcional <span class="tag doc">Lo esperado sale del Dockerfile · no ejecutado por el autor</span></div>
+  <h1>Mirar <i>dentro</i> de la imagen</h1>
+  <div class="g2">
+    <div>
+<pre class="cmd" style="font-size:13px"><span class="c"># Terminal del Codespace; abre una shell en un contenedor nuevo</span>
+docker run --rm -it retencion-api:local bash
+<span class="c"># ya DENTRO del contenedor:</span>
+pwd
+ls -la
+ls models
+cat models/metadatos.json
+id
+python --version
+pip list | grep -i -E "fastapi|uvicorn|scikit-learn|pandas|mlflow"
+exit</pre>
+<pre class="cmd" style="font-size:13px;margin-top:10px"><span class="c"># otra vez en el Codespace</span>
+docker history retencion-api:local
+docker image inspect retencion-api:local --format '{{.Config.User}} · {{.Config.ExposedPorts}} · {{.Config.Cmd}} · {{.Size}}'</pre>
+    </div>
+    <div class="card"><h3>Qué se espera ver (y por qué)</h3><ul class="l s">
+      <li><code>pwd</code> → <code>/app</code> (el <code>WORKDIR</code>).</li>
+      <li><code>ls -la</code> → <code>ia_mlops</code>, <code>models</code> y <code>requirements-api.lock</code>.</li>
+      <li><code>ls models</code> → <code>modelo_mlflow</code> y <code>metadatos.json</code>; el <code>cat</code> muestra la ficha del modelo.</li>
+      <li><code>id</code> → <code>uid=10001</code> (no root, por el <code>USER</code>).</li>
+      <li><code>python --version</code> → Python 3.11.x.</li>
+      <li><code>pip list</code> → fastapi, uvicorn, scikit-learn, pandas y mlflow.</li>
+      <li><code>docker history</code> → una fila por capa; la del <code>pip install</code> es la más grande, y por eso las dependencias se copian antes que el código.</li>
+      <li><code>inspect</code> → usuario <code>10001</code>, puerto <code>8080</code>, <code>uvicorn …</code> y el tamaño en bytes.</li></ul>
+      <p class="tiny muted" style="margin-top:6px">Si <code>bash</code> no existe en la imagen, usa <code>sh</code> (la imagen <code>python:3.11-slim</code> sí trae bash).</p></div>
+  </div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación</span></div>
+</section>
+
+<section class="slide" data-title="El orden de las cosas" data-notes="Lo que más se olvida: cada paso necesita lo anterior. kubectl apply solo crea el Deployment y el Service; no construye la imagen, no crea el clúster y no carga la imagen. La tabla dice qué se rompe si se altera el orden.">
+  <div class="kick">A · Conceptos · el orden importa</div>
+  <h1>modelo → imagen → clúster → carga → apply</h1>
+  <table class="t">
+    <tr><th>Paso</th><th>Por qué va ahí</th><th>Si falta o va después</th></tr>
+    <tr><td>1 · Modelo (<code>pipeline</code>)</td><td>La imagen empaqueta <code>models/</code>; no lo entrena</td><td><code>COPY failed … models/modelo_mlflow</code> en el build</td></tr>
+    <tr><td>2 · Imagen (<code>docker build</code>)</td><td>Hay que tener algo que cargar y desplegar</td><td><code>kind load</code>: <code>image: "retencion-api:local" not present locally</code></td></tr>
+    <tr><td>3 · Clúster (<code>kind create</code>)</td><td>Hace falta un sitio donde cargar y desplegar</td><td><code>kind load</code> o <code>kubectl</code>: «no clusters» / connection refused</td></tr>
+    <tr><td>4 · Carga (<code>kind load</code>)</td><td>Los nodos de kind tienen su <b>propio</b> almacén: no ven tu Docker</td><td>Pods en <code>ErrImagePull</code> / <code>ImagePullBackOff</code></td></tr>
+    <tr><td>5 · <code>kubectl apply</code></td><td>Solo <b>crea</b> el Deployment y el Service (los pide, no los construye)</td><td>Antes de 4: ImagePullBackOff; sin clúster: error de conexión</td></tr>
+  </table>
+  <div class="card warn" style="margin-top:10px"><p class="small"><code>kubectl apply</code> <b>no</b> construye la imagen, <b>no</b> crea el clúster y <b>no</b> carga la imagen. Si cambias el código: <code>docker build</code> → <code>kind load</code> → <code>kubectl rollout restart deployment/retencion-api</code>.</p></div>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>A · Conceptos</span></div>
+</section>
+
 <section class="slide" data-title="Paso 1 · Crear el clúster" data-notes="kind descarga una imagen de nodo (kindest/node) y arranca un contenedor que hace de máquina. Al terminar deja kubectl apuntando al clúster (contexto kind-curso).">
   <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
   <h1><span class="paso">1</span> Crear el clúster</h1>
-<pre class="cmd">kind create cluster --name curso</pre>
+<pre class="cmd"><span class="c"># Terminal del Codespace, en 04-Proyecto-Base</span>
+kind get clusters
+kind create cluster --name curso</pre>
   <div class="shotw"><!--CAPTURA k01-crear-cluster|kind create cluster: imagen de nodo, plano de control, red (CNI) y almacenamiento; 1 min 4 s.--></div>
+  <p class="small" style="margin-top:10px"><b>Qué debes ver:</b> <code>kind get clusters</code> imprime <code>No kind clusters found.</code> si no hay ninguno. <b>Si falla:</b> si ya existe <code>curso</code>, <code>create</code> avisa de que el clúster existe: úsalo tal cual o bórralo con <code>kind delete cluster --name curso</code>. «<code>kind: command not found</code>» → <code>bash .devcontainer/postcreate.sh</code>.</p>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 1</span></div>
 </section>
 
@@ -333,8 +466,10 @@ kubectl get nodes</pre>
 <section class="slide" data-title="Paso 2 · Cargar la imagen" data-notes="Error clásico: el clúster no ve las imágenes de tu Docker, porque el nodo de kind es otro contenedor con su propio almacén. Hay que copiarla. En GKE el equivalente es subirla a Artifact Registry.">
   <div class="kick">B · Práctica <span class="tag ok">Probado</span></div>
   <h1><span class="paso">2</span> Darle la imagen al clúster</h1>
-<pre class="cmd">kind load docker-image retencion-api:local --name curso</pre>
+<pre class="cmd">kind load docker-image retencion-api:local --name curso
+docker exec curso-control-plane crictl images | grep retencion</pre>
   <div class="shotw"><!--CAPTURA k03-cargar-imagen|«not yet present on node … loading…»: copia la imagen (826 MB) al nodo; 42 s.--></div>
+  <p class="small" style="margin-top:10px"><b>Qué hace:</b> toma <code>retencion-api:local</code> de tu Docker <b>por su nombre:etiqueta</b>, la exporta y la importa en cada nodo (containerd). La segunda orden entra en el nodo y lista sus imágenes: debe aparecer <code>docker.io/library/retencion-api</code> con la etiqueta <code>local</code> (lo esperado; el <code>grep</code> no lo ejecutó el autor). <b>Si falla:</b> <code>ERROR: image: "retencion-api:local" not present locally</code> = no la construiste (P3).</p>
   <div class="card warn" style="margin-top:14px"><p class="small"><b>Por qué hace falta:</b> el nodo de kind es <b>otro contenedor</b>, con su propio almacén de imágenes. Si te saltas este paso, los pods se quedan en <code>ErrImagePull</code>: intentan descargar <code>docker.io/library/retencion-api:local</code>, que no existe. En GKE esto se hace subiendo la imagen a <b>Artifact Registry</b>.</p></div>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 2</span></div>
 </section>
@@ -355,6 +490,25 @@ kubectl get deployments,replicasets,pods,services</pre>
 kubectl get pods -o wide</pre>
   <div class="shotw"><!--CAPTURA k05-rollout|«successfully rolled out»: los dos pods Running 1/1, cada uno con su IP (10.244.0.5 y .6), en unos 10 s.--></div>
   <p class="small" style="margin-top:12px">Fíjate en la cadena de nombres: <code>retencion-api</code> (Deployment) → <code>retencion-api-76b885ddb9</code> (ReplicaSet) → <code>retencion-api-76b885ddb9-h662c</code> (pod). <b>READY 1/1</b> significa que su readiness (<code>/listo</code>) ya responde 200.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 3</span></div>
+</section>
+
+<section class="slide" data-title="Paso 3 · Entrar en un pod" data-notes="Es la misma imagen que se miró con docker run, ahora ejecutándose dentro de Kubernetes. La salida exacta no la ejecutó el autor de la guía; lo esperado sale del Dockerfile y del manifiesto.">
+  <div class="kick">B · Práctica <span class="tag doc">Secuencia del profesor · salida no ejecutada por el autor</span></div>
+  <h1><span class="paso">3</span> Entrar en un pod en marcha</h1>
+<pre class="cmd"><span class="c"># Terminal del Codespace; abre una shell dentro de UN pod del Deployment</span>
+kubectl exec -it deployment/retencion-api -- bash
+<span class="c"># ya DENTRO del pod:</span>
+ls /app
+id
+exit</pre>
+  <div class="g2" style="margin-top:12px">
+    <div class="card ok"><h3>Qué debes ver</h3><p class="small"><code>ls /app</code> → <code>ia_mlops</code>, <code>models</code>… (lo mismo que dentro de la imagen) e <code>id</code> → <code>uid=10001</code>. Es la <b>misma imagen</b>, ahora <b>en ejecución en Kubernetes</b>.</p></div>
+    <div class="card"><h3>Tres ideas que lo explican</h3><ul class="l s">
+      <li>El <b>Deployment</b> pide N copias (aquí 2); el <b>ReplicaSet</b> crea y repone los <b>pods</b>.</li>
+      <li>El <b>Service</b> (<code>ClusterIP</code>) es un nombre estable <b>solo dentro del clúster</b>: desde fuera se llega con <code>port-forward</code>.</li>
+      <li><code>/salud</code> (liveness): ¿vive el proceso? · <code>/listo</code> (readiness): ¿hay modelo? Si no, 503 y sin tráfico.</li></ul></div>
+  </div>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 3</span></div>
 </section>
 
@@ -384,6 +538,21 @@ curl -s http://127.0.0.1:8080/modelo
 python -m ia_mlops.modeling.comparar --url http://127.0.0.1:8080</pre>
   <div class="shotw"><!--CAPTURA k08-port-forward|A través de Kubernetes: {"estado":"listo"}, la ficha del modelo y comparar con los cuatro caminos iguales (diferencia 0).--></div>
   <p class="small muted" style="margin-top:8px">El <code>&amp;</code> deja el túnel en segundo plano; <code>kill %1</code> lo cierra. El Service escucha en el 80 y entrega en el 8080 del contenedor.</p>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 5</span></div>
+</section>
+
+<section class="slide" data-title="Paso 5 · Pedir una predicción" data-notes="Secuencia validada por el profesor: /listo y /predecir a través del port-forward. La probabilidad esperada, 0.8278…, es la que dio la prueba del profesor. Si hay un uvicorn en el 8080 (de S2), el port-forward falla por puerto ocupado: pararlo antes.">
+  <div class="kick">B · Práctica <span class="tag doc">Secuencia del profesor · salida no ejecutada por el autor</span></div>
+  <h1><span class="paso">5</span> Una predicción real, a través de Kubernetes</h1>
+<pre class="cmd"><span class="c"># Terminal del Codespace (bash), en 04-Proyecto-Base</span>
+kubectl port-forward service/retencion-api 8080:80 &amp;
+curl http://127.0.0.1:8080/listo
+curl -s -X POST http://127.0.0.1:8080/predecir -H "Content-Type: application/json" -d @tests/datos/cliente_ejemplo.json</pre>
+  <div class="g2" style="margin-top:12px">
+    <div class="card ok"><h3>Qué debes ver</h3><p class="small"><code>{"estado":"listo"}</code> y, en el segundo, un JSON con la probabilidad de recompra: <b>0.8278…</b> para el cliente de ejemplo.</p></div>
+    <div class="card bad"><h3>Si falla</h3><p class="small"><code>bind: address already in use</code>: hay otro proceso en el 8080 (un <code>uvicorn</code> de S2): páralo (<code>Ctrl+C</code> en su terminal) y repite. <code>Connection refused</code>: el túnel murió (se borró el pod por el que iba): relánzalo.</p></div>
+  </div>
+  <div class="card warn" style="margin-top:12px"><p class="small"><b>Desde tu ordenador (no desde el Codespace):</b> en <b>Windows cmd</b>: sin <code>; echo</code>, el JSON con <code>\"</code> y <b>sin comillas simples</b>. En <b>PowerShell 5.1</b> usa <code>curl.exe</code> (<code>curl</code> a secas es otro comando).</p></div>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 5</span></div>
 </section>
 
@@ -472,6 +641,7 @@ kind delete cluster --name curso
 kind get clusters</pre>
   <div class="shotw"><!--CAPTURA k16-limpiar|Recursos borrados, túnel terminado, clúster borrado en 25 s: «No kind clusters found».--></div>
   <p class="small muted" style="margin-top:8px">Después, para el Codespace (guía de Codespaces). En GKE: <code>gcloud container clusters delete NOMBRE --location REGIÓN</code>.</p>
+  <div class="card" style="margin-top:8px"><p class="small"><b>Para dejarlo todo limpio</b> (versión de la secuencia del profesor; en vez de <code>kill %1</code>, mata el túnel por su nombre): <code>pkill -f "kubectl port-forward"</code> · <code>kind delete cluster --name curso</code> · <code>docker rmi retencion-api:local</code>. Si ya no vas a usar el Codespace, <b>bórralo</b> en <code>github.com/codespaces</code>.</p></div>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Paso 11</span></div>
 </section>
 
@@ -487,6 +657,23 @@ kind get clusters</pre>
     <tr><td><code>Pending</code></td><td>No cabe en ningún nodo (pide demasiada CPU o memoria)</td><td><code>kubectl describe pod …</code>: «Insufficient cpu/memory»</td></tr>
     <tr><td><code>curl</code> no responde tras borrar un pod</td><td>El <code>port-forward</code> iba por ese pod y se cortó</td><td>Vuelve a lanzar <code>kubectl port-forward service/retencion-api 8080:80 &amp;</code></td></tr>
     <tr><td><code>The connection to the server … was refused</code></td><td>No hay clúster o kubectl apunta a otro</td><td><code>kind get clusters</code> · <code>kubectl config current-context</code></td></tr>
+  </table>
+  <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Diagnóstico</span></div>
+</section>
+
+<section class="slide" data-title="Si algo falla: del build al curl" data-notes="Los fallos reales que se vieron al usar la guía en un Codespace nuevo, en el orden en que aparecen. Las salidas exactas las trajo el profesor; el autor de la guía no pudo ejecutarlas.">
+  <div class="kick">B · Práctica · diagnóstico <span class="tag doc">Fallos vistos por el profesor</span></div>
+  <h1>Si algo falla: del <code style="font-size:.85em">build</code> al <code style="font-size:.85em">curl</code></h1>
+  <table class="t" style="font-size:13.5px">
+    <tr><th>Mensaje</th><th>Causa</th><th>Qué hacer</th></tr>
+    <tr><td><code>docker buildx build requires 1 argument</code></td><td>Falta el <b>punto final</b> (el contexto)</td><td><code>docker build -f deploy/docker/Dockerfile -t retencion-api:local .</code></td></tr>
+    <tr><td><code>COPY failed … models/modelo_mlflow</code></td><td>No se entrenó el modelo (<code>models/</code> no viene en el repositorio)</td><td><code>python -m ia_mlops.pipeline</code> y <code>ls models/modelo_mlflow</code></td></tr>
+    <tr><td><code>ERROR: image: "retencion-api:local" not present locally</code></td><td>Haces <code>kind load</code> sin haber construido la imagen</td><td>Construye (P3) y repite el <code>kind load</code></td></tr>
+    <tr><td><code>kind: command not found</code> · <code>docker</code>/<code>kubectl</code> no encontrados</td><td>El Codespace no terminó de prepararse</td><td><code>bash .devcontainer/postcreate.sh</code>; si faltan docker/kubectl: <b>Codespaces: Rebuild Container</b></td></tr>
+    <tr><td>El clúster <code>curso</code> ya existe</td><td>Quedó de una práctica anterior</td><td>Úsalo, o <code>kind delete cluster --name curso</code> y créalo de nuevo</td></tr>
+    <tr><td><code>ImagePullBackOff</code></td><td>La imagen no está en el nodo (te saltaste el <code>kind load</code> o el build)</td><td><code>kind load docker-image retencion-api:local --name curso</code> y <code>kubectl rollout restart deployment/retencion-api</code></td></tr>
+    <tr><td>El puerto 8080 está ocupado</td><td>Un <code>uvicorn</code> o un <code>port-forward</code> anterior lo usa</td><td>Párale (<code>Ctrl+C</code> o <code>pkill -f "kubectl port-forward"</code>) y relanza</td></tr>
+    <tr><td><code>curl</code> en Windows da error de JSON o de comillas</td><td><code>cmd</code> no entiende comillas simples ni <code>; echo</code></td><td>JSON con <code>\"</code>, sin comillas simples; en PowerShell 5.1, <code>curl.exe</code></td></tr>
   </table>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Diagnóstico</span></div>
 </section>
@@ -601,6 +788,7 @@ gcloud artifacts repositories delete curso-repo --location=us-central1</pre>
       <li>Los comandos de Docker de la chuleta: bloque 4 de S2 (12/11/2026), salvo <code>push</code>.</li></ul></div>
     <div class="card bad"><h3>Sin ejecutar</h3><ul class="l s">
       <li><b>GKE y Artifact Registry</b>: los comandos salen de la documentación oficial; no se ha creado nada en Google Cloud.</li>
+      <li><b>Las salidas</b> de «Preparación», «Mirar dentro de la imagen», «Entrar en un pod» y «Pedir una predicción»: el profesor validó la secuencia; el autor de la guía solo describe lo esperado.</li>
       <li>Los ejercicios 3 a 6 (sus soluciones dicen qué se espera según la documentación de Kubernetes).</li>
       <li><code>docker push</code>, el Service <code>LoadBalancer</code> y los permisos de IAM.</li></ul></div>
   </div>
