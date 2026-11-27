@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de MLOps clásico de S5: deriva, alias y alertas · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--tinta:#1f2937;--suave:#5b6472;--linea:#d6dde6;--fondo:#ffffff;--gris:#f4f6f9;--acento:#0b5cad;--ok:#15803d;--mal:#b91c1c;--aviso:#92400e;
+ --mono:Consolas,"Cascadia Mono","DejaVu Sans Mono",Menlo,monospace;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8ecf1;color:var(--tinta);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#viewport{position:fixed;inset:0 0 48px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#stage{width:1280px;height:720px;flex:none;position:relative;transform:scale(var(--s,1));background:var(--fondo);box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;padding:30px 52px 46px;display:none;flex-direction:column;gap:10px;overflow:hidden}
+.slide.active{display:flex}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acento);font-weight:700}
+h1{font-size:31px;line-height:1.15;font-weight:700;margin-bottom:4px}
+h3{font-size:17px;margin-bottom:5px}
+.sub{font-size:22px;line-height:1.4;color:var(--suave);max-width:1050px}
+.cover{display:flex;flex-direction:column;justify-content:flex-start;padding-top:70px;flex:1}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--tinta)}
+.tag.ok{border-color:#86c79c;background:#ecf8f0;color:var(--ok)}.tag.warn{border-color:#e2b56b;background:#fdf6e9;color:var(--aviso)}
+.card{border:1px solid var(--linea);border-radius:12px;padding:10px 14px;background:#fff}
+.callout{border-left:4px solid var(--acento);background:#eef5fc;padding:9px 14px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.4}
+.small{font-size:15px;line-height:1.42}
+.mono{font-family:var(--mono);font-size:.92em;background:var(--gris);padding:0 4px;border-radius:4px}
+.okc{color:var(--ok)}.malc{color:var(--mal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.thumbs{display:grid;gap:8px}.thumbs.t2{grid-template-columns:1fr 1fr}
+.src{margin:0;padding:7px 11px;font-family:var(--mono);font-size:12px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere}
+.grande .src{font-size:13.5px}
+.split{display:grid;gap:18px;min-height:0}.col,.capcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+.list{list-style:none;display:flex;flex-direction:column;gap:4px}.list li{font-size:15px;line-height:1.38;padding-left:16px;position:relative}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--acento)}
+.ol{padding-left:24px;display:flex;flex-direction:column;gap:5px;font-size:17px}.ol.sm{font-size:15px;gap:3px}
+.mira h3{color:var(--acento);font-size:15.5px}.mira .list li{font-size:14.5px}
+.falla{border-color:#e2b56b;background:#fffaf0}.falla h3{color:var(--aviso);font-size:15.5px}.falla .list li{font-size:14.5px}.falla .list li::before{background:var(--aviso)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);border-bottom:2px solid var(--linea);padding:5px 8px}
+.tbl td{border-bottom:1px solid var(--linea);padding:6px 8px;line-height:1.35;vertical-align:top}
+.term{border:1px solid var(--linea);border-radius:10px;background:var(--gris);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--linea);background:#eaeef3}
+.term .bar em{flex:1;font-style:normal;font-size:12.5px;color:var(--suave)}
+.tls{padding:6px 8px;font-family:var(--mono);font-size:13px;line-height:1.42}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.tln.c{color:var(--suave);font-style:italic}
+.ps{color:var(--ok);font-weight:700}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #b9c3cf;background:#fff;font-size:13px;color:var(--suave)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}.cpall{padding:0 10px;font-size:12px;font-family:var(--sans)}
+.realbox{border:1px solid #86c79c;background:#f3fbf5;border-radius:10px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.rot{margin:-4px 0 0}
+.cap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cap figcaption{font-size:12px;line-height:1.35;color:var(--suave)}
+.cap .nota{color:var(--aviso)}
+.zoom{display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoom img{display:block;max-width:100%;height:auto;border:1px solid var(--linea);border-radius:8px}
+.lupa{position:absolute;right:6px;bottom:6px;font-size:11.5px;background:rgba(255,255,255,.92);border:1px solid var(--linea);border-radius:6px;padding:1px 6px;display:flex;align-items:center;gap:4px;color:var(--suave)}
+.pend{border:2px dashed #c9a65e;background:#fdf9f0;border-radius:10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;text-align:center;font-size:13.5px;color:var(--aviso)}
+.pend b{font-size:16px}
+.grande .small{font-size:17.5px}.grande .list li{font-size:17px}.grande .mira .list li,.grande .falla .list li{font-size:16.5px}.grande .tbl{font-size:16.5px}.grande .tbl td{padding:8px 10px}
+.grande .tls{font-size:14.5px;line-height:1.5}.grande .callout{font-size:18px}.grande .ol{font-size:19px}.grande .ol.sm{font-size:17px}.grande h3{font-size:19px}.grande .mira h3,.grande .falla h3{font-size:17px}
+.grande .card{padding:13px 17px}.grande .grid4 .kpi{min-height:250px;padding-top:20px}.grande .grid4 .kpi .small{font-size:19px}.grande .grid4{margin-top:36px!important}.grande .kpi .n{font-size:30px}.grande .msg{font-size:32px}
+.kpi .n{display:block;font-size:27px;line-height:1.15;color:var(--acento);margin-bottom:4px}.kpi .n.okc{color:var(--ok)}
+.msg{font-size:27px;line-height:1.3;font-weight:600;border-left:6px solid var(--acento);padding:12px 20px;background:#eef5fc;border-radius:0 12px 12px 0}
+svg .nodo{fill:#f4f8fc;stroke:#8fb2d6;stroke-width:1.5}svg .nodo.puerta{fill:#fdf6e9;stroke:#c9a65e}svg .nodo.ok{fill:#ecf8f0;stroke:var(--ok)}svg .nodo.mal{fill:#fdeeee;stroke:var(--mal)}
+svg .fl{stroke:var(--acento);stroke-width:2;fill:none}svg .fl.dis{stroke-dasharray:5 4;stroke:#8fb2d6}
+svg .t1{font:700 15px var(--sans);fill:var(--tinta);text-anchor:middle}svg .t2{font:13px var(--sans);fill:var(--suave);text-anchor:middle}
+svg .tok{fill:var(--ok)}svg .tmal{fill:var(--mal)}
+.card svg{display:block;width:100%;height:auto}
+.foot{position:absolute;left:52px;right:52px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acento);z-index:5}
+#bar{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border-top:1px solid var(--linea);font-size:13px;z-index:6}
+#bar button,#bar a{border:1px solid var(--linea);border-radius:8px;padding:4px 10px;background:#fff;color:var(--tinta);text-decoration:none;font-size:13px}
+#bar .part.on{border-color:var(--acento);color:var(--acento);font-weight:700}
+#bar .sp{flex:1}#count,#clockref{color:var(--suave);padding:0 6px}
+#notes{position:fixed;right:0;top:0;bottom:48px;width:400px;background:#fff;border-left:1px solid var(--linea);padding:18px;overflow:auto;display:none;z-index:7;font-size:15px;line-height:1.5}
+#notes.on{display:block}#notes h3{margin-bottom:8px}
+#index{position:fixed;inset:0 0 48px 0;background:rgba(255,255,255,.98);display:none;z-index:8;padding:28px;overflow:auto}
+#index.on{display:block}#index .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+#index button{border:1px solid var(--linea);border-radius:10px;padding:10px;text-align:left;font-size:14px;background:#fff}
+#index button small{display:block;color:var(--suave);font-size:12px}#index button.cur{border-color:var(--acento)}
+#zoombox{position:fixed;inset:0;background:rgba(20,26,34,.86);display:none;z-index:9;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#zoombox.on{display:flex}#zoombox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#zoombox p{position:fixed;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+@media print{#bar,#notes,#index,#prog,.cp{display:none!important}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="3" data-title="Portada"
+ data-notes="Presentación para el alumno del laboratorio de MLOps clásico de la sesión 5. Todas las salidas del terminal son reales, ejecutadas el 26/11/2026 sobre una copia de ensayo del proyecto con la muestra de 150 clientes. Las capturas de GitHub Actions están pendientes: se hacen cuando el profesor lance los dos ensayos. Insista desde el principio en el mensaje: un modelo en producción se vigila, se versiona y se puede deshacer.">
+<p class="kick">1 · Qué vamos a hacer · ML e IA: de desarrollo a producción · S5</p><h1>Laboratorio de MLOps clásico: vigilar, versionar y avisar</h1>
+
+<div class="cover">
+ <p class="sub">El modelo de <b>retención a 90 días</b> ya está en producción desde S4. Ahora toca lo que hace un equipo de MLOps cada día: <b>medir si los datos o el modelo han cambiado</b>, <b>cambiar de versión y volver atrás sin miedo</b> y <b>dejar que GitHub avise</b> cuando algo se mueve.</p>
+ <div class="chips"><span class="tag">Caso Online Retail II</span><span class="tag">PSI y KS</span><span class="tag">AUC por corte</span><span class="tag">Alias de MLflow</span><span class="tag">GitHub Actions</span><span class="tag">Issues</span></div>
+ <div class="card" style="margin-top:22px"><h3>Cómo seguirlo</h3><p class="small">Cada orden lleva <b>⧉</b> para copiarla. Se pega <b>en la terminal bash del Codespace</b>, siempre <b>desde la carpeta <span class="mono">04-Proyecto-Base</span></b>, salvo las de git (L4), que van en la raíz del repositorio y lo dicen. En cada paso hay <b>qué debes ver</b> (salida real) y <b>si falla</b>. <b>← →</b> avanzan · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa · clic en una captura para ampliarla y <b>Esc</b> para cerrarla.</p></div>
+ <div class="callout" style="margin-top:12px"><b>No cuesta dinero:</b> todo corre en tu Codespace y en los minutos de GitHub Actions. En L5 se enlaza lo de Google Cloud (presupuesto y borrado) de S4.</div>
+</div>
+</section>
+
+<section class="slide grande" data-part="A" data-min="4" data-title="El plan"
+ data-notes="Mapa de los cinco laboratorios. L1 y L2 miden, L3 versiona y deshace, L4 automatiza el aviso y L5 recuerda los costes de S4 sin repetirlos. El orden importa por una razón práctica: L3 entrena una versión 2 con los datos completos del Excel y eso cambia la base analítica local, así que L1 y L2 se hacen antes. Todo lo que se enseña se ejecutó de verdad en una copia de ensayo; lo de GitHub Actions lo ensaya el profesor.">
+<p class="kick">1 · Qué vamos a hacer · cinco laboratorios</p><h1>Cinco laboratorios para un modelo que ya está en producción</h1>
+
+<div class="card"><table class="tbl"><tr><th>#</th><th>Laboratorio</th><th>Qué haces</th><th>Qué te llevas</th></tr><tr><td><b>L1</b></td><td>Deriva de datos</td><td><span class="mono">deriva cortes</span> y <span class="mono">deriva datos</span>: PSI y KS de las 13 variables</td><td>El modelo <b>no avisa solo</b> de que los datos han cambiado</td></tr><tr><td><b>L2</b></td><td>Deriva de rendimiento</td><td><span class="mono">deriva rendimiento</span>: el AUC por corte</td><td>Se mide <b>tarde</b>, y <b>medir con datos de entrenamiento engaña</b></td></tr><tr><td><b>L3</b></td><td>Versionar y volver atrás</td><td><span class="mono">alias_modelo</span>: una v2 distinta, <span class="mono">promover</span> y <span class="mono">volver</span></td><td>Un alias es un <b>puntero</b>: deshacer es moverlo</td></tr><tr><td><b>L4</b></td><td>Alertas con GitHub Actions</td><td>El workflow <span class="mono">monitoreo.yml</span> y dos ramas de ensayo</td><td>La alerta <b>es el rojo</b> y un issue</td></tr><tr><td><b>L5</b></td><td>Costes y orden</td><td>Lo de S4: presupuesto y borrado</td><td>Avisar no es cortar; lo que creas, lo borras</td></tr></table></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Dónde</h3><ul class="list"><li><b>Codespace</b> (terminal bash) para L1 a L3, desde <span class="mono">04-Proyecto-Base</span>.</li><li><b>Terminal en la raíz</b> y la web de <b>GitHub</b> (pestañas Actions e Issues) para L4.</li></ul></div><div class="card"><h3>Orden</h3><ul class="list"><li><b>L1 y L2 antes que L3:</b> L3 cambia los datos a los completos y los números de L1 y L2 dejan de ser los de la muestra.</li><li>Al final de L3 se explica cómo volver a la muestra.</li></ul></div><div class="card"><h3>Sin claves</h3><ul class="list"><li>Ningún secreto: el workflow usa solo el <span class="mono">GITHUB_TOKEN</span> de cada run.</li><li>Ni Google Cloud ni LLM.</li></ul></div>
+</div>
+</section>
+
+<section class="slide grande" data-part="A" data-min="4" data-title="Siglas y palabras"
+ data-notes="Diapositiva de vocabulario. Insista en dos ideas: el umbral de PSI es una convención del oficio, no una ley, y se puede cambiar con una opción; y la deriva de datos avisa pronto pero puede dar falsas alarmas, mientras que la de rendimiento es la verdad pero llega tarde. Se miran las dos. Después de esta diapositiva todo es práctico.">
+<p class="kick">1 · Qué vamos a hacer · vocabulario</p><h1>Las palabras que vamos a usar</h1>
+<div class="card"><table class="tbl"><tr><th>Palabra</th><th>Qué significa aquí</th></tr><tr><td><b>Corte</b></td><td>Una fecha para la que se calculan las 13 variables de cada cliente («la foto de ese día»). El <b>«ahora»</b> es el día siguiente a la última factura: 2011-12-10</td></tr><tr><td><b>Deriva de datos</b></td><td>Los clientes de hoy ya no se parecen a los de entrenamiento. Se mide <b>sin etiqueta</b>, solo con los datos</td></tr><tr><td><b>Deriva de rendimiento</b></td><td>El modelo acierta menos que antes (el <b>AUC</b> cae). Necesita la <b>etiqueta</b>, que llega 90 días tarde</td></tr><tr><td><b>PSI</b></td><td><i>Population Stability Index</i>: cuánto cambia el reparto de una variable. Menos de 0,10 «estable», de 0,10 a 0,25 «moderado», más de 0,25 «cambio importante»: una <b>convención del oficio, no una ley</b></td></tr><tr><td><b>KS</b></td><td>Estadístico de Kolmogórov y Smirnov: distancia máxima entre dos distribuciones (0 = iguales, 1 = totalmente separadas)</td></tr><tr><td><b>Alias</b> <span class="mono">champion</span></td><td>Un puntero con nombre a una <b>versión</b> del modelo en MLflow: «la que manda». Cambiar de modelo es mover el puntero</td></tr><tr><td><b>Issue</b></td><td>Una incidencia abierta en el repositorio de GitHub (pestaña <b>Issues</b>): aquí, el aviso de la alerta</td></tr><tr><td><b>schedule</b></td><td>El disparador de GitHub Actions que lanza un workflow a una hora fija (cron). En un <i>fork</i> viene <b>desactivado</b></td></tr></table></div>
+</section>
+
+<section class="slide" data-part="A" data-min="8" data-title="Preparar el entorno"
+ data-notes="Preparación. Las dos primeras órdenes dejan la base operacional y el pipeline entrena el modelo y registra la versión uno en MLflow. En el ensayo tardó unos treinta segundos. Las salidas de esta presentación vienen de un portátil con Windows; en un Codespace con Linux no se han comprobado: los números deberían coincidir, pero está sin verificar. La línea de la ruta del almacén de MLflow será la del alumno.">
+<p class="kick">1 · Qué vamos a hacer · paso 0 · Codespace</p><h1>Deja la base de datos y el modelo listos (una vez)</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr">
+ <div class="col"><div class="term"><div class="bar"><em>Codespace · terminal bash · una orden cada vez</em><button class="cp cpall" data-t="cd 04-Proyecto-Base
+python -m pip install -r requirements-dev.txt
+python -m ia_mlops.operacional
+python -m ia_mlops.pipeline">Copiar todo</button></div><div class="tls"><div class="tln c"># 1) entra en la carpeta del proyecto</div><div class="tln"><span class="ps">$</span> <code>cd 04-Proyecto-Base</code><button class="cp" data-t="cd 04-Proyecto-Base" title="Copiar">⧉</button></div><div class="tln c"># 2) las dependencias (si tu Codespace ya las trae, no hace nada)</div><div class="tln"><span class="ps">$</span> <code>python -m pip install -r requirements-dev.txt</code><button class="cp" data-t="python -m pip install -r requirements-dev.txt" title="Copiar">⧉</button></div><div class="tln c"># 3) la base operacional (la fuente) y el pipeline que entrena el modelo</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.operacional</code><button class="cp" data-t="python -m ia_mlops.operacional" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.pipeline</code><button class="cp" data-t="python -m ia_mlops.pipeline" title="Copiar">⧉</button></div></div></div>
+  <div class="callout">El pipeline <b>registra la versión 1</b> de <span class="mono">retencion-90d</span> en MLflow. Con un Codespace nuevo verás «versión 1»; si ya habías ejecutado el pipeline con <span class="mono">--forzar</span>, tendrás más versiones: usa <b>tus</b> números.</div>
+ </div>
+ <div class="col">
+  <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">OPERACIONAL: clientes 150 filas</span> … <span class="mono">lineas_factura 23,070 filas</span>.</li><li>Los cuatro pipelines con su tiempo y, al final, <span class="mono">regresion_logistica   AUC valid 0.698 | test 0.747</span>.</li><li><span class="mono">Registrado en MLflow como «retencion-90d», version 1.</span> (~30 s en un portátil).</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">No module named ia_mlops</span>: no estás en <span class="mono">04-Proyecto-Base</span> (<span class="mono">pwd</span>).</li><li><span class="mono">0xc06d007f</span> al importar <span class="mono">scikit-learn</span> en Windows con conda: falta <span class="mono">&lt;entorno&gt;\Library\bin</span> en el <span class="mono">PATH</span>; activa el entorno con <span class="mono">conda activate</span>.</li></ul></div>
+  <p class="small">Si usas <b>Windows</b> (cmd o PowerShell 5.1) en vez del Codespace: no existe <span class="mono">&amp;&amp;</span>; en lugar de <span class="mono">echo &quot;salida: $?&quot;</span> usa <span class="mono">echo $LASTEXITCODE</span> (PowerShell) o <span class="mono">echo %ERRORLEVEL%</span> (cmd); <span class="mono">rm</span> es <span class="mono">del</span>, <span class="mono">cp</span> es <span class="mono">copy</span> y <span class="mono">mkdir -p</span> es <span class="mono">mkdir</span>.</p>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="La deriva de datos"
+ data-notes="Primera idea del laboratorio: el modelo no avisa de que los datos han cambiado, porque siempre devuelve una probabilidad. Hay que medirlo comparando un corte de referencia con otro actual, variable a variable, con PSI y KS. Esto no necesita la etiqueta, por eso se puede hacer cada día. Advierta que con pocos clientes el PSI oscila por azar y que el comando solo lee, no cambia nada.">
+<p class="kick">2 · L1 · Deriva de datos · qué es y por qué no avisa sola</p><h1>El modelo sigue funcionando… pero ya no ve a los clientes con los que aprendió</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Qué pasa</h3><ul class="list"><li>Un modelo <b>no se rompe</b>: sigue devolviendo una probabilidad para cualquier entrada. <b>No avisa</b> de que sus entradas ya no se parecen a las del entrenamiento.</li><li>Los clientes de hoy compran menos veces al trimestre, o hace más tiempo que no compran: el modelo <b>extrapola</b>.</li><li>Por eso alguien tiene que <b>medirlo</b>: comparar los datos de hoy con los de referencia.</li></ul></div><div class="card"><h3>Cómo se mide</h3><ul class="list"><li>Se elige un <b>corte de referencia</b> (el último de entrenamiento) y un <b>corte actual</b>.</li><li>Para cada una de las 13 variables: <b>PSI</b> (cuánto cambia el reparto) y <b>KS</b> (distancia entre distribuciones).</li><li>No hace falta la etiqueta: se puede hacer <b>hoy</b>, sin esperar 90 días.</li></ul></div>
+</div>
+<div class="callout" style="margin-top:12px"><b>Lo que avisa pronto puede dar falsas alarmas</b> (los datos cambian y el modelo sigue bien). <b>Lo que dice la verdad llega tarde</b> (L2). Se miran las dos.</div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Datos de hoy</h3><ul class="list"><li>Se calculan al vuelo con el <b>mismo SQL</b> de la capa FS que usó el entrenamiento: así la comparación es justa.</li></ul></div><div class="card"><h3>Pocos clientes</h3><ul class="list"><li>Con 109 y 148 clientes el PSI <b>oscila por azar</b>: es un aviso, no una sentencia.</li></ul></div><div class="card"><h3>Solo lectura</h3><ul class="list"><li><span class="mono">deriva</span> no escribe nada en la base ni en el registro: lo puedes lanzar sin miedo.</li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Los cortes guardados"
+ data-notes="Los cortes guardados salen de la tabla fs_cliente_corte. Fíjese en la columna partición: los cortes de entrenamiento, el de validación y los de prueba. Esa columna será importante en L2, cuando midamos el rendimiento. El ahora es el día siguiente a la última factura. Cualquier otra fecha se puede pedir y se calcula al vuelo.">
+<p class="kick">2 · L1 · Deriva de datos · paso 1 · cortes</p><h1>Primero, qué fechas hay: <span class="mono">deriva cortes</span></h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.deriva cortes">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva cortes</code><button class="cp" data-t="python -m ia_mlops.deriva cortes" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Diez cortes guardados, de <b>69</b> a <b>131</b> clientes por corte.</li><li>Los siete primeros son de <b>entrenamiento</b> (<span class="mono">train</span>), 2011-03-01 es de <b>validación</b> y los dos últimos de <b>prueba</b> (<span class="mono">test</span>).</li><li>El «ahora» de los datos es <b>2011-12-10</b>. Se puede pedir cualquier fecha: se calcula al vuelo.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Sale 2 y un mensaje de error: falta ejecutar el pipeline (paso 0).</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver · salida 0</div><pre>Cortes guardados en fs_cliente_corte (10):
+  2010-06-01     69 clientes  partición train  etiqueta a 90 días: sí
+  2010-07-01     80 clientes  partición train  etiqueta a 90 días: sí
+  2010-08-01     84 clientes  partición train  etiqueta a 90 días: sí
+  2010-09-01     88 clientes  partición train  etiqueta a 90 días: sí
+  2010-10-01     93 clientes  partición train  etiqueta a 90 días: sí
+  2010-11-01    103 clientes  partición train  etiqueta a 90 días: sí
+  2010-12-01    109 clientes  partición train  etiqueta a 90 días: sí
+  2011-03-01    114 clientes  partición valid  etiqueta a 90 días: sí
+  2011-06-01    119 clientes  partición test   etiqueta a 90 días: sí
+  2011-09-01    131 clientes  partición test   etiqueta a 90 días: sí
+Corte «ahora» (día siguiente a la última factura): 2011-12-10</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="6" data-title="Deriva de datos con datos reales"
+ data-notes="Esta es la orden central de L1. La salida real: cinco de trece variables superan el umbral de 0,25. La más grande, la antigüedad, es esperable: todos los clientes envejecen un año. Las que realmente importan son las de actividad reciente. Esto es lo que hay que enseñar a leer: no toda deriva pide reentrenar. El número de salida, uno, es lo que usará el workflow para decidir.">
+<p class="kick">2 · L1 · Deriva de datos · paso 2 · datos</p><h1>La orden: <span class="mono">deriva datos</span> entre el último corte de entrenamiento y el «ahora»</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10
+echo &quot;salida: $?&quot;">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10</code><button class="cp" data-t="python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>echo &quot;salida: $?&quot;</code><button class="cp" data-t="echo &quot;salida: $?&quot;" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Salida 1</b>: hay deriva (salida 0 = sin deriva, 2 = error). Un workflow puede decidir con ese número.</li><li><b>5 de 13</b> variables superan 0,25; las mayores: <span class="mono">antiguedad_dias</span> (PSI <b>2,830</b>, KS 0,736) y <span class="mono">recencia_dias</span> (0,437).</li><li>Las más bajas: <span class="mono">es_reino_unido</span> 0,000, <span class="mono">ticket_medio</span> 0,012 y <span class="mono">devoluciones</span> 0,018.</li></ul></div><div class="callout"><b>Lectura honesta:</b> <span class="mono">antiguedad_dias</span> crece para todos con solo <b>dejar pasar un año</b>: su PSI enorme es esperable y no pide por sí solo reentrenar. Las de actividad reciente (<span class="mono">recencia_dias</span>, <span class="mono">frecuencia_90d</span>, <span class="mono">frecuencia_180d</span>, <span class="mono">monto_90d</span>) sí dicen que el comportamiento cambió.</div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver</div><pre>Deriva de datos: referencia 2010-12-01 (109 clientes, fs_cliente_corte) frente a actual 2011-12-10 (148 clientes, calculado al vuelo)
+PSI con 10 intervalos por cuantiles de la referencia (suelo 0.0001); umbral de alarma 0.25.
+
+variable                        PSI      KS  estado
+antiguedad_dias               2.830   0.736  deriva  &lt;-- supera el umbral
+recencia_dias                 0.437   0.259  deriva  &lt;-- supera el umbral
+frecuencia_180d               0.400   0.240  deriva  &lt;-- supera el umbral
+monto_90d                     0.293   0.213  deriva  &lt;-- supera el umbral
+frecuencia_90d                0.276   0.213  deriva  &lt;-- supera el umbral
+unidades_total                0.147   0.122  moderada
+frecuencia                    0.137   0.145  moderada
+dias_medios_entre_compras     0.115   0.128  moderada
+productos_distintos           0.107   0.124  moderada
+monto_total                   0.097   0.138  estable
+devoluciones                  0.018   0.064  estable
+ticket_medio                  0.012   0.064  estable
+es_reino_unido                0.000   0.010  estable
+
+DERIVA: 5 de 13 variables superan el umbral (antiguedad_dias, recencia_dias, frecuencia_180d, monto_90d, frecuencia_90d).
+Ojo: con 109 clientes el PSI oscila por azar; es un aviso, no una sentencia.
+salida: 1</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Cómo leer PSI y KS"
+ data-notes="El ejemplo pequeño de la documentación del proyecto: cuatro clientes y dos intervalos. La mediana de la referencia, dos coma cinco, separa los intervalos; el PSI da cero coma dos siete cuatro siete. Los umbrales de cero coma diez y cero coma veinticinco son una convención del oficio. El suelo de cero coma cero cero cero uno evita el logaritmo de cero. Con pocos clientes, el PSI oscila por azar.">
+<p class="kick">2 · L1 · Deriva de datos · el cálculo con cuatro clientes</p><h1>El PSI con un ejemplo que cabe en la mano</h1>
+
+<div class="grid2" style="grid-template-columns:1.05fr .95fr">
+ <div class="col">
+  <div class="card"><h3><span class="mono">PSI = suma de (q − p) · ln(q / p)</span></h3><p class="small">Con <b>p</b> = fracción de clientes de la referencia en cada intervalo y <b>q</b> = la del corte actual. Los intervalos salen de los <b>cuantiles de la referencia</b>.</p><table class="tbl"><tr><th>intervalo</th><th>referencia (p)</th><th>actual (q)</th><th>aporte</th></tr><tr><td>hasta 2,5</td><td>0,50</td><td>0,75</td><td>0,1014</td></tr><tr><td>más de 2,5</td><td>0,50</td><td>0,25</td><td>0,1733</td></tr><tr><td>nulo</td><td>0,0001</td><td>0,0001</td><td>0,0000</td></tr><tr><td><b>PSI</b></td><td></td><td></td><td><b>0,2747</b></td></tr></table></div>
+  <div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -c &quot;from ia_mlops import deriva; print(round(deriva.psi_detalle([1, 2, 3, 4], [1, 1, 1, 4], intervalos=2)[&#x27;psi&#x27;], 4))&quot;">Copiar todo</button></div><div class="tls"><div class="tln c"># la referencia es [1, 2, 3, 4] y el corte actual [1, 1, 1, 4]</div><div class="tln"><span class="ps">$</span> <code>python -c &quot;from ia_mlops import deriva; print(round(deriva.psi_detalle([1, 2, 3, 4], [1, 1, 1, 4], intervalos=2)[&#x27;psi&#x27;], 4))&quot;</code><button class="cp" data-t="python -c &quot;from ia_mlops import deriva; print(round(deriva.psi_detalle([1, 2, 3, 4], [1, 1, 1, 4], intervalos=2)[&#x27;psi&#x27;], 4))&quot;" title="Copiar">⧉</button></div></div></div>
+  <p class="small">Qué debes ver: <b>0.2747</b>. Con la misma muestra en los dos lados, el PSI es exactamente <b>0</b>.</p>
+ </div>
+ <div class="col">
+  <div class="card"><h3>Las tres franjas (una convención)</h3><ul class="list"><li>Menos de <b>0,10</b>: estable.</li><li>De <b>0,10 a 0,25</b>: moderado.</li><li>Más de <b>0,25</b>: cambio importante.</li><li>Es la regla del oficio, <b>no una ley</b>: por eso <span class="mono">--umbral-psi</span> la deja cambiar.</li></ul></div><div class="card"><h3>El suelo anti-cero</h3><ul class="list"><li><span class="mono">ln(q / p)</span> no existe si un intervalo está vacío: las fracciones menores que <b>0,0001</b> se suben a 0,0001. Es un parche numérico, no una teoría.</li></ul></div><div class="card"><h3>El KS</h3><ul class="list"><li>Mira la distancia máxima entre las dos distribuciones <b>acumuladas</b>: 0 iguales, 1 separadas del todo. Es un segundo punto de vista sobre lo mismo.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="B" data-min="6" data-title="Ejercicio de deriva de datos"
+ data-notes="Ejercicio. Primero un par distinto: agosto y septiembre de dos mil diez. Con el umbral por defecto da salida uno por la antigüedad, que vale cero coma cuatro uno cero. Con el umbral en cero coma cinco la misma medición da cero. Es una decisión de convención, no de datos. Conviene decir con honestidad que en esta muestra de ciento cincuenta clientes ninguna de las cuarenta y cinco parejas de cortes da cero con el umbral de cero coma veinticinco. Esa pareja y ese umbral son los del escenario estable del workflow.">
+<p class="kick">2 · L1 · Deriva de datos · ejercicio · otro par y otro umbral</p><h1>Ahora tú: otro par de cortes y otro umbral</h1>
+
+<div class="split" style="grid-template-columns:.95fr 1.05fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01
+echo &quot;salida: $?&quot;
+python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01 --umbral-psi 0.5
+echo &quot;salida: $?&quot;
+python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10 --json reports/datos.json
+python -c &quot;import json; d = json.load(open(&#x27;reports/datos.json&#x27;, encoding=&#x27;utf-8&#x27;)); print(d[&#x27;hay_deriva&#x27;], d[&#x27;superan_umbral&#x27;])&quot;">Copiar todo</button></div><div class="tls"><div class="tln c"># 1) dos cortes de entrenamiento consecutivos</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01</code><button class="cp" data-t="python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>echo &quot;salida: $?&quot;</code><button class="cp" data-t="echo &quot;salida: $?&quot;" title="Copiar">⧉</button></div><div class="tln c"># 2) la misma pareja, con otro umbral de alarma</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01 --umbral-psi 0.5</code><button class="cp" data-t="python -m ia_mlops.deriva datos --referencia 2010-08-01 --actual 2010-09-01 --umbral-psi 0.5" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>echo &quot;salida: $?&quot;</code><button class="cp" data-t="echo &quot;salida: $?&quot;" title="Copiar">⧉</button></div><div class="tln c"># 3) y el resultado en JSON (lo que lee un workflow)</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10 --json reports/datos.json</code><button class="cp" data-t="python -m ia_mlops.deriva datos --referencia 2010-12-01 --actual 2011-12-10 --json reports/datos.json" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -c &quot;import json; d = json.load(open(&#x27;reports/datos.json&#x27;, encoding=&#x27;utf-8&#x27;)); print(d[&#x27;hay_deriva&#x27;], d[&#x27;superan_umbral&#x27;])&quot;</code><button class="cp" data-t="python -c &quot;import json; d = json.load(open(&#x27;reports/datos.json&#x27;, encoding=&#x27;utf-8&#x27;)); print(d[&#x27;hay_deriva&#x27;], d[&#x27;superan_umbral&#x27;])&quot;" title="Copiar">⧉</button></div></div></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver (recortado)</div><pre>variable                        PSI      KS  estado
+antiguedad_dias               0.410   0.261  deriva  &lt;-- supera el umbral
+recencia_dias                 0.228   0.175  moderada
+monto_90d                     0.092   0.106  estable
+...
+DERIVA: 1 de 13 variables superan el umbral (antiguedad_dias).
+salida: 1
+
+--umbral-psi 0.5:
+umbral de alarma 0.5.
+variable                        PSI      KS  estado
+antiguedad_dias               0.410   0.261  moderada
+recencia_dias                 0.228   0.175  moderada
+...
+Sin deriva relevante: ninguna variable supera el umbral.
+salida: 0</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Con el umbral por defecto la pareja agosto→septiembre de 2010 <b>también da salida 1</b>: <span class="mono">antiguedad_dias</span> llega a <b>0,410</b>.</li><li>Con <span class="mono">--umbral-psi 0.5</span> la <b>misma medición</b> da salida <b>0</b>: la variable pasa a «moderada». Cambió la convención, no los datos.</li><li>En esta muestra <b>ninguna pareja de cortes da salida 0</b> con el umbral 0,25 (se probaron las 45): siempre hay alguna variable, casi siempre <span class="mono">antiguedad_dias</span>, que supera 0,25.</li><li>El JSON dice <span class="mono">True [&#x27;antiguedad_dias&#x27;, &#x27;recencia_dias&#x27;, &#x27;frecuencia_180d&#x27;, &#x27;monto_90d&#x27;, &#x27;frecuencia_90d&#x27;]</span>.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Por qué se mide tarde"
+ data-notes="Segunda idea: la deriva de rendimiento es la verdad, pero necesita la etiqueta, y en nuestro caso la etiqueta llega noventa días después del corte. Mientras tanto solo podemos mirar la deriva de datos. La tolerancia de cero coma cero cinco es provisional: no sale de ninguna medición. Es una decisión que debe tomar el negocio.">
+<p class="kick">3 · L2 · Deriva de rendimiento · la etiqueta llega 90 días después</p><h1>La deriva de rendimiento es la verdad… que llega 90 días tarde</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Qué se predice</h3><ul class="list"><li>La probabilidad de que el cliente <b>vuelva a comprar en los próximos 90 días</b>.</li><li>La <b>etiqueta</b> («¿compró?») solo se conoce <b>cuando pasan esos 90 días</b>.</li><li>El corte 2011-12-10 aparece como «sin etiqueta»: el corte + 90 días se sale de los datos.</li></ul></div><div class="card"><h3>Qué se mide</h3><ul class="list"><li>El <b>AUC</b> del modelo en producción en cada corte con etiqueta: cómo ordena a los que compran por delante de los que no.</li><li>Se compara con el <b>primer corte medido</b>: la <b>caída</b> de AUC.</li><li>La <b>tolerancia</b> por defecto (0,05) es <b>provisional</b>: no sale de ninguna medición.</li></ul></div>
+</div>
+<div class="card" style="margin-top:12px"><h3>Línea de tiempo (un corte cualquiera)</h3><table class="tbl"><tr><th>Día 0 (corte)</th><th>Día 0 a 90</th><th>Día 90</th></tr><tr><td>Se calculan las 13 variables y se <b>puntúa</b></td><td>Nadie sabe todavía quién comprará: <b>solo</b> se puede mirar la deriva de datos (L1)</td><td>Llega la etiqueta: ya se puede calcular el <b>AUC</b> de ese corte</td></tr></table></div>
+<div class="callout" style="margin-top:12px">Por eso se <b>miran las dos</b>: la de datos avisa <b>pronto</b> (pero puede ser falsa alarma) y la de rendimiento confirma <b>tarde</b>.</div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Rendimiento por corte"
+ data-notes="La orden de rendimiento calcula el AUC del modelo en producción para cada corte con etiqueta. En el ensayo da cero coma seis nueve ocho dos en validación, cero coma siete cinco tres cuatro y cero coma siete cuatro dos tres en prueba. La salida es cero. Fíjese en el aviso: el primer corte medido es de validación y por tanto sobreestima.">
+<p class="kick">3 · L2 · Deriva de rendimiento · paso 3 · rendimiento</p><h1>La orden: <span class="mono">deriva rendimiento</span> con los cortes de validación y de prueba</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.deriva rendimiento --cortes 2011-03-01 2011-06-01 2011-09-01
+echo &quot;salida: $?&quot;">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva rendimiento --cortes 2011-03-01 2011-06-01 2011-09-01</code><button class="cp" data-t="python -m ia_mlops.deriva rendimiento --cortes 2011-03-01 2011-06-01 2011-09-01" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>echo &quot;salida: $?&quot;</code><button class="cp" data-t="echo &quot;salida: $?&quot;" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Salida 0</b>: la caída máxima no supera la tolerancia (0,05).</li><li>AUC <b>0,6982</b> (validación, 114 clientes), <b>0,7534</b> (prueba, 119) y <b>0,7423</b> (prueba, 131).</li><li>Caída <b>negativa</b> = el AUC <b>mejora</b> frente al primer corte; la orden no se alarma.</li><li>El AVISO dice que 2011-03-01 es de validación: ahí el AUC <b>sobreestima</b>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Sale 2 y un mensaje de error: falta el modelo; ejecuta <span class="mono">python -m ia_mlops.pipeline</span> (paso 0).</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver</div><pre>corte       uso                        clientes positivos      AUC    caída
+2011-03-01  validación                      114        52   0.6982  +0.0000
+2011-06-01  prueba                          119        46   0.7534  -0.0552
+2011-09-01  prueba                          131        55   0.7423  -0.0441
+
+AVISO: El corte 2011-03-01 es de entrenamiento o validación: el modelo se ajustó o se eligió con él y el AUC ahí SOBREESTIMA. Para una medida honesta usa cortes de prueba o posteriores al entrenamiento.
+Sin deriva de rendimiento relevante.
+salida: 0</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="La lección del corte de entrenamiento"
+ data-notes="Esta es la lección importante de la práctica. Si empezamos por un corte de entrenamiento, el AUC vale cero coma ocho cuatro nueve siete, y el de validación cero coma seis nueve ocho dos: la caída es de cero coma uno cinco uno cinco y la orden sale con uno. Pero el modelo no ha cambiado: solo estamos midiendo con datos que ya vio. La propia orden lo avisa. Medir en datos de entrenamiento engaña.">
+<p class="kick">3 · L2 · Deriva de rendimiento · medir con datos de entrenamiento engaña</p><h1>Si el primer corte es de entrenamiento, el modelo parece haber «caído» sin haber cambiado</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.deriva rendimiento --cortes 2010-12-01 2011-03-01 2011-06-01 2011-09-01
+echo &quot;salida: $?&quot;">Copiar todo</button></div><div class="tls"><div class="tln c"># el mismo modelo, pero empezando por un corte de ENTRENAMIENTO</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.deriva rendimiento --cortes 2010-12-01 2011-03-01 2011-06-01 2011-09-01</code><button class="cp" data-t="python -m ia_mlops.deriva rendimiento --cortes 2010-12-01 2011-03-01 2011-06-01 2011-09-01" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>echo &quot;salida: $?&quot;</code><button class="cp" data-t="echo &quot;salida: $?&quot;" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Salida 1</b> y «DERIVA DE RENDIMIENTO: sí»: la caída máxima es <b>0,1515</b>, mayor que 0,05.</li><li>El AUC en entrenamiento (2010-12-01) es <b>0,8497</b>; en validación, <b>0,6982</b>: <b>el modelo no ha cambiado</b>, solo lo medimos con datos que ya había visto.</li><li>La orden <b>avisa</b>: parte de la caída es <b>sobreajuste</b> y no deriva.</li></ul></div><div class="callout"><b>La lección importante:</b> medir el rendimiento con datos de entrenamiento <b>engaña</b>. Para una medida honesta, usa cortes de <b>prueba</b> o posteriores al entrenamiento.</div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver (recortado)</div><pre>corte       uso                        clientes positivos      AUC    caída
+2010-12-01  entrenamiento                   109        41   0.8497  +0.0000
+2011-03-01  validación                      114        52   0.6982  +0.1515
+2011-06-01  prueba                          119        46   0.7534  +0.0963
+2011-09-01  prueba                          131        55   0.7423  +0.1074
+
+AVISO: Los cortes 2010-12-01, 2011-03-01 son de entrenamiento o validación: el modelo se ajustó o se eligió con ellos y el AUC ahí SOBREESTIMA. [...]
+AVISO: El AUC cae 0.1515 respecto al primer corte medido (2010-12-01), más que la tolerancia de 0.05. Si ese primer corte es de entrenamiento, parte de la caída es sobreajuste y no deriva.
+DERIVA DE RENDIMIENTO: sí.
+salida: 1</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Un alias es un puntero"
+ data-notes="Primer paso de L3. El registro de MLflow tiene una versión del modelo de retención. Promover la versión uno pone el alias champion en ella. Cargar por alias carga lo que apunta champion y puntúa al cliente de ejemplo: cero coma ocho dos siete nueve. Con tres versiones idénticas el cambio de alias no se nota en la probabilidad, por eso en el siguiente paso entrenamos una versión distinta.">
+<p class="kick">4 · L3 · Versionar y volver atrás con alias · paso 1 · mostrar, promover y cargar</p><h1>Un alias es un puntero a una versión: nada se copia ni se borra</h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.alias_modelo mostrar
+python -m ia_mlops.alias_modelo promover --version 1
+python -m ia_mlops.alias_modelo cargar">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo mostrar</code><button class="cp" data-t="python -m ia_mlops.alias_modelo mostrar" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo promover --version 1</code><button class="cp" data-t="python -m ia_mlops.alias_modelo promover --version 1" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo cargar</code><button class="cp" data-t="python -m ia_mlops.alias_modelo cargar" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">mostrar</span>: <b>una</b> versión (v1) y «Alias: ninguno».</li><li><span class="mono">promover --version 1</span>: <span class="mono">@champion -&gt; v1</span> y el aviso de que <b>no había anterior</b>.</li><li><span class="mono">cargar</span>: carga <span class="mono">models:/retencion-90d@champion</span> y puntúa al cliente de ejemplo: <b>0.8279</b>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Si te salen más versiones que en la pantalla, usa <b>tus</b> números (<span class="mono">mostrar</span> te dice cuáles hay).</li><li>«No existe la versión 9 de «retencion-90d»…»: pediste una que no está; mira <span class="mono">mostrar</span>.</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver (la línea «Almacén de MLflow: …» será tu ruta)</div><pre>Modelo registrado «retencion-90d»: 1 versiones
+  v1   alias: -            valid_auc 0.6982 · test_auc 0.7471
+Alias: ninguno
+
+@champion -&gt; v1 (no había champion anterior: no se guardó a dónde volver).
+
+Cargado models:/retencion-90d@champion -&gt; versión 1
+Probabilidad de comprar en 90 días del cliente de cliente_ejemplo.json: 0.8279</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="8" data-title="Una v2 distinta"
+ data-notes="Para que el cambio de alias se note hay que tener dos versiones distintas. La segunda se entrena con los datos completos del Excel de Online Retail II, que no está en el repositorio: se baja con el comando descargar, que verifica la huella. El pipeline completo tardó cuatrocientos treinta y siete segundos en el portátil del ensayo, más de siete minutos; en un Codespace no se ha medido. La versión dos tiene AUC de test cero coma siete nueve cinco seis frente a cero coma siete cuatro siete uno de la uno.">
+<p class="kick">4 · L3 · Versionar y volver atrás con alias · paso 2 · datos completos</p><h1>Entrena una v2 que sea de verdad otra: los datos completos del Excel</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.dataset descargar
+python -m ia_mlops.pipeline --fuente completo">Copiar todo</button></div><div class="tls"><div class="tln c"># 1) baja el Excel completo de UCI y comprueba su huella sha256 (unos 45 MB)</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.dataset descargar</code><button class="cp" data-t="python -m ia_mlops.dataset descargar" title="Copiar">⧉</button></div><div class="tln c"># 2) rehace la base con 1,07 millones de filas, reentrena y registra la v2</div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.pipeline --fuente completo</code><button class="cp" data-t="python -m ia_mlops.pipeline --fuente completo" title="Copiar">⧉</button></div></div></div><div class="callout"><b>Paciencia:</b> el segundo comando tardó <b>437 s</b> (algo más de 7 minutos) en el portátil del ensayo. En un Codespace: <b>sin verificar</b>. Después de esto, tus cortes y tu modelo local <b>ya no son los de la muestra</b> (al final de L3 se explica cómo volver).</div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">descargar</span>: «sha256: 572e3627…» y «Listo: …/online_retail_II.xlsx».</li><li>El pipeline: clientes <b>5,942</b>, líneas <b>1,067,371</b>, <span class="mono">regresion_logistica   AUC valid 0.786 | test 0.796</span> y «version 2».</li><li>La v2 tiene otra huella de datos (<b>3521a0421905ba28</b>) que la v1 (<b>35a94deb4e04ab4a</b>).</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver (recortado)</div><pre>  OPERACIONAL: clientes             5,942 filas
+  OPERACIONAL: lineas_factura   1,067,371 filas
+  ...
+  ML: train  23,760 filas | tasa de recompra 48.1 %
+  ML: valid   4,512 filas | tasa de recompra 35.1 %
+  ML: test   10,132 filas | tasa de recompra 38.0 %
+  regresion_logistica        AUC valid 0.786 | test 0.796 | precision media test 0.735
+  ...
+  Registrado en MLflow como «retencion-90d», version 2.
+
+Modelo registrado «retencion-90d»: 2 versiones
+  v1   alias: @champion    valid_auc 0.6982 · test_auc 0.7471
+  v2   alias: -            valid_auc 0.7855 · test_auc 0.7956
+Alias: @champion -&gt; v1</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Mover el puntero"
+ data-notes="Promover la versión dos mueve el puntero y deja anotado en la versión dos cuál era la anterior, con la etiqueta champion_anterior. Al cargar por alias ahora se carga la versión dos y la probabilidad del cliente de ejemplo es cero coma siete dos cuatro cinco, frente a cero coma ocho dos siete nueve de la versión uno. El mismo comando, otro modelo.">
+<p class="kick">4 · L3 · Versionar y volver atrás con alias · paso 3 · promover 2 y cargar</p><h1>Promover la v2: mismo comando, otro modelo</h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.alias_modelo promover --version 2
+python -m ia_mlops.alias_modelo cargar">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo promover --version 2</code><button class="cp" data-t="python -m ia_mlops.alias_modelo promover --version 2" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo cargar</code><button class="cp" data-t="python -m ia_mlops.alias_modelo cargar" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">promover</span>: «@champion: v1 -&gt; v2. La v2 recuerda a la v1» y <b>«No se ha borrado nada»</b>.</li><li><span class="mono">cargar</span> ahora carga la <b>versión 2</b> y la probabilidad del cliente de ejemplo es <b>0.7245</b>.</li><li>Antes (v1) era <b>0.8279</b>: el alias decide qué modelo se sirve, y ahora <b>se nota</b>.</li></ul></div><div class="callout"><span class="mono">promover</span> guarda en la v2 una etiqueta <b><span class="mono">champion_anterior = 1</span></b>: es lo que luego lee <span class="mono">volver</span>.</div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver</div><pre>@champion: v1 -&gt; v2. La v2 recuerda a la v1: para volver, `volver`. No se ha borrado nada.
+
+Cargado models:/retencion-90d@champion -&gt; versión 2
+Probabilidad de comprar en 90 días del cliente de cliente_ejemplo.json: 0.7245</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Volver atrás"
+ data-notes="El rollback es mover el puntero hacia atrás. Después de volver, el alias apunta de nuevo a la versión uno y la probabilidad vuelve a ser cero coma ocho dos siete nueve. La versión dos sigue registrada, con sus métricas y su modelo: no se ha borrado nada. Si se repite volver y no hay versión anterior, falla con un mensaje claro y salida dos.">
+<p class="kick">4 · L3 · Versionar y volver atrás con alias · paso 4 · rollback</p><h1>Deshacer es mover el puntero: <span class="mono">volver</span></h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="python -m ia_mlops.alias_modelo volver
+python -m ia_mlops.alias_modelo cargar
+python -m ia_mlops.alias_modelo mostrar">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo volver</code><button class="cp" data-t="python -m ia_mlops.alias_modelo volver" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo cargar</code><button class="cp" data-t="python -m ia_mlops.alias_modelo cargar" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo mostrar</code><button class="cp" data-t="python -m ia_mlops.alias_modelo mostrar" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">volver</span>: «Rollback: @champion: v2 -&gt; v1. La v2 <b>sigue registrada</b>».</li><li><span class="mono">cargar</span> otra vez da <b>0.8279</b> y <b>versión 1</b>: el mismo modelo de antes.</li><li><span class="mono">mostrar</span> enseña <b>las dos versiones</b> y la v2 con «(champion anterior: v1)».</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Si repites <span class="mono">volver</span>: «La versión 1, que es @champion, no guardó una versión anterior: no hay a dónde volver» (salida <b>2</b>). Para ir a otra, <span class="mono">promover --version N</span>.</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Qué debes ver</div><pre>Rollback: @champion: v2 -&gt; v1. La v2 sigue registrada; no se ha borrado nada.
+
+(cargar)
+Cargado models:/retencion-90d@champion -&gt; versión 1
+Probabilidad de comprar en 90 días del cliente de cliente_ejemplo.json: 0.8279
+
+(mostrar)
+Modelo registrado «retencion-90d»: 2 versiones
+  v1   alias: @champion    valid_auc 0.6982 · test_auc 0.7471
+  v2   alias: -            valid_auc 0.7855 · test_auc 0.7956  (champion anterior: v1)
+Alias: @champion -&gt; v1
+
+(volver otra vez)
+Error: La versión 1, que es @champion, no guardó una versión anterior: no hay a dónde volver. Si sabes cuál quieres, usa  promover --version N
+salida: 2</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Lo que el alias gobierna"
+ data-notes="Honestidad sobre el alcance del alias: gobierna el registro y a quien cargue por alias, no la imagen Docker de la API, que copia el modelo al construirse. Un sistema real lo uniría exportando la versión champion, construyendo y publicando la imagen con la versión en su etiqueta y desplegándola. Aquí no se implementa. A la derecha, cómo volver a los datos de la muestra: hay que borrar la base analítica antes, porque si no el pipeline falla por integridad referencial; es un comportamiento del proyecto que se anota en el informe.">
+<p class="kick">4 · L3 · Versionar y volver atrás con alias · limitación honesta</p><h1>Mover el alias no cambia la API que ya está desplegada</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Qué gobierna el alias</h3><ul class="list"><li>El <b>registro</b> de MLflow y <b>cualquiera que cargue</b> <span class="mono">models:/retencion-90d@champion</span>.</li><li><span class="mono">cargar</span> y las pruebas de este laboratorio.</li></ul></div><div class="card"><h3>Qué NO gobierna</h3><ul class="list"><li>La <b>imagen Docker de la API</b> copia <span class="mono">models/modelo_mlflow</span> al construirse y <b>no lee el registro</b>.</li><li>Mover <span class="mono">champion</span> <b>no cambia</b> lo que responde la API ya desplegada.</li></ul></div>
+</div>
+<div class="card" style="margin-top:12px"><h3>Cómo se uniría en un sistema real (tres líneas; aquí no se implementa)</h3><ol class="ol sm">
+ <li>Al mover el alias, un paso del workflow <b>exporta la versión champion</b> a <span class="mono">models/modelo_mlflow</span>.</li>
+ <li>Construye y publica la imagen con <b>la versión en su etiqueta</b>.</li>
+ <li>La despliega (o hace que la API <b>cargue por alias al arrancar</b>).</li></ol></div>
+<div class="grid2" style="margin-top:12px">
+ <div class="card"><h3>Volver a la muestra (si quieres repetir L1 y L2)</h3><ul class="list"><li>Tras L3 la base local es la completa. Bórrala y rehaz la de la muestra: <b>en este orden</b>.</li><li>Registrará una <b>v3</b> (igual que la v1) y <b>el alias no se mueve</b>.</li></ul></div><div class="term"><div class="bar"><em>Codespace · desde 04-Proyecto-Base</em><button class="cp cpall" data-t="rm data/processed/curso.db
+python -m ia_mlops.pipeline --fuente muestra">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>rm data/processed/curso.db</code><button class="cp" data-t="rm data/processed/curso.db" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.pipeline --fuente muestra</code><button class="cp" data-t="python -m ia_mlops.pipeline --fuente muestra" title="Copiar">⧉</button></div></div></div>
+</div><div class="callout" style="margin-top:10px"><b>Sin verificar:</b> repetirlo en un Codespace. Si lanzas <span class="mono">--fuente muestra</span> <b>sin</b> borrar antes <span class="mono">curso.db</span>, falla con «R03_integridad_referencial: Violaciones de claves foráneas» (visto en el ensayo).</div>
+</section>
+
+<section class="slide" data-part="E" data-min="5" data-title="El workflow de monitoreo"
+ data-notes="El workflow tiene tres trabajos: preparar datos y modelo, medir la deriva de datos y la de rendimiento, y la alerta, que solo se ejecuta si algún código de salida fue uno. La alerta abre un issue con la etiqueta alerta-deriva, o comenta el que ya hay, y termina el run en rojo. El nombre de la rama elige el escenario, igual que en S4. El schedule diario no corre en un fork salvo que se active; como los datos están congelados siempre daría alerta, así que hay que desactivarlo al terminar.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · qué hace monitoreo.yml</p><h1>El mismo <span class="mono">deriva</span>, pero cada día y sin que nadie mire</h1>
+
+<div class="grid3">
+ <div class="card"><h3>1 · Datos y modelo</h3><ul class="list"><li>Reconstruye la <b>base operacional</b> y entrena el modelo desde la muestra (<span class="mono">operacional</span> + <span class="mono">pipeline</span>), como <span class="mono">puntuar-lote.yml</span> de S4.</li><li>Sube <b>models/</b> y <b>curso.db</b> como artefacto.</li></ul></div><div class="card"><h3>2 · Deriva</h3><ul class="list"><li><b>Elige el escenario</b> (por la rama, por las entradas o por defecto).</li><li>Lanza <span class="mono">deriva datos</span> y <span class="mono">deriva rendimiento</span> con <span class="mono">--json</span>.</li><li>Escribe el <b>resumen</b> con la tabla de PSI y sube los JSON.</li></ul></div><div class="card"><h3>3 · Alerta</h3><ul class="list"><li>Solo si algún código de salida fue <b>1</b>.</li><li><b>Abre un issue</b> (o comenta el que ya hay) con la etiqueta <span class="mono">alerta-deriva</span> y <b>termina el run en ROJO</b>.</li></ul></div>
+</div>
+<div class="card" style="margin-top:10px"><table class="tbl"><tr><th>Disparador</th><th>Cuándo</th><th>Qué mide</th></tr><tr><td><span class="mono">schedule</span></td><td>cada día a las <b>05:23 UTC</b> (un minuto «raro»: a las horas en punto GitHub va cargado)</td><td>referencia 2010-12-01 frente al «ahora». En un <i>fork</i> viene <b>desactivado</b></td></tr><tr><td><span class="mono">workflow_dispatch</span></td><td>a mano, con <span class="mono">referencia</span>, <span class="mono">actual</span> y <span class="mono">umbral_psi</span></td><td>lo que escribas</td></tr><tr><td><span class="mono">push</span> a <span class="mono">lab/monitoreo/**</span></td><td>el <b>nombre de la rama</b> elige el escenario</td><td><span class="mono">lab/monitoreo/estable</span> y <span class="mono">lab/monitoreo/deriva</span></td></tr></table></div>
+<div class="grid3" style="margin-top:10px">
+ <div class="card"><h3>Permisos mínimos</h3><ul class="list"><li><span class="mono">contents: read</span> en todo; <b><span class="mono">issues: write</span> solo</b> en el trabajo de alerta.</li></ul></div><div class="card"><h3>Sin secretos</h3><ul class="list"><li>Solo el <span class="mono">GITHUB_TOKEN</span> de cada run.</li></ul></div><div class="card"><h3>Un detalle</h3><ul class="list"><li>El trabajo de alerta <b>no hace checkout</b>: lleva <span class="mono">working-directory: .</span> (lección real de S4).</li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Copiar y subir el workflow"
+ data-notes="Se copia el workflow a la carpeta de workflows en una rama base. El push a la rama base no lanza nada porque no coincide con el patrón de las ramas de ensayo. Las ramas de ensayo se crean después a partir de esta. Recuerde que aquí no hace falta el environment de producción de S4 porque este workflow no despliega nada, solo mide y avisa. Las órdenes de git se ejecutan en la raíz del repositorio, no en cero cuatro guion proyecto base.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · paso 1 · en la raíz del repositorio</p><h1>Copia <span class="mono">monitoreo.yml</span> a <span class="mono">.github/workflows</span> en una rama base</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>Codespace · terminal bash · RAÍZ del repositorio</em><button class="cp cpall" data-t="cd ..
+git switch develop
+git pull
+git switch -c lab/mlops-s5
+mkdir -p .github/workflows
+cp 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-mlops/monitoreo.yml .github/workflows/
+git add .github/workflows
+git commit -m &quot;Laboratorio de MLOps clásico de S5: workflow de monitoreo&quot;
+git push -u origin lab/mlops-s5">Copiar todo</button></div><div class="tls"><div class="tln c"># sal de 04-Proyecto-Base (si estás dentro)</div><div class="tln"><span class="ps">$</span> <code>cd ..</code><button class="cp" data-t="cd .." title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git switch develop</code><button class="cp" data-t="git switch develop" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git pull</code><button class="cp" data-t="git pull" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git switch -c lab/mlops-s5</code><button class="cp" data-t="git switch -c lab/mlops-s5" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>mkdir -p .github/workflows</code><button class="cp" data-t="mkdir -p .github/workflows" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>cp 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-mlops/monitoreo.yml .github/workflows/</code><button class="cp" data-t="cp 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-mlops/monitoreo.yml .github/workflows/" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git add .github/workflows</code><button class="cp" data-t="git add .github/workflows" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git commit -m &quot;Laboratorio de MLOps clásico de S5: workflow de monitoreo&quot;</code><button class="cp" data-t="git commit -m &quot;Laboratorio de MLOps clásico de S5: workflow de monitoreo&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git push -u origin lab/mlops-s5</code><button class="cp" data-t="git push -u origin lab/mlops-s5" title="Copiar">⧉</button></div></div></div><div class="callout">Este push <b>no lanza el workflow</b>: <span class="mono">lab/mlops-s5</span> no es una rama de ensayo. <b><span class="mono">Run workflow</span> solo aparece si el archivo está en la rama por defecto</b>; por eso los ensayos usan ramas.</div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En la pestaña <b>Actions</b> de tu <i>fork</i>, a la izquierda, <b>«Monitoreo del modelo»</b>. Si es un <i>fork</i>, acepta antes el aviso para <b>activar las Actions</b>.</li><li>Configuración del repositorio: lo mismo que en S4 (<span class="mono">CONFIGURAR-REPOSITORIO.md</span>). Aquí <b>no</b> hace falta el <i>environment</i> <span class="mono">produccion</span>: no hay despliegue.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">git push</span> da 403: el gestor de credenciales tiene otra cuenta (<span class="mono">git-credential-manager github login</span>).</li><li>No aparece el workflow: comprueba que el archivo está en <span class="mono">.github/workflows/</span> de la rama y que activaste las Actions.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Escenario estable"
+ data-notes="Primer ensayo: la rama estable. El nombre de la rama elige el escenario: referencia agosto de dos mil diez, actual septiembre, umbral cero coma cinco. Con ese umbral la salida es cero y el workflow acaba en verde, con el trabajo de alerta omitido. Las capturas están pendientes: las hará el profesor al lanzar el ensayo. Lo que sí está comprobado es el código de salida de la orden, ejecutada en local sobre los mismos datos.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · ensayo 1 · rama lab/monitoreo/estable</p><h1>Primer ensayo: nada que avisar, el run termina en verde</h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>Terminal bash · raíz del repositorio</em><button class="cp cpall" data-t="git switch lab/mlops-s5
+git switch -c lab/monitoreo/estable
+git push -u origin lab/monitoreo/estable">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>git switch lab/mlops-s5</code><button class="cp" data-t="git switch lab/mlops-s5" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git switch -c lab/monitoreo/estable</code><button class="cp" data-t="git switch -c lab/monitoreo/estable" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git push -u origin lab/monitoreo/estable</code><button class="cp" data-t="git push -u origin lab/monitoreo/estable" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Qué verás</b> (ensayado en Actions el 26/11): los trabajos 1 y 2 en <b>verde</b> y el 3 <b>omitido</b>.</li><li>Mide la pareja <b>2010-08-01 → 2010-09-01</b> con umbral <b>0,50</b>: <span class="mono">antiguedad_dias</span> 0,410 queda «moderada» y la salida es <b>0</b> (comprobado en local).</li><li>El resumen dice <b>«Sin alerta»</b> y el AUC por corte: 0.6982, 0.7534 y 0.7423.</li><li><b>No se abre ningún issue.</b></li></ul></div><div class="callout"><b>Honestidad:</b> «estable» <b>no</b> es «sin cambios»: es un par de cortes cercano <b>y un umbral más laxo</b>. Con 0,25 también habría alertado (L1).</div></div><div class="capcol"><figure class="cap" data-img="m-01-estable-verde.webp"><button class="zoom" data-src="img/m-01-estable-verde.webp" data-alt="Run de «Monitoreo del modelo» en la rama lab/monitoreo/estable: los trabajos «1 · Preparar datos y modelo» y «2 · Deriva de datos y de rendimiento» en verde y «3 · Alerta» omitido (gris), con el aviso de que el workflow no abrió ningún issue" title="Ampliar (Esc cierra)"><img src="img/m-01-estable-verde.webp" alt="Run de «Monitoreo del modelo» en la rama lab/monitoreo/estable: los trabajos «1 · Preparar datos y modelo» y «2 · Deriva de datos y de rendimiento» en verde y «3 · Alerta» omitido (gris), con el aviso de que el workflow no abrió ningún issue" style="max-height:160px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Run de «Monitoreo del modelo» en la rama lab/monitoreo/estable: los trabajos «1 · Preparar datos y modelo» y «2 · Deriva de datos y de rendimiento» en verde y «3 · Alerta» omitido (gris), con el aviso de que el workflow no abrió ningún issue</figcaption></figure><figure class="cap" data-img="m-02-resumen-estable.webp"><button class="zoom" data-src="img/m-02-resumen-estable.webp" data-alt="Resumen del run de la rama lab/monitoreo/estable: «Sin alerta», la tabla de PSI y KS por variable con antiguedad_dias en 0.410 (moderada con el umbral de 0.50) y la tabla de AUC por corte (0.6982, 0.7534 y 0.7423)" title="Ampliar (Esc cierra)"><img src="img/m-02-resumen-estable.webp" alt="Resumen del run de la rama lab/monitoreo/estable: «Sin alerta», la tabla de PSI y KS por variable con antiguedad_dias en 0.410 (moderada con el umbral de 0.50) y la tabla de AUC por corte (0.6982, 0.7534 y 0.7423)" style="max-height:160px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Resumen del run de la rama lab/monitoreo/estable: «Sin alerta», la tabla de PSI y KS por variable con antiguedad_dias en 0.410 (moderada con el umbral de 0.50) y la tabla de AUC por corte (0.6982, 0.7534 y 0.7423)</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Escenario deriva: el rojo"
+ data-notes="Segundo ensayo: la rama deriva. Mide la misma pareja que L1, el último corte de entrenamiento frente al ahora de los datos, con el umbral por defecto. La salida es uno, cinco de trece variables, y el workflow termina en rojo a propósito. El rojo es la alerta: si el workflow acabara en verde, nadie se enteraría. Las capturas están pendientes.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · ensayo 2 · rama lab/monitoreo/deriva</p><h1>Segundo ensayo: la deriva real, y el run en rojo</h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>Terminal bash · raíz del repositorio</em><button class="cp cpall" data-t="git switch lab/mlops-s5
+git switch -c lab/monitoreo/deriva
+git push -u origin lab/monitoreo/deriva">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>git switch lab/mlops-s5</code><button class="cp" data-t="git switch lab/mlops-s5" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git switch -c lab/monitoreo/deriva</code><button class="cp" data-t="git switch -c lab/monitoreo/deriva" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git push -u origin lab/monitoreo/deriva</code><button class="cp" data-t="git push -u origin lab/monitoreo/deriva" title="Copiar">⧉</button></div></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Qué verás</b> (ensayado en Actions el 26/11): los trabajos 1 y 2 en <b>verde</b> y el <b>3 · Alerta en ROJO</b>.</li><li>Mide <b>2010-12-01 frente a 2011-12-10</b> con umbral <b>0,25</b>: la misma medición de L1, <b>salida 1</b>, <b>5 de 13</b> variables.</li><li>El resumen dice <b>«ALERTA»</b> y marca las cinco variables con <b>supera el umbral</b>.</li><li><b>La alerta es el rojo</b>: sin él, nadie se entera de que ha pasado algo.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>«Rama de ensayo desconocida»: el nombre no es <span class="mono">…/estable</span> ni <span class="mono">…/deriva</span>; el workflow lo rechaza a propósito.</li></ul></div></div><div class="capcol"><figure class="cap" data-img="m-03-deriva-rojo.webp"><button class="zoom" data-src="img/m-03-deriva-rojo.webp" data-alt="Run de «Monitoreo del modelo» en la rama lab/monitoreo/deriva: los trabajos 1 y 2 en verde y «3 · Alerta» en ROJO, con la anotación «Alerta de deriva» y el enlace al issue abierto" title="Ampliar (Esc cierra)"><img src="img/m-03-deriva-rojo.webp" alt="Run de «Monitoreo del modelo» en la rama lab/monitoreo/deriva: los trabajos 1 y 2 en verde y «3 · Alerta» en ROJO, con la anotación «Alerta de deriva» y el enlace al issue abierto" style="max-height:160px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Run de «Monitoreo del modelo» en la rama lab/monitoreo/deriva: los trabajos 1 y 2 en verde y «3 · Alerta» en ROJO, con la anotación «Alerta de deriva» y el enlace al issue abierto</figcaption></figure><figure class="cap" data-img="m-04-resumen-deriva.webp"><button class="zoom" data-src="img/m-04-resumen-deriva.webp" data-alt="Resumen del run de la rama lab/monitoreo/deriva: «ALERTA», la tabla de PSI con las cinco variables marcadas como «supera el umbral» (antiguedad_dias 2.830, recencia_dias 0.437, frecuencia_180d 0.400, monto_90d 0.293, frecuencia_90d 0.276)" title="Ampliar (Esc cierra)"><img src="img/m-04-resumen-deriva.webp" alt="Resumen del run de la rama lab/monitoreo/deriva: «ALERTA», la tabla de PSI con las cinco variables marcadas como «supera el umbral» (antiguedad_dias 2.830, recencia_dias 0.437, frecuencia_180d 0.400, monto_90d 0.293, frecuencia_90d 0.276)" style="max-height:160px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Resumen del run de la rama lab/monitoreo/deriva: «ALERTA», la tabla de PSI con las cinco variables marcadas como «supera el umbral» (antiguedad_dias 2.830, recencia_dias 0.437, frecuencia_180d 0.400, monto_90d 0.293, frecuencia_90d 0.276)</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="5" data-title="El issue de alerta"
+ data-notes="El aviso de verdad es el issue. El workflow lo abre con el título y la tabla de variables, y pone la etiqueta alerta-deriva, que crea si no existe. El trabajo de alerta es el único con permiso de escritura, y solo sobre issues. Esto se ensayó de verdad en Actions el veintiséis de noviembre y funcionó con solo ese permiso.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · qué abre el workflow</p><h1>El aviso de verdad: un issue con las variables y el enlace al run</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr"><div class="col"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En la pestaña <b>Issues</b> hay <b>uno nuevo</b>, con la etiqueta <b><span class="mono">alerta-deriva</span></b> (se crea sola si no existe).</li><li>Título: <b>«Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)»</b>.</li><li>Cuerpo: la tabla de las <b>cinco variables</b> que superan el umbral con su PSI y su KS, el <b>enlace al run</b> y qué hacer.</li></ul></div><div class="callout"><b>Qué hacer con la alerta:</b> abre el run, lee el resumen y decide si la deriva es <b>esperable</b> (<span class="mono">antiguedad_dias</span>) o <b>de comportamiento</b> (<span class="mono">recencia_dias</span>, <span class="mono">frecuencia_90d</span>…). Si el AUC de cortes de <b>prueba</b> cae, reentrena y promueve la versión nueva con alias (L3); si sale mal, <span class="mono">volver</span>.</div>
+  <p class="small"><b>Verificado en Actions (26/11):</b> <span class="mono">gh issue create</span> funciona con solo <span class="mono">issues: write</span>, y un segundo run comenta en el mismo issue.</p></div><div class="capcol"><figure class="cap" data-img="m-05-issue-alerta.webp"><button class="zoom" data-src="img/m-05-issue-alerta.webp" data-alt="Issue abierto por el workflow con la etiqueta alerta-deriva: título «Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)», la tabla de variables y el enlace al run" title="Ampliar (Esc cierra)"><img src="img/m-05-issue-alerta.webp" alt="Issue abierto por el workflow con la etiqueta alerta-deriva: título «Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)», la tabla de variables y el enlace al run" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Issue abierto por el workflow con la etiqueta alerta-deriva: título «Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)», la tabla de variables y el enlace al run</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Otra alerta, ningún issue nuevo"
+ data-notes="Si se repite el run, el trabajo de alerta busca primero si hay un issue abierto con la etiqueta alerta-deriva. Si lo hay, añade un comentario en lugar de abrir otro. Al terminar el laboratorio conviene cerrar el issue, borrar las dos ramas y desactivar el workflow, porque con los datos congelados el schedule diario daría alerta todos los días. El mensaje de error de permisos es una conjetura habitual y no se ha provocado.">
+<p class="kick">5 · L4 · Alertas con GitHub Actions · repetir y limpiar</p><h1>Si repites el run, no se abre un segundo issue</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr"><div class="col"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En la página del run, <b>Re-run all jobs</b>: vuelve a medir y a dar rojo.</li><li><b>Qué verás</b> (ensayado en Actions el 26/11): el trabajo 3 <b>comenta</b> en el issue que ya está abierto («Nueva medición con deriva») y <b>no abre otro</b>.</li><li>Así una deriva que sigue ahí no llena la lista de issues: <b>una alerta abierta</b> hasta que alguien la cierre.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">gh: Resource not accessible by integration</span>: faltan permisos de escritura de issues; en <i>Settings › Actions › General</i>, comprueba que el workflow puede escribir.</li><li>El issue no se crea: mira el paso «Abrir el issue» del trabajo 3.</li></ul></div><div class="card"><h3>Al terminar, limpia</h3><ul class="list"><li><b>Cierra</b> el issue (botón <i>Close issue</i>).</li><li>Borra las dos ramas de ensayo (órdenes de abajo).</li><li><b>Desactiva el workflow</b> en Actions («···» › <i>Disable workflow</i>): con datos congelados, el schedule diario avisaría <b>siempre</b>.</li></ul></div><div class="term"><div class="bar"><em>Terminal bash · raíz del repositorio</em><button class="cp cpall" data-t="git push origin --delete lab/monitoreo/estable
+git push origin --delete lab/monitoreo/deriva">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>git push origin --delete lab/monitoreo/estable</code><button class="cp" data-t="git push origin --delete lab/monitoreo/estable" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>git push origin --delete lab/monitoreo/deriva</code><button class="cp" data-t="git push origin --delete lab/monitoreo/deriva" title="Copiar">⧉</button></div></div></div></div><div class="capcol"><figure class="cap" data-img="m-06-segunda-alerta.webp"><button class="zoom" data-src="img/m-06-segunda-alerta.webp" data-alt="El mismo issue tras repetir el run: en lugar de un segundo issue, un comentario «Nueva medición con deriva» con el enlace al nuevo run; el issue sigue siendo el mismo (#6)" title="Ampliar (Esc cierra)"><img src="img/m-06-segunda-alerta.webp" alt="El mismo issue tras repetir el run: en lugar de un segundo issue, un comentario «Nueva medición con deriva» con el enlace al nuevo run; el issue sigue siendo el mismo (#6)" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> El mismo issue tras repetir el run: en lugar de un segundo issue, un comentario «Nueva medición con deriva» con el enlace al nuevo run; el issue sigue siendo el mismo (#6)</figcaption></figure></div></div>
+</section>
+
+<section class="slide grande" data-part="F" data-min="4" data-title="Costes y orden"
+ data-notes="Cierre de costes sin repetir S4: este laboratorio no usa la nube de pago. Se recuerdan las dos ideas de S4: el presupuesto con alertas avisa pero no corta, y lo que se crea se borra. Se enlaza la guía de Cloud Journey de S4. Los minutos exactos de Actions del workflow están sin dato hasta que el profesor lo ensaye.">
+<p class="kick">6 · L5 · Costes y orden · sin repetir S4</p><h1>Este laboratorio no usa la nube de pago; lo de S4 sigue valiendo</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Lo de este laboratorio</h3><ul class="list"><li>L1 a L3: tu <b>Codespace</b> (lo que ya tengas incluido en tu cuenta de GitHub).</li><li>L4: <b>minutos de GitHub Actions</b> (gratis en repositorios públicos; en uno privado cuentan contra tu cuota). Minutos exactos del workflow: <b>sin dato</b> hasta el ensayo del profesor.</li><li>Lo que crea y <b>se borra</b>: las ramas <span class="mono">lab/monitoreo/*</span>, el issue y la etiqueta <span class="mono">alerta-deriva</span>; y el workflow, desactivado.</li></ul></div>
+ <div class="card"><h3>Lo de Google Cloud (S4), sin repetirlo</h3><ul class="list"><li>Un <b>presupuesto</b> con alertas (en S4, 20 € al 50, 90 y 100 %): <b>avisa, no corta nada</b>.</li><li>Lo que más cobra si se olvida es lo que <b>sigue encendido</b> (un clúster, un endpoint): se <b>borra</b> con los scripts de borrado, siempre.</li><li>Guía completa: [Laboratorio Cloud Journey](../../S4-Orquestacion-y-CI-CD/laboratorio-cloud-journey/guia.md) (<span class="mono">01-Sesiones/S4-Orquestacion-y-CI-CD/laboratorio-cloud-journey/guia.md</span>).</li></ul></div>
+</div>
+<div class="callout" style="margin-top:14px"><b>Dos reglas del oficio:</b> un aviso que nadie lee <b>no protege</b> (por eso la alerta es un rojo y un issue), y <b>lo que creas, lo borras</b>.</div>
+</section>
+
+<section class="slide grande" data-part="G" data-min="5" data-title="Si algo falla"
+ data-notes="Los casos marcados con sí se vieron de verdad el veintiséis de noviembre en la copia de ensayo. Los marcados previsto vienen de la documentación o de la práctica de S4. El de permisos de issues no se ha provocado: con el permiso del workflow, la alerta funcionó. Si un alumno encuentra otro, que lo cuente para completar el material.">
+<p class="kick">7 · Verificación y cierre · casos y qué hacer</p><h1>Si algo falla: casos y qué hacer</h1>
+<div class="card"><table class="tbl"><tr><th>Síntoma</th><th>Causa</th><th>Qué hacer</th><th>¿Visto?</th></tr><tr><td><span class="mono">No module named ia_mlops</span></td><td>No estás en <span class="mono">04-Proyecto-Base</span></td><td><span class="mono">cd 04-Proyecto-Base</span></td><td>previsto</td></tr><tr><td><span class="mono">Error: La referencia «2010-12-1» no tiene la forma AAAA-MM-DD</span></td><td>Fecha sin ceros (salida 2)</td><td>Escribe <span class="mono">2010-12-01</span></td><td>sí (26/11)</td></tr><tr><td><span class="mono">deriva</span> sale 1 con casi cualquier pareja de cortes</td><td><span class="mono">antiguedad_dias</span> siempre crece con el tiempo</td><td>Léela como esperable; compara con <span class="mono">--umbral-psi</span></td><td>sí (26/11)</td></tr><tr><td><span class="mono">rendimiento</span> con un corte de entrenamiento da <b>salida 1</b></td><td>El AUC en entrenamiento sobreestima</td><td>Empieza por un corte de <b>prueba</b> (L2)</td><td>sí (26/11)</td></tr><tr><td><span class="mono">volver</span>: «no hay a dónde volver» (2)</td><td>Esa versión no guardó anterior</td><td><span class="mono">promover --version N</span></td><td>sí (26/11)</td></tr><tr><td><span class="mono">--fuente muestra</span> falla con <span class="mono">R03_integridad_referencial</span></td><td>Quedan tablas de los datos completos</td><td><span class="mono">rm data/processed/curso.db</span> y repetir</td><td>sí (26/11)</td></tr><tr><td><span class="mono">gh: Resource not accessible by integration</span> en la alerta</td><td>Falta permiso de escritura de issues</td><td>Revisa los permisos del workflow y de Actions</td><td>sin verificar</td></tr><tr><td>El schedule no corre</td><td>En un <i>fork</i> viene desactivado y solo corre en la rama por defecto</td><td>Actívalo en Actions o usa <span class="mono">workflow_dispatch</span></td><td>previsto</td></tr></table></div>
+</section>
+
+<section class="slide grande" data-part="G" data-min="5" data-title="Qué se comprobó de verdad"
+ data-notes="Diapositiva de honestidad. Lo comprobado es todo lo que se ejecutó en local, con sus cifras. Lo no comprobado es todo lo de GitHub Actions: se ensayará con el profesor y se insertarán entonces las capturas. Tampoco se probó en un Codespace con Linux ni se midieron los minutos de Actions.">
+<p class="kick">7 · Verificación y cierre · qué se comprobó y qué no</p><h1>Qué se comprobó de verdad y qué falta</h1>
+
+<div class="grid2">
+ <div class="card"><h3 class="okc">Comprobado el 26/11/2026 (copia de ensayo, Windows)</h3><ul class="list"><li><b>L1 y L2:</b> <span class="mono">cortes</span>, <span class="mono">datos</span> (salida 1, 5 de 13), <span class="mono">rendimiento</span> (salidas 0 y 1) con las cifras de esta presentación.</li><li><b>L3:</b> v2 con datos completos (AUC de test <b>0.7956</b> frente a <b>0.7471</b>), <span class="mono">promover</span>, <span class="mono">cargar</span> (<b>0.7245</b> y <b>0.8279</b>) y <span class="mono">volver</span>.</li><li><b>Workflow:</b> YAML válido, permisos, órdenes y opciones que existen, <span class="mono">bash -n</span> de cada paso, y los dos escenarios <b>ejecutados en local sobre los datos reales</b> (estable → 0, deriva → 1).</li><li>El <b>resumen</b> y el <b>cuerpo del issue</b> se generan bien a partir de los JSON reales.</li></ul></div>
+ <div class="card"><h3 class="malc">Sin verificar o sin dato</h3><ul class="list"><li><b>Todo lo de GitHub Actions</b>: los dos runs, el issue, el comentario del segundo run y los permisos (<span class="mono">issues: write</span>). Las capturas están <b>pendientes</b>.</li><li>Las órdenes <b>en un Codespace</b> (Linux): se ejecutaron en Windows.</li><li>El tiempo de <span class="mono">--fuente completo</span> en un Codespace (<b>437 s</b> en el ensayo) y los minutos de Actions: <b>sin dato</b>.</li><li>Un <b>umbral de PSI</b> o una <b>tolerancia de AUC</b> razonables para el negocio: son convenciones, no salen de ninguna medición.</li></ul></div>
+</div>
+</section>
+
+<section class="slide grande" data-part="G" data-min="4" data-title="Cierre"
+ data-notes="Cierre con un único mensaje: un modelo en producción se vigila, se versiona y se puede deshacer. Las cuatro cifras son reales: cinco de trece variables con deriva, el AUC de entrenamiento frente al de validación, la probabilidad con la versión uno y la dos, y los códigos de salida de la orden. La operación de agentes, y la tarea de la sesión, siguen en el resto de S5.">
+<p class="kick">7 · Verificación y cierre · El mensaje</p><h1>Un modelo en producción se vigila, se versiona y se puede deshacer</h1>
+
+<div class="msg">La <b>deriva</b> se mide, el <b>alias</b> es un puntero que se mueve y se vuelve a mover, y la <b>alerta es el rojo</b>: sin él, nadie se entera.</div>
+<div class="grid4" style="margin-top:18px">
+ <div class="card kpi"><b class="n ">5 de 13</b><p class="small">variables con PSI por encima de 0,25 entre 2010-12-01 y 2011-12-10: <span class="mono">deriva datos</span> sale <b>1</b></p></div><div class="card kpi"><b class="n ">0,8497 → 0,6982</b><p class="small">AUC en un corte de <b>entrenamiento</b> y en el de validación: <b>medir con datos de entrenamiento engaña</b></p></div><div class="card kpi"><b class="n ">0,8279 → 0,7245</b><p class="small">probabilidad del cliente de ejemplo con la <b>v1</b> y la <b>v2</b>: el alias se nota; <span class="mono">volver</span> la devuelve</p></div><div class="card kpi"><b class="n ">0 · 1 · 2</b><p class="small">códigos de salida de <span class="mono">deriva</span>: <b>sin deriva · deriva · error</b>; un workflow decide con ellos</p></div>
+</div>
+<div style="text-align:center;margin-top:44px;font-size:44px;font-weight:700;color:var(--acento)">¿Preguntas?</div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<div id="zoombox" aria-label="Captura ampliada"><p>Esc o clic para cerrar</p><img id="zoomimg" alt=""></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado (propuesta)"></span>
+  <button class="part" data-p="A">Plan</button><button class="part" data-p="B">L1 · Datos</button><button class="part" data-p="C">L2 · Rendimiento</button><button class="part" data-p="D">L3 · Alias</button><button class="part" data-p="E">L4 · Alertas</button><button class="part" data-p="F">L5 · Costes</button><button class="part" data-p="G">Cierre</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S5">⌂ S5</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en guia.md, en esta carpeta.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "Plan", "B": "L1 · Datos", "C": "L2 · Rendimiento", "D": "L3 · Alias", "E": "L4 · Alertas", "F": "L5 · Costes", "G": "Cierre"};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S5 · Laboratorio de MLOps clásico</span><span><b>${esc(PARTES[s.dataset.part]||'')}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N; $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL+' (propuesta)';
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto (propuesta): '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part]||'')} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+function zoom(on,src,alt){const z=$('#zoombox');if(on){$('#zoomimg').src=src;$('#zoomimg').alt=alt||'';}z.classList.toggle('on',!!on)}
+$('#zoombox').onclick=()=>zoom(false);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='Escape'){zoom(false);toggle('#index',false);toggle('#notes',false);return}
+  if($('#zoombox').classList.contains('on')) return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O'){toggle('#index')} else if(k==='s'||k==='S'){toggle('#notes')} else if(k==='f'||k==='F'){$('#bfull').click()}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.zoom'); if(z){e.stopPropagation();zoom(true,z.dataset.src,z.dataset.alt);return}
+  const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+fit();
+const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1)});
+})();
+</script>
+</body>
+</html>

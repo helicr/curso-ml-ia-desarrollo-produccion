@@ -1,0 +1,328 @@
+# MONITOREO DEL MODELO · cada día, ¿han cambiado los datos o ha empeorado el modelo? Si sí, ALERTA (run en rojo + un issue).
+# Es el laboratorio L4 de S5 («MLOps clásico»). No despliega nada: solo MIDE y AVISA.
+#
+#   datos  ──►  deriva  ──►  alerta
+#   (operacional + pipeline)  (PSI/KS de las 13 variables + AUC por corte)  (issue en GitHub y workflow en ROJO)
+#
+# Se copia en:  .github/workflows/monitoreo.yml  (en la raíz de tu copia del repositorio)
+#
+# QUÉ MIDE (lo hace ia_mlops.deriva; ver 04-Proyecto-Base/docs/mlops-clasico.md)
+#   · Deriva de DATOS: PSI y KS de cada variable entre un corte de referencia y otro actual. No necesita la etiqueta.
+#     Código de salida: 0 sin deriva · 1 alguna variable supera el umbral de PSI · 2 error.
+#   · Deriva de RENDIMIENTO: AUC del modelo en cada corte con etiqueta. Llega 90 días tarde (la etiqueta es «¿compró en los
+#     90 días siguientes?»). Código de salida: 0 · 1 si la caída de AUC supera la tolerancia · 2 error.
+#   El umbral de PSI (0,10 «moderado», 0,25 «cambio importante») es una CONVENCIÓN del oficio, no una ley.
+#
+# CÓMO SE LANZA CADA ESCENARIO (el NOMBRE DE LA RAMA elige el escenario, como en los workflows de S4 y del laboratorio de agentes)
+#   git switch -c lab/monitoreo/estable && git push -u origin lab/monitoreo/estable
+#       referencia 2010-08-01 frente a actual 2010-09-01 con umbral de PSI 0,50 → sin alerta: el run termina en VERDE.
+#       (Con el umbral por defecto, 0,25, esta pareja ya daría alerta: antiguedad_dias llega a 0,410. Ver la guía.)
+#   git switch -c lab/monitoreo/deriva  && git push -u origin lab/monitoreo/deriva
+#       referencia 2010-12-01 frente a actual 2011-12-10 con umbral 0,25 → ALERTA: 5 de 13 variables superan el umbral;
+#       el run termina en ROJO y se abre un issue con la etiqueta «alerta-deriva».
+#   Cualquier otro nombre bajo lab/monitoreo/ se rechaza con un error que lo explica (así un fallo al teclear no pasa en silencio).
+#
+# CUÁNDO SE EJECUTA
+#   · schedule: todos los días a las 05:23 UTC, con referencia 2010-12-01 (el último corte de entrenamiento) frente al «ahora»
+#     de los datos. Se elige un minuto «raro» (23) a propósito: a las horas en punto GitHub tiene mucha carga y puede retrasar el
+#     schedule varios minutos. OJO: en un FORK los workflows con schedule vienen DESACTIVADOS (hay que activarlos en la pestaña
+#     Actions) y el schedule solo corre desde la rama por defecto. Como los datos del curso están congelados, ese «ahora» siempre
+#     da alerta: desactiva el workflow al terminar el laboratorio (Actions → Monitoreo del modelo → «···» → Disable workflow).
+#   · workflow_dispatch: a mano desde Actions → «Monitoreo del modelo» → Run workflow, con tres entradas (referencia, actual,
+#     umbral_psi). Run workflow solo aparece si el archivo está en la rama por defecto: por eso los ensayos usan ramas.
+#   · push a una rama lab/monitoreo/**: el ensayo de arriba.
+#
+# QUÉ VERÁS
+#   · Página del run (resumen): tabla de PSI y KS por variable, la tabla de AUC por corte y el veredicto.
+#   · Artefacto «monitoreo»: datos.json, rendimiento.json, cortes.json y las salidas en texto.
+#   · Si hay alerta: el trabajo «3 · Alerta» en rojo y un issue abierto («Alerta de deriva …») con las variables que superan el
+#     umbral y el enlace al run. Si ya hay un issue abierto con la etiqueta alerta-deriva, NO se abre otro: se añade un comentario.
+#   · La alerta ES el rojo: sin él nadie se entera. Se avisa en el issue y el workflow falla a propósito.
+#
+# SEGURIDAD: sin secretos propios (solo el GITHUB_TOKEN del run). Permisos mínimos: contents: read en todo; issues: write SOLO en
+# el trabajo de alerta (el único que escribe en el repositorio).
+name: Monitoreo del modelo
+
+on:
+  schedule:
+    - cron: '23 5 * * *'      # todos los días a las 05:23 UTC
+  workflow_dispatch:
+    inputs:
+      referencia:
+        description: 'Corte de referencia AAAA-MM-DD (por defecto 2010-12-01, el último de entrenamiento)'
+        required: false
+        default: '2010-12-01'
+      actual:
+        description: 'Corte actual AAAA-MM-DD (vacío = el «ahora» de los datos: el día siguiente a la última factura)'
+        required: false
+        default: ''
+      umbral_psi:
+        description: 'PSI a partir del cual una variable deriva (convención: 0.25)'
+        required: false
+        default: '0.25'
+  push:
+    branches: ['lab/monitoreo/**']
+
+permissions:
+  contents: read
+
+# Dos monitoreos a la vez no tienen sentido (y dos alertas a la vez podrían abrir dos issues): el segundo espera al primero.
+concurrency:
+  group: monitoreo
+  cancel-in-progress: false
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  PYTHON: "3.11"
+  # Con schedule o push no hay «inputs». Se pasan por variables de entorno (nunca pegados dentro del script) para que un valor
+  # raro escrito a mano no pueda ejecutarse como orden.
+  ENTRADA_REFERENCIA: ${{ inputs.referencia || '' }}
+  ENTRADA_ACTUAL: ${{ inputs.actual || '' }}
+  ENTRADA_UMBRAL: ${{ inputs.umbral_psi || '' }}
+  # Cortes con etiqueta para la deriva de rendimiento (validación y dos de prueba).
+  CORTES_RENDIMIENTO: "2011-03-01 2011-06-01 2011-09-01"
+
+defaults:
+  run:
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  # ── 1 · Datos y modelo: la base operacional y el pipeline (idempotente: con los mismos datos da siempre lo mismo) ─────────
+  datos:
+    name: 1 · Preparar datos y modelo (operacional + pipeline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - name: Base operacional (la fuente) y pipeline (RAW → MASTER → FS → ML → modelo)
+        # En producción, la base operacional sería el sistema de ventas y el modelo ya estaría entrenado. Aquí los dos se
+        # reconstruyen desde la muestra del repositorio: el run es reproducible y barato (alrededor de un minuto).
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: datos-y-modelo
+          retention-days: 3
+          path: |
+            04-Proyecto-Base/models/
+            04-Proyecto-Base/data/processed/curso.db
+
+  # ── 2 · Deriva de datos y de rendimiento: medir, guardar el JSON y escribir el resumen ──────────────────────────────────
+  deriva:
+    name: 2 · Deriva de datos y de rendimiento
+    needs: datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      alerta: ${{ steps.medir.outputs.alerta }}
+      salida_datos: ${{ steps.medir.outputs.salida_datos }}
+      salida_rendimiento: ${{ steps.medir.outputs.salida_rendimiento }}
+      referencia: ${{ steps.escenario.outputs.referencia }}
+      actual: ${{ steps.escenario.outputs.actual }}
+      umbral: ${{ steps.escenario.outputs.umbral }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: datos-y-modelo, path: 04-Proyecto-Base }
+
+      - name: Elegir el escenario (por el nombre de la rama, por las entradas o por defecto)
+        id: escenario
+        shell: bash
+        run: |
+          mkdir -p reports/monitoreo
+          python -m ia_mlops.deriva cortes --json reports/monitoreo/cortes.json
+          AHORA=$(python -c "import json; print(json.load(open('reports/monitoreo/cortes.json', encoding='utf-8'))['ahora'])")
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            # ENSAYO: el nombre de la rama elige el escenario.
+            case "$GITHUB_REF_NAME" in
+              lab/monitoreo/estable) REF=2010-08-01; ACT=2010-09-01; UMBRAL=0.50; ESCENARIO="estable (ensayo por rama)";;
+              lab/monitoreo/deriva)  REF=2010-12-01; ACT="$AHORA";   UMBRAL=0.25; ESCENARIO="deriva (ensayo por rama)";;
+              *) echo "::error::Rama de ensayo desconocida: $GITHUB_REF_NAME. Usa lab/monitoreo/estable o lab/monitoreo/deriva."; exit 1;;
+            esac
+          else
+            # schedule o a mano: las entradas, o los valores por defecto.
+            REF="${ENTRADA_REFERENCIA:-2010-12-01}"; ACT="${ENTRADA_ACTUAL:-$AHORA}"; UMBRAL="${ENTRADA_UMBRAL:-0.25}"
+            ESCENARIO="$GITHUB_EVENT_NAME"
+          fi
+          # Validar a mano: esto corre sin que nadie mire.
+          for f in "$REF" "$ACT"; do
+            case "$f" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) echo "::error::fecha no válida: $f (se espera AAAA-MM-DD)"; exit 1;; esac
+          done
+          case "$UMBRAL" in ''|*[!0-9.]*) echo "::error::umbral no válido: $UMBRAL"; exit 1;; esac
+          echo "Escenario: $ESCENARIO · referencia $REF · actual $ACT · umbral de PSI $UMBRAL"
+          {
+            echo "referencia=$REF"; echo "actual=$ACT"; echo "umbral=$UMBRAL"; echo "escenario=$ESCENARIO"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Medir la deriva de datos y la de rendimiento (los códigos de salida 0 y 1 NO rompen este paso)
+        id: medir
+        shell: bash
+        env:
+          REF: ${{ steps.escenario.outputs.referencia }}
+          ACT: ${{ steps.escenario.outputs.actual }}
+          UMBRAL: ${{ steps.escenario.outputs.umbral }}
+        run: |
+          # Un 1 significa «hay deriva»: es un resultado, no un fallo del paso. Un 2 sí es un error y para el run.
+          cd_datos=0
+          python -m ia_mlops.deriva datos --referencia "$REF" --actual "$ACT" --umbral-psi "$UMBRAL" \
+            --json reports/monitoreo/datos.json | tee reports/monitoreo/datos.txt || cd_datos=$?
+          cd_rend=0
+          # shellcheck disable=SC2086  (la lista de cortes va sin comillas a propósito: son varios argumentos)
+          python -m ia_mlops.deriva rendimiento --cortes $CORTES_RENDIMIENTO \
+            --json reports/monitoreo/rendimiento.json | tee reports/monitoreo/rendimiento.txt || cd_rend=$?
+          echo "Salida de datos: $cd_datos · salida de rendimiento: $cd_rend"
+          if [ "$cd_datos" -ge 2 ] || [ "$cd_rend" -ge 2 ]; then
+            echo "::error::ia_mlops.deriva terminó con error (2): mira el registro de arriba."; exit 1
+          fi
+          ALERTA=false
+          if [ "$cd_datos" -eq 1 ] || [ "$cd_rend" -eq 1 ]; then ALERTA=true; fi
+          {
+            echo "alerta=$ALERTA"; echo "salida_datos=$cd_datos"; echo "salida_rendimiento=$cd_rend"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Escribir el resumen del run
+        shell: bash
+        run: |
+          python - <<'FIN' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.load(open('reports/monitoreo/datos.json', encoding='utf-8'))
+          r = json.load(open('reports/monitoreo/rendimiento.json', encoding='utf-8'))
+          print('## Monitoreo del modelo')
+          print()
+          veredicto = 'ALERTA' if (d['hay_deriva'] or r['hay_alerta']) else 'Sin alerta'
+          print(f'**{veredicto}** · deriva de datos: {"sí" if d["hay_deriva"] else "no"} · deriva de rendimiento: {"sí" if r["hay_alerta"] else "no"}')
+          print()
+          ref, act = d['referencia'], d['actual']
+          print(f'### Deriva de datos: referencia {ref["corte"]} ({ref["filas"]} clientes) frente a actual {act["corte"]} ({act["filas"]} clientes), umbral de PSI {d["umbral_psi"]:g}')
+          print()
+          print('| Variable | PSI | KS | Estado |')
+          print('|---|---:|---:|---|')
+          for v in d['variables']:
+              marca = ' **supera el umbral**' if v['variable'] in d['superan_umbral'] else ''
+              print(f'| `{v["variable"]}` | {v["psi"]:.3f} | {v["ks"]:.3f} | {v["estado"]}{marca} |')
+          print()
+          print(f'Superan el umbral: **{len(d["superan_umbral"])} de {len(d["variables"])}** variables. Los umbrales de PSI son una convención del oficio, no una ley.')
+          print()
+          print(f'### Deriva de rendimiento (tolerancia de AUC {r["tolerancia"]:g})')
+          print()
+          print('| Corte | Uso | Clientes | AUC | Caída |')
+          print('|---|---|---:|---:|---:|')
+          for c in r['cortes']:
+              if c.get('auc') is None:
+                  print(f'| {c["corte"]} | {c["uso"]} | - | sin etiqueta | - |')
+              else:
+                  print(f'| {c["corte"]} | {c["uso"]} | {c["clientes"]} | {c["auc"]:.4f} | {c["caida"]:+.4f} |')
+          print()
+          print('Caída = AUC del primer corte medido menos el de este corte (positiva = empeora).')
+          print()
+          for a in r['avisos']:
+              print(f'- AVISO: {a}')
+          print()
+          print('Artefacto **monitoreo**: los JSON y las salidas en texto de esta medición.')
+          FIN
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monitoreo
+          retention-days: 14
+          path: 04-Proyecto-Base/reports/monitoreo/
+
+  # ── 3 · Alerta: si hay deriva, abrir UN issue (o comentar el que ya está abierto) y terminar el run en ROJO ──────────────
+  alerta:
+    name: 3 · Alerta
+    needs: deriva
+    if: needs.deriva.outputs.alerta == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # El ÚNICO trabajo que escribe en el repositorio, y solo issues.
+    permissions:
+      issues: write
+    # Este trabajo no hace checkout: no tiene 04-Proyecto-Base. Sin esto heredaría el working-directory de arriba y fallaría
+    # (lección real de S4).
+    defaults:
+      run:
+        working-directory: .
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      URL_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      REF: ${{ needs.deriva.outputs.referencia }}
+      ACT: ${{ needs.deriva.outputs.actual }}
+      UMBRAL: ${{ needs.deriva.outputs.umbral }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: monitoreo, path: salidas }
+      - name: Redactar el título y el cuerpo del issue
+        shell: bash
+        run: |
+          python3 - <<'FIN'
+          import json, os
+          d = json.load(open('salidas/datos.json', encoding='utf-8'))
+          r = json.load(open('salidas/rendimiento.json', encoding='utf-8'))
+          url = os.environ['URL_RUN']
+          n = len(d['superan_umbral'])
+          partes = []
+          if d['hay_deriva']:
+              partes.append(f'{n} variables superan el PSI {d["umbral_psi"]:g}')
+          if r['hay_alerta']:
+              partes.append(f'el AUC cae {r["caida_maxima"]:.4f} (tolerancia {r["tolerancia"]:g})')
+          titulo = f'Alerta de deriva: {" y ".join(partes)} (referencia {os.environ["REF"]}, actual {os.environ["ACT"]})'
+          c = []
+          c.append(f'El monitoreo ha detectado un cambio. Run: {url}')
+          c.append('')
+          if d['hay_deriva']:
+              c.append(f'### Deriva de datos (umbral de PSI {d["umbral_psi"]:g})')
+              c.append('')
+              c.append('| Variable | PSI | KS |')
+              c.append('|---|---:|---:|')
+              for v in d['variables']:
+                  if v['variable'] in d['superan_umbral']:
+                      c.append(f'| `{v["variable"]}` | {v["psi"]:.3f} | {v["ks"]:.3f} |')
+              c.append('')
+          if r['hay_alerta']:
+              c.append(f'### Deriva de rendimiento: el AUC cae {r["caida_maxima"]:.4f}')
+              c.append('')
+              c.extend(f'- {a}' for a in r['avisos'])
+              c.append('')
+          c.append('### Qué hacer')
+          c.append('')
+          c.append('1. Abre el run y lee el resumen: ¿es una deriva esperable (por ejemplo, `antiguedad_dias` crece sola con el tiempo) o de comportamiento (`recencia_dias`, `frecuencia_90d`...)?')
+          c.append('2. Si hay caída de AUC en cortes de prueba, reentrena y promueve la versión nueva con alias (`python -m ia_mlops.alias_modelo promover --version N`); si sale mal, `volver`.')
+          c.append('3. Cuando lo hayas resuelto, cierra este issue: el próximo monitoreo con deriva abrirá otro.')
+          c.append('')
+          c.append('Los umbrales de PSI (0,10 y 0,25) son una convención del oficio, no una ley; con pocos clientes el PSI oscila por azar.')
+          open('titulo.txt', 'w', encoding='utf-8').write(titulo)
+          open('cuerpo.md', 'w', encoding='utf-8').write('\n'.join(c) + '\n')
+          FIN
+      - name: Abrir el issue (o comentar el que ya hay abierto) con la etiqueta alerta-deriva
+        shell: bash
+        run: |
+          # La etiqueta: se crea si no existe.
+          gh label list --limit 200 --json name --jq '.[].name' | grep -qx 'alerta-deriva' \
+            || gh label create alerta-deriva --color B60205 --description 'El monitoreo ha detectado deriva en el modelo'
+          # ¿Ya hay una alerta abierta? Entonces NO se abre otra.
+          ABIERTA=$(gh issue list --label alerta-deriva --state open --json number --jq '.[0].number // empty')
+          if [ -n "$ABIERTA" ]; then
+            echo "Ya hay un issue de alerta abierto (#$ABIERTA): se añade un comentario, no se abre otro."
+            { echo "Nueva medición con deriva. Run: $URL_RUN"; echo; echo "$(cat titulo.txt)"; } > comentario.md
+            gh issue comment "$ABIERTA" --body-file comentario.md
+            echo "### Alerta: comentario en el issue #$ABIERTA (ya estaba abierto)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            URL_ISSUE=$(gh issue create --title "$(cat titulo.txt)" --body-file cuerpo.md --label alerta-deriva)
+            echo "Issue abierto: $URL_ISSUE"
+            echo "### Alerta: issue abierto" >> "$GITHUB_STEP_SUMMARY"
+            echo "$URL_ISSUE" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Terminar en ROJO (la alerta ES el rojo; sin él nadie se entera)
+        run: |
+          echo "::error title=Alerta de deriva::El modelo o los datos han cambiado más de lo tolerado. Mira el issue con la etiqueta alerta-deriva y el resumen del run."
+          exit 1
