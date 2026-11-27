@@ -16,7 +16,7 @@ Preparado el 27/11/2026. Es para ti: sirve para **practicar** S4 de principio a 
 
 ## 2. Qué sigue pendiente (no lo des por hecho al ensayar)
 
-1. **Dockerfiles multi-etapa** (otra sesión, rama `feat/dockerfile-clon`, **no está en `develop`**): cambia la línea de `docker build` de los workflows (el código se clona del commit exacto y el modelo entra con `--build-context modelo`). Falta ensayarla en Actions, regenerar PDFs y rehacer capturas con el comando antiguo. **Mientras no se una, todo lo de S4 describe la construcción actual y es coherente.**
+1. **Dockerfiles multi-etapa** (rama `feat/dockerfile-clon`, **ya fusionada en `develop`**): el código se clona del commit exacto y el modelo entra con `--build-context modelo`; cambia la línea de `docker build` de los workflows, de los compose (modo desarrollo `FUENTE=contexto`) y de las guías. **Ningún `docker build` se ha ejecutado de verdad ni se ha ensayado en Actions**: el **ensayo A** de abajo es también la primera prueba real (mira sobre todo `validar-dos-contenedores`, el clon por *sha*, `--secret env=` y `additional_contexts`). Si algo falla, anótalo: las guías ya describen el comando nuevo. Faltan además los PDF y las capturas antiguas con el comando anterior.
 2. **Decisiones tuyas**: el recorte de Google Cloud en 4 h (la hoja de ruta de [`practica/guia-laboratorio.md`](practica/guia-laboratorio.md) lo deja abierto), los pesos de la rúbrica y qué se entrega por qué canal.
 3. **Sin verificar**: clonar el *fork* de un alumno en Cloud Shell, y el coste y el tiempo exacto del endpoint de Vertex (**sin dato**).
 
