@@ -275,9 +275,9 @@ vuelve a abrir Jupyter.
 En un PC corporativo típico (PowerShell), antes de abrir Jupyter:
 
 ```powershell
-$env:HTTP_PROXY  = "http://proxysscc.bankinter.bk:8080"
+$env:HTTP_PROXY  = "http://proxy.miempresa.example:8080"
 $env:HTTPS_PROXY = $env:HTTP_PROXY
-$env:NO_PROXY    = "localhost,127.0.0.1,.bankinter.bk"
+$env:NO_PROXY    = "localhost,127.0.0.1,.miempresa.example"
 ```
 
 Adapta el host si el tuyo es otro. Si hay usuario y contraseña, van en la URL
