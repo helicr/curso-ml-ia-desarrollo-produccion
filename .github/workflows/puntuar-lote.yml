@@ -1,0 +1,257 @@
+# Modo 1 · PUNTUACIÓN POR LOTES: cada día, el modelo en producción puntúa a TODOS los clientes y deja la lista de la campaña.
+# Responde a la pregunta del negocio «¿a quién llamo hoy?». Nadie pregunta por un cliente: se puntúa a todos y se ordena.
+#
+#   datos  ──►  puntuar  ──►  resumen
+#   (operacional + pipeline)  (API en un contenedor + explotacion --url)  (página del run)
+#
+# Se copia en:  .github/workflows/puntuar-lote.yml  (en la raíz de tu copia del repositorio)
+#
+# CUÁNDO SE EJECUTA
+#   · schedule: todos los días a las 05:17 UTC (06:17 en invierno / 07:17 en verano en la España peninsular), antes de que
+#     empiece la jornada. Se elige un minuto «raro» (17) a propósito: a las horas en punto GitHub tiene mucha carga.
+#     OJO 1: GitHub puede RETRASAR un schedule varios minutos (o más) cuando hay carga: no es un reloj exacto.
+#     OJO 2: en un FORK los workflows con schedule vienen DESACTIVADOS; hay que activarlos en la pestaña Actions o lanzarlo
+#            a mano con workflow_dispatch. Y el schedule solo corre desde la rama por defecto del repositorio.
+#   · workflow_dispatch: a mano desde Actions → «Puntuar por lotes» → Run workflow, con tres entradas:
+#       capacidad  a qué fracción de clientes llega la campaña (0.10 = el 10 %)
+#       corte      fecha AAAA-MM-DD de la puntuación (vacío = el día siguiente a la última factura de MASTER)
+#       imagen     «construir» (por defecto: construye la API desde este repositorio) o «ghcr» (usa la imagen de producción
+#                  publicada, la de la etiqueta de models/referencia.json; solo funciona cuando esa imagen ya está publicada)
+#   · push a una rama lab/**, SOLO si cambia este workflow o ia_mlops/explotacion.py: sirve para probar cambios sin esperar al día siguiente.
+#
+# QUÉ DEJA
+#   · La página del run (resumen): corte, clientes puntuados, campaña, probabilidad media, versión y huella del modelo,
+#     la etiqueta de models/referencia.json y los avisos de valores fuera de rango.
+#   · Artefacto «campana»: campana_<corte>.csv (todos los clientes, ordenados) y campana_<corte>.json (resumen y trazabilidad).
+#   · Artefacto «base-fs-produccion»: una copia de curso.db que incluye la tabla fs_produccion (las 13 variables del corte
+#     puntuado), la que lee el panel de producción para la inferencia «bajo demanda».
+name: Puntuar por lotes
+
+on:
+  schedule:
+    - cron: '17 5 * * *'      # todos los días a las 05:17 UTC
+  workflow_dispatch:
+    inputs:
+      capacidad:
+        description: 'Fracción de clientes a los que llega la campaña (0.10 = el 10 %)'
+        required: false
+        default: '0.10'
+      corte:
+        description: 'Fecha de corte AAAA-MM-DD (vacío = día siguiente a la última factura)'
+        required: false
+        default: ''
+      imagen:
+        description: 'API que puntúa: construir (desde este repositorio) o ghcr (imagen de producción de models/referencia.json)'
+        type: choice
+        options: [construir, ghcr]
+        default: construir
+  push:
+    branches: ['lab/**']
+    paths:
+      - '.github/workflows/puntuar-lote.yml'
+      - '04-Proyecto-Base/ia_mlops/explotacion.py'
+
+# Mínimo imprescindible: leer el repositorio. (Bajar una imagen PÚBLICA de GHCR no necesita más.)
+permissions:
+  contents: read
+
+# Dos puntuaciones a la vez no tienen sentido: la segunda espera a que acabe la primera.
+concurrency:
+  group: puntuar-lote
+  cancel-in-progress: false
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+  PYTHON: "3.11"
+  # Con schedule o push no hay «inputs»: se usan los valores por defecto. Se pasan por variables de entorno (nunca pegados
+  # dentro del script) para que un valor raro escrito a mano no pueda ejecutarse como orden.
+  CAPACIDAD: ${{ inputs.capacidad || '0.10' }}
+  CORTE: ${{ inputs.corte || '' }}
+  IMAGEN: ${{ inputs.imagen || 'construir' }}
+
+defaults:
+  run:
+    working-directory: 04-Proyecto-Base
+
+jobs:
+  # ── 1 · Datos: la base operacional y el pipeline (idempotente: con los mismos datos da siempre lo mismo) ───────────
+  datos:
+    name: 1 · Preparar datos (operacional + pipeline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - name: Base operacional (la fuente) y pipeline (RAW → MASTER → FS → ML → modelo)
+        # En producción, la base operacional sería el sistema de ventas y el modelo ya estaría entrenado. Aquí los dos se
+        # reconstruyen desde la muestra: es lo que hace que el run sea reproducible y barato.
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: datos-y-modelo
+          retention-days: 3
+          path: |
+            04-Proyecto-Base/models/
+            04-Proyecto-Base/data/processed/curso.db
+
+  # ── 2 · Puntuar: la API en un contenedor y explotacion a través de ella ───────────────────────────────────────────
+  puntuar:
+    name: 2 · Puntuar a todos los clientes
+    needs: datos
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}", cache: pip, cache-dependency-path: 04-Proyecto-Base/requirements-*.txt }
+      - name: Instalar
+        run: pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+      - uses: actions/download-artifact@v4
+        with: { name: datos-y-modelo, path: 04-Proyecto-Base }
+
+      - name: Obtener la imagen de la API (construirla o bajar la de producción)
+        env:
+          GIT_TOKEN: ${{ github.token }}     # secreto de BuildKit al construir: solo hace falta con un repositorio privado
+        run: |
+          if [ "$IMAGEN" = "ghcr" ]; then
+            # La imagen de PRODUCCIÓN: la que dice models/referencia.json, publicada en GHCR por nueva-version.yml.
+            ETIQUETA=$(python -c "from ia_mlops import produccion; print(produccion.leer_referencia()['etiqueta_imagen'])")
+            PROPIETARIO=$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')   # GHCR exige minúsculas
+            IMG="ghcr.io/${PROPIETARIO}/${ETIQUETA}"
+            echo "Bajando la imagen de producción: $IMG"
+            docker pull "$IMG"
+          else
+            # Lo mismo que hace validar-dos-contenedores.yml: el código del commit de esta ejecución (clonado) y el modelo que
+            # acaba de entrenar el pipeline (descargado en models/ con el artefacto «datos-y-modelo»), por el contexto «modelo».
+            IMG=retencion-api:local
+            docker build -f deploy/docker/Dockerfile --build-arg REF="${GITHUB_SHA}" --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+              --build-context modelo=models --secret id=git_token,env=GIT_TOKEN -t "$IMG" .
+          fi
+          echo "IMG=$IMG" >> "$GITHUB_ENV"
+
+      - name: Arrancar la API y esperar a que esté lista
+        run: |
+          docker run -d --name api -p 8080:8080 "$IMG"
+          for _ in $(seq 1 40); do curl -fsS http://127.0.0.1:8080/listo && break; sleep 2; done
+          echo
+          curl -fsS http://127.0.0.1:8080/modelo
+
+      - name: Puntuar a todos los clientes (explotacion --url) y elegir la campaña
+        id: puntuar
+        run: |
+          # Validar las entradas a mano: esto corre sin que nadie mire.
+          case "$CAPACIDAD" in ''|*[!0-9.]*) echo "capacidad no válida: $CAPACIDAD"; exit 1;; esac
+          ARGS=(--url http://127.0.0.1:8080 --capacidad "$CAPACIDAD")
+          if [ -n "$CORTE" ]; then
+            case "$CORTE" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ARGS+=(--corte "$CORTE");; *) echo "corte no válido: $CORTE"; exit 1;; esac
+          fi
+          # Por defecto escribe además la tabla fs_produccion en curso.db (las variables del corte, para «bajo demanda»).
+          python -m ia_mlops.explotacion "${ARGS[@]}" | tee campana.txt
+          CORTE_USADO=$(python -c "import glob, os; print(sorted(glob.glob('reports/campana/campana_*.json'), key=os.path.getmtime)[-1].split('campana_')[-1][:-5])")
+          echo "corte=$CORTE_USADO" >> "$GITHUB_OUTPUT"
+
+      - name: Comprobar que puntúa la versión que dice models/referencia.json
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          from ia_mlops import produccion
+          r = json.load(open('reports/campana/campana_${{ steps.puntuar.outputs.corte }}.json', encoding='utf-8'))
+          try:
+              ref = produccion.leer_referencia()
+          except produccion.ErrorReferencia as e:
+              print(f'::warning::No hay referencia válida: {e}'); sys.exit(0)
+          print(f'Referencia: v{ref["version"]} · huella {ref["huella_datos"]}')
+          print(f'Puntúa:     huella {r["huella_datos"]} · {r["modelo"]}')
+          if r['huella_datos'] == ref['huella_datos']:
+              print('Coincide: el lote lo puntúa la versión en producción.')
+          elif os.environ['IMAGEN'] == 'ghcr':
+              print('::error::La imagen de GHCR no es la de models/referencia.json: algo está mal publicado.'); sys.exit(1)
+          else:
+              # Con «construir», el modelo se acaba de entrenar aquí: si los datos cambian, su huella cambia. Es un aviso, no un fallo.
+              print('::warning::El modelo construido en este run NO tiene la huella de models/referencia.json (datos distintos a los de la versión en producción).')
+          PY
+
+      - name: Registro de la API (si algo falla)
+        if: failure()
+        run: docker logs api 2>&1 | tail -40 || true
+      - name: Parar la API
+        if: always()
+        run: docker rm -f api || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: campana
+          retention-days: 14
+          path: |
+            04-Proyecto-Base/reports/campana/campana_${{ steps.puntuar.outputs.corte }}.csv
+            04-Proyecto-Base/reports/campana/campana_${{ steps.puntuar.outputs.corte }}.json
+            04-Proyecto-Base/campana.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: base-fs-produccion
+          retention-days: 14
+          path: 04-Proyecto-Base/data/processed/curso.db
+
+  # ── 3 · Resumen en la página del run ───────────────────────────────────────────────────────────────────────────────
+  resumen:
+    name: 3 · Resumen
+    needs: puntuar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: campana, path: salidas/campana }
+      - uses: actions/download-artifact@v4
+        with: { name: base-fs-produccion, path: salidas/base }
+      - name: Escribir el resumen del run
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import csv, glob, json, sqlite3
+          ruta_json = sorted(glob.glob('salidas/campana/**/campana_*.json', recursive=True))[-1]
+          r = json.load(open(ruta_json, encoding='utf-8'))
+          ref = r.get('referencia') or {}
+          fs = sqlite3.connect('salidas/base/curso.db').execute(
+              'SELECT COUNT(*), MIN(version_modelo), MIN(huella_modelo) FROM fs_produccion WHERE fecha_corte = ?', (r['corte'],)).fetchone()
+          print('## Puntuación por lotes')
+          print()
+          print('| Dato | Valor |')
+          print('|---|---|')
+          print(f'| Corte | {r["corte"]} |')
+          print(f'| Clientes puntuados | {r["clientes_puntuados"]} |')
+          print(f'| Campaña | {r["clientes_en_campana"]} clientes (capacidad {r["capacidad"]}), probabilidad mínima {r["probabilidad_minima_en_campana"]} |')
+          print(f'| Probabilidad media | {r["probabilidad_media"]} (la de la campaña: {r["probabilidad_media_campana"]}) |')
+          print(f'| Modelo que puntúa | {r["modelo"]} · huella de datos `{r["huella_datos"]}` · entrenado {r["entrenado_en"]} |')
+          print(f'| En models/referencia.json | v{ref.get("version", "?")} · `{ref.get("etiqueta_imagen", "sin referencia")}` |')
+          print(f'| Origen de las predicciones | {r["origen"]} |')
+          print(f'| fs_produccion | {fs[0]} filas del corte {r["corte"]} (versión {fs[1]}, huella {fs[2]}) |')
+          print()
+          print(f'### Avisos de valores fuera de rango: {r["clientes_con_advertencias"]} clientes')
+          print()
+          print('Valores que el modelo no vio al entrenar: la primera señal de que conviene reentrenar.')
+          con_aviso = []
+          for f in glob.glob('salidas/campana/**/campana_*.csv', recursive=True):
+              con_aviso = [x for x in csv.DictReader(open(f, encoding='utf-8')) if int(x['n_advertencias']) > 0]
+          if con_aviso:
+              print()
+              print('| Cliente | Puesto | Aviso |')
+              print('|---|---|---|')
+              for x in con_aviso[:10]:
+                  print(f'| {x["cliente_id"]} | {x["puesto"]} | {x["advertencias"].replace(" | ", "; ")} |')   # el «|» rompería la tabla
+              if len(con_aviso) > 10:
+                  print()
+                  print(f'(y {len(con_aviso) - 10} más en el CSV)')
+          print()
+          print('### Probabilidad media por decil')
+          print()
+          print(' · '.join(f'{k}: {v:.2f}' for k, v in r['probabilidad_media_por_decil'].items()))
+          print()
+          print('Artefactos: **campana** (CSV y JSON del corte) y **base-fs-produccion** (curso.db con la tabla `fs_produccion`).')
+          PY

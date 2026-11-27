@@ -1,0 +1,163 @@
+name: Rollback de la versión del modelo
+# =====================================================================================================================
+# QUÉ HACE  (a mano: Actions > «Rollback de la versión del modelo» > Run workflow)
+#
+#   Vuelve a una versión anterior del modelo SIN reentrenar ni reconstruir nada. La versión «en producción» es la que dice
+#   04-Proyecto-Base/models/referencia.json en la rama base, y las imágenes de las versiones anteriores siguen en GHCR
+#   (retencion-api:v<N>-<huella>): volver atrás es devolver la ficha a esa versión. Este workflow:
+#     1) busca en el historial de git la ficha de la versión pedida (por defecto, la inmediatamente anterior a la actual);
+#     2) comprueba que su imagen existe en GHCR (si no existe, se para: la ficha apuntaría a una imagen que no se puede usar);
+#     3) abre un PULL REQUEST (rama «referencia/rollback-v<N>-<n.º de ejecución>») que restaura esa ficha tal cual estaba
+#        y actualiza models/historial_versiones.json (`python -m ia_mlops.produccion historial`): la restaurada queda
+#        «produccion» y la que se deja, «retirada».
+#   NUNCA hace push a develop ni a main. Al FUSIONAR el PR, el siguiente lote vuelve a usar la imagen anterior.
+#   No borra nada: ni imágenes, ni el historial, ni la versión que se deja. Volver a avanzar es lanzar «Nueva versión del modelo».
+#
+#   Entradas:
+#     version            número de la versión a restaurar (p. ej. 1). Vacío = la anterior a la actual en el historial.
+#     comprobar_imagen   si está marcado (por defecto), se exige que la imagen esté en GHCR. Desmárcalo solo si sabes por qué.
+#
+#   La versión 1 (la que se entrenó en local con la muestra) NO tiene imagen en GHCR hasta que alguien la publique: un
+#   rollback a la v1 con la comprobación activada se para con ese mensaje. Es a propósito.
+#
+#   Alternativa sin este workflow: en el PR de referencia que se fusionó, botón «Revert» de GitHub.
+#
+# CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/rollback.yml  (ver la cabecera de nueva-version.yml para una raíz distinta).
+# SIN SECRETOS PROPIOS: solo el GITHUB_TOKEN de la ejecución. Permisos mínimos: leer paquetes (comprobar la imagen) y crear
+# la rama y el PR. Requiere el mismo permiso de Actions para crear PR que nueva-version.yml (CONFIGURAR-REPOSITORIO.md).
+# =====================================================================================================================
+on:
+  # ENSAYO (sin la rama principal): un push a lab/rollback/<nombre> lo lanza sobre esa rama (que debe contener la referencia
+  # a la que se quiere volver atrás). Con «sin-comprobar» en el nombre NO se comprueba que la imagen exista en GHCR.
+  # Lanzado a mano (workflow_dispatch), mandan las entradas.
+  push:
+    branches: ['lab/rollback/**']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión a restaurar (número, p. ej. 1). Vacío = la anterior a la actual"
+        type: string
+        required: false
+        default: ""
+      comprobar_imagen:
+        description: "Exigir que la imagen de esa versión esté publicada en GHCR"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nueva-version-modelo      # el mismo grupo que nueva-version.yml: no se publica y se vuelve atrás a la vez
+  cancel-in-progress: false
+
+jobs:
+  rollback:
+    name: Abrir el pull request que restaura la versión anterior
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write         # solo para crear la RAMA NUEVA del pull request (nunca se empuja a develop ni a main)
+      pull-requests: write    # para abrir el pull request
+      packages: read          # para comprobar que la imagen existe en GHCR
+    env:
+      VERSION_PEDIDA: ${{ inputs.version }}
+      COMPROBAR_IMAGEN: ${{ (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar'))) }}
+      BASE: ${{ github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      FICHA: 04-Proyecto-Base/models/referencia.json
+      HISTORIAL: 04-Proyecto-Base/models/historial_versiones.json
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # hace falta todo el historial para encontrar las fichas anteriores
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Buscar la ficha de la versión a restaurar en el historial
+        id: buscar
+        run: |
+          python - <<'FIN' >> "$GITHUB_OUTPUT"
+          import json, os, subprocess, sys
+          ficha, pedida = os.environ['FICHA'], os.environ['VERSION_PEDIDA'].strip()
+          actual = json.load(open(ficha, encoding='utf-8'))
+          commits = subprocess.run(['git', 'log', '--format=%H', '--', ficha], capture_output=True, text=True, check=True).stdout.split()
+          if pedida and (not pedida.isdigit() or int(pedida) < 1):
+              sys.exit(f'::error title=Entrada no válida::version debe ser un número entero mayor o igual que 1 (recibido: {pedida})')
+          destino = int(pedida) if pedida else None
+          for c in commits:                                   # del más reciente al más antiguo
+              r = subprocess.run(['git', 'show', f'{c}:{ficha}'], capture_output=True, text=True)
+              if r.returncode != 0:
+                  continue
+              try:
+                  d = json.loads(r.stdout)
+              except json.JSONDecodeError:
+                  continue
+              v = d.get('version')
+              if (destino is None and v != actual['version']) or (destino is not None and v == destino):
+                  if v == actual['version']:
+                      sys.exit(f"::error title=Nada que restaurar::La versión {v} ya es la de producción en esta rama.")
+                  print(f'commit={c}')
+                  print(f'version={v}')
+                  print(f"etiqueta={d['etiqueta_imagen']}")
+                  print(f"actual={actual['version']}")
+                  break
+          else:
+              sys.exit('::error title=No encontrada::No hay en el historial de ' + ficha + ' una versión ' + (str(destino) if destino else 'anterior a la actual') + '.')
+          FIN
+          cat "$GITHUB_OUTPUT"
+
+      - name: Comprobar que la imagen existe en GHCR
+        if: (github.event_name == 'workflow_dispatch' && inputs.comprobar_imagen || (github.event_name == 'push' && !contains(github.ref_name, 'sin-comprobar')))
+        env:
+          ETIQUETA_IMAGEN: ${{ steps.buscar.outputs.etiqueta }}
+        run: |
+          propietario="$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
+          imagen="ghcr.io/${propietario}/${ETIQUETA_IMAGEN}"
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          if ! docker manifest inspect "$imagen" > /dev/null 2>&1; then
+            echo "::error title=La imagen no está en GHCR::No se encuentra ${imagen}. Restaurar esa ficha dejaría la producción apuntando a una imagen que no se puede descargar. Si la imagen es de un paquete privado de otro propietario, o nunca se publicó, no hay rollback posible a esa versión."
+            exit 1
+          fi
+          echo "La imagen existe: ${imagen}"
+
+      - name: Rama nueva, ficha restaurada y pull request
+        env:
+          COMMIT: ${{ steps.buscar.outputs.commit }}
+          VERSION: ${{ steps.buscar.outputs.version }}
+          ACTUAL: ${{ steps.buscar.outputs.actual }}
+          ETIQUETA_IMAGEN: ${{ steps.buscar.outputs.etiqueta }}
+        run: |
+          rama="referencia/rollback-v${VERSION}-${GITHUB_RUN_ID}"
+          case "$rama" in main|develop|master) echo "MAL: no se empuja a $rama"; exit 1 ;; esac
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$rama"
+          cp "$FICHA" /tmp/ficha-retirada.json                  # la versión que sale de producción
+          git show "${COMMIT}:${FICHA}" > "$FICHA"              # la ficha restaurada, tal cual estaba
+          # El historial (lo que enseña la pestaña «Versiones» del panel) no se restaura del pasado: se actualiza. La restaurada
+          # pasa a «produccion» y la que se deja, a «retirada». PYTHONPATH porque aquí no estamos dentro de 04-Proyecto-Base.
+          PYTHONPATH=04-Proyecto-Base python -m ia_mlops.produccion historial --retira /tmp/ficha-retirada.json --estado-retirada retirada
+          git add "$FICHA" "$HISTORIAL"
+          git commit -m "Rollback del modelo: de v${ACTUAL} a v${VERSION} (${ETIQUETA_IMAGEN})"
+          git push origin "refs/heads/${rama}"
+          cat > /tmp/cuerpo.md <<FIN
+          Devuelve \`${FICHA}\` a la **versión ${VERSION}** (\`${ETIQUETA_IMAGEN}\`), que estaba en producción antes de la ${ACTUAL}. La ficha se restaura tal cual estaba en el commit \`${COMMIT}\`.
+
+          También actualiza \`${HISTORIAL}\` (pestaña «Versiones» del panel): la versión ${VERSION} figura como «produccion» y la ${ACTUAL}, como «retirada».
+
+          Al fusionar este pull request, el siguiente lote vuelve a usar esa imagen. No se borra nada: la imagen de la versión ${ACTUAL} sigue en GHCR.
+
+          Generado por la ejecución ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}.
+          FIN
+          url="$(gh pr create --base "$BASE" --head "$rama" --title "Rollback del modelo: v${ACTUAL} a v${VERSION}" --body-file /tmp/cuerpo.md)"
+          echo "::notice title=pull-request::${url}"
+          {
+            echo "## Rollback · de v${ACTUAL} a v${VERSION}"
+            echo
+            echo "Pull request: ${url}"
+            echo
+            echo "Al fusionarlo, la versión en producción pasa a ser \`${ETIQUETA_IMAGEN}\`."
+          } >> "$GITHUB_STEP_SUMMARY"
