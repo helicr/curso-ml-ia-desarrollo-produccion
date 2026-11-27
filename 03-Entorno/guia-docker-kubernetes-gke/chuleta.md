@@ -16,8 +16,8 @@ cd 04-Proyecto-Base
 python -m ia_mlops.operacional
 python -m ia_mlops.pipeline
 ls models/modelo_mlflow models/metadatos.json
-# 2. Imagen (el punto final es obligatorio)
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+# 2. Imagen (el punto final es obligatorio; FUENTE=contexto = tu código; modelo = tu carpeta models/)
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker image ls retencion-api
 # 3. Clúster
 kind get clusters

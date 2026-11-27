@@ -333,7 +333,7 @@ cd 04-Proyecto-Base</pre>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación 1</span></div>
 </section>
 
-<section class="slide" data-title="Preparación 2 · Datos y modelo" data-notes="El modelo no viene en el repositorio. El pipeline recorre raw, master, fs, ml y modelo. operacional solo simula el sistema de origen y el pipeline lo crea si falta; se deja por claridad. Sin models/modelo_mlflow el docker build falla en el COPY.">
+<section class="slide" data-title="Preparación 2 · Datos y modelo" data-notes="El modelo no viene en el repositorio. El pipeline recorre raw, master, fs, ml y modelo. operacional solo simula el sistema de origen y el pipeline lo crea si falta; se deja por claridad. Sin la carpeta models/ el docker build falla al no encontrar el contexto «modelo» (mensaje exacto sin verificar).">
   <div class="kick">B · Preparación <span class="tag doc">Secuencia del profesor · salidas no ejecutadas por el autor</span></div>
   <h1><span class="paso">P2</span> Crear los datos y entrenar el modelo</h1>
 <pre class="cmd"><span class="c"># Terminal del Codespace, en 04-Proyecto-Base, con (env-ia-mlops)</span>
@@ -345,7 +345,7 @@ ls models/modelo_mlflow models/metadatos.json</pre>
       <li><code>operacional</code>: simula el sistema de origen (la base de datos de la empresa). Si te lo saltas, el pipeline lo crea.</li>
       <li><code>pipeline</code>: raw → master → fs → ml → <b>modelo</b>. Deja <code>models/modelo_mlflow/</code> y <code>models/metadatos.json</code>.</li></ul></div>
     <div class="card ok"><h3>Qué debes ver</h3><p class="small"><code>ls</code> lista el contenido de <code>models/modelo_mlflow</code> (MLmodel, model.pkl, etc.) y <code>models/metadatos.json</code>, sin «No such file». En la prueba de S2 el pipeline tardó unos 31 s.</p>
-      <h3 style="margin-top:8px;color:var(--bad)">Si falla</h3><p class="small">«No such file or directory» en <code>ls</code>: el pipeline no terminó; repítelo y lee su último error. Sin esta carpeta, el <code>docker build</code> da <code>COPY failed … models/modelo_mlflow</code>.</p></div>
+      <h3 style="margin-top:8px;color:var(--bad)">Si falla</h3><p class="small">«No such file or directory» en <code>ls</code>: el pipeline no terminó; repítelo y lee su último error. Sin esta carpeta, el <code>docker build</code> falla porque no encuentra el contexto <code>modelo</code> (el mensaje exacto está sin verificar con Docker).</p></div>
   </div>
   <div class="pie"><span>Docker · Kubernetes · GKE</span><span>B · Preparación 2</span></div>
 </section>
@@ -354,10 +354,11 @@ ls models/modelo_mlflow models/metadatos.json</pre>
   <div class="kick">B · Preparación <span class="tag doc">Secuencia del profesor · salidas no ejecutadas por el autor</span></div>
   <h1><span class="paso">P3</span> Construir la imagen</h1>
 <pre class="cmd"><span class="c"># Terminal del Codespace, en 04-Proyecto-Base</span>
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker image ls retencion-api</pre>
   <div class="g2" style="margin-top:12px">
     <div class="card warn"><h3>El punto final es obligatorio</h3><p class="small">Es el <b>contexto</b>: la carpeta de la que Docker toma los archivos (<code>.</code> = la actual). Sin él: <code>docker buildx build requires 1 argument</code>.</p></div>
+    <div class="card"><h3>Los dos argumentos nuevos</h3><p class="small"><code>--build-arg FUENTE=contexto</code>: el código sale de <b>tu carpeta</b> (modo desarrollo; en Actions la imagen clona el commit exacto). <code>--build-context modelo=models</code>: el modelo entra <b>aparte</b>, porque la API no entrena. Sin probar con Docker real.</p></div>
     <div class="card ok"><h3>Qué debes ver</h3><p class="small">Al final del build, <code>naming to docker.io/library/retencion-api:local</code>, y <code>docker image ls retencion-api</code> con una fila <code>retencion-api  local</code>. En la validación de S2: build de 78 s e imagen de 826 MB (Docker 29: DISK USAGE 826 MB, CONTENT SIZE 183 MB).</p></div>
   </div>
   <div class="card bad" style="margin-top:12px"><h3>Si falla</h3><p class="small"><code>COPY failed … models/modelo_mlflow</code>: no entrenaste (vuelve a P2). Tabla completa en «Si algo falla».</p></div>
@@ -666,7 +667,7 @@ kind get clusters</pre>
   <h1>Si algo falla: del <code style="font-size:.85em">build</code> al <code style="font-size:.85em">curl</code></h1>
   <table class="t" style="font-size:13.5px">
     <tr><th>Mensaje</th><th>Causa</th><th>Qué hacer</th></tr>
-    <tr><td><code>docker buildx build requires 1 argument</code></td><td>Falta el <b>punto final</b> (el contexto)</td><td><code>docker build -f deploy/docker/Dockerfile -t retencion-api:local .</code></td></tr>
+    <tr><td><code>docker buildx build requires 1 argument</code></td><td>Falta el <b>punto final</b> (el contexto)</td><td><code>docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .</code></td></tr>
     <tr><td><code>COPY failed … models/modelo_mlflow</code></td><td>No se entrenó el modelo (<code>models/</code> no viene en el repositorio)</td><td><code>python -m ia_mlops.pipeline</code> y <code>ls models/modelo_mlflow</code></td></tr>
     <tr><td><code>ERROR: image: "retencion-api:local" not present locally</code></td><td>Haces <code>kind load</code> sin haber construido la imagen</td><td>Construye (P3) y repite el <code>kind load</code></td></tr>
     <tr><td><code>kind: command not found</code> · <code>docker</code>/<code>kubectl</code> no encontrados</td><td>El Codespace no terminó de prepararse</td><td><code>bash .devcontainer/postcreate.sh</code>; si faltan docker/kubectl: <b>Codespaces: Rebuild Container</b></td></tr>
