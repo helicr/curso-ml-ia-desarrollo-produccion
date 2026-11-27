@@ -111,6 +111,10 @@ jobs:
           test -f models/referencia.json && test -f models/historial_versiones.json && test -f data/processed/curso.db && ls reports/campana
 
       - name: Levantar el compose con el perfil ci (construye la API y la interfaz del agente)
+        env:                                 # el código, del commit clonado (el compose, por defecto, construye desde la carpeta)
+          FUENTE: git
+          REF: ${{ github.sha }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
         run: docker compose -f "$COMPOSE" --profile ci up -d --build
 
       - name: Esperar a que la interfaz esté lista (/listo)

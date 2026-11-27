@@ -51,10 +51,22 @@ jobs:
         working-directory: ${{ env.PROYECTO }}
         run: python -m pytest tests
 
+      # El código de la imagen es el del commit probado, CLONADO (no el de la carpeta del runner); el modelo, el que acaba de
+      # entrenar el pipeline (contexto «modelo»). En un pull request se clona la cabeza de la rama (github.sha sería el merge).
+      # GIT_TOKEN, como secreto de BuildKit, solo hace falta si el repositorio es privado: no queda en la imagen.
       - name: Construir la imagen
         working-directory: ${{ env.PROYECTO }}
+        env:
+          GIT_TOKEN: ${{ github.token }}
+          REF: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          docker build -f deploy/docker/Dockerfile -t retencion-api:ci .
+          docker build -f deploy/docker/Dockerfile \
+            --build-arg REF="${REF}" \
+            --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+            --build-arg CARPETA="${PROYECTO}" \
+            --build-context modelo=models \
+            --secret id=git_token,env=GIT_TOKEN \
+            -t retencion-api:ci .
           docker image ls retencion-api:ci
 
       - name: Probar el contenedor

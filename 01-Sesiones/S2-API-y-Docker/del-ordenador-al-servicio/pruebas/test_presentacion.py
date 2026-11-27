@@ -86,7 +86,8 @@ def test_los_archivos_y_las_ordenes_existen_en_el_proyecto(html):
     # lo que se describe del Dockerfile es lo que hay en el Dockerfile
     dockerfile = (PROYECTO / 'deploy' / 'docker' / 'interfaz.Dockerfile').read_text(encoding='utf-8')
     for trozo in ('FROM python:3.11-slim', 'CURSO_DB=/datos/curso.db', 'CURSO_DB_SOLO_LECTURA=1', 'CURSO_URL_API=http://api:8080',
-                  'pip install -c requirements-api.lock -r requirements-interfaz.txt', 'USER 10001', 'EXPOSE 8090', '"--host", "0.0.0.0", "--port", "8090"'):
+                  'pip install -c requirements-api.lock -r requirements-interfaz.txt', 'USER 10001', 'EXPOSE 8090', '"--host", "0.0.0.0", "--port", "8090"',
+                  'FROM fuente-${FUENTE} AS fuente', 'COPY --from=fuente /src/ia_mlops/ ia_mlops/', 'COPY --from=fuente /src/sql/fs/02_poblar_fs.sql'):
         assert trozo in dockerfile, trozo
     compose = (PROYECTO / 'deploy' / 'docker' / 'compose.yaml').read_text(encoding='utf-8')
     assert '../../data/processed:/datos:ro' in compose and 'condition: service_healthy' in compose

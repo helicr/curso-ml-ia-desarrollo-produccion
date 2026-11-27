@@ -145,6 +145,19 @@ def test_puntuar_construye_como_validar_dos_contenedores_y_deja_la_via_ghcr():
     assert wf["env"]["IMAGEN"].endswith("|| 'construir' }}")  # sin entradas (schedule/push) construye
 
 
+def test_al_construir_el_codigo_es_el_del_commit_y_el_modelo_el_del_pipeline():
+    """El Dockerfile clona el commit de la ejecución y toma el modelo del contexto «modelo» (models/, que trae el artefacto «datos-y-modelo»)."""
+    wf = _wf()
+    assert "pull_request" not in _on(wf)                     # con pull_request, GITHUB_SHA sería un commit de fusión
+    paso = next(p for p in wf["jobs"]["puntuar"]["steps"] if "docker build" in str(p.get("run", "")))
+    orden = re.search(r"docker build(?:[^\n]*\\\n)*[^\n]*", paso["run"]).group(0)
+    assert '--build-arg REF="${GITHUB_SHA}"' in orden and '--build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git"' in orden
+    assert "--build-context modelo=models" in orden and "--secret id=git_token,env=GIT_TOKEN" in orden
+    assert paso["env"]["GIT_TOKEN"] == "${{ github.token }}" and "GIT_TOKEN=" not in orden
+    bajar = next(p for p in wf["jobs"]["puntuar"]["steps"] if str(p.get("uses", "")).startswith("actions/download-artifact"))
+    assert bajar["with"] == {"name": "datos-y-modelo", "path": "04-Proyecto-Base"}   # deja models/ donde lo busca --build-context
+
+
 def test_las_entradas_pasan_por_variables_de_entorno_y_no_dentro_del_script():
     texto = RUTA.read_text(encoding="utf-8")
     cuerpo = "\n".join(str(p.get("run", "")) for _, p in _pasos(_wf()))

@@ -62,6 +62,10 @@ jobs:
           test -f models/referencia.json && test -f models/historial_versiones.json && test -f data/processed/curso.db
 
       - name: Levantar el compose (construye la API y la interfaz)
+        env:                                 # el código, del commit clonado (el compose, por defecto, construye desde la carpeta)
+          FUENTE: git
+          REF: ${{ github.sha }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
         run: docker compose -f "$COMPOSE" up --build -d
 
       - name: Esperar a que la interfaz esté lista (/listo)

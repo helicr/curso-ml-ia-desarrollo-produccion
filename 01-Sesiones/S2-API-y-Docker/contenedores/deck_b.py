@@ -13,8 +13,9 @@ NUBE = 'https://docs.cloud.google.com/run/docs/container-contract'
 DOCKERFILE_CURSO = '04-Proyecto-Base/deploy/docker/Dockerfile'
 # Fragmentos del Dockerfile del proyecto que citamos en la diapositiva «La imagen del curso»; las pruebas comprueban que existen.
 FRAGMENTOS_DOCKERFILE_CURSO = [
-    'FROM python:3.11-slim', 'PYTHONUNBUFFERED=1', 'COPY requirements-api.lock .', 'RUN pip install -r requirements-api.lock',
-    'COPY ia_mlops/ ia_mlops/', 'COPY models/modelo_mlflow/ models/modelo_mlflow/', 'COPY models/metadatos.json models/metadatos.json',
+    'FROM python:3.11-slim', 'PYTHONUNBUFFERED=1', 'COPY --from=fuente /src/requirements-api.lock .', 'RUN pip install -r requirements-api.lock',
+    'COPY --from=fuente /src/ia_mlops/ ia_mlops/', 'COPY --from=modelo modelo_mlflow/ models/modelo_mlflow/', 'COPY --from=modelo metadatos.json models/metadatos.json',
+    'FROM python:3.11-slim AS fuente-git', 'rm -rf /tmp/repo', 'FROM fuente-${FUENTE} AS fuente',
     'RUN useradd --uid 10001', 'USER 10001', 'EXPOSE 8080', 'HEALTHCHECK --interval=30s', '"--host", "0.0.0.0"', '"--port", "8080"']
 FRAGMENTOS_DOCKERIGNORE_CURSO = ['.git', '**/.env', '**/*.key', '**/credenciales*.json', 'data/', 'notebooks/', 'tests/']
 
@@ -173,10 +174,10 @@ def dockerfile_a_produccion():
     # 13 ------------------------------------------------------------------------------------------- la imagen del curso
     P.libre('La imagen del curso', B, DOCKERFILE_CURSO, 'La imagen de la API del curso, línea a línea',
             tabla(['En el Dockerfile del proyecto', 'Para qué', 'Dónde lo has visto'], [
-                ['<code>FROM python:3.11-slim</code>', 'La misma base que los ejemplos', 'Ejemplos 1 y 4'],
+                ['<code>FROM python:3.11-slim</code> (+ etapa <code>fuente-git</code>)', 'La misma base. Antes, una etapa <b>clona el commit</b> y se tira (ni git ni el clon quedan); con <code>FUENTE=contexto</code>, el código es el de tu carpeta', 'Ejemplos 1 y 4 · S4'],
                 ['<code>ENV PYTHONUNBUFFERED=1 …</code>', 'Ajustes de Python y de pip y la ruta del modelo; ninguno es un secreto', 'Ejemplo 6'],
-                ['<code>COPY requirements-api.lock .</code> + <code>RUN pip install -r …</code>', 'Dependencias <b>primero</b>: la capa solo se rehace si cambian las versiones', 'Ejemplo 5'],
-                ['<code>COPY ia_mlops/ …</code> + <code>COPY models/modelo_mlflow/ …</code>', 'Solo el código y el modelo necesarios; el modelo viaja <b>dentro</b> de la imagen', 'Ejemplos 7 y 8 · rotura 3'],
+                ['<code>COPY --from=fuente …lock .</code> + <code>RUN pip install -r …</code>', 'Dependencias <b>primero</b>: la capa solo se rehace si cambian las versiones', 'Ejemplo 5'],
+                ['<code>COPY --from=fuente …ia_mlops/</code> + <code>COPY --from=modelo …</code>', 'Solo el código y el modelo; el modelo viaja <b>dentro</b>, pero entra aparte (<code>--build-context modelo=models</code>): el validado', 'Ejemplos 7 y 8 · rotura 3'],
                 ['<code>.dockerignore</code>', 'Deja fuera datos, cuadernos, pruebas, <code>.git</code> y claves', 'Ejemplo 8'],
                 ['<code>RUN useradd --uid 10001 …</code> + <code>USER 10001</code>', 'No se ejecuta como root', 'Ejemplos 8 y 9'],
                 ['<code>EXPOSE 8080</code> + <code>HEALTHCHECK --interval=30s …</code>', 'Puerto de la API y comprobación de salud (en el ejemplo, cada 3 s para verlo en vivo)', 'Ejemplo 9'],

@@ -71,7 +71,8 @@ name: Nueva versión del modelo
 #   Cópialo a  .github/workflows/nueva-version.yml  de TU repositorio. Está escrito para el repositorio del curso, donde el
 #   proyecto vive en 04-Proyecto-Base. Si la raíz de tu repositorio es la carpeta del proyecto (la que tiene Makefile y
 #   deploy/), cambia  working-directory: 04-Proyecto-Base  por  working-directory: .  y quita el prefijo «04-Proyecto-Base/»
-#   de las rutas de los pasos «cache», «upload-artifact» y «download-artifact», y de los dos «cache-dependency-path».
+#   de las rutas de los pasos «cache», «upload-artifact» y «download-artifact», y de los dos «cache-dependency-path»; y en el
+#   «docker build» añade  --build-arg CARPETA=.  (la carpeta del proyecto dentro del repositorio que clona el Dockerfile).
 #
 # SIN SECRETOS PROPIOS: solo se usa el GITHUB_TOKEN que GitHub crea en cada ejecución, con los permisos mínimos de cada trabajo.
 # Las cifras salen de la ejecución (la decisión, las métricas, los cambios de tramo): ninguna está escrita a mano aquí.
@@ -306,7 +307,8 @@ jobs:
           name: candidata
           path: 04-Proyecto-Base/paquete
 
-      # El Dockerfile copia models/modelo_mlflow y models/metadatos.json: se dejan donde los espera.
+      # La imagen lleva el modelo de models/ (contexto «modelo» del docker build): se deja ahí el de la candidata, el que aprobó
+      # la puerta de calidad (entrenado con los datos pedidos, que no están en el repositorio), y no otro.
       - name: Colocar el modelo de la candidata donde lo espera el Dockerfile
         run: |
           mkdir -p models reports
@@ -314,13 +316,21 @@ jobs:
           cp paquete/reports/metricas.json reports/
           ls models
 
+      # El código, del commit de esta ejecución CLONADO en una etapa que se tira (no el de la carpeta del runner); el modelo,
+      # el de la candidata. GIT_TOKEN, secreto de BuildKit, solo hace falta con un repositorio privado: no queda en la imagen.
       - name: Construir la imagen (con la etiqueta de versión dentro)
+        env:
+          GIT_TOKEN: ${{ github.token }}
         run: |
           mkdir -p /tmp/s
           docker build \
             --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
             --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
             --label "org.opencontainers.image.version=${ETIQUETA}" \
+            --build-arg REF="${GITHUB_SHA}" \
+            --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+            --build-context modelo=models \
+            --secret id=git_token,env=GIT_TOKEN \
             -f deploy/docker/Dockerfile -t retencion-api:candidata .
           docker image ls retencion-api:candidata --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
           test "$(docker run --rm --entrypoint id retencion-api:candidata -u)" = "10001"

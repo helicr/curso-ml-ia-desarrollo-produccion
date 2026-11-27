@@ -261,7 +261,7 @@ table.t th{color:var(--gold);font-weight:700}
     <div class="card"><h3>Volumen</h3><p class="small"><code>-v origen:destino:ro</code> monta una carpeta del equipo. Los datos quedan <b>fuera</b> de la imagen y, con <code>:ro</code>, no se pueden modificar.</p></div>
     <div class="card"><h3>Variables de entorno</h3><p class="small"><code>-e</code> o <code>ENV</code>: la configuración llega desde fuera. El mismo código sirve en cualquier sitio.</p></div>
   </div>
-  <div class="term" style="margin-top:14px;font-size:15px"><span class="p">$</span> docker build -f deploy/docker/Dockerfile -t retencion-api:local .<br><span class="p">$</span> docker run --rm -p 8080:8080 retencion-api:local</div>
+  <div class="term" style="margin-top:14px;font-size:15px"><span class="p">$</span> docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .<br><span class="p">$</span> docker run --rm -p 8080:8080 retencion-api:local</div>
   <div class="pie"><span>Recap 02</span><span>7</span></div>
 </section>
 

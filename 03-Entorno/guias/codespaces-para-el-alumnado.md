@@ -229,7 +229,7 @@ python -m ia_mlops.pipeline
 Docker lee el Dockerfile y crea la imagen `retencion-api:local`: Python 3.11, las dependencias fijadas, el paquete y el modelo, sin root.
 
 ```bash
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker image ls retencion-api:local
 ```
 

@@ -74,7 +74,7 @@ docker rmi retencion-api:local
 ## Docker
 | Para | Comando |
 |---|---|
-| Construir | `docker build -f deploy/docker/Dockerfile -t retencion-api:local .` |
+| Construir | `docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .` |
 | Ver imágenes | `docker image ls` (Docker 29: DISK USAGE y CONTENT SIZE) |
 | Arrancar | `docker run -d --name api -p 8080:8080 retencion-api:local` |
 | Ver contenedores | `docker ps` · `docker ps -a` |

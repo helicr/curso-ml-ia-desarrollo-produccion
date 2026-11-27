@@ -186,10 +186,11 @@ Repaso rápido de las presentaciones *Contenedores 1* y *Contenedores 2*. Si alg
 
 Lo hiciste en el bloque 4. Recuerda qué lleva y qué no:
 ```text
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker run --rm -p 8080:8080 retencion-api:local
 ```
-- **Lleva:** Python 3.11, las versiones exactas de `requirements-api.lock`, el código `ia_mlops/` y **el modelo** (`models/modelo_mlflow/` y `metadatos.json`).
+- **Lleva:** Python 3.11, las versiones exactas de `requirements-api.lock`, el código `ia_mlops/` y **el modelo** (`models/modelo_mlflow/` y `metadatos.json`, que entran por el contexto `modelo`).
+- **De dónde sale el código:** con `FUENTE=contexto`, de tu carpeta (para probar lo que aún no has subido). En los workflows (S4) sale del **commit clonado** (`FUENTE=git`, el valor por defecto, con `--build-arg REF=<sha>`), en una etapa que se tira, y el modelo es el que aprobó la puerta de calidad. Ver `docs/api-y-contenedor.md`, «La imagen Docker».
 - **No lleva:** datos de clientes, cuadernos, pruebas ni el SQL (lo excluye el `.dockerignore` de la raíz).
 - **Qué ha cambiado respecto al escalón 1:** la API ya no depende de tu entorno conda ni de tu sistema operativo. Cualquier equipo con Docker obtiene **exactamente lo mismo**, con las mismas versiones y la misma probabilidad (lo comprobaste con `comparar`).
 
@@ -210,19 +211,20 @@ Por tres razones:
 |---|---|---|
 | `FROM python:3.11-slim` | Parte de la misma base que la API. | El mismo Python que el entorno del curso. |
 | `ENV CURSO_DB=/datos/curso.db CURSO_DB_SOLO_LECTURA=1 CURSO_URL_API=http://api:8080` | Fija la configuración por defecto. | Se puede cambiar al arrancar con `-e`, sin reconstruir. |
-| `COPY requirements-api.lock requirements-interfaz.txt ./` y `RUN pip install -c requirements-api.lock -r requirements-interfaz.txt` | Instala **solo** fastapi, uvicorn, pydantic, pandas y numpy, con las versiones del lock de la API. | `-c` es un archivo de **restricciones**: no instala nada por sí mismo, solo fija la versión de lo que se instala. Las dos imágenes usan las mismas versiones. Sin scikit-learn ni mlflow: la interfaz no ejecuta el modelo. |
-| `COPY ia_mlops/ ia_mlops/` y `COPY sql/fs/02_poblar_fs.sql …` | El código y el SQL de las variables. | Nada de `models/` ni de `data/`. |
+| `FROM … AS fuente-git`, `FROM scratch AS fuente-contexto` y `FROM fuente-${FUENTE} AS fuente` | Dos formas de reunir el código en `/src`: clonando el commit (`FUENTE=git`, por defecto) o desde tu carpeta (`FUENTE=contexto`). | Las dos copian lo mismo; la etapa del clon se tira, así que en la imagen no quedan ni git ni el clon. |
+| `COPY --from=fuente /src/requirements-api.lock /src/requirements-interfaz.txt ./` y `RUN pip install -c requirements-api.lock -r requirements-interfaz.txt` | Instala **solo** fastapi, uvicorn, pydantic, pandas y numpy, con las versiones del lock de la API. | `-c` es un archivo de **restricciones**: no instala nada por sí mismo, solo fija la versión de lo que se instala. Las dos imágenes usan las mismas versiones. Sin scikit-learn ni mlflow: la interfaz no ejecuta el modelo. |
+| `COPY --from=fuente /src/ia_mlops/ ia_mlops/` y `COPY --from=fuente /src/sql/fs/02_poblar_fs.sql …` | El código y el SQL de las variables. | Nada de `models/` ni de `data/`. |
 | `RUN useradd --uid 10001 … && mkdir /datos` y `USER 10001` | Crea un usuario sin privilegios y el punto de montaje. | Mismo criterio que la API. |
 | `EXPOSE 8090` | Documenta el puerto. | No lo publica: eso lo hace `-p`. |
 | `HEALTHCHECK … /salud` | Docker pregunta «¿vivo?» cada 30 s. | `/salud` y no `/listo`: si la API cae, reiniciar la interfaz no arregla nada. |
 | `CMD ["uvicorn", "ia_mlops.interfaz.app:app", "--host", "0.0.0.0", "--port", "8090"]` | Arranca la interfaz. | `0.0.0.0`: las llamadas llegan desde fuera del contenedor. |
 
 ### 5.3 Cada imagen, su lista de exclusiones
-El `.dockerignore` de la raíz es el de la API y excluye `sql/`, pero esta imagen necesita un archivo de `sql/`. Docker (BuildKit) permite **un archivo de exclusiones por Dockerfile**: junto a `interfaz.Dockerfile` está `interfaz.Dockerfile.dockerignore`, y cuando se construye con `-f deploy/docker/interfaz.Dockerfile`, Docker usa ese y no el de la raíz. La estrategia es la más segura: **excluir todo** (`*`) y dejar pasar solo lo que se copia (`!ia_mlops`, `!sql/fs/02_poblar_fs.sql`, `!requirements-…`). Así, un archivo nuevo con secretos en la carpeta del proyecto nunca entra por descuido.
+(Esto cuenta al construir desde tu carpeta, con `FUENTE=contexto`; con `FUENTE=git` el código sale del clon.) El `.dockerignore` de la raíz es el de la API y excluye `sql/`, pero esta imagen necesita un archivo de `sql/`. Docker (BuildKit) permite **un archivo de exclusiones por Dockerfile**: junto a `interfaz.Dockerfile` está `interfaz.Dockerfile.dockerignore`, y cuando se construye con `-f deploy/docker/interfaz.Dockerfile`, Docker usa ese y no el de la raíz. La estrategia es la más segura: **excluir todo** (`*`) y dejar pasar solo lo que se copia (`!ia_mlops`, `!sql/fs/02_poblar_fs.sql`, `!requirements-…`). Así, un archivo nuevo con secretos en la carpeta del proyecto nunca entra por descuido.
 
 ### 5.4 Construir y mirar dentro
 ```text
-docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
+docker build -f deploy/docker/interfaz.Dockerfile --build-arg FUENTE=contexto -t retencion-interfaz:local .
 docker image ls 'retencion-*'                                                    # compara el tamaño de las dos imágenes
 docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*"'
 ```
@@ -357,6 +359,7 @@ La interfaz arrancó **6 segundos después** que la API. Es `depends_on: conditi
 | `docker network create retencion` | Automático: Compose crea una red por proyecto, `retencion_default` (el `name: retencion` del archivo más `_default`). |
 | `--name api` | El nombre del servicio (`services: api:`). |
 | `docker build -f deploy/docker/Dockerfile …` | `build: {context: ../.., dockerfile: deploy/docker/Dockerfile}` |
+| `--build-arg FUENTE=contexto` y `--build-context modelo=models` | `args: {FUENTE: ${FUENTE:-contexto}, …}` y `additional_contexts: {modelo: ../../models}` (en CI se pasa `FUENTE=git REF=<sha>` por entorno) |
 | `-p 8090:8090` | `ports: ["8090:8090"]` |
 | `-v "$PWD/data/processed:/datos:ro"` | `volumes: ["../../data/processed:/datos:ro"]` (las rutas se resuelven desde `deploy/docker/`) |
 | `-e CURSO_URL_API=…` | `environment: {CURSO_URL_API: http://api:8080}` |

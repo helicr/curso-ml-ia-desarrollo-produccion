@@ -10,7 +10,7 @@
 #   python -m ia_mlops.explotacion     # el lote: reports/campana/ y la tabla fs_produccion dentro de curso.db (la que lee «bajo demanda»)
 #
 # Desde la carpeta del proyecto (04-Proyecto-Base):
-#   docker compose -f deploy/docker/compose-produccion.yaml up --build -d    # construye la API y la interfaz desde este repositorio
+#   docker compose -f deploy/docker/compose-produccion.yaml up --build -d    # construye la API y la interfaz desde TU carpeta (FUENTE=contexto)
 #   docker compose -f deploy/docker/compose-produccion.yaml ps               # estado y salud de cada servicio
 #   docker compose -f deploy/docker/compose-produccion.yaml down             # para y borra contenedores y red (la copia de demo se pierde: es lo previsto)
 #
@@ -22,6 +22,9 @@
 # Sin IMAGEN_API se usa (y se construye) retencion-api:local.
 #
 # Las rutas relativas de este archivo se resuelven desde ESTA carpeta (deploy/docker): por eso el contexto es ../..
+#
+# CÓDIGO Y MODELO AL CONSTRUIR (como en compose.yaml): por defecto FUENTE=contexto (tu carpeta); en CI se pasa por entorno
+# FUENTE=git REF=<sha> y el código sale de ese commit clonado. El modelo de la API entra por el contexto «modelo» (../../models).
 name: retencion-produccion
 
 services:
@@ -29,6 +32,12 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
+      args:
+        FUENTE: ${FUENTE:-contexto}
+        REF: ${REF:-develop}
+        REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
+      additional_contexts:
+        modelo: ../../models             # modelo_mlflow/ y metadatos.json del pipeline (relativa a ESTA carpeta, como context)
     image: ${IMAGEN_API:-retencion-api:local}     # con IMAGEN_API, la imagen publicada; sin ella, la que se construye aquí
     # Sin «ports»: la API NO se publica fuera. Solo la interfaz, dentro de la red, puede llamarla.
 
@@ -36,6 +45,10 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/interfaz.Dockerfile
+      args:                              # los mismos que la API; la interfaz no lleva modelo
+        FUENTE: ${FUENTE:-contexto}
+        REF: ${REF:-develop}
+        REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
     image: retencion-interfaz:local
     ports:
       - "8090:8090"                      # equipo:contenedor -> http://127.0.0.1:8090/panel

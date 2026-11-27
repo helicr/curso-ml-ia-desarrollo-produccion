@@ -11,7 +11,8 @@ import sys
 import pytest
 
 from ia_mlops import config
-from tests.test_imagen import _instrucciones, _regex, _versiones
+from tests.test_imagen import (_copias, _etapa, _etapas, _final, _globales, _instrucciones, _orden_del_clon, _regex, _src_del_clon,
+                                _src_del_contexto, _versiones)
 
 RAIZ = config.RAIZ
 DOCKERFILE = RAIZ / 'deploy' / 'docker' / 'interfaz.Dockerfile'
@@ -19,8 +20,13 @@ IGNORAR = RAIZ / 'deploy' / 'docker' / 'interfaz.Dockerfile.dockerignore'
 COMPOSE = RAIZ / 'deploy' / 'docker' / 'compose.yaml'
 
 
+def texto():
+    return DOCKERFILE.read_text(encoding='utf-8')
+
+
 def ins():
-    return _instrucciones(DOCKERFILE.read_text(encoding='utf-8'))
+    """Instrucciones de la etapa FINAL (la imagen que se sirve)."""
+    return _final(texto())
 
 
 def entra_en_el_contexto(ruta):
@@ -42,7 +48,9 @@ def entra_en_el_contexto(ruta):
 # --- Dockerfile ------------------------------------------------------------------------------------------------------------------
 
 def test_misma_base_y_mismas_versiones_que_la_imagen_de_la_api():
-    assert [r for i, r in ins() if i == 'FROM'] == ['python:3.11-slim']
+    bases = [b for _, b, _ in _etapas(texto())]
+    assert bases[-1] == 'python:3.11-slim'
+    assert {b for b in bases if b != 'scratch' and not b.startswith('fuente-')} == {'python:3.11-slim'}
     pip = [r for i, r in ins() if i == 'RUN' and 'pip install' in r]
     assert len(pip) == 1 and '-c requirements-api.lock' in pip[0] and '-r requirements-interfaz.txt' in pip[0]
     bloqueadas = _versiones(RAIZ / 'requirements-api.lock')
@@ -52,10 +60,38 @@ def test_misma_base_y_mismas_versiones_que_la_imagen_de_la_api():
 
 
 def test_no_lleva_ni_modelo_ni_datos_solo_codigo_y_el_sql_de_las_variables():
-    copias = [r.split() for i, r in ins() if i == 'COPY']
-    origenes = [o for c in copias for o in c[:-1]]
-    assert sorted(origenes) == sorted(['requirements-api.lock', 'requirements-interfaz.txt', 'ia_mlops/', 'sql/fs/02_poblar_fs.sql'])
+    # lo que se toma de la carpeta del proyecto (FUENTE=contexto) y del clon (FUENTE=git): lo mismo
+    origenes = list(_src_del_contexto(texto()).values())
+    assert sorted(origenes) == sorted(['requirements-api.lock', 'requirements-interfaz.txt', 'ia_mlops', 'sql/fs/02_poblar_fs.sql'])
+    assert _src_del_clon(texto()) == _src_del_contexto(texto())
     assert not any(o.startswith(('models', 'data')) for o in origenes)
+    # la imagen final solo copia de la etapa «fuente»: ni de la carpeta ni de un contexto «modelo»
+    desdes = {desde for desde, _, _ in _copias(ins())}
+    assert desdes == {'fuente'}, desdes
+    src = _src_del_contexto(texto())
+    assert all(o.rstrip('/') in src for desde, os_, _ in _copias(ins()) for o in os_)
+
+
+def test_el_codigo_sale_del_clon_por_defecto_y_el_clon_no_queda_en_la_imagen():
+    assert ('ARG', 'FUENTE=git') in _globales(texto())
+    nombres = {n: b for n, b, _ in _etapas(texto())}
+    assert nombres.get('fuente') == 'fuente-${FUENTE}' and nombres.get('fuente-contexto') == 'scratch' and 'fuente-git' in nombres
+    args = [r for i, r in _etapa(texto(), 'fuente-git') if i == 'ARG']
+    assert 'REF=develop' in args and 'CARPETA=04-Proyecto-Base' in args
+    orden = _orden_del_clon(texto())
+    assert any(' fetch ' in o and '--depth 1' in o and '"$REF"' in o for o in orden)
+    assert orden[-1] == 'rm -rf /tmp/repo'
+    for i, r in ins():
+        if i == 'RUN':
+            assert not re.search(r'\bgit\b|apt-get', r), r                    # la imagen final no instala git
+
+
+def test_el_token_va_como_secreto_y_nunca_como_arg_ni_env():
+    run = next(r for i, r in _etapa(texto(), 'fuente-git') if i == 'RUN' and 'git_token' in r)
+    assert run.startswith('--mount=type=secret,id=git_token')
+    for i, r in _instrucciones(texto()):
+        if i in ('ARG', 'ENV', 'LABEL'):
+            assert 'token' not in r.lower(), f'{i} {r}'
 
 
 def test_la_configuracion_va_por_variables_de_entorno():
@@ -80,9 +116,10 @@ def test_el_contexto_solo_deja_pasar_lo_que_se_copia():
     for ruta in ('data/processed/curso.db', 'models/metadatos.json', 'models/modelo_mlflow/MLmodel', 'sql/fs/01_crear_fs.sql', '.env',
                  'tests/test_api.py', 'notebooks/04_entrenamiento_y_seguimiento.ipynb', 'ia_mlops/__pycache__/config.cpython-311.pyc', 'mlruns/0/x'):
         assert not entra_en_el_contexto(ruta), ruta
-    # y todo lo que se copia existe
-    for o in ('requirements-api.lock', 'requirements-interfaz.txt', 'ia_mlops', 'sql/fs/02_poblar_fs.sql'):
+    # y todo lo que se copia (con FUENTE=contexto) existe y entra en el contexto
+    for o in _src_del_contexto(texto()).values():
         assert (RAIZ / o).exists(), o
+        assert entra_en_el_contexto(o), o
 
 
 def test_la_interfaz_no_carga_las_librerias_del_modelo():
@@ -119,3 +156,33 @@ def test_compose_la_interfaz_llama_a_la_api_por_su_nombre_y_lee_los_datos_en_sol
     assert (COMPOSE.parent / '../../data/processed').resolve() == (RAIZ / 'data' / 'processed').resolve()
     assert i['depends_on'] == {'api': {'condition': 'service_healthy'}}
     assert re.search(r'HEALTHCHECK', (RAIZ / 'deploy' / 'docker' / 'Dockerfile').read_text(encoding='utf-8'))   # sin él, «healthy» no llega nunca
+
+
+def comprobar_build_del_compose(ruta, servicios_api, servicios_interfaz, datos):
+    """Lo común a los tres compose: el código de la carpeta por defecto (FUENTE=contexto, desarrollo), FUENTE/REF/REPO_URL desde el
+    entorno (en CI: FUENTE=git REF=<sha>) y el modelo de la API por el contexto «modelo» = models/ del proyecto (el que deja el pipeline)."""
+    for nombre in servicios_api + servicios_interfaz:
+        b = datos['services'][nombre]['build'] if nombre in datos['services'] else datos[nombre]['build']
+        assert b['args']['FUENTE'] == '${FUENTE:-contexto}', (ruta.name, nombre)
+        assert b['args']['REF'] == '${REF:-develop}', (ruta.name, nombre)
+        assert b['args']['REPO_URL'].startswith('${REPO_URL:-https://github.com/'), (ruta.name, nombre)
+        assert 'GIT_TOKEN' not in str(b) and 'token' not in str(b['args']).lower()     # el token nunca como argumento
+        if nombre in servicios_api:
+            assert set(b['additional_contexts']) == {'modelo'}, (ruta.name, nombre)
+            # relativa a la carpeta del compose, como «context»: tiene que ser models/ del proyecto
+            assert (ruta.parent / b['additional_contexts']['modelo']).resolve() == (RAIZ / 'models').resolve(), (ruta.name, nombre)
+            assert (ruta.parent / b['context']).resolve() == RAIZ.resolve()
+        else:
+            assert 'additional_contexts' not in b, (ruta.name, nombre)      # la interfaz no lleva modelo
+
+
+def test_compose_construye_desde_la_carpeta_por_defecto_y_el_modelo_entra_por_su_contexto(compose):
+    comprobar_build_del_compose(COMPOSE, ['api'], ['interfaz'], compose)
+
+
+def test_compose_de_produccion_y_del_agente_igual():
+    yaml = pytest.importorskip('yaml')
+    produccion = RAIZ / 'deploy' / 'docker' / 'compose-produccion.yaml'
+    comprobar_build_del_compose(produccion, ['api'], ['interfaz'], yaml.safe_load(produccion.read_text(encoding='utf-8')))
+    agente = RAIZ / 'deploy' / 'docker' / 'compose-agente.yaml'
+    comprobar_build_del_compose(agente, ['api'], ['x-interfaz'], yaml.safe_load(agente.read_text(encoding='utf-8')))

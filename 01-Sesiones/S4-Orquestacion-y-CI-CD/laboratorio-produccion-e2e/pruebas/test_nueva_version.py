@@ -393,3 +393,27 @@ def test_no_se_crea_nada_en_github():
     """Los workflows de este laboratorio se copian a .github/workflows/ cada alumno; aquí no se crea nada en .github."""
     assert not (LAB / '.github').exists()
     assert not list(LAB.rglob('.github'))
+
+
+# ------------------------------------------------------------------------------------------------ la imagen: código del commit + modelo validado
+def _orden_docker_build(cuerpo):
+    """La orden «docker build» entera (con sus líneas de continuación «\\»)."""
+    m = re.search(r'docker build(?:[^\n]*\\\n)*[^\n]*', cuerpo)
+    assert m, 'no hay docker build'
+    return m.group(0)
+
+
+def test_la_imagen_lleva_el_codigo_del_commit_y_el_modelo_de_la_candidata(nueva):
+    """El Dockerfile clona el commit de la ejecución (no la carpeta del runner) y toma el modelo del contexto «modelo»: el que aprobó la
+    puerta de calidad, que se coloca en models/ antes de construir. Un pull_request haría de GITHUB_SHA un commit de fusión: no se usa."""
+    assert 'pull_request' not in disparadores(nueva)
+    lista = pasos(nueva['jobs']['construir-y-probar'])
+    nombres = [p.get('name', '') for p in lista]
+    colocar = next(i for i, n in enumerate(nombres) if n.startswith('Colocar el modelo de la candidata'))
+    construir = next(i for i, n in enumerate(nombres) if n.startswith('Construir la imagen'))
+    assert colocar < construir and 'cp -r paquete/models/. models/' in lista[colocar]['run']
+    orden = _orden_docker_build(lista[construir]['run'])
+    assert '--build-arg REF="${GITHUB_SHA}"' in orden and '--build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git"' in orden
+    assert '--build-context modelo=models' in orden and '-f deploy/docker/Dockerfile' in orden
+    assert '--secret id=git_token,env=GIT_TOKEN' in orden and lista[construir]['env']['GIT_TOKEN'] == '${{ github.token }}'
+    assert 'FUENTE=contexto' not in orden and 'GIT_TOKEN=' not in orden          # ni la carpeta del runner ni el token como argumento

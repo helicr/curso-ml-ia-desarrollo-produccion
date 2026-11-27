@@ -84,7 +84,9 @@ def test_la_imagen_de_la_interfaz_incluye_los_archivos_nuevos():
     for f in ("modos.py", "panel.py"):
         assert (base / "ia_mlops" / "interfaz" / f).is_file()
     dockerfile = (base / "deploy" / "docker" / "interfaz.Dockerfile").read_text(encoding="utf-8")
-    assert "COPY ia_mlops/ ia_mlops/" in dockerfile
+    # todo ia_mlops: de la carpeta (FUENTE=contexto), del clon (FUENTE=git) y de ahí a la imagen final
+    assert "COPY ia_mlops/ /src/ia_mlops/" in dockerfile and 'cp -r /tmp/repo/"$CARPETA"/ia_mlops /src/ia_mlops' in dockerfile
+    assert "COPY --from=fuente /src/ia_mlops/ ia_mlops/" in dockerfile
     assert "USER 10001" in dockerfile
 
 
@@ -121,6 +123,19 @@ def test_prepara_datos_y_levanta_el_compose():
     assert cmd.index("ia_mlops.explotacion") < cmd.index("up --build -d"), "el lote va antes de levantar el compose"
     assert 'docker compose -f "$COMPOSE" up --build -d' in cmd
     assert _wf()["env"]["COMPOSE"] == "deploy/docker/compose-produccion.yaml"
+
+
+def test_el_compose_construye_desde_el_commit_en_ci_y_desde_la_carpeta_por_defecto():
+    """En CI el código sale del commit clonado (FUENTE=git REF=<sha> por entorno); sin ellas, el compose usa la carpeta (desarrollo)."""
+    pasos = [p for j in _wf()["jobs"].values() for p in j["steps"]]
+    levantar = next(p for p in pasos if "up --build -d" in str(p.get("run", "")))
+    assert levantar["env"]["FUENTE"] == "git" and levantar["env"]["REF"] == "${{ github.sha }}"
+    assert levantar["env"]["REPO_URL"] == "https://github.com/${{ github.repository }}.git"
+    assert "pull_request" not in _on(_wf())
+    api = _compose()["services"]["api"]["build"]
+    assert api["args"]["FUENTE"] == "${FUENTE:-contexto}" and api["args"]["REF"] == "${REF:-develop}"
+    assert (RUTA_COMPOSE.parent / api["additional_contexts"]["modelo"]).resolve() == (RAIZ_CURSO / "04-Proyecto-Base" / "models").resolve()
+    assert "additional_contexts" not in _compose()["services"]["interfaz"]["build"]
 
 
 def test_comprobaciones_con_curl():

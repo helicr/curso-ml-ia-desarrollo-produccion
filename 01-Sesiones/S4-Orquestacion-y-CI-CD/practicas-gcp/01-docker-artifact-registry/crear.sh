@@ -26,7 +26,9 @@ fi
 
 aviso "2. Construir y subir la imagen $IMAGEN_COMPLETA"
 gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
-docker build -f "$DIR_PROYECTO/deploy/docker/Dockerfile" -t "$IMAGEN_COMPLETA" "$DIR_PROYECTO"
+# El codigo, de la carpeta del proyecto en Cloud Shell (FUENTE=contexto); el modelo, el de models/ (contexto «modelo»).
+docker build -f "$DIR_PROYECTO/deploy/docker/Dockerfile" --build-arg FUENTE=contexto --build-context modelo="$DIR_PROYECTO/models" \
+  -t "$IMAGEN_COMPLETA" "$DIR_PROYECTO"
 docker push "$IMAGEN_COMPLETA"
 
 aviso "3. Cloud Run (servicio privado: solo con identidad)"

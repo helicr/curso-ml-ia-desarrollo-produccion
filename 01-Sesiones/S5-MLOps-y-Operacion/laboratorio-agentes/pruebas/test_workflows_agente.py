@@ -466,6 +466,42 @@ def test_el_compose_tiene_el_perfil_ci_y_el_puerto_que_usan_los_workflows():
     assert 'up -d --build' in ci_cuerpo, 'el humo del CI construye con el compose (el pedido en la tarea)'
 
 
+def _pasos_que(wf, texto):
+    return [p for j in wf['jobs'].values() for p in pasos(j) if texto in str(p.get('run', ''))]
+
+
+def test_en_ci_el_compose_construye_desde_el_commit_clonado():
+    """El compose construye por defecto desde la carpeta (FUENTE=contexto, desarrollo); en los workflows se le pasa el commit."""
+    for wf in (cargar(CI), cargar(NUEVA)):
+        assert 'pull_request' not in disparadores(wf)              # con pull_request, GITHUB_SHA sería un commit de fusión
+        for paso in _pasos_que(wf, 'docker compose -f "$COMPOSE" --profile ci up'):
+            env = paso.get('env') or {}
+            assert env.get('FUENTE') == 'git' and env.get('REF') == '${{ github.sha }}', paso.get('name')
+            assert env.get('REPO_URL') == 'https://github.com/${{ github.repository }}.git', paso.get('name')
+    compose = yaml.safe_load(_modulo('deploy/docker/compose-agente.yaml'))
+    assert compose['services']['api']['build']['additional_contexts'] == {'modelo': '../../models'}
+    assert compose['x-interfaz']['build']['args']['FUENTE'] == '${FUENTE:-contexto}'
+
+
+def test_la_imagen_del_agente_se_construye_del_commit_salvo_con_el_atajo_del_prompt():
+    """aplicar_prompt.py cambia agente.py en el runner sin commit: con PROMPT=nuevo la imagen tiene que salir de la carpeta
+    (FUENTE=contexto) para llevar el MISMO agente que se evaluó; si no, sale del commit clonado (FUENTE=git)."""
+    paso = _pasos_que(cargar(NUEVA), 'docker build')
+    assert len(paso) == 1
+    run = paso[0]['run']
+    assert 'FUENTE_IMAGEN=git' in run and 'if [ "$PROMPT" = "nuevo" ]; then FUENTE_IMAGEN=contexto; fi' in run
+    orden = re.search(r'docker build(?:[^\n]*\\\n)*[^\n]*', run).group(0)
+    for parte in ('--build-arg FUENTE="${FUENTE_IMAGEN}"', '--build-arg REF="${GITHUB_SHA}"',
+                  '--build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git"', '--secret id=git_token,env=GIT_TOKEN',
+                  '-f deploy/docker/interfaz-agente.Dockerfile'):
+        assert parte in orden, parte
+    assert '--build-context modelo' not in orden                     # la interfaz no lleva modelo
+    assert paso[0]['env']['GIT_TOKEN'] == '${{ github.token }}' and 'GIT_TOKEN=' not in orden
+    # y el atajo se aplica en este mismo trabajo antes de construir
+    nombres = [p.get('name', '') for p in pasos(cargar(NUEVA)['jobs']['construir-y-probar'])]
+    assert nombres.index('Aplicar el prompt nuevo (solo en prompt-nuevo y rechazo)') < nombres.index(paso[0]['name'])
+
+
 # ------------------------------------------------------------------------------------------------ escenarios de ensayo
 def _en_el_path():
     sys.path.insert(0, str(PROYECTO))

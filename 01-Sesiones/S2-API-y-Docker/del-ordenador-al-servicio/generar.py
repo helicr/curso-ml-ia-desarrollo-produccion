@@ -476,7 +476,7 @@ def construir():
 
     slide('C', 1, 'Escalón 2: la API en su imagen', 'Escalón 2 · repaso del bloque 4', 'La API ya vive en una imagen', '''
 <div class="split" style="grid-template-columns:1fr 1fr">
- <div class="col">''' + term('Lo que hiciste en el bloque 4', ['docker build -f deploy/docker/Dockerfile -t retencion-api:local .']) + '''
+ <div class="col">''' + term('Lo que hiciste en el bloque 4', ['docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .']) + '''
   <div class="card f"><h3>Lleva</h3><p class="small">Python 3.11, versiones exactas (<span class="mono">requirements-api.lock</span>), <span class="mono">ia_mlops/</span> y <b>el modelo</b>.</p></div>
   <div class="card f"><h3>No lleva</h3><p class="small">Datos de clientes, cuadernos, pruebas ni SQL (<span class="mono">.dockerignore</span> de la raíz).</p></div></div>
  <div class="col">
@@ -501,7 +501,7 @@ def construir():
           'Pulse cada bloque. Tres decisiones a destacar. Uno: -c requirements-api.lock es un archivo de restricciones; no instala nada por sí mismo, solo fija versiones, y así las dos imágenes usan las mismas. Dos: no se copia ni models ni data. Tres: HEALTHCHECK pregunta a /salud y no a /listo.', enter='dock')
 
     t3 = term('Terminal del Codespace · desde 04-Proyecto-Base', [
-        'docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .',
+        'docker build -f deploy/docker/interfaz.Dockerfile --build-arg FUENTE=contexto -t retencion-interfaz:local .',
         "docker image ls 'retencion-*'",
         'docker run --rm --entrypoint sh retencion-interfaz:local -c \'find /app -type f -not -path "*/ia_mlops/*"\'',
         'docker run --rm --entrypoint python retencion-interfaz:local -c "import sklearn"'])
@@ -532,7 +532,7 @@ def construir():
         'Dentro de `/app`, fuera del código, solo **tres archivos**: ni modelo ni datos.',
         '`import sklearn` termina en **`ModuleNotFoundError`**: es lo que queremos.'])}
 </div>''',
-            'Captura real. Si la imagen de la API no está del bloque 4, construirla también: docker build -f deploy/docker/Dockerfile -t retencion-api:local . La primera vez tarda un par de minutos por pip. Compare los tamaños con los del workflow de GitHub Actions: son los mismos. El ModuleNotFoundError se busca a propósito: la interfaz no ejecuta el modelo.')
+            'Captura real. Si la imagen de la API no está del bloque 4, construirla también: docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local . La primera vez tarda un par de minutos por pip. Compare los tamaños con los del workflow de GitHub Actions: son los mismos. El ModuleNotFoundError se busca a propósito: la interfaz no ejecuta el modelo.')
 
     slide('C', 2, 'Escalón 4: el diagrama', 'Escalón 4 · el servicio', 'Dos contenedores que se hablan', f'''
 <div class="card st" style="padding:12px 14px">{svg_dos_contenedores()}</div>
@@ -740,10 +740,10 @@ def construir():
 # Datos de las diapositivas interactivas
 # =====================================================================================================================================
 DOCKERFILE = [
-    ('FROM python:3.11-slim', 'Base', 'La misma base que la API: el mismo Python que el entorno del curso.', 'Menos sistema, menos que mantener y vigilar.'),
+    ('FROM fuente-${FUENTE} AS fuente\nFROM python:3.11-slim', 'Código y base', 'El código llega de la etapa «fuente»: el commit clonado (FUENTE=git, en CI) o tu carpeta (FUENTE=contexto, para desarrollar). La base, la misma que la API.', 'La etapa del clon se tira: en la imagen no quedan ni git ni el clon.'),
     ('ENV CURSO_DB=/datos/curso.db \\\n    CURSO_DB_SOLO_LECTURA=1 \\\n    CURSO_URL_API=http://api:8080', 'Configuración', 'Valores por defecto. Se cambian al arrancar con -e, sin reconstruir la imagen.', 'Dónde están los datos y la API no es cosa del código.'),
-    ('COPY requirements-api.lock requirements-interfaz.txt ./\nRUN pip install -c requirements-api.lock \\\n    -r requirements-interfaz.txt', 'Dependencias', 'Solo fastapi, uvicorn, pydantic, pandas y numpy. -c es un archivo de RESTRICCIONES: no instala nada por sí mismo, fija la versión de lo que se instala. Las dos imágenes usan las mismas versiones.', 'Sin scikit-learn ni mlflow: la interfaz no ejecuta el modelo.'),
-    ('COPY ia_mlops/ ia_mlops/\nCOPY sql/fs/02_poblar_fs.sql sql/fs/…', 'Código y SQL', 'El paquete y el SQL con el que se calculan las variables. Nada de models/ ni de data/.', 'Lo que no está en la imagen no se puede filtrar desde la imagen.'),
+    ('COPY --from=fuente /src/requirements-… ./\nRUN pip install -c requirements-api.lock \\\n    -r requirements-interfaz.txt', 'Dependencias', 'Solo fastapi, uvicorn, pydantic, pandas y numpy. -c es un archivo de RESTRICCIONES: no instala nada por sí mismo, fija la versión de lo que se instala. Las dos imágenes usan las mismas versiones.', 'Sin scikit-learn ni mlflow: la interfaz no ejecuta el modelo.'),
+    ('COPY --from=fuente /src/ia_mlops/ ia_mlops/\nCOPY --from=fuente /src/sql/fs/02_… sql/fs/…', 'Código y SQL', 'El paquete y el SQL con el que se calculan las variables. Nada de models/ ni de data/.', 'Lo que no está en la imagen no se puede filtrar desde la imagen.'),
     ('RUN useradd --uid 10001 … && mkdir /datos\nUSER 10001', 'Sin root', 'Un usuario sin privilegios y el punto de montaje de los datos.', 'Mismo criterio que la API: docker exec interfaz id -u da 10001.'),
     ('EXPOSE 8090\nHEALTHCHECK … /salud', 'Puerto y salud', 'EXPOSE documenta el puerto (no lo publica: eso es -p). Docker pregunta a /salud cada 30 s.', '/salud y no /listo: si la API cae, reiniciar la interfaz no arregla nada.'),
     ('CMD ["uvicorn", "ia_mlops.interfaz.app:app",\n     "--host", "0.0.0.0", "--port", "8090"]', 'Arranque', '0.0.0.0: dentro de un contenedor, las llamadas siempre llegan «desde fuera».', 'Con 127.0.0.1 nadie podría llegar, ni con -p.'),

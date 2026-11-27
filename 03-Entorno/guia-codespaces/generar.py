@@ -34,7 +34,7 @@ STORE = 'codespaces-guia-hecho'
 # Comandos del laboratorio (bloque 4 de S2): deben coincidir con practica/guia-laboratorio.md
 CMD_ENTRAR = 'cd 04-Proyecto-Base'
 CMD_PIPELINE = 'python -m ia_mlops.pipeline'
-CMD_BUILD = 'docker build -f deploy/docker/Dockerfile -t retencion-api:local .'
+CMD_BUILD = 'docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .'
 CMD_LS = 'docker image ls retencion-api:local'
 CMD_RUN = 'docker run -d --name api -p 8080:8080 retencion-api:local'
 CMD_LISTO = 'curl http://127.0.0.1:8080/listo'

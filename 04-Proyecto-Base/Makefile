@@ -62,8 +62,8 @@ interfaz:  ## Interfaz web (ids de cliente -> probabilidad y recomendacion) en h
 comparar:  ## Compara paquete, joblib y MLflow y, con URL=http://127.0.0.1:8080, tambien la API. Antes: make pipeline
 	$(PYTHON) -m ia_mlops.modeling.comparar $(if $(URL),--url $(URL),)
 
-imagen:  ## Construye la imagen Docker (en Codespaces; en tu equipo no hay Docker). Antes: make pipeline
-	docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+imagen:  ## Construye la imagen Docker con el codigo de TU carpeta y el modelo de models/ (en Codespaces; en tu equipo no hay Docker). Antes: make pipeline
+	docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 
 contenedor:  ## Ejecuta la imagen en http://127.0.0.1:8080
 	docker run --rm -p 8080:8080 retencion-api:local

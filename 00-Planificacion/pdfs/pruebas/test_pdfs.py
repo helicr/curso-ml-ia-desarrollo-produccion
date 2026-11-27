@@ -278,7 +278,7 @@ class TestPdfGenerados:
             assert sobra not in todo, sobra
         assert 'Copia cada línea y pégala en la terminal del Codespace' in todo
         # lo esencial del laboratorio sigue en el PDF
-        for debe in ('docker version', 'docker build -f deploy/docker/Dockerfile -t retencion-api:local .', '10001'):
+        for debe in ('docker version', 'docker build -f deploy/docker/Dockerfile', '--build-context modelo=models', '10001'):
             assert debe in todo.replace('\n', ' '), debe
 
     def test_s2_conserva_las_cifras_reales_de_la_practica(self):

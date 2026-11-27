@@ -98,9 +98,14 @@ Cada petición escribe **una línea JSON por la salida estándar**:
 
 ```text
 make pipeline                                   # el modelo se entrena ANTES; la imagen solo lo sirve
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+# desarrollo (Codespace): el código de TU carpeta y el modelo de models/
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker run --rm -p 8080:8080 retencion-api:local
+# producción (lo que hacen los workflows): el código del commit, clonado
+docker build -f deploy/docker/Dockerfile --build-arg REF=<sha> --build-context modelo=models -t retencion-api .
 ```
+
+**¿Por qué el código se clona y el modelo entra aparte?** Si la imagen se construye con lo que haya en tu carpeta, lleva también lo que no has subido (un cambio a medias, un modelo de otra prueba): sale de *tu* equipo, no del repositorio. Con `FUENTE=git` (el valor por defecto) una primera etapa clona el repositorio en el commit pedido (`REF`), copia solo lo que la imagen necesita y **se tira entera**: en la imagen final no quedan ni git, ni el clon, ni el token (que, si el repositorio es privado, entra como secreto de BuildKit: `--secret id=git_token,env=GIT_TOKEN`). El modelo no se entrena dentro: en S4 la puerta de calidad aprueba **un** modelo, entrenado con datos que no están en el repositorio, y la imagen tiene que llevar **ese**; por eso entra por un contexto con nombre (`--build-context modelo=<carpeta con modelo_mlflow/ y metadatos.json>`). Para desarrollar, `--build-arg FUENTE=contexto` toma el código de tu carpeta. Hace falta BuildKit (la primera línea del Dockerfile lo pide; es el motor por defecto de Docker, de los runners de GitHub y de Codespaces).
 Docker no se instala en tu equipo: se usa en **Codespaces** (ver `03-Entorno/`). Dentro del Codespace, el archivo `.devcontainer/devcontainer.json` de este proyecto pide Python 3.11 y Docker (*sin probar*: ver «Verificación»).
 
 Si lanzas `curl` justo después de `docker run`, puede salir `Connection reset by peer`: el puerto ya está publicado, pero `uvicorn` aún no ha arrancado. Espera unos segundos y repite (el workflow lo hace en un bucle). Tamaño de la imagen construida en GitHub Actions: **826 MB** en disco y 183 MB de «contenido» según `docker image ls`.
@@ -111,7 +116,8 @@ Si lanzas `curl` justo después de `docker run`, puede salir `Connection reset b
 | Primero `requirements-api.lock`, después el código | La capa de dependencias solo se reconstruye si cambian las versiones: una línea de código no reinstala todo. |
 | `requirements-api.lock` (versiones **exactas**, 53 paquetes) y no `requirements-api.txt` | Dos construcciones dan las mismas versiones. Se regenera con `make lock`. |
 | `mlflow-skinny` y no `mlflow` | Basta para leer un modelo y su firma; no trae servidor ni SQL. |
-| Solo `ia_mlops/`, `models/modelo_mlflow/` y `models/metadatos.json` | La imagen contiene lo que sirve y nada más: sin datos, sin SQL, sin pruebas, sin la base SQLite. |
+| Solo `ia_mlops/`, `models/modelo_mlflow/` y `models/metadatos.json` | La imagen contiene lo que sirve y nada más: sin datos, sin SQL, sin pruebas, sin la base SQLite. El código sale de la etapa `fuente` (el clon o tu carpeta); el modelo, del contexto `modelo`. |
+| Etapa `fuente-git` que se tira | El clon, git y el token no llegan a la imagen final; las dos fuentes (`git` y `contexto`) copian exactamente lo mismo (lo comprueba `tests/test_imagen.py`). |
 | `.dockerignore` | Deja fuera datos, cuadernos, pruebas, `.git` y los secretos habituales (`.env`, `*.key`). Ojo: un patrón como `*.pyc` solo vale en la raíz; para cualquier carpeta hay que escribir `**/*.pyc`. |
 | Usuario `10001`, no root | Si alguien explota la API, no es administrador del contenedor. |
 | `HEALTHCHECK` sobre `/salud` | El motor de contenedores sabe si el proceso responde. |
@@ -134,7 +140,7 @@ Permisos mínimos (`contents: read`), sin secretos y sin publicar nada: publicar
 
 **Probado**
 - Las 112 pruebas del proyecto base (108 rápidas y 4 lentas, que ejecutan los cuadernos) en Linux, con el entorno `env-ia-mlops`.
-- Que las pruebas **detectan** fallos: `tests/mutaciones_s2.py` rompe el código de 24 maneras distintas (la API acepta campos desconocidos, no se avisa de valores fuera de rango, la app no configura el registro, la imagen corre como root…) y comprueba que cada una hace fallar alguna prueba.
+- Que las pruebas **detectan** fallos: `tests/mutaciones_s2.py` rompe el código de 38 maneras distintas (la API acepta campos desconocidos, no se avisa de valores fuera de rango, la app no configura el registro, la imagen corre como root, el clon no se borra, el token entra como `ARG`, el modelo sale de la carpeta y no del contexto `modelo`…) y comprueba que cada una hace fallar alguna prueba (38 de 38 el 27/11/2026).
 - El Dockerfile y el workflow, **en GitHub Actions** (Ubuntu con Docker): construye la imagen, el contenedor responde en `/listo`, `/modelo` y `/predecir`, rechaza un campo fuera del contrato con 422 y corre con el usuario `10001`. Tres ejecuciones en verde (ids 42729626415, 42730202500 y 42730743692). La probabilidad del cliente de ejemplo es **0.8278889191932133** en local y en el contenedor, idéntica.
 - El workflow pasa `actionlint` sin avisos.
 
@@ -144,3 +150,5 @@ Permisos mínimos (`contents: read`), sin secretos y sin publicar nada: publicar
 - Los comandos de Windows (PowerShell y CMD).
 
 Ten presente al reproducirlo: el Dockerfile se verificó con el proyecto tal como estaba cuando se ejecutó el workflow; si cambias archivos que la imagen copia (`ia_mlops/`, `models/`), repite la construcción.
+
+**Sin probar con Docker (27/11/2026):** el Dockerfile multi-etapa (clon con `FUENTE=git`, `FUENTE=contexto`, `--build-context modelo=…` y el secreto `git_token`). Se ha comprobado leyéndolo (`tests/test_imagen.py`), no construyéndolo: las ejecuciones citadas arriba son del Dockerfile anterior, de una sola etapa.

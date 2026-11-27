@@ -178,8 +178,13 @@ def test_compose_los_dockerfiles_existen_y_la_imagen_lleva_skills_y_httpx(compos
     for nombre in ('api', 'interfaz', 'interfaz-ci'):
         b = compose['services'][nombre]['build']
         assert (COMPOSE.parent / b['context'] / b['dockerfile']).resolve().is_file()
+    from tests.test_imagen import _copias, _final, _src_del_clon, _src_del_contexto
     docker = (RAIZ / 'deploy' / 'docker' / 'interfaz-agente.Dockerfile').read_text(encoding='utf-8')
-    assert 'COPY skills/ skills/' in docker and ' httpx' in docker and 'CURSO_LLM=falso' in docker
+    # las skills llegan a /app/skills desde la etapa «fuente», y las dos fuentes (clon y carpeta) las copian igual
+    assert ('fuente', ['/src/skills/'], 'skills/') in _copias(_final(docker))
+    assert _src_del_clon(docker) == _src_del_contexto(docker) and _src_del_contexto(docker)['/src/skills'] == 'skills'
+    assert {desde for desde, _, _ in _copias(_final(docker))} == {'fuente'}       # la interfaz no lleva modelo
+    assert ' httpx' in docker and 'CURSO_LLM=falso' in docker
     assert '!skills' in (RAIZ / 'deploy' / 'docker' / 'interfaz-agente.Dockerfile.dockerignore').read_text(encoding='utf-8')
 
 

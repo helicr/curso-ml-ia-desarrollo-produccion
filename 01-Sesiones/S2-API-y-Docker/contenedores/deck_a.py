@@ -128,7 +128,7 @@ def modelo_mental():
                    + mini('e7', 6, 3, etiqueta='…cat /modelos/modelo.txt (tras editar el archivo en tu máquina)')
                    + mini('e7', 7, 3, clase='bad', etiqueta='…sh -c "echo x > /modelos/otro.txt"  (con :ro)'), 'ok')
             + '</div>'
-            + '<p style="font-size:16px;margin-top:12px">El proyecto del curso <b>copia el modelo dentro de la imagen</b> (<code>COPY models/…</code>): la imagen es autosuficiente y reproducible. '
+            + '<p style="font-size:16px;margin-top:12px">El proyecto del curso <b>copia el modelo dentro de la imagen</b> (<code>COPY --from=modelo …</code>, el validado): la imagen es autosuficiente y reproducible. '
               'Montarlo sería más flexible, pero depende de que la carpeta esté donde toca.</p>')
 
     # 11 ------------------------------------------------------------------------------------------- práctica C (ejemplo 7)

@@ -52,7 +52,8 @@ name: Agente · Nueva versión
 #
 # CÓMO USAR ESTE ARCHIVO: cópialo a  .github/workflows/agente-nueva-version.yml  de TU repositorio. Está escrito para el repositorio
 #   del curso (proyecto en 04-Proyecto-Base y esta carpeta en 01-Sesiones/S5-MLOps-y-Operacion/laboratorio-agentes: los pasos usan
-#   los scripts que hay en ella; variable LAB). Si tu raíz es otra, ajusta `working-directory`, `LAB` y los prefijos de las rutas.
+#   los scripts que hay en ella; variable LAB). Si tu raíz es otra, ajusta `working-directory`, `LAB` y los prefijos de las rutas
+#   (y, en el «docker build», añade  --build-arg CARPETA=.  si el proyecto está en la raíz).
 #
 # SIN SECRETOS PROPIOS: solo el GITHUB_TOKEN que GitHub crea en cada ejecución, con los permisos mínimos de cada trabajo.
 # Las cifras salen de la ejecución: ninguna está escrita a mano aquí.
@@ -368,17 +369,31 @@ jobs:
 
       # Se construye con docker build (para poner las etiquetas OCI) y el compose, que ya la encuentra con ese nombre, la usa tal cual:
       # el contenedor probado es el que se publica.
+      # El código sale del commit de esta ejecución CLONADO (FUENTE=git), salvo con el atajo didáctico del prompt: aplicar_prompt.py
+      # cambia agente.py EN EL RUNNER, sin commit, y el clon no lo llevaría; entonces se construye desde la carpeta (FUENTE=contexto).
       - name: Construir la imagen interfaz-agente (con la etiqueta de versión dentro)
+        env:
+          GIT_TOKEN: ${{ github.token }}     # secreto de BuildKit: solo hace falta con un repositorio privado y no queda en la imagen
         run: |
+          FUENTE_IMAGEN=git
+          if [ "$PROMPT" = "nuevo" ]; then FUENTE_IMAGEN=contexto; fi
           docker build \
             --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
             --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
             --label "org.opencontainers.image.version=${ETIQUETA}" \
+            --build-arg FUENTE="${FUENTE_IMAGEN}" \
+            --build-arg REF="${GITHUB_SHA}" \
+            --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+            --secret id=git_token,env=GIT_TOKEN \
             -f deploy/docker/interfaz-agente.Dockerfile -t retencion-interfaz-agente:local .
           docker image ls retencion-interfaz-agente:local --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
           test "$(docker run --rm --entrypoint id retencion-interfaz-agente:local -u)" = "10001"
 
       - name: Levantar el compose con el perfil ci (la API se construye; la interfaz ya está construida)
+        env:                                 # la API, desde el commit clonado (el compose, por defecto, construye desde la carpeta)
+          FUENTE: git
+          REF: ${{ github.sha }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
         run: |
           docker compose -f "$COMPOSE" --profile ci up -d
           for _ in $(seq 1 60); do curl -fsS http://127.0.0.1:8090/listo -o "$SALIDAS/00-listo.json" && break; sleep 2; done

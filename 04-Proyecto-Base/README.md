@@ -87,8 +87,9 @@ Dos caminos, y las pruebas exigen que den **el mismo resultado**: ver `docs/de-n
 python -m ia_mlops.pipeline                 # deja models/modelo_mlflow/ y models/metadatos.json
 make api                                    # http://127.0.0.1:8080/docs
 curl http://127.0.0.1:8080/predecir ...     # ver docs/api-y-contenedor.md
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .      # en Codespaces
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .   # en Codespaces (o: make imagen)
 ```
+La imagen se construye en dos etapas: el código sale del **commit clonado** (`FUENTE=git`, lo que hacen los workflows con `--build-arg REF=<sha>`) o, para desarrollar, de tu carpeta (`FUENTE=contexto`); el modelo entra aparte, por el contexto `modelo` (el que se entrenó y validó).
 Cinco endpoints (`/salud`, `/listo`, `/modelo`, `/predecir`, `/predecir/lote`), un contrato que sale de la **firma del modelo MLflow**, errores 422/503/500 distinguibles,
 registros JSON por la salida estándar y una imagen mínima que no corre como root. Todo explicado, con lo que se probó y lo que no, en `docs/api-y-contenedor.md`.
 

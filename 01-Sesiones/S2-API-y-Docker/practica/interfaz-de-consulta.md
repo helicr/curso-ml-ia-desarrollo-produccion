@@ -38,12 +38,12 @@ Se hace dos veces, en dos sitios, para ver la diferencia:
 5. **Pregunta para el grupo.** ¿De qué depende que esto funcione? Haz la lista y compárala con la tabla del apartado 2: entorno, archivos, sistema operativo, sesión abierta, `127.0.0.1`.
 
 ## B · Dos contenedores en el Codespace (35 min) · guía, apartados 3 a 8
-En el Codespace del curso, en la terminal, desde `04-Proyecto-Base`. La imagen de la API ya está construida del bloque 4; si no, `docker build -f deploy/docker/Dockerfile -t retencion-api:local .`.
+En el Codespace del curso, en la terminal, desde `04-Proyecto-Base`. La imagen de la API ya está construida del bloque 4; si no, `docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .`.
 
 1. **Repaso de conceptos (5 min).** Imagen, contenedor, contexto, `-p`, `-v …:ro`, red y nombres, `-e`, usuario sin privilegios, `HEALTHCHECK` (apartado 3).
 2. **La imagen de la interfaz (10 min, apartado 5).** Lee `deploy/docker/interfaz.Dockerfile` con la tabla del apartado 5.2: no lleva ni modelo ni datos, y sus versiones salen del lock de la API.
    ```text
-   docker build -f deploy/docker/interfaz.Dockerfile -t retencion-interfaz:local .
+   docker build -f deploy/docker/interfaz.Dockerfile --build-arg FUENTE=contexto -t retencion-interfaz:local .
    docker image ls 'retencion-*'                     # anota el tamaño de las dos
    docker run --rm --entrypoint sh retencion-interfaz:local -c 'find /app -type f -not -path "*/ia_mlops/*"'
    ```

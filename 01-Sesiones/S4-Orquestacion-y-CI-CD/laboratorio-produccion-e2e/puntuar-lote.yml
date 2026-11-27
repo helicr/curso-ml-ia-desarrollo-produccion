@@ -115,6 +115,8 @@ jobs:
         with: { name: datos-y-modelo, path: 04-Proyecto-Base }
 
       - name: Obtener la imagen de la API (construirla o bajar la de producción)
+        env:
+          GIT_TOKEN: ${{ github.token }}     # secreto de BuildKit al construir: solo hace falta con un repositorio privado
         run: |
           if [ "$IMAGEN" = "ghcr" ]; then
             # La imagen de PRODUCCIÓN: la que dice models/referencia.json, publicada en GHCR por nueva-version.yml.
@@ -124,9 +126,11 @@ jobs:
             echo "Bajando la imagen de producción: $IMG"
             docker pull "$IMG"
           else
-            # Lo mismo que hace validar-dos-contenedores.yml: construir la imagen con el modelo que acaba de entrenar el pipeline.
+            # Lo mismo que hace validar-dos-contenedores.yml: el código del commit de esta ejecución (clonado) y el modelo que
+            # acaba de entrenar el pipeline (descargado en models/ con el artefacto «datos-y-modelo»), por el contexto «modelo».
             IMG=retencion-api:local
-            docker build -f deploy/docker/Dockerfile -t "$IMG" .
+            docker build -f deploy/docker/Dockerfile --build-arg REF="${GITHUB_SHA}" --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+              --build-context modelo=models --secret id=git_token,env=GIT_TOKEN -t "$IMG" .
           fi
           echo "IMG=$IMG" >> "$GITHUB_ENV"
 

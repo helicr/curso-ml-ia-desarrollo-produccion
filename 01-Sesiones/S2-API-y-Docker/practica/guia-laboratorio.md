@@ -145,7 +145,7 @@ docker version
 Deben aparecer **Client** y **Server**. Si `docker` no existe, sigue con el bloque 5: el CI construye la imagen por ti.
 ```bash
 python -m ia_mlops.pipeline
-docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .
 docker image ls retencion-api:local
 docker run -d --name api -p 8080:8080 retencion-api:local
 curl http://127.0.0.1:8080/listo
@@ -175,6 +175,8 @@ El workflow no publica nada ni usa secretos. **Pregunta:** ¿qué pasos del work
 | Síntoma | Qué hacer |
 |---|---|
 | `COPY failed … models/modelo_mlflow` al construir | Falta entrenar: `python -m ia_mlops.pipeline` antes de `docker build`. |
+| `pull access denied for modelo` (o `modelo_mlflow: not found`) al construir | Falta `--build-context modelo=models` en el `docker build` (el modelo entra por ese contexto), o `models/` está vacío: entrena antes. |
+| La imagen no lleva tu último cambio de `ia_mlops/` | Sin `--build-arg FUENTE=contexto`, el Dockerfile **clona el repositorio** (rama `develop`) en vez de usar tu carpeta. |
 | `/listo` da 503 | Lee el `detalle`: falta el modelo, o el esquema/los metadatos no coinciden con la firma. |
 | `Address already in use` / el puerto 8080 no responde | Otra API (o contenedor) ya lo usa: ciérrala o usa `--port 8081`. |
 | El navegador no llega al contenedor | Falta `-p 8080:8080`, o la API escucha en `127.0.0.1` dentro del contenedor. |

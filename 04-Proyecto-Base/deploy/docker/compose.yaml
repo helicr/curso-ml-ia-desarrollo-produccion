@@ -8,6 +8,11 @@
 #   docker compose -f deploy/docker/compose.yaml down              # para y borra contenedores y red (las imagenes y los datos quedan)
 #
 # Las rutas relativas de este archivo se resuelven desde ESTA carpeta (deploy/docker): por eso el contexto es ../..
+#
+# De dónde sale el código (ver la cabecera de deploy/docker/Dockerfile):
+#   - por defecto, FUENTE=contexto: el de TU carpeta, para probar lo que aún no has subido (el modo desarrollo del Codespace);
+#   - en CI se pasa por entorno  FUENTE=git REF=<sha>  y las imágenes clonan ESE commit (REPO_URL, si no es el repositorio del curso).
+# El modelo de la API entra aparte, por el contexto «modelo» (../../models: el que acabas de entrenar con el pipeline).
 name: retencion
 
 services:
@@ -15,6 +20,12 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
+      args:
+        FUENTE: ${FUENTE:-contexto}
+        REF: ${REF:-develop}
+        REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
+      additional_contexts:
+        modelo: ../../models             # la carpeta con modelo_mlflow/ y metadatos.json (relativa a ESTA carpeta, como context)
     image: retencion-api:local
     # Sin «ports»: la API NO se publica fuera. Solo la interfaz, dentro de la red, puede llamarla.
     # Para probarla con curl desde fuera, descomenta:
@@ -24,6 +35,10 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/interfaz.Dockerfile
+      args:                              # los mismos que la API; sin contexto «modelo»: la interfaz no lleva modelo
+        FUENTE: ${FUENTE:-contexto}
+        REF: ${REF:-develop}
+        REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
     image: retencion-interfaz:local
     ports:
       - "8090:8090"                      # equipo:contenedor -> http://127.0.0.1:8090 (en Codespaces, pestaña Puertos)

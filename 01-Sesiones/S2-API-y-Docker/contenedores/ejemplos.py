@@ -205,7 +205,7 @@ EJEMPLOS = [
          ],
          aprende=['**Volumen** (`-v nombre:ruta`): lo gestiona Docker; sirve para datos que deben sobrevivir al contenedor (una base de datos, resultados).',
                   '**Montaje de carpeta** (`-v carpeta:ruta`): expone una carpeta tuya dentro; sirve para desarrollo y para cambiar datos o modelo sin reconstruir. `:ro` evita que el contenedor la modifique.',
-                  'El proyecto del curso **copia el modelo dentro de la imagen** (`COPY models/...`): la imagen es autosuficiente y reproducible. Montarlo sería más flexible pero depende de que la carpeta esté donde toca.'],
+                  'El proyecto del curso **copia el modelo dentro de la imagen** (`COPY --from=modelo ...`: el modelo validado, que entra aparte con `--build-context modelo=models`): la imagen es autosuficiente y reproducible. Montarlo sería más flexible pero depende de que la carpeta esté donde toca.'],
          piensa=['¿Qué ventaja y qué riesgo tiene montar el modelo en lugar de copiarlo en la imagen?']),
 
     # ------------------------------------------------------------------------------------------------ 8

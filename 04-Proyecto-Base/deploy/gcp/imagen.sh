@@ -27,7 +27,8 @@ paso "2. Docker usa las credenciales de gcloud (sin claves en disco)"
 correr gcloud auth configure-docker "$HOST_AR" --quiet
 
 paso "3. build, tag y push con etiqueta fija ($ETIQUETA_IMAGEN)"
-correr docker build -f deploy/docker/Dockerfile -t "$IMAGEN:$ETIQUETA_IMAGEN" .
+# El codigo, de esta carpeta (FUENTE=contexto); el modelo, el de models/ (contexto «modelo»). Ver la cabecera de deploy/docker/Dockerfile.
+correr docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t "$IMAGEN:$ETIQUETA_IMAGEN" .
 correr docker tag "$IMAGEN:$ETIQUETA_IMAGEN" "$IMAGEN_COMPLETA"
 correr docker push "$IMAGEN_COMPLETA"
 

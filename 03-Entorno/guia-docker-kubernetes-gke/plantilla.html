@@ -133,7 +133,7 @@ svg text{font-family:var(--sans)}
   <h1>Docker: los comandos que usarás</h1>
   <div class="g2">
     <table class="t"><tr><th>Para</th><th>Comando</th></tr>
-      <tr><td>Construir la imagen</td><td><code>docker build -f deploy/docker/Dockerfile -t retencion-api:local .</code></td></tr>
+      <tr><td>Construir la imagen</td><td><code>docker build -f deploy/docker/Dockerfile --build-arg FUENTE=contexto --build-context modelo=models -t retencion-api:local .</code></td></tr>
       <tr><td>Ver imágenes</td><td><code>docker image ls</code></td></tr>
       <tr><td>Arrancar en segundo plano</td><td><code>docker run -d --name api -p 8080:8080 retencion-api:local</code></td></tr>
       <tr><td>Ver contenedores</td><td><code>docker ps</code> · <code>docker ps -a</code> (también los parados)</td></tr>

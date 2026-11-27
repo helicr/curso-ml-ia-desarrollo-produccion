@@ -25,12 +25,19 @@
 # LAS HERRAMIENTAS DEL AGENTE
 #   La interfaz las usa EN MEMORIA (ia_mlops/interfaz/asistente.py). Para usar el servidor MCP (python -m ia_mlops.agente.servidor_mcp) habría que
 #   darle a la imagen el modelo y scikit-learn, que la interfaz no lleva: queda fuera de este compose.
+#
+# CÓDIGO Y MODELO AL CONSTRUIR (como en compose.yaml): por defecto FUENTE=contexto (tu carpeta); en CI se pasa por entorno
+# FUENTE=git REF=<sha> y el código sale de ese commit clonado. El modelo de la API entra por el contexto «modelo» (../../models).
 name: retencion-agente
 
 x-interfaz: &interfaz
   build:
     context: ../..
     dockerfile: deploy/docker/interfaz-agente.Dockerfile
+    args:                                # sin contexto «modelo»: la interfaz no lleva modelo
+      FUENTE: ${FUENTE:-contexto}
+      REF: ${REF:-develop}
+      REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
   image: retencion-interfaz-agente:local
   ports:
     - "8090:8090"
@@ -47,6 +54,12 @@ services:
     build:
       context: ../..
       dockerfile: deploy/docker/Dockerfile
+      args:
+        FUENTE: ${FUENTE:-contexto}
+        REF: ${REF:-develop}
+        REPO_URL: ${REPO_URL:-https://github.com/helicr/curso-ml-ia-desarrollo-produccion.git}
+      additional_contexts:
+        modelo: ../../models             # modelo_mlflow/ y metadatos.json del pipeline (relativa a ESTA carpeta, como context)
     image: ${IMAGEN_API:-retencion-api:local}
 
   ollama:

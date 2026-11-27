@@ -52,14 +52,19 @@ jobs:
         run: |
           python -m pip install -r requirements-dev.txt
           python -m pip install -e . --no-deps
-      - name: Datos y modelo (lo que copia el Dockerfile)
+      - name: Datos y modelo (el modelo entra en la imagen por el contexto «modelo»)
         run: |
           python -m ia_mlops.operacional
           python -m ia_mlops.pipeline
           ls models/modelo_mlflow models/metadatos.json
+      # El código, del commit de esta ejecución CLONADO (no de la carpeta del runner); el modelo, el que acaba de entrenar el pipeline.
       - name: Construir la imagen
+        env:
+          GIT_TOKEN: ${{ github.token }}     # secreto de BuildKit: solo hace falta con un repositorio privado y no queda en la imagen
         run: |
-          docker build --label "org.opencontainers.image.revision=${GITHUB_SHA}" -f deploy/docker/Dockerfile -t "$SERVICIO:prueba" .
+          docker build --label "org.opencontainers.image.revision=${GITHUB_SHA}" -f deploy/docker/Dockerfile \
+            --build-arg REF="${GITHUB_SHA}" --build-arg REPO_URL="https://github.com/${GITHUB_REPOSITORY}.git" \
+            --build-context modelo=models --secret id=git_token,env=GIT_TOKEN -t "$SERVICIO:prueba" .
           docker image ls "$SERVICIO:prueba" --format '{{.Repository}}:{{.Tag}}  {{.Size}}'
       - name: Probar el contenedor en el runner (/salud, /listo, /modelo y una predicción)
         run: |
