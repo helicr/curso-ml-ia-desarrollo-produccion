@@ -1,0 +1,44 @@
+$ (resumir_salida + validar_salida sobre la salida real de arriba)
+{
+ "corte": "2011-12-10",
+ "modelo": "regresion_logistica",
+ "huella_datos": "35a94deb4e04ab4a",
+ "entrenado_en": "2026-11-13T17:04:12",
+ "origen": "modelo local (models/)",
+ "capacidad": 0.1,
+ "clientes_puntuados": 148,
+ "filas": 148,
+ "nulos": 0,
+ "prob_min": 0.12802697870370852,
+ "prob_max": 0.99771900532971,
+ "prob_media": 0.4858,
+ "tramos": {
+  "alta": 40,
+  "media": 35,
+  "baja": 73
+ },
+ "deciles": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10
+ ],
+ "en_campana": 15,
+ "clientes_en_campana": 15,
+ "con_advertencias": 132
+}
+validar_salida -> OK; avisos: ['132 clientes con valores fuera del rango de entrenamiento (primera señal de que conviene reentrenar)']
+## Lote de retención · corte 2011-12-10
+
+- Clientes puntuados: **148** · campaña: **15** (capacidad 0.1)
+- Probabilidad: mínima 0.128 · media 0.486 · máxima 0.998
+- Tramos de negocio: alta 40 · media 35 · baja 73
+- Modelo: regresion_logistica · huella de datos `35a94deb4e04ab4a` · entrenado 2026-11-13T17:04:12
+- Origen de las predicciones: modelo local (models/)
+- Aviso: 132 clientes con valores fuera del rango de entrenamiento (primera señal de que conviene reentrenar)

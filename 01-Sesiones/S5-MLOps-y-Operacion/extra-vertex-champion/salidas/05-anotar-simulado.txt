@@ -1,0 +1,6 @@
+SIMULADO (no se escribe nada). Se escribirían en la versión 6 de «retencion-90d» en MLflow:
+  vertex_modelo = retencion-90d-champion
+  vertex_model_version = 2
+  vertex_endpoint = retencion-90d-champion-ep
+  vertex_deployed_model_id = 1001
+  vertex_region = southamerica-west1

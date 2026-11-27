@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail · MCP y LLM</title>
+<meta name="description" content="Interfaz del extra de S5: dos servidores MCP (datos y modelo) conectados a un LLM.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f5fbf'/%3E%3Cpath d='M7 21a9 9 0 0 1 18 0' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='21' r='2.5' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="estatico/app.css">
+</head>
+<body>
+<a class="saltar" href="#principal">Saltar al contenido</a>
+
+<header class="cabecera">
+  <div class="marca">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor"/><path d="M7 21a9 9 0 0 1 18 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="21" r="2.5" fill="#fff"/></svg>
+    <div>
+      <h1>Retail · MCP y LLM</h1>
+      <p>ML e IA: de desarrollo a producción · extra de S5</p>
+    </div>
+  </div>
+  <div class="pildoras" id="pildoras" aria-label="Estado de los servicios"></div>
+  <div class="acciones">
+    <div class="segmento" role="group" aria-label="Motor de datos del MCP de datos">
+      <button type="button" id="b-sqlite" aria-pressed="true">SQLite</button>
+      <button type="button" id="b-bigquery" aria-pressed="false">BigQuery</button>
+    </div>
+    <button type="button" class="boton suave" id="b-ajustes">Ajustes del LLM</button>
+    <button type="button" class="boton suave" id="b-traza" aria-expanded="false" aria-controls="traza">Traza MCP <span class="contador" id="n-traza">0</span></button>
+  </div>
+</header>
+
+<div id="avisos"></div>
+
+<div class="cuerpo">
+  <main id="principal" tabindex="-1">
+    <div class="pestanas" role="tablist" aria-label="Secciones">
+      <button role="tab" id="t-cliente" aria-controls="p-cliente" aria-selected="true">Cliente</button>
+      <button role="tab" id="t-ysi" aria-controls="p-ysi" aria-selected="false" tabindex="-1">¿Y si…?</button>
+      <button role="tab" id="t-pregunta" aria-controls="p-pregunta" aria-selected="false" tabindex="-1">Pregunta</button>
+      <button role="tab" id="t-explorador" aria-controls="p-explorador" aria-selected="false" tabindex="-1">Explorador MCP</button>
+      <button role="tab" id="t-modelo" aria-controls="p-modelo" aria-selected="false" tabindex="-1">Modelo</button>
+      <button role="tab" id="t-lote" aria-controls="p-lote" aria-selected="false" tabindex="-1">Lote</button>
+    </div>
+
+    <section role="tabpanel" id="p-cliente" aria-labelledby="t-cliente"></section>
+    <section role="tabpanel" id="p-ysi" aria-labelledby="t-ysi" hidden></section>
+    <section role="tabpanel" id="p-pregunta" aria-labelledby="t-pregunta" hidden></section>
+    <section role="tabpanel" id="p-explorador" aria-labelledby="t-explorador" hidden></section>
+    <section role="tabpanel" id="p-modelo" aria-labelledby="t-modelo" hidden></section>
+    <section role="tabpanel" id="p-lote" aria-labelledby="t-lote" hidden></section>
+
+    <footer class="pie">
+      La probabilidad es la de <strong>volver a comprar en los próximos 90 días</strong>: alta = buena noticia, no es un riesgo de abandono.
+      Datos del caso Online Retail II (UCI, CC BY 4.0). Todo lo que se muestra sale de las herramientas MCP; lo que no se ha probado se marca «sin verificar».
+    </footer>
+  </main>
+
+  <aside id="traza" class="traza" aria-label="Traza MCP" hidden>
+    <div class="traza-cab">
+      <h2>Traza MCP</h2>
+      <span class="peq tenue" id="traza-vivo">en vivo</span>
+      <button type="button" class="boton suave peq" id="traza-limpiar">Vaciar</button>
+      <button type="button" class="boton suave peq" id="traza-cerrar" aria-label="Cerrar la traza">Cerrar</button>
+    </div>
+    <p class="peq tenue">Cada llamada a una herramienta, venga de un clic o del LLM. Pulsa una fila para ver el JSON.</p>
+    <ol id="traza-lista" class="traza-lista"></ol>
+  </aside>
+</div>
+
+<dialog id="dialogo" role="alertdialog" aria-labelledby="dlg-titulo" aria-describedby="dlg-cuerpo">
+  <form method="dialog" id="dlg-form">
+    <h2 id="dlg-titulo"></h2>
+    <div id="dlg-cuerpo" class="dlg-cuerpo"></div>
+    <div class="dlg-pie">
+      <button type="button" class="boton suave" id="dlg-cancelar">Cancelar</button>
+      <button type="button" class="boton primario" id="dlg-ok">Aceptar</button>
+    </div>
+  </form>
+</dialog>
+
+<noscript><p class="aviso">Esta interfaz necesita JavaScript (no usa nada de Internet: todo está en esta carpeta).</p></noscript>
+<script src="estatico/app.js"></script>
+</body>
+</html>

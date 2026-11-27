@@ -1,0 +1,7 @@
+{
+  "deployedModels": [
+    {"id": "1000", "displayName": "mlflow-v5"},
+    {"id": "1001", "displayName": "mlflow-v6"}
+  ],
+  "trafficSplit": {"1000": 90, "1001": 10}
+}

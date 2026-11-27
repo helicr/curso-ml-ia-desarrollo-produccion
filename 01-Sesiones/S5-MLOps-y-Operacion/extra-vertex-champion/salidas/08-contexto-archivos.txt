@@ -1,0 +1,15 @@
+Dockerfile.vertex
+ia_mlops/__init__.py
+ia_mlops/api/__init__.py
+ia_mlops/api/esquemas.py
+ia_mlops/config.py
+modelo/modelo_mlflow/MLmodel
+modelo/modelo_mlflow/conda.yaml
+modelo/modelo_mlflow/input_example.json
+modelo/modelo_mlflow/model.pkl
+modelo/modelo_mlflow/python_env.yaml
+modelo/modelo_mlflow/requirements.txt
+modelo/modelo_mlflow/serving_input_example.json
+modelo/vertex-manifiesto.json
+requirements-api.lock
+vertex_adaptador.py

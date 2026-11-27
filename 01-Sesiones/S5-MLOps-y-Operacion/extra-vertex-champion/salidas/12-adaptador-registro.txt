@@ -1,0 +1,5 @@
+{"severity": "INFO", "message": "modelo cargado", "evento": "modelo_cargado", "mlflow_version": 6, "huella_datos": "35a94deb4e04ab4a"}
+{"severity": "INFO", "message": "predicción", "evento": "peticion", "codigo": 200, "instancias": 3, "ms": 95.8}
+{"severity": "WARNING", "message": "instancias no válidas", "evento": "peticion", "codigo": 422, "errores": 1}
+{"severity": "WARNING", "message": "instancias no válidas", "evento": "peticion", "codigo": 422, "errores": 1}
+{"severity": "WARNING", "message": "instancias no válidas", "evento": "peticion", "codigo": 422, "errores": 1}

@@ -1,0 +1,4 @@
+# Contexto de construcción de lote.Dockerfile: se excluye TODO y se deja pasar solo lo que ese archivo copia.
+*
+!sql/fs/02_poblar_fs.sql
+!data/processed/curso.db

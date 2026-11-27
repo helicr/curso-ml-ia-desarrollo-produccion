@@ -1,0 +1,17 @@
+$ bash scripts/borrar.sh
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== Endpoint retencion-90d-champion-ep: undeploy de cada versión desplegada y borrado
+undeploy del modelo desplegado 1001
+undeploy del modelo desplegado 1002
+
+== Modelo retencion-90d-champion del Model Registry (todas sus versiones)
+
+== Imágenes retencion-vertex de Artifact Registry
+
+== Temporales locales
+
+== Lo que queda (debe estar vacío de recursos de este extra)
+
+
+(ninguna imagen retencion-vertex)

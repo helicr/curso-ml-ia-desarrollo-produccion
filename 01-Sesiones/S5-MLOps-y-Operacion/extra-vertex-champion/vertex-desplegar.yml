@@ -1,0 +1,318 @@
+name: Vertex AI · desplegar el champion de MLflow
+# =====================================================================================================================
+# QUÉ HACE (extra de S5: del alias champion de MLflow a un endpoint de Vertex AI)
+#
+#   1 · modelo       Entrena (datos de muestra), deja el alias `champion` de MLflow en la versión pedida, pasa la PUERTA DE CALIDAD
+#                    (pruebas del adaptador, AUC mínimo, huella de datos), construye la imagen de predicción con ESE modelo dentro,
+#                    la ARRANCA en el runner y comprueba /salud y una predicción real contra el modelo cargado a mano (paridad).
+#                    Si algo falla, NO se publica nada y no se entra en Google Cloud.
+#   2 · desplegar    Espera la APROBACIÓN en el environment «produccion» (Review deployments), entra en Google Cloud SIN CLAVES
+#                    (Workload Identity Federation), sube LA MISMA imagen a Artifact Registry con la etiqueta v<versión de MLflow>-<huella>,
+#                    registra una VERSIÓN NUEVA del modelo en el Model Registry de Vertex (--parent-model, alias champion y mlflow-v<N>),
+#                    la despliega en el endpoint en CANARIO (10 % por defecto si ya hay otra versión), PRUEBA una predicción real y
+#                    comprueba la paridad con el modelo local, y entonces pasa al 100 % (si se pidió). Deja el Job Summary con el
+#                    enlace MLflow <-> Vertex.
+#
+# DÓNDE SE COPIA: .github/workflows/vertex-desplegar.yml de TU repositorio (fork del curso). NO está instalado en el del curso.
+# QUÉ NECESITA (una vez; ver guia.md, «Preparar Google Cloud y GitHub»):
+#   · en Google Cloud: scripts/preparar_gcp.sh (APIs, repositorio de Artifact Registry, permisos de la cuenta de despliegue) y la
+#     federación WIF de S4 (preparar-gcp-s4.sh);
+#   · en GitHub, VARIABLES (no secretos): GCP_PROYECTO, GCP_REGION, GCP_PROVEEDOR_WIF, GCP_CUENTA_DESPLIEGUE, GCP_REPO_AR (opcional,
+#     por defecto «curso»); y el environment «produccion» con revisores (el de S4).
+# SIN SECRETOS: GitHub pide a Google un token de corta vida con su propia identidad OIDC (permiso id-token: write).
+#
+# ¡COBRA! Mientras haya un modelo desplegado, el endpoint cobra (sin dato de precio: https://cloud.google.com/vertex-ai/pricing).
+# Cuando acabes, lanza «Vertex AI · borrar todo» (vertex-borrar.yml) o scripts/borrar.sh en Cloud Shell.
+#
+# DE DÓNDE SALE EL MODELO CHAMPION EN EL RUNNER (limitación honesta): el registro de MLflow del curso es LOCAL (models/mlflow.db, no
+#   está en git). Como hace nueva-version.yml, el runner ENTRENA con los datos de muestra y crea su propio registro: el champion de aquí
+#   es el de ESTE run, no «el de tu portátil». Con «dos_versiones» se entrenan dos veces y se promueven en cadena (v1 y luego v2) para que
+#   exista una versión anterior a la que volver. En una empresa habría UN servidor de MLflow compartido: el workflow leería el champion de
+#   ahí (variable CURSO_MLFLOW_URI) y la etiqueta vertex_* se escribiría en ese registro (último paso, condicional).
+#
+# SIN VERIFICAR (aún no se ha ejecutado en GitHub Actions ni en Vertex): este workflow entero; docker en el runner con --platform linux/amd64;
+#   los campos JSON de `gcloud ai endpoints describe`; `--model ID@VERSION` en deploy-model; y que las versiones de las acciones
+#   google-github-actions/auth@v2 y setup-gcloud@v2 (ejecutadas en S4 con desplegar-gcp.yml) funcionen igual aquí.
+# =====================================================================================================================
+on:
+  # ENSAYO sin la rama principal: un push a lab/vertex-champion/<lo-que-sea> lo lanza (con las entradas por defecto; se para en la aprobación).
+  # A mano (Actions > «Vertex AI · desplegar el champion de MLflow» > Run workflow): mandan las entradas.
+  push:
+    branches: ['lab/vertex-champion/**']
+  workflow_dispatch:
+    inputs:
+      version_mlflow:
+        description: "Versión de MLflow que será el champion (vacío = la última del registro del runner)"
+        type: string
+        required: false
+        default: ""
+      dos_versiones:
+        description: "Entrenar dos veces y promover en cadena (v1 -> v2) para que haya una versión anterior a la que volver"
+        type: boolean
+        default: true
+      region:
+        description: "Región de Vertex AI y de Artifact Registry (el repositorio de la imagen debe estar en la MISMA región)"
+        type: string
+        default: ""
+      maquina:
+        description: "Tipo de máquina de la predicción online (por defecto e2-standard-2)"
+        type: string
+        default: "e2-standard-2"
+      min_replicas:
+        description: "Réplicas mínimas (entero >= 1; cada réplica cobra mientras esté desplegada)"
+        type: string
+        default: "1"
+      canario:
+        description: "% de tráfico para la versión nueva si ya hay otra desplegada (0-100; 0 = directamente el 100 %)"
+        type: string
+        default: "10"
+      auc_minimo:
+        description: "Puerta de calidad: AUC mínimo en validación y en prueba (0.65 es provisional, no sale de una medición)"
+        type: string
+        default: "0.65"
+      promover:
+        description: "Pasar al 100 % del tráfico tras probar"
+        type: boolean
+        default: true
+      retirar_anterior:
+        description: "Tras promover, esperar y retirar (undeploy) la versión anterior: deja de cobrar, pero ya no se vuelve en segundos"
+        type: boolean
+        default: false
+
+# Lo mínimo para todo el workflow; cada trabajo declara abajo los suyos (y solo los que necesita).
+permissions:
+  contents: read
+
+# Una operación de Vertex a la vez (desplegar, volver o borrar comparten el grupo); la segunda espera, no cancela a la primera
+# (puede estar esperando aprobación).
+concurrency:
+  group: vertex-champion
+  cancel-in-progress: false
+
+env:
+  CURSO_SIN_PANTALLA: "1"
+
+jobs:
+  # ===================================================================================================================
+  modelo:
+    name: "1 · Champion, puerta de calidad y prueba de la imagen"
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: 04-Proyecto-Base
+    outputs:
+      version_mlflow: ${{ steps.manifiesto.outputs.version_mlflow }}
+      etiqueta_imagen: ${{ steps.manifiesto.outputs.etiqueta_imagen }}
+    env:
+      EXTRA: ../01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion
+      CURSO_TRABAJO: ${{ runner.temp }}/vertex
+      VERSION_ENTRADA: ${{ inputs.version_mlflow }}
+      DOS_VERSIONES: ${{ inputs.dos_versiones }}
+      AUC_MINIMO: ${{ inputs.auc_minimo || '0.65' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: 04-Proyecto-Base/requirements-dev.txt
+      - name: Instalar el proyecto
+        run: |
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -e . --no-deps
+      - name: Comprobar las entradas (solo números donde van números)
+        run: |
+          [[ "$AUC_MINIMO" =~ ^[0-9]+(\.[0-9]+)?$ ]] || { echo "auc_minimo no es un número: $AUC_MINIMO"; exit 1; }
+          [[ -z "$VERSION_ENTRADA" || "$VERSION_ENTRADA" =~ ^[0-9]+$ ]] || { echo "version_mlflow debe ser un entero o estar vacía"; exit 1; }
+      - name: Datos y modelo (registra la versión 1 en MLflow; con dos_versiones, también la 2)
+        run: |
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+          if [ "$DOS_VERSIONES" = "true" ]; then python -m ia_mlops.pipeline --forzar; fi
+          python -m ia_mlops.alias_modelo mostrar
+      - name: Dejar el alias champion en la versión pedida (y recordar la anterior)
+        run: |
+          python -m ia_mlops.alias_modelo mostrar --json /tmp/estado.json > /dev/null
+          ULTIMA="$(python -c "import json; print(max(v['version'] for v in json.load(open('/tmp/estado.json'))['versiones']))")"
+          OBJETIVO="${VERSION_ENTRADA:-$ULTIMA}"
+          if [ "$OBJETIVO" -gt 1 ] && [ "$DOS_VERSIONES" = "true" ]; then python -m ia_mlops.alias_modelo promover --version "$((OBJETIVO - 1))"; fi
+          python -m ia_mlops.alias_modelo promover --version "$OBJETIVO"
+          python -m ia_mlops.alias_modelo mostrar
+      - name: Manifiesto del champion y contexto de la imagen
+        id: manifiesto
+        run: |
+          mkdir -p "$CURSO_TRABAJO"
+          python "$EXTRA/manifiesto_champion.py" generar --salida "$CURSO_TRABAJO/vertex-manifiesto.json"
+          (cd "$EXTRA" && python preparar_contexto.py --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" --destino "$CURSO_TRABAJO/build/vertex")
+          {
+            echo "version_mlflow=$(python "$EXTRA/manifiesto_champion.py" leer --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" mlflow_version)"
+            echo "etiqueta_imagen=$(python "$EXTRA/manifiesto_champion.py" leer --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" etiqueta_imagen)"
+          } >> "$GITHUB_OUTPUT"
+      - name: PUERTA DE CALIDAD (si falla, no se publica nada)
+        run: |
+          python "$EXTRA/manifiesto_champion.py" puerta --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" --auc-minimo "$AUC_MINIMO"
+          python -m pytest -q -p no:cacheprovider "$EXTRA/pruebas/test_adaptador.py" "$EXTRA/pruebas/test_manifiesto.py" "$EXTRA/pruebas/test_ayuda.py"
+      - name: Construir la imagen de predicción
+        run: docker build --platform linux/amd64 -f "$CURSO_TRABAJO/build/vertex/Dockerfile.vertex" -t retencion-vertex:prueba "$CURSO_TRABAJO/build/vertex"
+      - name: Probar la imagen en el runner (salud, predicción y paridad con el modelo local)
+        run: |
+          docker run -d --name vertex -p 8080:8080 -e AIP_HTTP_PORT=8080 -e AIP_HEALTH_ROUTE=/salud -e AIP_PREDICT_ROUTE=/predict retencion-vertex:prueba
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/salud > /dev/null 2>&1 && break; sleep 2; done
+          curl -fsS http://127.0.0.1:8080/salud; echo
+          python "$EXTRA/instancias.py" --salida "$CURSO_TRABAJO/instancias.json"
+          curl -fsS -X POST http://127.0.0.1:8080/predict -H 'content-type: application/json' -d @"$CURSO_TRABAJO/instancias.json" > "$CURSO_TRABAJO/respuesta.json"
+          cat "$CURSO_TRABAJO/respuesta.json"; echo
+          python "$EXTRA/comparar_paridad.py" --respuesta "$CURSO_TRABAJO/respuesta.json" --instancias "$CURSO_TRABAJO/instancias.json" \
+            --modelo-dir "$CURSO_TRABAJO/build/vertex/modelo" --esperar-version "${{ steps.manifiesto.outputs.version_mlflow }}" | tee "$CURSO_TRABAJO/paridad.txt"
+          docker rm -f vertex
+      - name: Guardar la imagen probada para el siguiente trabajo
+        run: docker save retencion-vertex:prueba | gzip > "$RUNNER_TEMP/imagen.tar.gz"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: imagen
+          path: ${{ runner.temp }}/imagen.tar.gz
+          retention-days: 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contexto
+          path: ${{ runner.temp }}/vertex
+          retention-days: 1
+          include-hidden-files: true
+      - name: Resumen
+        run: |
+          {
+            echo "## Champion listo para Vertex AI"
+            echo
+            echo "- MLflow: «retencion-90d» @champion -> **versión ${{ steps.manifiesto.outputs.version_mlflow }}**"
+            echo "- Imagen probada en el runner: \`${{ steps.manifiesto.outputs.etiqueta_imagen }}\`"
+            echo "- Puerta de calidad: AUC mínimo $AUC_MINIMO, pruebas del adaptador y paridad con el modelo local"
+            echo
+            echo '```'
+            cat "$CURSO_TRABAJO/paridad.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===================================================================================================================
+  desplegar:
+    name: "2 · Publicar en Artifact Registry y desplegar en Vertex AI (con aprobación)"
+    needs: modelo
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: produccion         # aquí se para hasta que un revisor lo apruebe (Review deployments)
+    permissions:
+      contents: read
+      id-token: write               # para que GitHub pida a Google el token de corta vida (WIF): sin claves
+    defaults:
+      run:
+        shell: bash
+        working-directory: 01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion
+    env:
+      CURSO_PROYECTO: ${{ vars.GCP_PROYECTO }}
+      CURSO_REGION_VERTEX: ${{ inputs.region || vars.GCP_REGION }}
+      CURSO_REPO_AR: ${{ vars.GCP_REPO_AR || 'curso' }}
+      CURSO_MAQUINA: ${{ inputs.maquina || 'e2-standard-2' }}
+      CURSO_MIN_REPLICAS: ${{ inputs.min_replicas || '1' }}
+      CURSO_CANARIO: ${{ inputs.canario || '10' }}
+      CURSO_TRABAJO: ${{ runner.temp }}/vertex
+      CURSO_PYTHON: python
+      CURSO_REUTILIZAR: "1"
+      CURSO_SIN_HABILITAR_APIS: "1"
+      CURSO_DIR_PROYECTO: ${{ github.workspace }}/04-Proyecto-Base
+      PROMOVER: ${{ github.event_name != 'workflow_dispatch' || inputs.promover }}
+      RETIRAR_ANTERIOR: ${{ inputs.retirar_anterior }}
+      ETIQUETA_IMAGEN: ${{ needs.modelo.outputs.etiqueta_imagen }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Comprobar las entradas (solo números donde van números)
+        run: |
+          [[ "$CURSO_MIN_REPLICAS" =~ ^[1-9][0-9]*$ ]] || { echo "min_replicas debe ser un entero >= 1"; exit 1; }
+          [[ "$CURSO_CANARIO" =~ ^[0-9]+$ ]] && [ "$CURSO_CANARIO" -le 100 ] || { echo "canario debe ser un entero entre 0 y 100"; exit 1; }
+          [[ "$CURSO_MAQUINA" =~ ^[a-z0-9-]+$ ]] || { echo "maquina no es un tipo de máquina"; exit 1; }
+          [[ "$CURSO_REGION_VERTEX" =~ ^[a-z0-9-]+$ ]] || { echo "region no válida"; exit 1; }
+      - name: Dependencias de las pruebas de paridad (las mismas que la imagen)
+        run: python -m pip install -r ../../../04-Proyecto-Base/requirements-api.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: imagen
+          path: ${{ runner.temp }}/descarga
+      - uses: actions/download-artifact@v4
+        with:
+          name: contexto
+          path: ${{ runner.temp }}/vertex
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.GCP_CUENTA_DESPLIEGUE }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Subir la imagen PROBADA a Artifact Registry (la misma, no otra parecida)
+        run: |
+          IMAGEN="${CURSO_REGION_VERTEX}-docker.pkg.dev/${CURSO_PROYECTO}/${CURSO_REPO_AR}/retencion-vertex:${ETIQUETA_IMAGEN}"
+          gunzip -c "$RUNNER_TEMP/descarga/imagen.tar.gz" | docker load
+          docker tag retencion-vertex:prueba "$IMAGEN"
+          gcloud auth configure-docker "${CURSO_REGION_VERTEX}-docker.pkg.dev" --quiet
+          docker push "$IMAGEN"
+      - name: Registrar la versión en el Model Registry (scripts/subir_modelo.sh)
+        run: bash scripts/subir_modelo.sh
+      - name: Desplegar en el endpoint, en canario si ya hay otra versión (scripts/desplegar.sh)
+        run: bash scripts/desplegar.sh --canario "$CURSO_CANARIO"
+      - name: Probar una predicción real y comprobar la paridad (scripts/probar.sh)
+        run: bash scripts/probar.sh
+      - name: Pasar al 100 % del tráfico (scripts/promover.sh)
+        if: ${{ env.PROMOVER == 'true' }}
+        run: |
+          if [ "$RETIRAR_ANTERIOR" = "true" ]; then bash scripts/promover.sh --retirar-anterior; else bash scripts/promover.sh; fi
+      - name: Enlace MLflow <-> Vertex en el registro compartido (solo si hay servidor de MLflow compartido)
+        if: ${{ vars.CURSO_MLFLOW_URI != '' }}
+        env:
+          URI_MLFLOW: ${{ vars.CURSO_MLFLOW_URI }}
+        run: |
+          python -m pip install mlflow-skinny==3.18.0
+          python manifiesto_champion.py anotar --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" --uri "$URI_MLFLOW" \
+            --vertex-modelo retencion-90d-champion --vertex-version "$(cat "$CURSO_TRABAJO/version_vertex.txt")" \
+            --endpoint retencion-90d-champion-ep --deployed-model-id "$(cat "$CURSO_TRABAJO/id_desplegado.txt")" --region "$CURSO_REGION_VERTEX"
+      - name: Job Summary con el enlace MLflow <-> Vertex
+        if: ${{ always() }}
+        run: |
+          [ -f "$CURSO_TRABAJO/vertex-manifiesto.json" ] || exit 0
+          VER_MLFLOW="$(python manifiesto_champion.py leer --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" mlflow_version)"
+          {
+            echo "## Desplegado en Vertex AI"
+            echo
+            echo "| MLflow | Vertex AI |"
+            echo "|---|---|"
+            echo "| modelo «retencion-90d» @champion | modelo \`retencion-90d-champion\` (Model Registry) |"
+            echo "| versión **$VER_MLFLOW** | versión **$(cat "$CURSO_TRABAJO/version_vertex.txt" 2>/dev/null || echo '?')** (alias \`mlflow-v$VER_MLFLOW\`, \`champion\`) |"
+            echo "| huella de datos \`$(python manifiesto_champion.py leer --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" huella_datos)\` | etiqueta \`huella_datos\` de la versión |"
+            echo "| AUC valid $(python manifiesto_champion.py leer --manifiesto "$CURSO_TRABAJO/vertex-manifiesto.json" valid_auc) | etiqueta \`auc_valid\` |"
+            echo
+            echo "- Endpoint: \`retencion-90d-champion-ep\` en \`$CURSO_REGION_VERTEX\` (consola: Vertex AI > Predicción en línea)"
+            echo "- Imagen: \`$ETIQUETA_IMAGEN\` en Artifact Registry"
+            echo "- Entrada en Google Cloud **sin claves** (Workload Identity Federation)"
+            echo
+            echo "**El endpoint COBRA mientras tenga un modelo desplegado.** Para dejarlo a cero: \`Vertex AI · borrar todo\`."
+            echo
+            echo '```'
+            cat "$CURSO_TRABAJO/paridad.txt" 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: vertex-enlace
+          path: |
+            ${{ runner.temp }}/vertex/vertex-manifiesto.json
+            ${{ runner.temp }}/vertex/version_vertex.txt
+            ${{ runner.temp }}/vertex/id_desplegado.txt
+            ${{ runner.temp }}/vertex/endpoint.json
+            ${{ runner.temp }}/vertex/paridad.txt
+          if-no-files-found: ignore
+          retention-days: 14

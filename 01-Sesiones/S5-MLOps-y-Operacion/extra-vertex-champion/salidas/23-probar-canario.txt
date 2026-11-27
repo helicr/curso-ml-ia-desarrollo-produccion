@@ -1,0 +1,20 @@
+$ bash scripts/probar.sh
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== Petición (<trabajo>/instancias.json)
+Escrito <trabajo>/instancias.json: 3 instancias (activo, dormido, una_factura), 13 números cada una
+{"instances": [[35, 6, 1250.4, 208.4, 410, 38, 310, 2, 380.5, 4, 55.0, 1, 1], [300, 2, 90.0, 45.0, 30, 8, 340, 0, 0.0, 0, 200.0, 0, 0], [20, 1, 85.5, 85.5, 12, 5, 20, 1, 85.5, 1, null, 0, 1]]}
+
+== gcloud ai endpoints predict (hasta 40 intentos hasta que conteste la versión 6)
+intento 1: contestó otra versión (tráfico dividido); reintento...
+[{"probabilidad": 0.8278889191932137, "clase": 1, "tramo": "alta", "version_mlflow": 6}, {"probabilidad": 0.2759763412994004, "clase": 0, "tramo": "baja", "version_mlflow": 6}, {"probabilidad": 0.28516736331641934, "clase": 0, "tramo": "baja", "version_mlflow": 6}]
+
+
+== Comparación con el modelo local
+instancia   probabilidad (Vertex)   probabilidad (local)   diferencia   clase   tramo   versión MLflow
+0           0.8278889192            0.8278889192          0.00e+00     1/1   alta/alta   6  IGUAL
+1           0.2759763413            0.2759763413          0.00e+00     0/0   baja/baja   6  IGUAL
+2           0.2851673633            0.2851673633          0.00e+00     0/0   baja/baja   6  IGUAL
+PARIDAD: las predicciones del endpoint y las del modelo local coinciden.
+
+Todo correcto. Si es el canario, siguiente: scripts/promover.sh. AHORA o al terminar: scripts/borrar.sh (el endpoint cobra mientras esté desplegado).

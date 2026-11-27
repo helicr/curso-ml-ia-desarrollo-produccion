@@ -1,0 +1,16 @@
+$ bash scripts/volver.sh
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== 1. A qué versión volver
+Sirve ahora: mlflow-v6 (modelo desplegado 1001)  ->  vuelve a: mlflow-v5
+
+== 2. Tráfico del endpoint
+mlflow-v5 ya no está desplegada: se vuelve a desplegar la versión 1 del Model Registry (tarda varios minutos).
+1001	mlflow-v6	0%
+1002	mlflow-v5	100%
+
+== 3. Alias champion de MLflow
+Almacén de MLflow: sqlite:///<trabajo>/models/mlflow.db
+Rollback: @champion: v6 -> v5. La v6 sigue registrada; no se ha borrado nada.
+
+mlflow-v6 sigue desplegada con 0 % y SIGUE COBRANDO. Retírala con  scripts/volver.sh --retirar-actual  o borra todo con scripts/borrar.sh

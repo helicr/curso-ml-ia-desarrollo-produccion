@@ -1,0 +1,78 @@
+# EXTRA S5 · Subir el DAG al bucket del entorno de Cloud Composer cuando cambia, tras pasar las pruebas.
+#
+#   pruebas  ──►  subir  (environment: produccion = ESPERA a un revisor)  ──►  comprobar que Airflow lo ve
+#
+# Se copia en:  .github/workflows/dags-composer.yml  (en la raíz de tu copia del repositorio)
+# ESTADO: SIN ENSAYAR (ni en Actions ni contra un entorno de Composer). Variables y entorno: los de lote-composer.yml.
+#
+# CUÁNDO: al hacer push a la rama principal cambiando los DAG, o a mano. Las ramas de ensayo (lab/**) solo pasan las PRUEBAS: no se sube nada.
+# QUÉ SUBE: dags/retencion_lote.py y dags/lote_logica.py a la carpeta /dags del bucket del entorno
+#   (gcloud composer environments storage dags import …). Airflow tarda en verlos: la documentación habla de 1-2 minutos de retraso
+#   (https://docs.cloud.google.com/composer/docs/composer-3/manage-dags), por eso el último paso espera con reintentos.
+name: DAG en Cloud Composer
+
+on:
+  push:
+    branches: [main, 'lab/composer/**']
+    paths:
+      - '01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dags-composer
+  cancel-in-progress: false
+
+env:
+  EXTRA: 01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch
+
+jobs:
+  pruebas:
+    name: 1 · Pruebas del DAG y del cliente (sin Airflow, sin Google Cloud)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Instalar lo mínimo para las pruebas
+        run: pip install -q pytest pyyaml fastapi uvicorn httpx pandas
+      - name: Pruebas de extra-composer-batch
+        working-directory: 01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch
+        run: python -m pytest pruebas -q -p no:cacheprovider
+
+  subir:
+    name: 2 · Subir el DAG al entorno (con aprobación)
+    needs: pruebas
+    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: produccion
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.COMPOSER_CUENTA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Subir los DAG a la carpeta /dags del bucket del entorno
+        run: |
+          for f in lote_logica.py retencion_lote.py; do
+            gcloud composer environments storage dags import --environment "${{ vars.COMPOSER_ENV }}" --location "${{ vars.COMPOSER_REGION }}" --source="$EXTRA/dags/$f"
+          done
+      - name: Esperar a que Airflow vea el DAG
+        run: |
+          for i in $(seq 1 20); do
+            if gcloud composer environments run "${{ vars.COMPOSER_ENV }}" --location "${{ vars.COMPOSER_REGION }}" dags list -- --output=json 2>/dev/null | grep -q retencion_lote; then
+              echo "Airflow ya ve retencion_lote"; echo "- DAG subido a **${{ vars.COMPOSER_ENV }}** (${{ vars.COMPOSER_REGION }}): Airflow ya ve \`retencion_lote\`." >> "$GITHUB_STEP_SUMMARY"; exit 0
+            fi
+            echo "Intento $i/20: todavía no aparece. Espero 30 s."; sleep 30
+          done
+          echo "::error::Airflow no ve retencion_lote tras 10 minutos: mira los errores de importación del DAG en la interfaz de Airflow."; exit 1

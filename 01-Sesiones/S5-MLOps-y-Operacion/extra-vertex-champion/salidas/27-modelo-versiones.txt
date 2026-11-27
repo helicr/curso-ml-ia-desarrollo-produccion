@@ -1,0 +1,44 @@
+[
+ {
+  "versionId": "1",
+  "versionAliases": [
+   "mlflow-v5"
+  ],
+  "labels": {
+   "curso": "ml-ia",
+   "mlflow_modelo": "retencion-90d",
+   "mlflow_alias": "champion",
+   "mlflow_version": "5",
+   "mlflow_run": "8aee8bf0ee3745949fc6dc573d127b4f",
+   "huella_datos": "35a94deb4e04ab4a",
+   "auc_valid": "0_6982",
+   "auc_test": "0_7471"
+  },
+  "imagen": "southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v5-35a94deb4e04ab4a",
+  "puerto": "8080",
+  "rutaPredict": "/predict",
+  "rutaSalud": "/salud"
+ },
+ {
+  "versionId": "2",
+  "versionAliases": [
+   "champion",
+   "mlflow-v6"
+  ],
+  "labels": {
+   "curso": "ml-ia",
+   "mlflow_modelo": "retencion-90d",
+   "mlflow_alias": "champion",
+   "mlflow_version": "6",
+   "mlflow_run": "ddd3b315513e4a3b9b79ae3e80cf1cb7",
+   "huella_datos": "35a94deb4e04ab4a",
+   "auc_valid": "0_6982",
+   "auc_test": "0_7471",
+   "mlflow_version_anterior": "5"
+  },
+  "imagen": "southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v6-35a94deb4e04ab4a",
+  "puerto": "8080",
+  "rutaPredict": "/predict",
+  "rutaSalud": "/salud"
+ }
+]

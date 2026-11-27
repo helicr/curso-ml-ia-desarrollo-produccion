@@ -1,0 +1,5 @@
+«retencion-90d» @champion -> versión 6 de MLflow (anterior: 5)
+  AUC valid 0.6982 · test 0.7471 · huella de datos 35a94deb4e04ab4a
+  imagen: <registro>/retencion-vertex:v6-35a94deb4e04ab4a   alias en Vertex: mlflow-v6
+  etiquetas de Vertex: curso=ml-ia,mlflow_modelo=retencion-90d,mlflow_alias=champion,mlflow_version=6,mlflow_run=ddd3b315513e4a3b9b79ae3e80cf1cb7,huella_datos=35a94deb4e04ab4a,auc_valid=0_6982,auc_test=0_7471,mlflow_version_anterior=5
+Escrito <trabajo>/vertex-manifiesto.json

@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extra de S5: lote con Airflow en Cloud Composer · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--tinta:#1f2937;--suave:#5b6472;--linea:#d6dde6;--fondo:#ffffff;--gris:#f4f6f9;--acento:#0b5cad;--ok:#15803d;--mal:#b91c1c;--aviso:#92400e;
+ --mono:Consolas,"Cascadia Mono","DejaVu Sans Mono",Menlo,monospace;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8ecf1;color:var(--tinta);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#viewport{position:fixed;inset:0 0 48px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#stage{width:1280px;height:720px;flex:none;position:relative;transform:scale(var(--s,1));background:var(--fondo);box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;padding:30px 52px 46px;display:none;flex-direction:column;gap:10px;overflow:hidden}
+.slide.active{display:flex}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acento);font-weight:700}
+h1{font-size:31px;line-height:1.15;font-weight:700;margin-bottom:4px}
+h3{font-size:17px;margin-bottom:5px}
+.sub{font-size:22px;line-height:1.4;color:var(--suave);max-width:1050px}
+.cover{display:flex;flex-direction:column;justify-content:flex-start;padding-top:70px;flex:1}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--tinta)}
+.tag.ok{border-color:#86c79c;background:#ecf8f0;color:var(--ok)}.tag.warn{border-color:#e2b56b;background:#fdf6e9;color:var(--aviso)}
+.card{border:1px solid var(--linea);border-radius:12px;padding:10px 14px;background:#fff}
+.callout{border-left:4px solid var(--acento);background:#eef5fc;padding:9px 14px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.4}
+.small{font-size:15px;line-height:1.42}
+.mono{font-family:var(--mono);font-size:.92em;background:var(--gris);padding:0 4px;border-radius:4px}
+.okc{color:var(--ok)}.malc{color:var(--mal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.thumbs{display:grid;gap:8px}.thumbs.t2{grid-template-columns:1fr 1fr}
+.src{margin:0;padding:7px 11px;font-family:var(--mono);font-size:12px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere}
+.grande .src{font-size:13.5px}
+.split{display:grid;gap:18px;min-height:0}.col,.capcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+.list{list-style:none;display:flex;flex-direction:column;gap:4px}.list li{font-size:15px;line-height:1.38;padding-left:16px;position:relative}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--acento)}
+.ol{padding-left:24px;display:flex;flex-direction:column;gap:5px;font-size:17px}.ol.sm{font-size:15px;gap:3px}
+.mira h3{color:var(--acento);font-size:15.5px}.mira .list li{font-size:14.5px}
+.falla{border-color:#e2b56b;background:#fffaf0}.falla h3{color:var(--aviso);font-size:15.5px}.falla .list li{font-size:14.5px}.falla .list li::before{background:var(--aviso)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);border-bottom:2px solid var(--linea);padding:5px 8px}
+.tbl td{border-bottom:1px solid var(--linea);padding:6px 8px;line-height:1.35;vertical-align:top}
+.term{border:1px solid var(--linea);border-radius:10px;background:var(--gris);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--linea);background:#eaeef3}
+.term .bar em{flex:1;font-style:normal;font-size:12.5px;color:var(--suave)}
+.tls{padding:6px 8px;font-family:var(--mono);font-size:13px;line-height:1.42}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.tln.c{color:var(--suave);font-style:italic}
+.ps{color:var(--ok);font-weight:700}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #b9c3cf;background:#fff;font-size:13px;color:var(--suave)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}.cpall{padding:0 10px;font-size:12px;font-family:var(--sans)}
+.realbox{border:1px solid #86c79c;background:#f3fbf5;border-radius:10px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.rot{margin:-4px 0 0}
+.cap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cap figcaption{font-size:12px;line-height:1.35;color:var(--suave)}
+.cap .nota{color:var(--aviso)}
+.zoom{display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoom img{display:block;max-width:100%;height:auto;border:1px solid var(--linea);border-radius:8px}
+.lupa{position:absolute;right:6px;bottom:6px;font-size:11.5px;background:rgba(255,255,255,.92);border:1px solid var(--linea);border-radius:6px;padding:1px 6px;display:flex;align-items:center;gap:4px;color:var(--suave)}
+.pend{border:2px dashed #c9a65e;background:#fdf9f0;border-radius:10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;text-align:center;font-size:13.5px;color:var(--aviso)}
+.pend b{font-size:16px}
+.grande .small{font-size:17.5px}.grande .list li{font-size:17px}.grande .mira .list li,.grande .falla .list li{font-size:16.5px}.grande .tbl{font-size:16.5px}.grande .tbl td{padding:8px 10px}
+.grande .tls{font-size:14.5px;line-height:1.5}.grande .callout{font-size:18px}.grande .ol{font-size:19px}.grande .ol.sm{font-size:17px}.grande h3{font-size:19px}.grande .mira h3,.grande .falla h3{font-size:17px}
+.grande .card{padding:13px 17px}.grande .grid4 .kpi{min-height:250px;padding-top:20px}.grande .grid4 .kpi .small{font-size:19px}.grande .grid4{margin-top:36px!important}.grande .kpi .n{font-size:30px}.grande .msg{font-size:32px}
+.kpi .n{display:block;font-size:27px;line-height:1.15;color:var(--acento);margin-bottom:4px}.kpi .n.okc{color:var(--ok)}
+.msg{font-size:27px;line-height:1.3;font-weight:600;border-left:6px solid var(--acento);padding:12px 20px;background:#eef5fc;border-radius:0 12px 12px 0}
+svg .nodo{fill:#f4f8fc;stroke:#8fb2d6;stroke-width:1.5}svg .nodo.puerta{fill:#fdf6e9;stroke:#c9a65e}svg .nodo.ok{fill:#ecf8f0;stroke:var(--ok)}svg .nodo.mal{fill:#fdeeee;stroke:var(--mal)}
+svg .fl{stroke:var(--acento);stroke-width:2;fill:none}svg .fl.dis{stroke-dasharray:5 4;stroke:#8fb2d6}
+svg .t1{font:700 15px var(--sans);fill:var(--tinta);text-anchor:middle}svg .t2{font:13px var(--sans);fill:var(--suave);text-anchor:middle}
+svg .tok{fill:var(--ok)}svg .tmal{fill:var(--mal)}
+.card svg{display:block;width:100%;height:auto}
+.foot{position:absolute;left:52px;right:52px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acento);z-index:5}
+#bar{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border-top:1px solid var(--linea);font-size:13px;z-index:6}
+#bar button,#bar a{border:1px solid var(--linea);border-radius:8px;padding:4px 10px;background:#fff;color:var(--tinta);text-decoration:none;font-size:13px}
+#bar .part.on{border-color:var(--acento);color:var(--acento);font-weight:700}
+#bar .sp{flex:1}#count,#clockref{color:var(--suave);padding:0 6px}
+#notes{position:fixed;right:0;top:0;bottom:48px;width:400px;background:#fff;border-left:1px solid var(--linea);padding:18px;overflow:auto;display:none;z-index:7;font-size:15px;line-height:1.5}
+#notes.on{display:block}#notes h3{margin-bottom:8px}
+#index{position:fixed;inset:0 0 48px 0;background:rgba(255,255,255,.98);display:none;z-index:8;padding:28px;overflow:auto}
+#index.on{display:block}#index .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+#index button{border:1px solid var(--linea);border-radius:10px;padding:10px;text-align:left;font-size:14px;background:#fff}
+#index button small{display:block;color:var(--suave);font-size:12px}#index button.cur{border-color:var(--acento)}
+#zoombox{position:fixed;inset:0;background:rgba(20,26,34,.86);display:none;z-index:9;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#zoombox.on{display:flex}#zoombox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#zoombox p{position:fixed;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+@media print{#bar,#notes,#index,#prog,.cp{display:none!important}}
+
+.fuente{font-size:12.5px;line-height:1.35;color:var(--suave);margin-top:2px}
+.fuente .mono{font-size:.95em}
+.tbl td .mono{font-size:12.5px}
+.grid2>.callout{align-self:start}
+.cover .grid3 .card .list li{font-size:14px}
+.pend ol{text-align:left;margin:4px 0 0;padding-left:22px}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="3" data-title="Portada"
+ data-notes="Portada del extra. El profesor decidió Cloud Composer, el Airflow gestionado de Google Cloud. Este extra tiene tres piezas: el DAG con los comandos manuales, una interfaz para lanzarlo y los workflows de GitHub Actions. Diga desde el principio lo que se ejecutó de verdad y lo que no: el DAG no se ha ejecutado en un Airflow real, ni nada en Composer, ni Docker. Cada diapositiva lo marca.">
+<p class="kick">1 · Por qué y qué · ML e IA: de desarrollo a producción · S5 · extra</p><h1>El lote del modelo, orquestado con Airflow en Cloud Composer</h1>
+
+<div class="cover">
+ <p class="sub">Cada día hay que puntuar a <b>todos</b> los clientes. Ya lo hace GitHub Actions (S4). Aquí lo hace <b>Airflow</b>, el orquestador, en su versión gestionada de Google Cloud: <b>Cloud Composer</b>. Un <b>DAG</b> de cuatro pasos, una <b>interfaz</b> con un botón y los <b>workflows</b> de Actions que lo lanzan con aprobación.</p>
+ <div class="chips"><span class="tag">DAG retencion_lote</span><span class="tag">KubernetesPodOperator</span><span class="tag">DockerOperator</span><span class="tag">API REST</span><span class="tag">pestaña Lote</span><span class="tag">WIF sin claves</span></div>
+ <div class="grid3" style="margin-top:20px">
+  <div class="card"><h3>Lo que te llevas</h3><ul class="list"><li>El <b>DAG</b> y los <b>comandos</b> para lanzarlo a mano.</li><li>Una <b>interfaz</b> para lanzarlo y verlo.</li><li>Los <b>workflows</b> de GitHub Actions.</li></ul></div>
+  <div class="card"><h3>Cómo se usa</h3><ul class="list"><li>Cada paso trae su <b>orden con ⧉</b> para copiar y pegar.</li><li>Cada paso trae <b>qué debes ver</b> y <b>si falla</b>.</li><li><b>← →</b> avanzan · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa.</li></ul></div>
+  <div class="card"><h3>Honestidad desde el principio</h3><ul class="list"><li>Ejecutado el <b>27/11/2026</b>: el lote real, la validación, el cliente REST y la interfaz (contra un <b>Airflow de prueba</b>).</li><li><b>Sin verificar:</b> el DAG en un Airflow real, Composer, Docker y los workflows en Actions. Se marca en cada diapositiva.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Por qué orquestar un lote"
+ data-notes="Por qué orquestar. Ya hay un lote diario en GitHub Actions, el workflow puntuar lote de S4, y funciona. Un orquestador añade dependencias entre pasos, reintentos, el estado de cada tarea, historial y un botón con parámetros. La decisión del profesor es Cloud Composer; sea honesto: para un solo lote es más caro que Actions o que un Cloud Run Job.">
+<p class="kick">1 · Por qué y qué · del cron al orquestador</p><h1>¿Por qué no basta un cron o un workflow? Porque un lote real tiene pasos, dependencias y fallos</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Lo que ya hace puntuar-lote.yml (S4)</h3><ul class="list"><li>Un workflow de Actions con <span class="mono">schedule</span> entrena, construye la API y puntúa a todos los clientes.</li><li>Funciona y es <b>barato</b>: para un lote diario aislado, <b>puede ser suficiente</b>.</li></ul></div>
+ <div class="card"><h3>Lo que añade un orquestador</h3><ul class="list"><li><b>Dependencias:</b> validar solo si el lote terminó; resumir solo si validó.</li><li><b>Reintentos y estado por tarea:</b> ves <i>qué</i> tarea falló y la repites sola.</li><li><b>Historial y botón:</b> cada ejecución queda guardada y se lanza con parámetros.</li><li><b>Un sitio donde coordinar muchos flujos</b> (ingesta, lote, monitoreo…).</li></ul></div>
+</div>
+<div class="callout"><b>Decisión del profesor: Cloud Composer.</b> Se justifica cuando hay <b>muchos</b> flujos que coordinar. Para uno solo, Cloud Run Jobs o el propio Actions cuestan mucho menos: el README lo dice sin cifras inventadas.</div><p class="fuente">Fuente: <span class="mono">puntuar-lote.yml</span> de S4 y README de este extra.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Airflow en cinco palabras"
+ data-notes="El vocabulario. Un DAG es un grafo de tareas sin ciclos, escrito en Python. Una tarea es un paso; un operador es la plantilla de una tarea; un run es una pasada completa. Cloud Composer es Airflow gestionado: Composer tres ofrece Airflow dos y Airflow tres según su documentación de versiones.">
+<p class="kick">1 · Por qué y qué · vocabulario</p><h1>DAG, tarea, operador, ejecución y Composer: el vocabulario que necesitas</h1>
+<div class="card"><table class="tbl"><tr><th>Palabra</th><th>Qué es</th><th>En este extra</th></tr><tr><td><b>DAG</b></td><td>Un grafo de tareas <b>sin ciclos</b>, escrito en Python</td><td><span class="mono">retencion_lote</span>: <span class="mono">entradas → comprobar → ejecutar_lote → validar → resumir</span></td></tr><tr><td><b>Tarea</b></td><td>Un paso del grafo</td><td>Cinco tareas</td></tr><tr><td><b>Operador</b></td><td>La plantilla de una tarea (qué sabe hacer)</td><td><span class="mono">KubernetesPodOperator</span>, <span class="mono">DockerOperator</span>, <span class="mono">PythonOperator</span></td></tr><tr><td><b>Run (ejecución)</b></td><td>Una pasada completa del DAG, con su estado</td><td><span class="mono">success</span> o <span class="mono">failed</span>; lleva su <span class="mono">conf</span> (corte, imagen)</td></tr><tr><td><b>Cloud Composer</b></td><td>Airflow <b>gestionado</b> en Google Cloud</td><td>Composer 3 ofrece Airflow 2 y Airflow 3; subes los DAG a <span class="mono">/dags</span> de un bucket</td></tr></table></div><p class="fuente">Fuente: &lt;https://docs.cloud.google.com/composer/docs/composer-versioning-overview&gt; y &lt;https://docs.cloud.google.com/composer/docs/composer-3/manage-dags&gt;.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Arquitectura"
+ data-notes="La arquitectura. La imagen de la API lleva el modelo pero no el SQL ni los datos, porque su dockerignore los excluye; por eso lote punto Dockerfile parte de esa imagen y añade el SQL de la capa FS y la base de muestra. Como parte de la imagen ya construida, vale con el Dockerfile actual de develop y con el multi etapa que usa build context modelo. El DAG tiene dos variantes de operador; el pod devuelve un resumen pequeño por XCom y una tarea del worker lo valida.">
+<p class="kick">1 · Por qué y qué · imagen → pod → salida → validación</p><h1>La imagen lleva el modelo; el DAG la ejecuta, valida la salida y la resume</h1>
+
+<div class="card"><svg viewBox="0 0 1100 175" role="img" aria-label="La imagen del lote se ejecuta como pod o contenedor lanzado por el DAG; deja la campaña en CSV y JSON; una tarea valida la salida y otra la resume"><defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="30" width="190" height="96" rx="12" class="nodo"/><text x="101" y="57" class="t1">Imagen del lote</text><text x="101" y="77" class="t2">API + modelo + SQL + datos</text><text x="101" y="97" class="t2">Artifact Registry</text><rect x="226" y="30" width="190" height="96" rx="12" class="nodo puerta"/><text x="321" y="57" class="t1">Airflow / Composer</text><text x="321" y="77" class="t2">el DAG retencion_lote</text><text x="321" y="97" class="t2">lo lanzas con --conf</text><rect x="446" y="30" width="190" height="96" rx="12" class="nodo puerta"/><text x="541" y="57" class="t1">Pod o contenedor</text><text x="541" y="77" class="t2">python -m ia_mlops.</text><text x="541" y="97" class="t2">explotacion</text><rect x="666" y="30" width="190" height="96" rx="12" class="nodo"/><text x="761" y="57" class="t1">Salida</text><text x="761" y="77" class="t2">campana_&lt;corte&gt;.csv</text><text x="761" y="97" class="t2">y .json</text><rect x="886" y="30" width="190" height="96" rx="12" class="nodo ok"/><text x="981" y="57" class="t1">Validación y resumen</text><text x="981" y="77" class="t2">filas · prob. en [0,1]</text><text x="981" y="97" class="t2">tramos · deciles</text><path d="M196 78 L223 78" class="fl" marker-end="url(#fa)"/><path d="M416 78 L443 78" class="fl" marker-end="url(#fa)"/><path d="M636 78 L663 78" class="fl" marker-end="url(#fa)"/><path d="M856 78 L883 78" class="fl" marker-end="url(#fa)"/><text x="550" y="160" class="t2">comprobar → ejecutar_lote → validar → resumir: si una falla, las siguientes no corren y el run queda en rojo</text></svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>La imagen</h3><ul class="list"><li>La imagen de la API lleva el modelo, pero <b>no el SQL ni los datos</b> (su <span class="mono">.dockerignore</span> los excluye).</li><li><span class="mono">lote.Dockerfile</span> parte de ella y los añade: sirve con el Dockerfile de develop <b>y</b> con el multi-etapa (<span class="mono">--build-context modelo=…</span>).</li></ul></div>
+ <div class="card"><h3>Dos operadores</h3><ul class="list"><li><b>Composer:</b> <span class="mono">KubernetesPodOperator</span> con la imagen de Artifact Registry.</li><li><b>Local:</b> <span class="mono">DockerOperator</span> con el socket de Docker.</li><li>Se elige con <span class="mono">LOTE_MODO</span>; si falta el proveedor, el DAG <b>se importa igual</b>.</li></ul></div>
+ <div class="card"><h3>La salida</h3><ul class="list"><li><span class="mono">explotacion</span> escribe <span class="mono">campana_&lt;corte&gt;.csv</span> y <span class="mono">.json</span> en <span class="mono">/tmp/reports</span> del contenedor.</li><li>El pod devuelve un <b>resumen pequeño</b> por XCom; no se guarda la lista de clientes fuera.</li></ul></div>
+</div><p class="small"><span class="tag warn">Sin verificar</span> El DAG no se ha ejecutado en un Airflow real: ni con Docker ni en Composer.</p>
+</section>
+
+<section class="slide" data-part="B" data-min="6" data-title="Paso 1 · El lote a mano"
+ data-notes="Paso uno. Antes de orquestar, el lote debe funcionar a mano. Estos son los comandos del paso cero de comandos punto md. La captura es la salida real: ciento cuarenta y ocho clientes, quince en campaña. Se ejecutó sobre una copia de curso punto db para no tocar el proyecto.">
+<p class="kick">2 · Preparar el lote y escribir el DAG · ejecutado</p><h1>Paso 1 · Antes de orquestar nada, el lote tiene que funcionar a mano</h1>
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · paso 0 (copia y pega)</em><button class="cp cpall" data-t="cd 04-Proyecto-Base
+python -m ia_mlops.operacional
+python -m ia_mlops.pipeline
+python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs">Copiar todo</button></div><pre class="src">cd 04-Proyecto-Base
+python -m ia_mlops.operacional
+python -m ia_mlops.pipeline
+python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">Clientes puntuados: 148</span> y <span class="mono">Campaña: 15 clientes</span>.</li><li>Los 10 primeros con su decil y los avisos (132 clientes con valores fuera de rango).</li><li>Código de salida 0.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">MASTER está vacío</span> / <span class="mono">No existe la capa FS</span> → falta <span class="mono">python -m ia_mlops.pipeline</span>.</li><li>Con <span class="mono">CURSO_DB</span> y <span class="mono">CURSO_REPORTES</span> en una carpeta temporal no se toca el proyecto: así se probó.</li></ul></div></div><div class="capcol"><figure class="cap" data-img="term-01-explotacion.webp"><button class="zoom" data-src="img/term-01-explotacion.webp" data-alt="Terminal: salida REAL de «python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs» sobre una copia de curso.db" title="Ampliar (Esc cierra)"><img src="img/term-01-explotacion.webp" alt="Terminal: salida REAL de «python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs» sobre una copia de curso.db" style="max-height:440px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal: salida REAL de «python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs» sobre una copia de curso.db</figcaption></figure></div></div><p class="small"><span class="tag ok">Ejecutado</span> sobre una copia de curso.db; el repositorio no cambió (comprobado con hashes).</p>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Paso 2 · La imagen del lote"
+ data-notes="Paso dos. La imagen del lote. El código es el del lote punto Dockerfile y los comandos son los del paso uno de comandos punto md. No se ha construido: no hay Docker aquí. Los datos van dentro de la imagen solo porque el curso los congela.">
+<p class="kick">2 · Preparar el lote y escribir el DAG · sin verificar</p><h1>Paso 2 · La imagen del lote: la de la API más el SQL y los datos</h1>
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="term"><div class="bar"><em>lote.Dockerfile</em><button class="cp cpall" data-t="ARG IMAGEN_API=retencion-api:local
+FROM ${IMAGEN_API}
+
+USER root
+COPY --chown=10001:10001 sql/fs/02_poblar_fs.sql /app/sql/fs/02_poblar_fs.sql
+COPY --chown=10001:10001 data/processed/curso.db /app/data/processed/curso.db
+# El lote escribe sus informes en /tmp/reports (CURSO_REPORTES, que fija el DAG): el sistema de archivos de /app no se toca.
+USER 10001">Copiar todo</button></div><pre class="src">ARG IMAGEN_API=retencion-api:local
+FROM ${IMAGEN_API}
+
+USER root
+COPY --chown=10001:10001 sql/fs/02_poblar_fs.sql /app/sql/fs/02_poblar_fs.sql
+COPY --chown=10001:10001 data/processed/curso.db /app/data/processed/curso.db
+# El lote escribe sus informes en /tmp/reports (CURSO_REPORTES, que fija el DAG): el sistema de archivos de /app no se toca.
+USER 10001</pre></div><div class="term"><div class="bar"><em>comandos.md · paso 1 (copia y pega)</em><button class="cp cpall" data-t="cd 04-Proyecto-Base
+docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f ../$EXTRA/lote.Dockerfile --build-arg IMAGEN_API=retencion-api:local -t retencion-lote:local .
+docker run --rm retencion-lote:local python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs">Copiar todo</button></div><pre class="src">cd 04-Proyecto-Base
+docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+docker build -f ../$EXTRA/lote.Dockerfile --build-arg IMAGEN_API=retencion-api:local -t retencion-lote:local .
+docker run --rm retencion-lote:local python -m ia_mlops.explotacion --corte 2011-12-10 --capacidad 0.1 --sin-guardar-fs</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">retencion-lote:local</span> aparece en <span class="mono">docker image ls</span>.</li><li>El último comando repite la salida del paso 1.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">Cannot connect to the Docker daemon</span> → Docker no está en marcha.</li><li><span class="mono">COPY failed … curso.db</span> → falta <span class="mono">python -m ia_mlops.pipeline</span>.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> No hay Docker en el ordenador donde se escribió: <b>no se ha construido</b> esta imagen. Los datos van dentro porque el curso los congela; en una empresa se leerían de BigQuery o de un volumen.</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="El DAG"
+ data-notes="El DAG. Sin schedule, un solo run a la vez y cuatro parámetros. La primera tarea valida las entradas antes de lanzar ningún contenedor. Comprobar lee qué modelo lleva la imagen. Ejecutar lote corre explotacion. Validar y resumir corren en el worker de Airflow.">
+<p class="kick">2 · Preparar el lote y escribir el DAG · dags/retencion_lote.py</p><h1>El DAG: cinco tareas encadenadas, sin schedule y con cuatro parámetros</h1>
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="term"><div class="bar"><em>dags/retencion_lote.py · la definición</em><button class="cp cpall" data-t="with DAG(
+    dag_id=DAG_ID,
+    description=&#x27;Puntuación por lotes de todos los clientes (ia_mlops.explotacion) en la imagen que lleva el modelo.&#x27;,
+    schedule=None, start_date=datetime(2026, 1, 1), catchup=False, max_active_runs=1,
+    tags=[&#x27;curso&#x27;, &#x27;retencion&#x27;, &#x27;lote&#x27;], doc_md=__doc__,
+    params={
+        &#x27;corte&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, pattern=r&#x27;^(\d{4}-\d{2}-\d{2})?$&#x27;, description=&#x27;AAAA-MM-DD; vacío = el día siguiente a la última factura&#x27;),
+        &#x27;imagen&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, description=&#x27;registro/ruta:etiqueta de la imagen del lote; vacío = LOTE_IMAGEN_DEFECTO&#x27;),
+        &#x27;capacidad&#x27;: Param(0.10, type=&#x27;number&#x27;, minimum=0.01, maximum=1, description=&#x27;fracción de clientes a los que llega la campaña&#x27;),
+        &#x27;huella_esperada&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, description=&#x27;opcional: huella de datos que debe tener el modelo de la imagen&#x27;),
+    },
+) as dag:
+    entradas = PythonOperator(task_id=&#x27;entradas&#x27;, python_callable=_validar_entradas_tarea)
+    comprobar = operador(&#x27;comprobar&#x27;, [&#x27;python&#x27;, &#x27;-c&#x27;], [ORDEN_COMPROBAR])
+    ejecutar = operador(&#x27;ejecutar_lote&#x27;, [&#x27;sh&#x27;, &#x27;-c&#x27;], [ORDEN_LOTE, &#x27;lote&#x27;, &#x27;{{ params.corte }}&#x27;, &#x27;{{ params.capacidad }}&#x27;], ENTORNO_LOTE)
+    validar = PythonOperator(task_id=&#x27;validar&#x27;, python_callable=_validar)
+    resumir = PythonOperator(task_id=&#x27;resumir&#x27;, python_callable=_resumir)
+    entradas &gt;&gt; comprobar &gt;&gt; ejecutar &gt;&gt; validar &gt;&gt; resumir">Copiar todo</button></div><pre class="src">with DAG(
+    dag_id=DAG_ID,
+    description=&#x27;Puntuación por lotes de todos los clientes (ia_mlops.explotacion) en la imagen que lleva el modelo.&#x27;,
+    schedule=None, start_date=datetime(2026, 1, 1), catchup=False, max_active_runs=1,
+    tags=[&#x27;curso&#x27;, &#x27;retencion&#x27;, &#x27;lote&#x27;], doc_md=__doc__,
+    params={
+        &#x27;corte&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, pattern=r&#x27;^(\d{4}-\d{2}-\d{2})?$&#x27;, description=&#x27;AAAA-MM-DD; vacío = el día siguiente a la última factura&#x27;),
+        &#x27;imagen&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, description=&#x27;registro/ruta:etiqueta de la imagen del lote; vacío = LOTE_IMAGEN_DEFECTO&#x27;),
+        &#x27;capacidad&#x27;: Param(0.10, type=&#x27;number&#x27;, minimum=0.01, maximum=1, description=&#x27;fracción de clientes a los que llega la campaña&#x27;),
+        &#x27;huella_esperada&#x27;: Param(&#x27;&#x27;, type=&#x27;string&#x27;, description=&#x27;opcional: huella de datos que debe tener el modelo de la imagen&#x27;),
+    },
+) as dag:
+    entradas = PythonOperator(task_id=&#x27;entradas&#x27;, python_callable=_validar_entradas_tarea)
+    comprobar = operador(&#x27;comprobar&#x27;, [&#x27;python&#x27;, &#x27;-c&#x27;], [ORDEN_COMPROBAR])
+    ejecutar = operador(&#x27;ejecutar_lote&#x27;, [&#x27;sh&#x27;, &#x27;-c&#x27;], [ORDEN_LOTE, &#x27;lote&#x27;, &#x27;{{ params.corte }}&#x27;, &#x27;{{ params.capacidad }}&#x27;], ENTORNO_LOTE)
+    validar = PythonOperator(task_id=&#x27;validar&#x27;, python_callable=_validar)
+    resumir = PythonOperator(task_id=&#x27;resumir&#x27;, python_callable=_resumir)
+    entradas &gt;&gt; comprobar &gt;&gt; ejecutar &gt;&gt; validar &gt;&gt; resumir</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Sin <span class="mono">schedule</span></b>: se lanza a mano, por la API o por Actions.</li><li><span class="mono">max_active_runs=1</span>: dos lotes a la vez no tienen sentido.</li><li>Cuatro <span class="mono">params</span>: <span class="mono">corte</span>, <span class="mono">imagen</span>, <span class="mono">capacidad</span>, <span class="mono">huella_esperada</span>; el formulario de Airflow los valida.</li></ul></div><div class="card"><h3>Las cinco tareas</h3><ul class="list"><li><span class="mono">entradas</span>: valida lo que escribió una persona <b>antes</b> de lanzar nada.</li><li><span class="mono">comprobar</span>: qué modelo lleva la imagen.</li><li><span class="mono">ejecutar_lote</span>: <span class="mono">python -m ia_mlops.explotacion</span>.</li><li><span class="mono">validar</span> y <span class="mono">resumir</span> corren en el worker.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Dos operadores"
+ data-notes="Las dos variantes. En Composer, KubernetesPodOperator con el espacio de nombres composer user workloads y el archivo de configuración que indica la documentación. En local, DockerOperator con el socket de Docker. Si falta el proveedor, la tarea falla con un mensaje que dice qué instalar, pero el DAG se importa. Esto está probado con módulos falsos, no con Airflow.">
+<p class="kick">2 · Preparar el lote y escribir el DAG · KubernetesPodOperator y DockerOperator</p><h1>Dos variantes del operador, elegidas por LOTE_MODO, sin que el DAG deje de importarse</h1>
+<div class="split" style="grid-template-columns:1.2fr .8fr"><div class="col"><div class="term"><div class="bar"><em>Composer · KubernetesPodOperator</em><button class="cp cpall" data-t="def pod(task_id, cmds, argumentos, entorno=None):
+    try:
+        from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+    except ImportError:
+        return _tarea_que_falla(task_id, &#x27;Falta apache-airflow-providers-cncf-kubernetes (viene con Cloud Composer). &#x27;
+                                         &#x27;En local usa LOTE_MODO=docker.&#x27;)
+    comunes = dict(
+        task_id=task_id, name=task_id.replace(&#x27;_&#x27;, &#x27;-&#x27;), namespace=NAMESPACE,
+        image=&#x27;{{ params.imagen or &quot;&#x27; + IMAGEN_DEFECTO + &#x27;&quot; }}&#x27;,
+        cmds=list(cmds), arguments=list(argumentos), env_vars=entorno or {},
+        get_logs=True, do_xcom_push=True, startup_timeout_seconds=600,
+        config_file=&#x27;/home/airflow/composer_kube_config&#x27;, kubernetes_conn_id=&#x27;kubernetes_default&#x27;,
+    )
+    try:
+        return KubernetesPodOperator(on_finish_action=&#x27;delete_pod&#x27;, **comunes)          # proveedor reciente
+    except TypeError:
+        return KubernetesPodOperator(is_delete_operator_pod=True, **comunes)             # proveedor antiguo">Copiar todo</button></div><pre class="src">def pod(task_id, cmds, argumentos, entorno=None):
+    try:
+        from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+    except ImportError:
+        return _tarea_que_falla(task_id, &#x27;Falta apache-airflow-providers-cncf-kubernetes (viene con Cloud Composer). &#x27;
+                                         &#x27;En local usa LOTE_MODO=docker.&#x27;)
+    comunes = dict(
+        task_id=task_id, name=task_id.replace(&#x27;_&#x27;, &#x27;-&#x27;), namespace=NAMESPACE,
+        image=&#x27;{{ params.imagen or &quot;&#x27; + IMAGEN_DEFECTO + &#x27;&quot; }}&#x27;,
+        cmds=list(cmds), arguments=list(argumentos), env_vars=entorno or {},
+        get_logs=True, do_xcom_push=True, startup_timeout_seconds=600,
+        config_file=&#x27;/home/airflow/composer_kube_config&#x27;, kubernetes_conn_id=&#x27;kubernetes_default&#x27;,
+    )
+    try:
+        return KubernetesPodOperator(on_finish_action=&#x27;delete_pod&#x27;, **comunes)          # proveedor reciente
+    except TypeError:
+        return KubernetesPodOperator(is_delete_operator_pod=True, **comunes)             # proveedor antiguo</pre></div><div class="term"><div class="bar"><em>Local · DockerOperator</em><button class="cp cpall" data-t="def contenedor(task_id, cmds, argumentos, entorno=None):
+    try:
+        from airflow.providers.docker.operators.docker import DockerOperator
+    except ImportError:
+        return _tarea_que_falla(task_id, &#x27;Falta apache-airflow-providers-docker. Instálalo (pip install apache-airflow-providers-docker) &#x27;
+                                         &#x27;o usa LOTE_MODO=kubernetes en Cloud Composer.&#x27;)
+    return DockerOperator(
+        task_id=task_id, image=&#x27;{{ params.imagen or &quot;&#x27; + IMAGEN_DEFECTO + &#x27;&quot; }}&#x27;,
+        command=list(cmds) + list(argumentos), environment=entorno or {},        # la imagen de la API solo define CMD: command lo sustituye
+        docker_url=leer_ajuste(&#x27;LOTE_DOCKER_URL&#x27;, &#x27;unix://var/run/docker.sock&#x27;), auto_remove=&#x27;success&#x27;, mount_tmp_dir=False,
+        tty=False, force_pull=False,
+    )">Copiar todo</button></div><pre class="src">def contenedor(task_id, cmds, argumentos, entorno=None):
+    try:
+        from airflow.providers.docker.operators.docker import DockerOperator
+    except ImportError:
+        return _tarea_que_falla(task_id, &#x27;Falta apache-airflow-providers-docker. Instálalo (pip install apache-airflow-providers-docker) &#x27;
+                                         &#x27;o usa LOTE_MODO=kubernetes en Cloud Composer.&#x27;)
+    return DockerOperator(
+        task_id=task_id, image=&#x27;{{ params.imagen or &quot;&#x27; + IMAGEN_DEFECTO + &#x27;&quot; }}&#x27;,
+        command=list(cmds) + list(argumentos), environment=entorno or {},        # la imagen de la API solo define CMD: command lo sustituye
+        docker_url=leer_ajuste(&#x27;LOTE_DOCKER_URL&#x27;, &#x27;unix://var/run/docker.sock&#x27;), auto_remove=&#x27;success&#x27;, mount_tmp_dir=False,
+        tty=False, force_pull=False,
+    )</pre></div></div><div class="capcol"><div class="card"><h3>Lo que dice la documentación</h3><ul class="list"><li>En Composer 3 los pods corren siempre en <b><span class="mono">composer-user-workloads</span></b>; <span class="mono">config_file</span> es <span class="mono">/home/airflow/composer_kube_config</span>.</li><li>XCom del pod: el contenido de <span class="mono">/airflow/xcom/return.json</span>.</li><li><span class="mono">DockerOperator</span> es del paquete <span class="mono">apache-airflow-providers-docker</span>; sin XCom completo recoge la <b>última línea</b> de salida.</li></ul></div><p class="fuente">Fuente: &lt;https://docs.cloud.google.com/composer/docs/composer-3/use-kubernetes-pod-operator&gt; y la documentación del proveedor Docker.</p><p class="small"><span class="tag warn">Sin verificar</span> Los argumentos están escritos de la documentación y probados con un Airflow <i>de cartón</i>; no se han ejecutado en Airflow.</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="5" data-title="Validar la salida"
+ data-notes="La validación. Comprueba que hay filas, que las probabilidades están entre cero y uno, que los tramos suman las filas, que hay diez deciles, que la campaña tiene el tamaño que dice la capacidad y que el modelo que puntuó es el que declaraba la imagen. Se probó sobre la salida real y las pruebas rompen cada dato para ver que se detecta. Los tramos alta, media y baja son los de la configuración del proyecto; una prueba comprueba que no se separan.">
+<p class="kick">2 · Preparar el lote y escribir el DAG · filas, probabilidades, tramos</p><h1>La tarea «validar» no se fía: filas, probabilidades en [0,1], tramos y modelo</h1>
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>dags/lote_logica.py · validar_salida (extracto)</em><button class="cp cpall" data-t="def validar_salida(resumen, comprobar=None, huella_esperada=None):
+    &quot;&quot;&quot;En el WORKER. Comprueba el resumen del lote. Devuelve la lista de avisos (no graves); lanza ErrorSalida si algo falla.
+
+    resumen          lo que devolvió resumir_salida() dentro del contenedor
+    comprobar        lo que dijo la tarea «comprobar» (modelo y huella que lleva la imagen); si se da, deben coincidir
+    huella_esperada  huella de datos que se exige a la imagen (parámetro opcional del DAG)
+    &quot;&quot;&quot;
+    fallos, avisos = [], []
+    if not isinstance(resumen, dict):
+        raise ErrorSalida(f&#x27;la tarea del lote no devolvió un resumen (llegó {type(resumen).__name__}); mira el registro del contenedor&#x27;)
+    filas = resumen.get(&#x27;filas&#x27;) or 0
+    if filas &lt;= 0:
+        fallos.append(&#x27;el lote no puntuó a ningún cliente (0 filas)&#x27;)
+    if resumen.get(&#x27;clientes_puntuados&#x27;) != filas:
+        fallos.append(f&#x27;filas del CSV ({filas}) distintas de clientes_puntuados del JSON ({resumen.get(&quot;clientes_puntuados&quot;)})&#x27;)
+    if resumen.get(&#x27;nulos&#x27;):
+        fallos.append(f&#x27;{resumen[&quot;nulos&quot;]} probabilidades vacías o no numéricas&#x27;)
+    lo, hi = resumen.get(&#x27;prob_min&#x27;), resumen.get(&#x27;prob_max&#x27;)
+    if filas and (lo is None or hi is None or not (0.0 &lt;= lo &lt;= hi &lt;= 1.0)):
+        fallos.append(f&#x27;probabilidades fuera de [0, 1]: mínima {lo}, máxima {hi}&#x27;)
+    tramos = resumen.get(&#x27;tramos&#x27;) or {}
+    if set(tramos) != {n for n, _ in TRAMOS}:
+        fallos.append(f&#x27;tramos inesperados: {sorted(tramos)}&#x27;)
+    elif sum(tramos.values()) != filas - (resumen.get(&#x27;nulos&#x27;) or 0):
+        fallos.append(f&#x27;los tramos suman {sum(tramos.values())} y no {filas}&#x27;)
+    if filas &gt;= 10 and resumen.get(&#x27;deciles&#x27;) != list(range(1, 11)):
+        fallos.append(f&#x27;deciles inesperados: {resumen.get(&quot;deciles&quot;)} (se esperaba 1..10)&#x27;)
+    esperados = max(1, math.ceil(float(resumen.get(&#x27;capacidad&#x27;) or 0) * filas)) if filas else 0
+    if resumen.get(&#x27;en_campana&#x27;) != esperados:
+        fallos.append(f&#x27;la campaña tiene {resumen.get(&quot;en_campana&quot;)} clientes y por la capacidad {resumen.get(&quot;capacidad&quot;)} deberían ser {esperados}&#x27;)">Copiar todo</button></div><pre class="src">def validar_salida(resumen, comprobar=None, huella_esperada=None):
+    &quot;&quot;&quot;En el WORKER. Comprueba el resumen del lote. Devuelve la lista de avisos (no graves); lanza ErrorSalida si algo falla.
+
+    resumen          lo que devolvió resumir_salida() dentro del contenedor
+    comprobar        lo que dijo la tarea «comprobar» (modelo y huella que lleva la imagen); si se da, deben coincidir
+    huella_esperada  huella de datos que se exige a la imagen (parámetro opcional del DAG)
+    &quot;&quot;&quot;
+    fallos, avisos = [], []
+    if not isinstance(resumen, dict):
+        raise ErrorSalida(f&#x27;la tarea del lote no devolvió un resumen (llegó {type(resumen).__name__}); mira el registro del contenedor&#x27;)
+    filas = resumen.get(&#x27;filas&#x27;) or 0
+    if filas &lt;= 0:
+        fallos.append(&#x27;el lote no puntuó a ningún cliente (0 filas)&#x27;)
+    if resumen.get(&#x27;clientes_puntuados&#x27;) != filas:
+        fallos.append(f&#x27;filas del CSV ({filas}) distintas de clientes_puntuados del JSON ({resumen.get(&quot;clientes_puntuados&quot;)})&#x27;)
+    if resumen.get(&#x27;nulos&#x27;):
+        fallos.append(f&#x27;{resumen[&quot;nulos&quot;]} probabilidades vacías o no numéricas&#x27;)
+    lo, hi = resumen.get(&#x27;prob_min&#x27;), resumen.get(&#x27;prob_max&#x27;)
+    if filas and (lo is None or hi is None or not (0.0 &lt;= lo &lt;= hi &lt;= 1.0)):
+        fallos.append(f&#x27;probabilidades fuera de [0, 1]: mínima {lo}, máxima {hi}&#x27;)
+    tramos = resumen.get(&#x27;tramos&#x27;) or {}
+    if set(tramos) != {n for n, _ in TRAMOS}:
+        fallos.append(f&#x27;tramos inesperados: {sorted(tramos)}&#x27;)
+    elif sum(tramos.values()) != filas - (resumen.get(&#x27;nulos&#x27;) or 0):
+        fallos.append(f&#x27;los tramos suman {sum(tramos.values())} y no {filas}&#x27;)
+    if filas &gt;= 10 and resumen.get(&#x27;deciles&#x27;) != list(range(1, 11)):
+        fallos.append(f&#x27;deciles inesperados: {resumen.get(&quot;deciles&quot;)} (se esperaba 1..10)&#x27;)
+    esperados = max(1, math.ceil(float(resumen.get(&#x27;capacidad&#x27;) or 0) * filas)) if filas else 0
+    if resumen.get(&#x27;en_campana&#x27;) != esperados:
+        fallos.append(f&#x27;la campaña tiene {resumen.get(&quot;en_campana&quot;)} clientes y por la capacidad {resumen.get(&quot;capacidad&quot;)} deberían ser {esperados}&#x27;)</pre></div></div><div class="capcol"><figure class="cap" data-img="term-02-resumir-y-validar.webp"><button class="zoom" data-src="img/term-02-resumir-y-validar.webp" data-alt="Terminal: salida REAL de resumir_salida(), validar_salida() y resumen_markdown() sobre esa salida" title="Ampliar (Esc cierra)"><img src="img/term-02-resumir-y-validar.webp" alt="Terminal: salida REAL de resumir_salida(), validar_salida() y resumen_markdown() sobre esa salida" style="max-height:420px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal: salida REAL de resumir_salida(), validar_salida() y resumen_markdown() sobre esa salida</figcaption></figure><p class="small"><span class="tag ok">Ejecutado</span> sobre la salida real del paso 1; las pruebas corrompen cada dato y comprueban que se detecta.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="6" data-title="Paso 3 · Airflow en local"
+ data-notes="Paso tres. Airflow en local con un compose mínimo basado en la guía oficial: un solo contenedor con SQLite. No se ha ejecutado. La captura de la lista de DAGs queda pendiente con su receta.">
+<p class="kick">3 · Airflow en tu ordenador · sin verificar</p><h1>Paso 3 · Airflow en tu ordenador con Docker (compose mínimo)</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · paso 2</em><button class="cp cpall" data-t="cd $EXTRA
+docker compose -f docker-compose-airflow.yaml up -d">Copiar todo</button></div><pre class="src">cd $EXTRA
+docker compose -f docker-compose-airflow.yaml up -d</pre></div><div class="term"><div class="bar"><em>docker-compose-airflow.yaml (extracto)</em><button class="cp cpall" data-t="services:
+  airflow:
+    image: ${AIRFLOW_IMAGE:-apache/airflow:2.10.5-python3.11}
+    ports:
+      - &quot;8080:8080&quot;
+    group_add:
+      - &quot;${DOCKER_GID:-0}&quot;
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: &quot;false&quot;
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: &quot;false&quot;    # sin esto el DAG nace en pausa y un run nuevo se queda en cola
+      AIRFLOW__API__AUTH_BACKENDS: &quot;airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session&quot;   # API REST con usuario y contraseña (Airflow 2)
+      _PIP_ADDITIONAL_REQUIREMENTS: &quot;apache-airflow-providers-docker&quot;   # solo para ensayar: la guía oficial lo permite, no es para producción
+      LOTE_MODO: docker
+      LOTE_IMAGEN_DEFECTO: retencion-lote:local
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock">Copiar todo</button></div><pre class="src">services:
+  airflow:
+    image: ${AIRFLOW_IMAGE:-apache/airflow:2.10.5-python3.11}
+    ports:
+      - &quot;8080:8080&quot;
+    group_add:
+      - &quot;${DOCKER_GID:-0}&quot;
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: &quot;false&quot;
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: &quot;false&quot;    # sin esto el DAG nace en pausa y un run nuevo se queda en cola
+      AIRFLOW__API__AUTH_BACKENDS: &quot;airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session&quot;   # API REST con usuario y contraseña (Airflow 2)
+      _PIP_ADDITIONAL_REQUIREMENTS: &quot;apache-airflow-providers-docker&quot;   # solo para ensayar: la guía oficial lo permite, no es para producción
+      LOTE_MODO: docker
+      LOTE_IMAGEN_DEFECTO: retencion-lote:local
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Tras 1-2 minutos, http://localhost:8080 pide usuario <span class="mono">airflow</span> y contraseña <span class="mono">airflow</span>.</li><li><span class="mono">airflow dags list</span> incluye <span class="mono">retencion_lote</span>; <span class="mono">list-import-errors</span> no da nada.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">docker compose logs airflow</span>.</li><li><span class="mono">permission denied</span> sobre el socket de Docker → <span class="mono">DOCKER_GID</span> (ver el compose).</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> Escrito desde la guía oficial, <b>sin ejecutar</b>. La guía oficial avisa de que su compose no es para producción.</p><figure class="cap" data-img="airflow-01-dag-en-la-lista.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/airflow-01-dag-en-la-lista.webp</span><span>Interfaz de Airflow (local): la lista de DAGs con retencion_lote</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li><span class="mono">docker compose -f docker-compose-airflow.yaml up -d</span> en la carpeta del extra.</li><li>Abre http://localhost:8080 (airflow / airflow).</li><li>Captura la lista de DAGs.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> Interfaz de Airflow (local): la lista de DAGs con retencion_lote</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="6" data-title="Paso 4 · dags test, trigger y estados"
+ data-notes="Paso cuatro. Dags test ejecuta el DAG entero en el mismo proceso, trigger crea un run de verdad y states for dag run enseña el estado de cada tarea. Ninguno se ha ejecutado aquí; las opciones están contrastadas con la referencia de la CLI de Airflow.">
+<p class="kick">3 · Airflow en tu ordenador · sin verificar</p><h1>Paso 4 · Probar el DAG entero, lanzarlo y mirar sus tareas</h1>
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · dags test</em><button class="cp cpall" data-t="docker compose -f docker-compose-airflow.yaml exec airflow airflow dags test retencion_lote 2011-12-10 --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27;">Copiar todo</button></div><pre class="src">docker compose -f docker-compose-airflow.yaml exec airflow airflow dags test retencion_lote 2011-12-10 --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27;</pre></div><div class="term"><div class="bar"><em>comandos.md · trigger, list-runs y states-for-dag-run</em><button class="cp cpall" data-t="docker compose -f docker-compose-airflow.yaml exec airflow airflow dags trigger retencion_lote --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27;
+docker compose -f docker-compose-airflow.yaml exec airflow airflow dags list-runs -d retencion_lote
+docker compose -f docker-compose-airflow.yaml exec airflow airflow tasks states-for-dag-run retencion_lote &lt;run_id&gt;">Copiar todo</button></div><pre class="src">docker compose -f docker-compose-airflow.yaml exec airflow airflow dags trigger retencion_lote --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27;
+docker compose -f docker-compose-airflow.yaml exec airflow airflow dags list-runs -d retencion_lote
+docker compose -f docker-compose-airflow.yaml exec airflow airflow tasks states-for-dag-run retencion_lote &lt;run_id&gt;</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Las cinco tareas en <span class="mono">success</span>.</li><li>En el registro de <span class="mono">resumir</span>, «Lote de retención · corte 2011-12-10».</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">ImagePullBackOff</span> / <span class="mono">pull access denied</span> → la imagen no existe en el Docker del equipo (paso 2).</li><li>En Airflow 3, <span class="mono">list-runs</span> recibe el DAG como argumento.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> Opciones de la CLI contrastadas con la referencia de Airflow, <b>no ejecutadas</b>.</p><figure class="cap" data-img="airflow-02-grid-run-ok.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/airflow-02-grid-run-ok.webp</span><span>Interfaz de Airflow: vista Grid del run con las cinco tareas en verde</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li>Lanza el DAG con <span class="mono">airflow dags trigger …</span> (paso siguiente).</li><li>Abre el DAG y su vista Grid.</li><li>Captura con las cinco tareas en verde.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> Interfaz de Airflow: vista Grid del run con las cinco tareas en verde</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="6" data-title="Paso 5 · lanzar_lote.py"
+ data-notes="Paso cinco. El cliente de la API REST. Usa solo la biblioteca estándar, detecta si el servidor habla la versión uno o la dos de la API y devuelve un código de salida: cero si el run acaba bien, uno si falla, dos si se agota la espera, tres si no hay conexión y cuatro si el DAG está en pausa. La captura es contra el servidor de prueba, no contra Airflow real. La documentación de Composer autentica con un token de acceso de Google; el script lo saca de gcloud.">
+<p class="kick">4 · Lanzarlo desde fuera: cliente REST e interfaz · cliente de la API REST</p><h1>Paso 5 · Lanzarlo por la API REST: un cliente sin dependencias que devuelve un código de salida</h1>
+<div class="split" style="grid-template-columns:.9fr 1.1fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · paso 3 (copia y pega)</em><button class="cp cpall" data-t="export AIRFLOW_USUARIO=airflow AIRFLOW_CLAVE=airflow
+python $EXTRA/lanzar_lote.py --url http://localhost:8080 --auth basic --corte 2011-12-10 --imagen retencion-lote:local
+python $EXTRA/lanzar_lote.py --url http://localhost:8080 --simular-url --corte 2011-12-10">Copiar todo</button></div><pre class="src">export AIRFLOW_USUARIO=airflow AIRFLOW_CLAVE=airflow
+python $EXTRA/lanzar_lote.py --url http://localhost:8080 --auth basic --corte 2011-12-10 --imagen retencion-lote:local
+python $EXTRA/lanzar_lote.py --url http://localhost:8080 --simular-url --corte 2011-12-10</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Una línea por cambio de estado de cada tarea y <span class="mono">Run …: success</span>.</li><li>Código 0 correcto · 1 el DAG falló · 2 se agotó la espera · 3 sin conexión o credenciales · 4 DAG en pausa.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">401</span> credenciales · <span class="mono">404</span> nombre del DAG o versión de la API · conexión rechazada: Airflow no está en marcha.</li></ul></div></div><div class="capcol"><figure class="cap" data-img="term-03-lanzar-lote.webp"><button class="zoom" data-src="img/term-03-lanzar-lote.webp" data-alt="Terminal: salida REAL de lanzar_lote.py contra el servidor Airflow DE PRUEBA (no es Airflow): un run correcto (código 0), uno fallido (código 1) y sin servidor (código 3)" title="Ampliar (Esc cierra)"><img src="img/term-03-lanzar-lote.webp" alt="Terminal: salida REAL de lanzar_lote.py contra el servidor Airflow DE PRUEBA (no es Airflow): un run correcto (código 0), uno fallido (código 1) y sin servidor (código 3)" style="max-height:470px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal: salida REAL de lanzar_lote.py contra el servidor Airflow DE PRUEBA (no es Airflow): un run correcto (código 0), uno fallido (código 1) y sin servidor (código 3)</figcaption></figure><p class="small"><span class="tag warn">Sin verificar</span> Probado contra un servidor Airflow <b>de prueba</b> (<span class="mono">pruebas/airflow_falso.py</span>), no contra Airflow real. Airflow 2 usa <span class="mono">/api/v1</span> y Airflow 3 <span class="mono">/api/v2</span> (con JWT local); en Composer, un token de Google.</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="Paso 6 · La interfaz: sin Airflow"
+ data-notes="Paso seis. La pestaña Lote de la interfaz del extra MCP. Si Airflow no responde lo dice claro, explica cómo arrancarlo y no simula ninguna ejecución. Los secretos solo se leen de variables de entorno.">
+<p class="kick">4 · Lanzarlo desde fuera: cliente REST e interfaz · pestaña Lote</p><h1>Paso 6 · La pestaña «Lote»: si Airflow no responde, lo dice y no simula nada</h1>
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Arrancar la interfaz (extra-mcp-notebooks/ui)</em><button class="cp cpall" data-t="cd 01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/ui
+python app.py">Copiar todo</button></div><pre class="src">cd 01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/ui
+python app.py</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Una pestaña nueva, «Lote», junto a «Modelo».</li><li>Con <span class="mono">AIRFLOW_URL</span> sin definir: «Sin conexión», cómo arrancar Airflow y el botón desactivado.</li></ul></div><div class="callout">Los secretos (<span class="mono">AIRFLOW_USUARIO</span>, <span class="mono">AIRFLOW_CLAVE</span>, <span class="mono">AIRFLOW_TOKEN</span>) solo se <b>leen</b> del entorno: la página no los pide, no los guarda ni los muestra.</div></div><div class="capcol"><figure class="cap" data-img="ui-01-sin-airflow.webp"><button class="zoom" data-src="img/ui-01-sin-airflow.webp" data-alt="Pestaña Lote de la interfaz arrancada SIN AIRFLOW_URL: dice «Sin conexión», cómo arrancar Airflow, y el botón «Lanzar el lote» desactivado. No simula nada" title="Ampliar (Esc cierra)"><img src="img/ui-01-sin-airflow.webp" alt="Pestaña Lote de la interfaz arrancada SIN AIRFLOW_URL: dice «Sin conexión», cómo arrancar Airflow, y el botón «Lanzar el lote» desactivado. No simula nada" style="max-height:560px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Pestaña Lote de la interfaz arrancada SIN AIRFLOW_URL: dice «Sin conexión», cómo arrancar Airflow, y el botón «Lanzar el lote» desactivado. No simula nada</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="La interfaz: configurar y confirmar"
+ data-notes="La interfaz conectada. La configuración se lee del entorno sin mostrar secretos. El botón abre un diálogo propio, nunca confirm del navegador, que explica qué lanza: un run del DAG y un contenedor que puntúa a todos los clientes, y qué no hace: no entrena, no mueve el alias champion, no toca la referencia de producción y no escribe fs produccion.">
+<p class="kick">4 · Lanzarlo desde fuera: cliente REST e interfaz · AIRFLOW_URL y diálogo propio</p><h1>Conectada: configuración sin secretos, formulario y un diálogo que explica qué lanza y qué no</h1>
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Variables (Airflow local)</em><button class="cp cpall" data-t="AIRFLOW_URL=http://localhost:8080 AIRFLOW_AUTH=basic AIRFLOW_USUARIO=airflow AIRFLOW_CLAVE=airflow">Copiar todo</button></div><pre class="src">AIRFLOW_URL=http://localhost:8080 AIRFLOW_AUTH=basic AIRFLOW_USUARIO=airflow AIRFLOW_CLAVE=airflow</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>«Conectado · API v1» (o v2) y el nombre del DAG.</li><li>El formulario: corte, imagen, capacidad y huella opcional.</li><li>Al pulsar «Lanzar el lote», un <b>diálogo propio</b> (nunca <span class="mono">confirm()</span>): <i>Esto lanza</i> y <i>Esto no hace</i>.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> Las capturas son contra un servidor Airflow <b>de prueba</b>, no contra Airflow real.</p></div><div class="capcol"><figure class="cap" data-img="ui-02-conectado.webp"><button class="zoom" data-src="img/ui-02-conectado.webp" data-alt="Pestaña Lote conectada a un servidor Airflow DE PRUEBA (no es Airflow real): configuración leída del entorno, sin secretos, y el formulario" title="Ampliar (Esc cierra)"><img src="img/ui-02-conectado.webp" alt="Pestaña Lote conectada a un servidor Airflow DE PRUEBA (no es Airflow real): configuración leída del entorno, sin secretos, y el formulario" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Pestaña Lote conectada a un servidor Airflow DE PRUEBA (no es Airflow real): configuración leída del entorno, sin secretos, y el formulario</figcaption></figure><figure class="cap" data-img="ui-03-dialogo.webp"><button class="zoom" data-src="img/ui-03-dialogo.webp" data-alt="Diálogo propio de confirmación de la pestaña Lote: «Esto lanza» y «Esto no hace»" title="Ampliar (Esc cierra)"><img src="img/ui-03-dialogo.webp" alt="Diálogo propio de confirmación de la pestaña Lote: «Esto lanza» y «Esto no hace»" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Diálogo propio de confirmación de la pestaña Lote: «Esto lanza» y «Esto no hace»</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="La interfaz: el run en vivo"
+ data-notes="El run en vivo. La interfaz sondea el run y cada tarea cada segundo y medio. El registro que se ve aquí es texto simulado del servidor de prueba. Al terminar se actualiza el historial y el resultado del lote, que solo se lee si el lote corrió en este equipo.">
+<p class="kick">4 · Lanzarlo desde fuera: cliente REST e interfaz · estado de cada tarea</p><h1>El run en vivo: cada tarea con su estado, el registro y el historial</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="ui-04-en-curso.webp"><button class="zoom" data-src="img/ui-04-en-curso.webp" data-alt="Run en curso contra el servidor Airflow DE PRUEBA: entradas y comprobar correctas, ejecutar_lote en curso, el resto pendiente" title="Ampliar (Esc cierra)"><img src="img/ui-04-en-curso.webp" alt="Run en curso contra el servidor Airflow DE PRUEBA: entradas y comprobar correctas, ejecutar_lote en curso, el resto pendiente" style="max-height:380px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Run en curso contra el servidor Airflow DE PRUEBA: entradas y comprobar correctas, ejecutar_lote en curso, el resto pendiente</figcaption></figure></div><div class="capcol"><figure class="cap" data-img="ui-05-terminado.webp"><button class="zoom" data-src="img/ui-05-terminado.webp" data-alt="Run terminado contra el servidor Airflow DE PRUEBA, con el registro de la tarea «resumir» (texto simulado del servidor de prueba) y el historial" title="Ampliar (Esc cierra)"><img src="img/ui-05-terminado.webp" alt="Run terminado contra el servidor Airflow DE PRUEBA, con el registro de la tarea «resumir» (texto simulado del servidor de prueba) y el historial" style="max-height:380px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Run terminado contra el servidor Airflow DE PRUEBA, con el registro de la tarea «resumir» (texto simulado del servidor de prueba) y el historial</figcaption></figure></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Sondeo cada 1,5 s del run y de cada tarea; enlace a Airflow para los registros completos.</li><li>Al terminar: historial de ejecuciones y, si el lote corrió <b>en este equipo</b>, el último <span class="mono">campana_*.json</span> (clientes y tramos). Si corrió en Composer, esa salida no está aquí: se lee en el registro de <span class="mono">resumir</span>.</li></ul></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="La interfaz: fallo y móvil"
+ data-notes="Un run fallido y la versión móvil. El servidor de prueba falla en ejecutar lote cuando la imagen se llama dos puntos falla; las tareas siguientes quedan como no llegó a ejecutarse. En móvil no hay desplazamiento horizontal.">
+<p class="kick">4 · Lanzarlo desde fuera: cliente REST e interfaz · cuando algo sale mal</p><h1>Cuando falla, lo ves: la tarea en rojo, las demás sin ejecutar y su registro</h1>
+<div class="split" style="grid-template-columns:1.4fr .6fr"><div class="col"><figure class="cap" data-img="ui-06-fallo.webp"><button class="zoom" data-src="img/ui-06-fallo.webp" data-alt="Run fallido contra el servidor Airflow DE PRUEBA (imagen «…:falla»): ejecutar_lote falla, las demás no llegan a ejecutarse, y su registro" title="Ampliar (Esc cierra)"><img src="img/ui-06-fallo.webp" alt="Run fallido contra el servidor Airflow DE PRUEBA (imagen «…:falla»): ejecutar_lote falla, las demás no llegan a ejecutarse, y su registro" style="max-height:400px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Run fallido contra el servidor Airflow DE PRUEBA (imagen «…:falla»): ejecutar_lote falla, las demás no llegan a ejecutarse, y su registro</figcaption></figure></div><div class="capcol"><figure class="cap" data-img="ui-07-movil.webp"><button class="zoom" data-src="img/ui-07-movil.webp" data-alt="La pestaña Lote en un móvil (390 px), contra el servidor Airflow DE PRUEBA" title="Ampliar (Esc cierra)"><img src="img/ui-07-movil.webp" alt="La pestaña Lote en un móvil (390 px), contra el servidor Airflow DE PRUEBA" style="max-height:400px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> La pestaña Lote en un móvil (390 px), contra el servidor Airflow DE PRUEBA</figcaption></figure></div></div><div class="callout">Todo con <span class="mono">playwright</span> (Chromium propio, 1440×900 y 390×844) contra el servidor de prueba. <b>Las pruebas de la interfaz</b> (<span class="mono">ui/pruebas</span>) cubren lanzar, seguir, fallo, pausa, autenticación, secretos y confirmación obligatoria.</div>
+</section>
+
+<section class="slide" data-part="E" data-min="5" data-title="Paso 7 · Composer en la consola"
+ data-notes="Las dos pantallas de la consola de Google Cloud, en solo lectura. Cloud Composer pide habilitar su API antes de enseñar nada y no se habilitó. Artifact Registry está vacío todavía. No se creó ni se habilitó ningún recurso.">
+<p class="kick">5 · Cloud Composer · solo lectura</p><h1>Paso 7 · Así se ve Cloud Composer por dentro de la consola: sin API no hay entornos que ver</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="gcp-01-composer-api.webp"><button class="zoom" data-src="img/gcp-01-composer-api.webp" data-alt="Consola de Google Cloud, solo lectura: la entrada de Cloud Composer en el proyecto del curso. La API está sin habilitar (botón «Habilitar» sin pulsar): no hay entorno que enseñar sin crear uno (nombre del proyecto y cuenta difuminados)" title="Ampliar (Esc cierra)"><img src="img/gcp-01-composer-api.webp" alt="Consola de Google Cloud, solo lectura: la entrada de Cloud Composer en el proyecto del curso. La API está sin habilitar (botón «Habilitar» sin pulsar): no hay entorno que enseñar sin crear uno (nombre del proyecto y cuenta difuminados)" style="max-height:360px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Consola de Google Cloud, solo lectura: la entrada de Cloud Composer en el proyecto del curso. La API está sin habilitar (botón «Habilitar» sin pulsar): no hay entorno que enseñar sin crear uno (nombre del proyecto y cuenta difuminados)</figcaption></figure></div><div class="capcol"><figure class="cap" data-img="gcp-02-artifact-registry.webp"><button class="zoom" data-src="img/gcp-02-artifact-registry.webp" data-alt="Consola de Google Cloud, solo lectura: Artifact Registry del proyecto del curso, sin repositorios todavía: aquí se subirá la imagen del lote (nombre del proyecto y cuenta difuminados)" title="Ampliar (Esc cierra)"><img src="img/gcp-02-artifact-registry.webp" alt="Consola de Google Cloud, solo lectura: Artifact Registry del proyecto del curso, sin repositorios todavía: aquí se subirá la imagen del lote (nombre del proyecto y cuenta difuminados)" style="max-height:360px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Consola de Google Cloud, solo lectura: Artifact Registry del proyecto del curso, sin repositorios todavía: aquí se subirá la imagen del lote (nombre del proyecto y cuenta difuminados)</figcaption></figure></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Cloud Composer pide <b>habilitar su API</b> antes de enseñar nada: aquí <b>no se habilitó</b> (no hace falta para entender el flujo).</li><li>Artifact Registry está <b>vacío</b>: ahí se subirá <span class="mono">retencion-lote</span>.</li></ul></div><div class="callout">Solo lectura: se visitaron las dos pantallas y <b>no se creó ni se habilitó nada</b>. La lista de entornos solo se ve completa creando uno (cuesta dinero), por eso está como captura pendiente.</div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Paso 8 · Entorno, DAG e imagen"
+ data-notes="Paso ocho. Crear el entorno, subir los dos archivos del DAG a la carpeta dags del bucket y subir la imagen a Artifact Registry. Nada de esto se ha ejecutado: crear un entorno cuesta dinero, tarda unos veinticinco minutos según la documentación y aquí no se cita ninguna cifra de coste. Acuérdese de borrarlo al terminar.">
+<p class="kick">5 · Cloud Composer · sin verificar</p><h1>Paso 8 · Crear el entorno, subir el DAG y subir la imagen a Artifact Registry</h1>
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · crear el entorno</em><button class="cp cpall" data-t="gcloud services enable composer.googleapis.com artifactregistry.googleapis.com --project $PROYECTO_GCP
+gcloud composer environments create $ENTORNO --location $REGION --image-version composer-3-airflow-2 --project $PROYECTO_GCP">Copiar todo</button></div><pre class="src">gcloud services enable composer.googleapis.com artifactregistry.googleapis.com --project $PROYECTO_GCP
+gcloud composer environments create $ENTORNO --location $REGION --image-version composer-3-airflow-2 --project $PROYECTO_GCP</pre></div><div class="term"><div class="bar"><em>comandos.md · subir los DAG a /dags</em><button class="cp cpall" data-t="gcloud composer environments storage dags import --environment $ENTORNO --location $REGION --source=$EXTRA/dags/lote_logica.py
+gcloud composer environments storage dags import --environment $ENTORNO --location $REGION --source=$EXTRA/dags/retencion_lote.py
+gcloud composer environments run $ENTORNO --location $REGION dags list -- --output=json">Copiar todo</button></div><pre class="src">gcloud composer environments storage dags import --environment $ENTORNO --location $REGION --source=$EXTRA/dags/lote_logica.py
+gcloud composer environments storage dags import --environment $ENTORNO --location $REGION --source=$EXTRA/dags/retencion_lote.py
+gcloud composer environments run $ENTORNO --location $REGION dags list -- --output=json</pre></div><div class="term"><div class="bar"><em>comandos.md · la imagen a Artifact Registry</em><button class="cp cpall" data-t="gcloud auth configure-docker $REGION-docker.pkg.dev
+docker tag retencion-lote:local $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1
+docker push $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1">Copiar todo</button></div><pre class="src">gcloud auth configure-docker $REGION-docker.pkg.dev
+docker tag retencion-lote:local $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1
+docker push $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">gcloud composer environments list --locations $REGION</span> muestra el entorno en <span class="mono">RUNNING</span> (~25 minutos).</li><li><span class="mono">dags list</span> incluye <span class="mono">retencion_lote</span> (Airflow tarda 1-2 minutos en verlo).</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">PERMISSION_DENIED</span> → faltan roles; <span class="mono">API not enabled</span> → el primer comando.</li><li>Si el DAG no aparece, mira los errores de importación en la interfaz de Airflow.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> <b>Crear un entorno cuesta dinero</b> y no se creó ninguno. Tiempo: «aproximadamente 25 minutos» según la documentación; coste: sin dato aquí.</p><figure class="cap" data-img="composer-01-entornos.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/composer-01-entornos.webp</span><span>Consola de Google Cloud: lista de entornos de Composer con el entorno en RUNNING</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li>(Cuesta dinero) crea el entorno con el comando del paso.</li><li>Consola → Cloud Composer → Entornos.</li><li>Captura con el entorno en RUNNING y bórralo después.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> Consola de Google Cloud: lista de entornos de Composer con el entorno en RUNNING</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="6" data-title="Paso 9 · Lanzarlo en Composer"
+ data-notes="Paso nueve. Lanzar el DAG en Composer con gcloud composer environments run, donde los argumentos del DAG van después de los dos guiones, o con la API REST usando la URL que devuelve config punto airflowUri. Está sin verificar. Al final, borre el entorno.">
+<p class="kick">5 · Cloud Composer · sin verificar</p><h1>Paso 9 · Lanzar el DAG en Composer: con gcloud o por la API REST</h1>
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>comandos.md · gcloud composer environments run</em><button class="cp cpall" data-t="gcloud composer environments run $ENTORNO --location $REGION dags trigger -- retencion_lote --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;&#x27;$REGION&#x27;-docker.pkg.dev/&#x27;$PROYECTO_GCP&#x27;/curso/retencion-lote:v1&quot;, &quot;capacidad&quot;: 0.1}&#x27;
+gcloud composer environments run $ENTORNO --location $REGION dags list-runs -- retencion_lote
+gcloud composer environments run $ENTORNO --location $REGION tasks states-for-dag-run -- retencion_lote &lt;run_id&gt;">Copiar todo</button></div><pre class="src">gcloud composer environments run $ENTORNO --location $REGION dags trigger -- retencion_lote --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;&#x27;$REGION&#x27;-docker.pkg.dev/&#x27;$PROYECTO_GCP&#x27;/curso/retencion-lote:v1&quot;, &quot;capacidad&quot;: 0.1}&#x27;
+gcloud composer environments run $ENTORNO --location $REGION dags list-runs -- retencion_lote
+gcloud composer environments run $ENTORNO --location $REGION tasks states-for-dag-run -- retencion_lote &lt;run_id&gt;</pre></div><div class="term"><div class="bar"><em>comandos.md · la API REST</em><button class="cp cpall" data-t="export AIRFLOW_URL=$(gcloud composer environments describe $ENTORNO --location $REGION --format=&quot;value(config.airflowUri)&quot;)
+python $EXTRA/lanzar_lote.py --url $AIRFLOW_URL --auth google --corte 2011-12-10 --imagen $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1">Copiar todo</button></div><pre class="src">export AIRFLOW_URL=$(gcloud composer environments describe $ENTORNO --location $REGION --format=&quot;value(config.airflowUri)&quot;)
+python $EXTRA/lanzar_lote.py --url $AIRFLOW_URL --auth google --corte 2011-12-10 --imagen $REGION-docker.pkg.dev/$PROYECTO_GCP/curso/retencion-lote:v1</pre></div><div class="term"><div class="bar"><em>comandos.md · borrar el entorno</em><button class="cp cpall" data-t="gcloud composer environments delete $ENTORNO --location $REGION">Copiar todo</button></div><pre class="src">gcloud composer environments delete $ENTORNO --location $REGION</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">trigger</span> devuelve el run; <span class="mono">list-runs</span> pasa de <span class="mono">running</span> a <span class="mono">success</span>; <span class="mono">states-for-dag-run</span> lista las cinco tareas.</li><li>Con la API: lo mismo que en el paso 5.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">ImagePullBackOff</span> en <span class="mono">ejecutar_lote</span> → la cuenta de servicio del entorno no lee Artifact Registry o la etiqueta no existe.</li><li><span class="mono">403</span> → falta rol de Airflow/IAM.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> Patrón de <span class="mono">gcloud composer environments run … -- …</span> y URL con <span class="mono">config.airflowUri</span> tomados de la documentación de Composer, <b>no ejecutados</b>.</p><figure class="cap" data-img="composer-03-run.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/composer-03-run.webp</span><span>Interfaz de Airflow del entorno de Composer: el run en verde</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li>Lanza el DAG con <span class="mono">gcloud composer environments run …</span>.</li><li>Abre la interfaz de Airflow del entorno, vista Grid.</li><li>Captura el run.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> Interfaz de Airflow del entorno de Composer: el run en verde</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="F" data-min="4" data-title="La propuesta de Actions"
+ data-notes="La propuesta de GitHub Actions. Tres workflows: lote composer, con formulario y aprobación del environment produccion, que entra en Google Cloud sin claves y lanza el DAG por la API; dags composer, que sube el DAG tras pasar las pruebas; y ensayo airflow, que ejecuta el DAG con airflow dags test en el runner para poder ensayar sin pagar un entorno. Los tres se probaron como texto; ninguno se ejecutó en Actions.">
+<p class="kick">6 · Automatizarlo con GitHub Actions · tres workflows</p><h1>GitHub Actions: lanzar con aprobación, subir el DAG tras las pruebas y ensayar sin Composer</h1>
+<div class="card"><table class="tbl"><tr><th>Workflow</th><th>Qué hace</th><th>Estado</th></tr><tr><td><span class="mono">lote-composer.yml</span></td><td>Formulario (corte, imagen, capacidad) → <b>aprobación</b> en <span class="mono">produccion</span> → WIF sin claves → URL de Airflow → <span class="mono">lanzar_lote.py --auth google</span> → resumen; <b>falla si el DAG falla</b></td><td>Sin ensayar</td></tr><tr><td><span class="mono">dags-composer.yml</span></td><td>Al cambiar <span class="mono">dags/**</span>: pruebas → (con aprobación) sube a <span class="mono">/dags</span> y espera a que Airflow vea el DAG</td><td>Sin ensayar</td></tr><tr><td><span class="mono">ensayo-airflow.yml</span></td><td>Sin Composer: construye las imágenes en el runner, instala Airflow con las restricciones oficiales y ejecuta <span class="mono">airflow dags test</span></td><td>Sin ensayar</td></tr></table></div><div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="card"><h3>Variables de GitHub (no secretos)</h3><ul class="list"><li><span class="mono">GCP_PROYECTO</span>, <span class="mono">GCP_PROVEEDOR_WIF</span>, <span class="mono">COMPOSER_CUENTA</span></li><li><span class="mono">COMPOSER_ENV</span>, <span class="mono">COMPOSER_REGION</span>, y <span class="mono">LOTE_IMAGEN</span> (opcional)</li><li>Environment <span class="mono">produccion</span> con revisores, como en S4.</li></ul></div></div><div class="capcol"><div class="card"><h3>Lo que comparten con S4</h3><ul class="list"><li><span class="mono">permissions: contents: read</span>; <span class="mono">id-token: write</span> solo en el job que entra en Google.</li><li><span class="mono">concurrency</span> propio y las entradas validadas a mano antes de usarlas.</li><li>No se instalan en <span class="mono">.github/workflows/</span> de este repo: se <b>copian</b> al fork.</li></ul></div></div></div><p class="small"><span class="tag warn">Sin verificar</span> Los tres están escritos y probados como <b>texto</b> (YAML, permisos, WIF, entradas). <b>Ninguno se ha ejecutado en Actions.</b></p>
+</section>
+
+<section class="slide" data-part="F" data-min="5" data-title="Así luce Actions hoy"
+ data-notes="Capturas de GitHub en solo lectura, de otros workflows que ya existen: la lista de Actions, una lista de runs y un run terminado de puntuar lote con su Job Summary. El workflow de este extra todavía no está en el repositorio. No hay botón Run workflow porque los workflows de ensayo están en ramas lab y no en la rama por defecto.">
+<p class="kick">6 · Automatizarlo con GitHub Actions · capturas de OTROS workflows</p><h1>Cómo lucen en GitHub los workflows que ya existen: lista, un run terminado con su resumen</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="gh-01-actions-lista.webp"><button class="zoom" data-src="img/gh-01-actions-lista.webp" data-alt="GitHub, solo lectura: la pestaña Actions del repositorio del curso con los workflows YA existentes (puntuar-lote, nueva-version…). El workflow nuevo de este extra todavía NO está en el repositorio" title="Ampliar (Esc cierra)"><img src="img/gh-01-actions-lista.webp" alt="GitHub, solo lectura: la pestaña Actions del repositorio del curso con los workflows YA existentes (puntuar-lote, nueva-version…). El workflow nuevo de este extra todavía NO está en el repositorio" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> GitHub, solo lectura: la pestaña Actions del repositorio del curso con los workflows YA existentes (puntuar-lote, nueva-version…). El workflow nuevo de este extra todavía NO está en el repositorio</figcaption></figure><figure class="cap" data-img="gh-03-puntuar-lote-resumen.webp"><button class="zoom" data-src="img/gh-03-puntuar-lote-resumen.webp" data-alt="GitHub, solo lectura: un run YA terminado de «Puntuar por lotes» (otro workflow, de S4) con sus tres trabajos y su Job Summary «Puntuación por lotes»: así lucirá el resumen del lote en Composer" title="Ampliar (Esc cierra)"><img src="img/gh-03-puntuar-lote-resumen.webp" alt="GitHub, solo lectura: un run YA terminado de «Puntuar por lotes» (otro workflow, de S4) con sus tres trabajos y su Job Summary «Puntuación por lotes»: así lucirá el resumen del lote en Composer" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> GitHub, solo lectura: un run YA terminado de «Puntuar por lotes» (otro workflow, de S4) con sus tres trabajos y su Job Summary «Puntuación por lotes»: así lucirá el resumen del lote en Composer</figcaption></figure></div><div class="capcol"><figure class="cap" data-img="gh-02-nueva-version-runs.webp"><button class="zoom" data-src="img/gh-02-nueva-version-runs.webp" data-alt="GitHub, solo lectura: ejecuciones de «Nueva versión del modelo», un workflow que YA existe (otro, no el de este extra), para ver cómo luce una lista de runs. No hay botón «Run workflow» porque los workflows de ensayo viven en ramas lab/, no en la rama por defecto" title="Ampliar (Esc cierra)"><img src="img/gh-02-nueva-version-runs.webp" alt="GitHub, solo lectura: ejecuciones de «Nueva versión del modelo», un workflow que YA existe (otro, no el de este extra), para ver cómo luce una lista de runs. No hay botón «Run workflow» porque los workflows de ensayo viven en ramas lab/, no en la rama por defecto" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> GitHub, solo lectura: ejecuciones de «Nueva versión del modelo», un workflow que YA existe (otro, no el de este extra), para ver cómo luce una lista de runs. No hay botón «Run workflow» porque los workflows de ensayo viven en ramas lab/, no en la rama por defecto</figcaption></figure><div class="callout">Todo <b>solo lectura</b>, de workflows de <b>S4</b>: <span class="mono">lote-composer.yml</span> aún no está en el repositorio. No se pulsó Run, Approve, Merge ni Delete. Los workflows de ensayo viven en ramas <span class="mono">lab/</span>, por eso la rama por defecto no ofrece el botón «Run workflow».</div></div></div>
+</section>
+
+<section class="slide" data-part="F" data-min="4" data-title="Aprobación y variables"
+ data-notes="El environment produccion y las variables de GCP ya existen del laboratorio de S4. Para los workflows de este extra hay que añadir las variables de Composer. Capturas de solo lectura, con los valores difuminados.">
+<p class="kick">6 · Automatizarlo con GitHub Actions · environment y variables de Actions</p><h1>Lo que ya está configurado: el environment «produccion» y las variables GCP_*</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="gh-04-environments.webp"><button class="zoom" data-src="img/gh-04-environments.webp" data-alt="GitHub, solo lectura: Settings › Environments del repositorio: el environment «produccion» con 1 regla de protección (el de la aprobación), que usarán los workflows nuevos" title="Ampliar (Esc cierra)"><img src="img/gh-04-environments.webp" alt="GitHub, solo lectura: Settings › Environments del repositorio: el environment «produccion» con 1 regla de protección (el de la aprobación), que usarán los workflows nuevos" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> GitHub, solo lectura: Settings › Environments del repositorio: el environment «produccion» con 1 regla de protección (el de la aprobación), que usarán los workflows nuevos</figcaption></figure></div><div class="capcol"><figure class="cap" data-img="gh-05-variables.webp"><button class="zoom" data-src="img/gh-05-variables.webp" data-alt="GitHub, solo lectura: Settings › Secrets and variables › Actions › Variables: las GCP_* de S4 (valores difuminados). Las del extra (COMPOSER_ENV, COMPOSER_REGION, COMPOSER_CUENTA…) habría que añadirlas" title="Ampliar (Esc cierra)"><img src="img/gh-05-variables.webp" alt="GitHub, solo lectura: Settings › Secrets and variables › Actions › Variables: las GCP_* de S4 (valores difuminados). Las del extra (COMPOSER_ENV, COMPOSER_REGION, COMPOSER_CUENTA…) habría que añadirlas" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> GitHub, solo lectura: Settings › Secrets and variables › Actions › Variables: las GCP_* de S4 (valores difuminados). Las del extra (COMPOSER_ENV, COMPOSER_REGION, COMPOSER_CUENTA…) habría que añadirlas</figcaption></figure></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El environment <span class="mono">produccion</span> ya existe con una regla de protección: los dos workflows nuevos lo reutilizan para <b>esperar aprobación</b>.</li><li>Las variables <span class="mono">GCP_PROYECTO</span>, <span class="mono">GCP_PROVEEDOR_WIF</span>… ya están (valores difuminados). <b>Hay que añadir</b> <span class="mono">COMPOSER_ENV</span>, <span class="mono">COMPOSER_REGION</span> y <span class="mono">COMPOSER_CUENTA</span> (y <span class="mono">LOTE_IMAGEN</span> si quieres).</li></ul></div>
+</section>
+
+<section class="slide" data-part="F" data-min="5" data-title="lote-composer.yml"
+ data-notes="El workflow que lanza el lote. El job lanzar para en el environment produccion hasta que un revisor lo aprueba, entra en Google Cloud con Workload Identity Federation, pregunta a Composer la URL de su Airflow y ejecuta lanzar lote punto py, que escribe el resumen en la página del run y sale con código distinto de cero si el DAG falla. Sin ensayar.">
+<p class="kick">6 · Automatizarlo con GitHub Actions · el workflow que lo lanza</p><h1>lote-composer.yml: aprobación, entrada sin claves y falla si el DAG falla</h1>
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="term"><div class="bar"><em>lote-composer.yml · el trabajo «lanzar»</em><button class="cp cpall" data-t="  lanzar:
+    name: 2 · Lanzar el DAG en Composer y esperar (con aprobación)
+    needs: entradas
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: produccion          # aquí se para hasta que un revisor lo apruebe (Review deployments)
+    permissions:
+      contents: read
+      id-token: write                # para que GitHub pida a Google el token de corta vida (WIF): sin claves
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: &quot;3.11&quot; }
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.COMPOSER_CUENTA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Averiguar la URL del Airflow del entorno
+        id: airflow
+        run: |
+          URL=$(gcloud composer environments describe &quot;${{ vars.COMPOSER_ENV }}&quot; --location &quot;${{ vars.COMPOSER_REGION }}&quot; --format=&quot;value(config.airflowUri)&quot;)
+          if [ -z &quot;$URL&quot; ]; then echo &quot;::error::El entorno no devolvió config.airflowUri: ¿existe y está en marcha?&quot;; exit 1; fi
+          echo &quot;url=$URL&quot; &gt;&gt; &quot;$GITHUB_OUTPUT&quot;
+      - name: Lanzar el DAG retencion_lote y esperar (falla si el DAG falla)
+        env:
+          AIRFLOW_URL: ${{ steps.airflow.outputs.url }}
+        run: |
+          # La salida del script ya escribe el resumen en GITHUB_STEP_SUMMARY (página del run).
+          python &quot;$EXTRA/lanzar_lote.py&quot; --url &quot;$AIRFLOW_URL&quot; --auth google --corte &quot;$CORTE&quot; --imagen &quot;$IMAGEN&quot; --capacidad &quot;$CAPACIDAD&quot; --espera 4800">Copiar todo</button></div><pre class="src">  lanzar:
+    name: 2 · Lanzar el DAG en Composer y esperar (con aprobación)
+    needs: entradas
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: produccion          # aquí se para hasta que un revisor lo apruebe (Review deployments)
+    permissions:
+      contents: read
+      id-token: write                # para que GitHub pida a Google el token de corta vida (WIF): sin claves
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: &quot;3.11&quot; }
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.COMPOSER_CUENTA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Averiguar la URL del Airflow del entorno
+        id: airflow
+        run: |
+          URL=$(gcloud composer environments describe &quot;${{ vars.COMPOSER_ENV }}&quot; --location &quot;${{ vars.COMPOSER_REGION }}&quot; --format=&quot;value(config.airflowUri)&quot;)
+          if [ -z &quot;$URL&quot; ]; then echo &quot;::error::El entorno no devolvió config.airflowUri: ¿existe y está en marcha?&quot;; exit 1; fi
+          echo &quot;url=$URL&quot; &gt;&gt; &quot;$GITHUB_OUTPUT&quot;
+      - name: Lanzar el DAG retencion_lote y esperar (falla si el DAG falla)
+        env:
+          AIRFLOW_URL: ${{ steps.airflow.outputs.url }}
+        run: |
+          # La salida del script ya escribe el resumen en GITHUB_STEP_SUMMARY (página del run).
+          python &quot;$EXTRA/lanzar_lote.py&quot; --url &quot;$AIRFLOW_URL&quot; --auth google --corte &quot;$CORTE&quot; --imagen &quot;$IMAGEN&quot; --capacidad &quot;$CAPACIDAD&quot; --espera 4800</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Run workflow pide corte, imagen y capacidad; el job «lanzar» <b>espera la aprobación</b>.</li><li>La página del run trae la tabla de tareas y el registro de <span class="mono">resumir</span>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">::error::El entorno no devolvió config.airflowUri</span> → no existe o no está en marcha.</li><li>Run en rojo con <span class="mono">failed</span> → mira el registro de la tarea que imprime el propio script.</li></ul></div><figure class="cap" data-img="actions-01-run-workflow.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/actions-01-run-workflow.webp</span><span>GitHub Actions: formulario «Run workflow» de «Lote en Cloud Composer» con corte, imagen y capacidad</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li>Copia <span class="mono">lote-composer.yml</span> a <span class="mono">.github/workflows/</span> de la rama por defecto (el botón «Run workflow» solo aparece así).</li><li>Actions → «Lote en Cloud Composer» → Run workflow.</li><li>Captura el formulario SIN pulsar Run.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> GitHub Actions: formulario «Run workflow» de «Lote en Cloud Composer» con corte, imagen y capacidad</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="F" data-min="5" data-title="dags-composer.yml y ensayo"
+ data-notes="Subir el DAG y ensayar sin Composer. Dags composer sube los dos archivos con gcloud y espera con reintentos a que Airflow vea el DAG. Ensayo airflow ejecuta airflow dags test en el runner con DockerOperator. Los dos están sin ensayar; la receta para ensayarlos en una rama lab está en el README.">
+<p class="kick">6 · Automatizarlo con GitHub Actions · subir el DAG y ensayar sin Composer</p><h1>Subir el DAG tras las pruebas, y un ensayo honesto sin Composer</h1>
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="term"><div class="bar"><em>dags-composer.yml · subir</em><button class="cp cpall" data-t="      - name: Subir los DAG a la carpeta /dags del bucket del entorno
+        run: |
+          for f in lote_logica.py retencion_lote.py; do
+            gcloud composer environments storage dags import --environment &quot;${{ vars.COMPOSER_ENV }}&quot; --location &quot;${{ vars.COMPOSER_REGION }}&quot; --source=&quot;$EXTRA/dags/$f&quot;
+          done">Copiar todo</button></div><pre class="src">      - name: Subir los DAG a la carpeta /dags del bucket del entorno
+        run: |
+          for f in lote_logica.py retencion_lote.py; do
+            gcloud composer environments storage dags import --environment &quot;${{ vars.COMPOSER_ENV }}&quot; --location &quot;${{ vars.COMPOSER_REGION }}&quot; --source=&quot;$EXTRA/dags/$f&quot;
+          done</pre></div><div class="term"><div class="bar"><em>ensayo-airflow.yml · airflow dags test</em><button class="cp cpall" data-t="      - name: Ejecutar el DAG entero con airflow dags test
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: &quot;false&quot;
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags
+          LOTE_MODO: docker
+          LOTE_IMAGEN_DEFECTO: retencion-lote:local
+        run: |
+          airflow dags test retencion_lote 2011-12-10 --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27; | tee ensayo.txt
+          {
+            echo &quot;## Ensayo del DAG sin Composer&quot;
+            echo
+            echo &quot;\`airflow dags test retencion_lote\` con Airflow ${AIRFLOW_VERSION} y DockerOperator en el runner.&quot;
+            echo
+            echo &#x27;```&#x27;
+            grep -E &quot;Lote de retención|Clientes puntuados|Tramos de negocio|Probabilidad:|Marking task as|DagRun Finished&quot; ensayo.txt | tail -20 || true
+            echo &#x27;```&#x27;
+          } &gt;&gt; &quot;$GITHUB_STEP_SUMMARY&quot;">Copiar todo</button></div><pre class="src">      - name: Ejecutar el DAG entero con airflow dags test
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: &quot;false&quot;
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags
+          LOTE_MODO: docker
+          LOTE_IMAGEN_DEFECTO: retencion-lote:local
+        run: |
+          airflow dags test retencion_lote 2011-12-10 --conf &#x27;{&quot;corte&quot;: &quot;2011-12-10&quot;, &quot;imagen&quot;: &quot;retencion-lote:local&quot;, &quot;capacidad&quot;: 0.1}&#x27; | tee ensayo.txt
+          {
+            echo &quot;## Ensayo del DAG sin Composer&quot;
+            echo
+            echo &quot;\`airflow dags test retencion_lote\` con Airflow ${AIRFLOW_VERSION} y DockerOperator en el runner.&quot;
+            echo
+            echo &#x27;```&#x27;
+            grep -E &quot;Lote de retención|Clientes puntuados|Tramos de negocio|Probabilidad:|Marking task as|DagRun Finished&quot; ensayo.txt | tail -20 || true
+            echo &#x27;```&#x27;
+          } &gt;&gt; &quot;$GITHUB_STEP_SUMMARY&quot;</pre></div></div><div class="capcol"><div class="card"><h3>El ensayo sin Composer</h3><ul class="list"><li>Rama <span class="mono">lab/composer/…</span> que cambie el DAG, o Run workflow.</li><li>Receta exacta en el README: «Ensayo en Actions».</li><li>Debes ver <span class="mono">list-import-errors</span> sin errores y las tareas en <span class="mono">success</span>.</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> <b>Sin ensayar.</b> Se espera hasta que el profesor autorice el push a una rama <span class="mono">lab/</span>.</p><figure class="cap" data-img="actions-04-ensayo-airflow.webp"><div class="pend"><b>Captura pendiente</b><span class="mono">img/actions-04-ensayo-airflow.webp</span><span>GitHub Actions: el resumen del ensayo «airflow dags test» en el runner</span><span class="small"><b>Cómo hacer esta captura</b></span><ol class="small"><li>Sigue la receta «Ensayo en Actions» del README.</li><li>Captura el resumen del job.</li></ol></div><figcaption><span class="tag warn">Pendiente</span> GitHub Actions: el resumen del ensayo «airflow dags test» en el runner</figcaption></figure></div></div>
+</section>
+
+<section class="slide grande" data-part="G" data-min="5" data-title="Qué quedó sin verificar"
+ data-notes="Qué se ejecutó y qué no. Lo ejecutado: el lote real, el DAG como estructura, el cliente y la interfaz contra un Airflow de prueba, los YAML como texto. Sin verificar: el DAG en un Airflow real, las imágenes, Composer y los workflows en Actions. Las capturas pendientes están listadas en capturas pendientes punto md.">
+<p class="kick">7 · Lo probado, lo que falta y los costes · honestidad</p><h1>Qué se ejecutó de verdad y qué quedó sin verificar</h1>
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="card"><table class="tbl"><tr><th>Ejecutado</th><th>Cómo</th></tr><tr><td>El lote real y su validación</td><td>Copia de <span class="mono">curso.db</span>; repositorio intacto (hashes)</td></tr><tr><td>El DAG: AST y estructura</td><td>Airflow <i>de cartón</i> (2 y 3) en las pruebas</td></tr><tr><td><span class="mono">lanzar_lote.py</span> y la pestaña Lote</td><td>Servidor Airflow <b>falso</b></td></tr><tr><td>Los YAML</td><td>Pruebas de texto: permisos, WIF, entradas</td></tr></table></div><figure class="cap" data-img="term-05-pytest-extra.webp"><button class="zoom" data-src="img/term-05-pytest-extra.webp" data-alt="Terminal: salida REAL de las pruebas de extra-composer-batch" title="Ampliar (Esc cierra)"><img src="img/term-05-pytest-extra.webp" alt="Terminal: salida REAL de las pruebas de extra-composer-batch" style="max-height:200px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal: salida REAL de las pruebas de extra-composer-batch</figcaption></figure></div><div class="capcol"><div class="card"><table class="tbl"><tr><th>Sin verificar</th><th>Para hacerlo</th></tr><tr><td>El DAG en Airflow real</td><td>Pasos 3-4 (Docker) o Actions «ensayo»</td></tr><tr><td><span class="mono">lote.Dockerfile</span>, el compose</td><td>Paso 2-3 con Docker</td></tr><tr><td>Composer, Artifact Registry, IAM</td><td>Pasos 7-9 (cuesta dinero)</td></tr><tr><td>Los workflows en Actions</td><td>Rama <span class="mono">lab/</span>, con autorización</td></tr></table></div><figure class="cap" data-img="term-06-pytest-ui.webp"><button class="zoom" data-src="img/term-06-pytest-ui.webp" data-alt="Terminal: salida REAL de las pruebas de la interfaz (las 46 de antes y las nuevas de la pestaña Lote)" title="Ampliar (Esc cierra)"><img src="img/term-06-pytest-ui.webp" alt="Terminal: salida REAL de las pruebas de la interfaz (las 46 de antes y las nuevas de la pestaña Lote)" style="max-height:200px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal: salida REAL de las pruebas de la interfaz (las 46 de antes y las nuevas de la pestaña Lote)</figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="G" data-min="4" data-title="Costes y limpieza"
+ data-notes="Costes. Un entorno de Composer cuesta mientras exista y tarda unos veinticinco minutos en crearse según la documentación. No se cita ninguna cifra porque la documentación consultada no la daba en esa página. En este extra no se creó ningún recurso ni se habilitó ninguna API.">
+<p class="kick">7 · Lo probado, lo que falta y los costes · sin cifras inventadas</p><h1>Costes: un entorno de Composer cuesta mientras exista, y esto no creó ninguno</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Lo que dice la documentación</h3><ul class="list"><li>Crear un entorno: «aproximadamente 25 minutos».</li><li>Precio: sin dato en esta presentación; <b>consulta la página de precios</b> de Composer.</li><li>Los DAG tardan 1-2 minutos en aparecer tras subirlos.</li></ul></div>
+ <div class="card"><h3>Antes de crear nada</h3><ul class="list"><li>Avisa al profesor: <b>cuesta dinero</b> y la cuenta del curso tiene presupuesto.</li><li>Bórralo al terminar: <span class="mono">gcloud composer environments delete</span>.</li><li>¿Un único lote diario? Un Cloud Run Job o <span class="mono">puntuar-lote.yml</span> salen mucho más baratos.</li></ul></div>
+</div>
+<div class="callout"><b>En este extra no se creó ningún recurso en Google Cloud y no se habilitó ninguna API</b>: las dos capturas de la consola son de solo lectura.</div><p class="fuente">Fuente: &lt;https://docs.cloud.google.com/composer/docs/composer-3/create-environments&gt;.</p>
+</section>
+
+<section class="slide grande" data-part="G" data-min="4" data-title="Resumen"
+ data-notes="Resumen. El orquestador no cambia lo que hace el lote, lo hace repetible, visible y con un botón. Recuerde que la imagen de la API no puede correr el lote sola, que hay que validar la salida dentro del DAG y que la nube se toca solo tras una aprobación. Lo que falta: ejecutarlo en un Airflow real y hacer las capturas pendientes.">
+<p class="kick">7 · Lo probado, lo que falta y los costes · lo que debes recordar</p><h1>Resumen: el orquestador no cambia el lote; lo hace repetible, visible y con botón</h1>
+
+<div class="grid3">
+ <div class="card"><h3>Lo que construiste</h3><ul class="list"><li>Un <b>DAG</b> de cinco tareas con dos operadores.</li><li>Un <b>cliente REST</b> y una <b>pestaña Lote</b>.</li><li>Tres <b>workflows</b> copiables.</li></ul></div>
+ <div class="card"><h3>Lo que debes recordar</h3><ul class="list"><li>La imagen de la API <b>no</b> puede correr el lote sola: lleva el modelo, no los datos.</li><li>Valida la salida <b>dentro del DAG</b>; un run en verde con datos malos no sirve.</li><li>Aprobación en <span class="mono">produccion</span> antes de tocar la nube.</li></ul></div>
+ <div class="card"><h3>Lo que falta</h3><ul class="list"><li>Ejecutarlo en un <b>Airflow real</b>.</li><li>Hacer las <b>capturas pendientes</b> (<span class="mono">capturas-pendientes.md</span>).</li><li>Ensayar los workflows en una rama <span class="mono">lab/</span>.</li></ul></div>
+</div><p class="fuente">Fuente: README.md y comandos.md de este extra.</p>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<div id="zoombox" aria-label="Captura ampliada"><p>Esc o clic para cerrar</p><img id="zoomimg" alt=""></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado (propuesta)"></span>
+  <button class="part" data-p="A">Plan</button><button class="part" data-p="B">El lote y el DAG</button><button class="part" data-p="C">Airflow en local</button><button class="part" data-p="D">Lanzarlo</button><button class="part" data-p="E">Cloud Composer</button><button class="part" data-p="F">GitHub Actions</button><button class="part" data-p="G">Cierre</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S5">⌂ Índice</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en README.md y comandos.md de esta carpeta.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "Plan", "B": "El lote y el DAG", "C": "Airflow en local", "D": "Lanzarlo", "E": "Cloud Composer", "F": "GitHub Actions", "G": "Cierre"};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S5 · Extra: lote con Airflow / Composer</span><span><b>${esc(PARTES[s.dataset.part]||'')}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N; $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL+' (propuesta)';
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto (propuesta): '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part]||'')} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+function zoom(on,src,alt){const z=$('#zoombox');if(on){$('#zoomimg').src=src;$('#zoomimg').alt=alt||'';}z.classList.toggle('on',!!on)}
+$('#zoombox').onclick=()=>zoom(false);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='Escape'){zoom(false);toggle('#index',false);toggle('#notes',false);return}
+  if($('#zoombox').classList.contains('on')) return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O'){toggle('#index')} else if(k==='s'||k==='S'){toggle('#notes')} else if(k==='f'||k==='F'){$('#bfull').click()}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.zoom'); if(z){e.stopPropagation();zoom(true,z.dataset.src,z.dataset.alt);return}
+  const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+fit();
+const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1)});
+})();
+</script>
+</body>
+</html>

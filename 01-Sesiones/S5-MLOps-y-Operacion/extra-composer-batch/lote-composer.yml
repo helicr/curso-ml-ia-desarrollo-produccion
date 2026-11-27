@@ -1,0 +1,105 @@
+# EXTRA S5 · Lanzar el lote en Cloud Composer (Airflow gestionado de Google Cloud) desde GitHub Actions, con aprobación.
+#
+#   entradas  ──►  lanzar  (environment: produccion = ESPERA a un revisor)  ──►  Job Summary
+#   (se validan)   (WIF sin claves → URL del Airflow → lanzar_lote.py → DAG retencion_lote → espera → resumen)
+#
+# Se copia en:  .github/workflows/lote-composer.yml  (en la raíz de tu copia del repositorio)
+# ESTADO: SIN ENSAYAR. No se ha ejecutado en GitHub Actions ni contra un entorno de Composer (crear uno cuesta dinero: ver el README).
+#   Receta de ensayo sin Composer: ensayo-airflow.yml. Lo que sí se probó: YAML, permisos, WIF, entradas y que el comando es el de comandos.md.
+#
+# QUÉ HACE
+#   · No construye nada: el DAG ya está en el entorno (lo sube dags-composer.yml) y la imagen del lote ya está en Artifact Registry.
+#   · Entra en Google Cloud SIN CLAVES (Workload Identity Federation, como el laboratorio cloud-journey de S4: permiso id-token: write).
+#   · Pregunta a Composer la URL de su Airflow:  gcloud composer environments describe … --format="value(config.airflowUri)"
+#   · Lanza el DAG por la API REST (lanzar_lote.py --auth google), espera, escribe el resumen en la página del run y FALLA si el DAG falla.
+#
+# VARIABLES DE GITHUB (Settings → Secrets and variables → Actions → Variables; son variables, no secretos)
+#   GCP_PROYECTO         id del proyecto de Google Cloud
+#   GCP_PROVEEDOR_WIF    proveedor de Workload Identity Federation (el mismo del laboratorio cloud-journey)
+#   COMPOSER_CUENTA      cuenta de servicio con la que entra Actions: necesita poder leer el entorno (composer.environments.get) y usar
+#                        el Airflow (rol de Composer + un rol de Airflow que permita lanzar DAGs). Mínimo privilegio: NO es la de despliegue de Cloud Run.
+#   COMPOSER_ENV         nombre del entorno de Composer
+#   COMPOSER_REGION      región del entorno (p. ej. europe-west1)
+#   LOTE_IMAGEN          (opcional) imagen del lote por defecto: <región>-docker.pkg.dev/<proyecto>/curso/retencion-lote:<etiqueta>
+# Environment «produccion» con revisores obligatorios (el de S4).
+name: Lote en Cloud Composer
+
+on:
+  workflow_dispatch:
+    inputs:
+      corte:
+        description: 'Fecha de corte AAAA-MM-DD (vacío = día siguiente a la última factura)'
+        required: false
+        default: ''
+      imagen:
+        description: 'Imagen del lote (vacío = la variable LOTE_IMAGEN)'
+        required: false
+        default: ''
+      capacidad:
+        description: 'Fracción de clientes a los que llega la campaña (0.10 = el 10 %)'
+        required: false
+        default: '0.10'
+
+permissions:
+  contents: read
+
+# Dos lotes a la vez sobre el mismo entorno no tienen sentido: el segundo espera.
+concurrency:
+  group: lote-composer
+  cancel-in-progress: false
+
+env:
+  CORTE: ${{ inputs.corte }}
+  IMAGEN: ${{ inputs.imagen || vars.LOTE_IMAGEN }}
+  CAPACIDAD: ${{ inputs.capacidad || '0.10' }}
+  EXTRA: 01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch
+
+jobs:
+  entradas:
+    name: 1 · Validar las entradas (sin credenciales)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Comprobar corte, imagen y capacidad
+        run: |
+          # Se validan a mano: lo que se escribe en el formulario no debe poder ejecutarse como una orden.
+          if [ -n "$CORTE" ]; then
+            case "$CORTE" in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;; *) echo "::error::corte no válido: $CORTE"; exit 1;; esac
+          fi
+          case "$CAPACIDAD" in ''|*[!0-9.]*) echo "::error::capacidad no válida: $CAPACIDAD"; exit 1;; esac
+          if [ -z "$IMAGEN" ]; then echo "::error::falta la imagen: escríbela al lanzar o define la variable LOTE_IMAGEN"; exit 1; fi
+          case "$IMAGEN" in *[!A-Za-z0-9._/:@-]*) echo "::error::imagen no válida: $IMAGEN"; exit 1;; esac
+          echo "Corte: ${CORTE:-(por defecto)} · imagen: $IMAGEN · capacidad: $CAPACIDAD"
+
+  lanzar:
+    name: 2 · Lanzar el DAG en Composer y esperar (con aprobación)
+    needs: entradas
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: produccion          # aquí se para hasta que un revisor lo apruebe (Review deployments)
+    permissions:
+      contents: read
+      id-token: write                # para que GitHub pida a Google el token de corta vida (WIF): sin claves
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.COMPOSER_CUENTA }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Averiguar la URL del Airflow del entorno
+        id: airflow
+        run: |
+          URL=$(gcloud composer environments describe "${{ vars.COMPOSER_ENV }}" --location "${{ vars.COMPOSER_REGION }}" --format="value(config.airflowUri)")
+          if [ -z "$URL" ]; then echo "::error::El entorno no devolvió config.airflowUri: ¿existe y está en marcha?"; exit 1; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Lanzar el DAG retencion_lote y esperar (falla si el DAG falla)
+        env:
+          AIRFLOW_URL: ${{ steps.airflow.outputs.url }}
+        run: |
+          # La salida del script ya escribe el resumen en GITHUB_STEP_SUMMARY (página del run).
+          python "$EXTRA/lanzar_lote.py" --url "$AIRFLOW_URL" --auth google --corte "$CORTE" --imagen "$IMAGEN" --capacidad "$CAPACIDAD" --espera 4800

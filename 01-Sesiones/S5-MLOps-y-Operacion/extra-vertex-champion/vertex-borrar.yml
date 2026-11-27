@@ -1,0 +1,103 @@
+name: Vertex AI · borrar todo
+# =====================================================================================================================
+# QUÉ HACE (a mano: Actions > «Vertex AI · borrar todo» > Run workflow)
+#
+#   Deja a cero lo que creó este extra, en este orden: undeploy de cada versión desplegada -> endpoint -> modelo (con todas sus
+#   versiones) -> imágenes de Artifact Registry. NO toca el repositorio de Artifact Registry (puede ser de otras prácticas), ni los
+#   recursos de la práctica 04 de S4, ni la federación WIF.
+#   Pide una CONFIRMACIÓN ESCRITA: hay que teclear BORRAR en la entrada «confirmacion»; con cualquier otra cosa el workflow se detiene
+#   antes de entrar en Google Cloud. Además espera la APROBACIÓN en el environment «produccion».
+#
+# DÓNDE SE COPIA: .github/workflows/vertex-borrar.yml. QUÉ NECESITA: las mismas variables que vertex-desplegar.yml.
+# LIMITACIÓN: borrar imágenes necesita roles/artifactregistry.repoAdmin (scripts/preparar_gcp.sh --con-borrado); con solo «writer» el
+#   workflow borra todo lo demás, AVISA de que la imagen se queda y se borra desde Cloud Shell (scripts/borrar.sh).
+# SIN VERIFICAR: este workflow entero (aún no se ha ejecutado) y que roles/aiplatform.user baste para undeploy y borrado.
+# =====================================================================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      confirmacion:
+        description: "Escribe BORRAR (en mayúsculas) para confirmar que quieres borrar el endpoint, el modelo y las imágenes"
+        type: string
+        required: true
+      region:
+        description: "Región de Vertex AI (vacío = la variable GCP_REGION)"
+        type: string
+        default: ""
+      con_imagenes:
+        description: "Borrar también las imágenes retencion-vertex de Artifact Registry"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vertex-champion
+  cancel-in-progress: false
+
+jobs:
+  confirmar:
+    name: "1 · Confirmación escrita"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CONFIRMACION: ${{ inputs.confirmacion }}
+    steps:
+      - name: Comprobar que has escrito BORRAR
+        run: |
+          if [ "$CONFIRMACION" != "BORRAR" ]; then
+            echo "::error::Para borrar hay que escribir BORRAR en la entrada «confirmacion». No se ha borrado nada."
+            exit 1
+          fi
+          echo "Confirmado."
+
+  borrar:
+    name: "2 · Borrar endpoint, modelo e imágenes (con aprobación)"
+    needs: confirmar
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: produccion
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        shell: bash
+        working-directory: 01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion
+    env:
+      CURSO_PROYECTO: ${{ vars.GCP_PROYECTO }}
+      CURSO_REGION_VERTEX: ${{ inputs.region || vars.GCP_REGION }}
+      CURSO_REPO_AR: ${{ vars.GCP_REPO_AR || 'curso' }}
+      CURSO_TRABAJO: ${{ runner.temp }}/vertex
+      CURSO_PYTHON: python
+      CON_IMAGENES: ${{ inputs.con_imagenes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.GCP_CUENTA_DESPLIEGUE }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Borrar (scripts/borrar.sh)
+        run: |
+          ARGS=()
+          [ "$CON_IMAGENES" = "true" ] || ARGS+=(--sin-imagenes)
+          bash scripts/borrar.sh "${ARGS[@]}" | tee "$RUNNER_TEMP/borrar.txt"
+      - name: Job Summary
+        if: ${{ always() }}
+        run: |
+          {
+            echo "## Vertex AI · borrado"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/borrar.txt" 2>/dev/null || echo "(sin salida)"
+            echo '```'
+            echo
+            echo "Comprueba en la consola (Vertex AI > Predicción en línea y Registro de modelos) que las listas están vacías."
+          } >> "$GITHUB_STEP_SUMMARY"

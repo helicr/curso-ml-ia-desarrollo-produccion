@@ -1,0 +1,6 @@
+$ python lanzar_lote.py --url https://ejemplo.composer.googleusercontent.com --auth google --corte 2011-12-10 --imagen europe-west1-docker.pkg.dev/PROYECTO/curso/retencion-lote:v1 --simular-url
+[simulado] URL base: https://ejemplo.composer.googleusercontent.com · autenticación: google · API: v2|v1 (se detectaría con /version)
+[simulado] 1. GET  /api/<v>/dags/retencion_lote            (¿existe y no está en pausa?)
+[simulado] 2. POST /api/<v>/dags/retencion_lote/dagRuns    cuerpo: {"conf": {"corte": "2011-12-10", "imagen": "europe-west1-docker.pkg.dev/PROYECTO/curso/retencion-lote:v1", "capacidad": 0.1}, "dag_run_id": "lanzar-20261127T095943"}
+[simulado] 3. GET  /api/<v>/dags/retencion_lote/dagRuns/lanzar-20261127T095943  cada 10 s hasta success o failed (máximo 3600 s)
+[simulado] No se ha enviado nada.

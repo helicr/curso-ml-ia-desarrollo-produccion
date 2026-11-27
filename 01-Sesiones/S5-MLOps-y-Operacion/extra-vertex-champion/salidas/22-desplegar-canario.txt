@@ -1,0 +1,17 @@
+$ bash scripts/desplegar.sh --canario 10
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== 1. Versión de Vertex con el alias mlflow-v6
+retencion-90d-champion versión 2
+
+== 2. Endpoint retencion-90d-champion-ep
+Ya existe.
+
+== 3. Desplegar mlflow-v6 (e2-standard-2 x 1; tarda varios minutos, sin medir)
+Reparto de tráfico: 0=10,1000=90   (0 = el modelo que se despliega ahora)
+
+== Tráfico ahora
+1000	mlflow-v5	90%
+1001	mlflow-v6	10%
+
+Listo. Siguiente: scripts/probar.sh ; si todo va bien: scripts/promover.sh ; y SIN DEJARLO PARA DESPUÉS: scripts/borrar.sh

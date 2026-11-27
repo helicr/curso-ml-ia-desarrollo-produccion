@@ -1,0 +1,96 @@
+name: Vertex AI · volver a la versión anterior
+# =====================================================================================================================
+# QUÉ HACE (a mano: Actions > «Vertex AI · volver a la versión anterior» > Run workflow)
+#
+#   Mueve el tráfico del endpoint a la versión ANTERIOR de MLflow (la que anotó la etiqueta mlflow_version_anterior de la versión que
+#   sirve ahora, o la que pidas). Si esa versión sigue desplegada (con 0 %), solo se mueve el tráfico: segundos. Si ya se retiró, se
+#   vuelve a desplegar desde el Model Registry (varios minutos, sin medir). Nada se borra: la versión mala sigue en el Model Registry.
+#   Espera la APROBACIÓN en el environment «produccion» y entra en Google Cloud SIN CLAVES (Workload Identity Federation).
+#
+# EL ALIAS DE MLFLOW: aquí NO se mueve (--sin-mlflow): el registro de MLflow del curso es local y el del runner desaparece al acabar.
+#   Para mover el alias donde sí está el registro: scripts/volver.sh en Cloud Shell (sin --sin-mlflow) o, a mano,
+#   python -m ia_mlops.alias_modelo volver   (con un servidor de MLflow compartido, este workflow lo haría con CURSO_MLFLOW_URI).
+#
+# DÓNDE SE COPIA: .github/workflows/vertex-rollback.yml. QUÉ NECESITA: las mismas variables que vertex-desplegar.yml.
+# ¡COBRA! Mientras haya algo desplegado el endpoint cobra. Con «retirar_actual» se hace undeploy de la versión mala (deja de cobrar).
+# SIN VERIFICAR: este workflow entero (aún no se ha ejecutado) y los campos JSON de `gcloud ai endpoints describe`.
+# =====================================================================================================================
+on:
+  workflow_dispatch:
+    inputs:
+      a_version:
+        description: "Versión de MLflow a la que volver (vacío = la anterior anotada en la versión que sirve ahora)"
+        type: string
+        required: false
+        default: ""
+      region:
+        description: "Región de Vertex AI (vacío = la variable GCP_REGION)"
+        type: string
+        default: ""
+      retirar_actual:
+        description: "Tras volver, esperar y retirar (undeploy) la versión mala: deja de cobrar"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vertex-champion
+  cancel-in-progress: false
+
+jobs:
+  volver:
+    name: "Volver a la versión anterior (con aprobación)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: produccion
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        shell: bash
+        working-directory: 01-Sesiones/S5-MLOps-y-Operacion/extra-vertex-champion
+    env:
+      CURSO_PROYECTO: ${{ vars.GCP_PROYECTO }}
+      CURSO_REGION_VERTEX: ${{ inputs.region || vars.GCP_REGION }}
+      CURSO_REPO_AR: ${{ vars.GCP_REPO_AR || 'curso' }}
+      CURSO_TRABAJO: ${{ runner.temp }}/vertex
+      CURSO_PYTHON: python
+      A_VERSION: ${{ inputs.a_version }}
+      RETIRAR_ACTUAL: ${{ inputs.retirar_actual }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Comprobar las entradas
+        run: |
+          [[ -z "$A_VERSION" || "$A_VERSION" =~ ^[1-9][0-9]*$ ]] || { echo "a_version debe ser un entero o estar vacía"; exit 1; }
+          [[ "$CURSO_REGION_VERTEX" =~ ^[a-z0-9-]+$ ]] || { echo "region no válida"; exit 1; }
+      - name: Entrar en Google Cloud sin claves (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ vars.GCP_PROYECTO }}
+          workload_identity_provider: ${{ vars.GCP_PROVEEDOR_WIF }}
+          service_account: ${{ vars.GCP_CUENTA_DESPLIEGUE }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Mover el tráfico a la versión anterior (scripts/volver.sh)
+        run: |
+          ARGS=(--sin-mlflow)
+          [ -n "$A_VERSION" ] && ARGS+=(--a-version "$A_VERSION")
+          [ "$RETIRAR_ACTUAL" = "true" ] && ARGS+=(--retirar-actual)
+          bash scripts/volver.sh "${ARGS[@]}" | tee "$RUNNER_TEMP/volver.txt"
+      - name: Job Summary
+        if: ${{ always() }}
+        run: |
+          {
+            echo "## Rollback en Vertex AI"
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/volver.txt" 2>/dev/null || echo "(sin salida)"
+            echo '```'
+            echo
+            echo "El alias \`champion\` de MLflow **no** se ha movido desde aquí: muévelo con \`python -m ia_mlops.alias_modelo volver\` en el registro que corresponda."
+          } >> "$GITHUB_STEP_SUMMARY"

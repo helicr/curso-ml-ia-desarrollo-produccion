@@ -1,0 +1,3 @@
+Almacén de MLflow: sqlite:///<trabajo>/models/mlflow.db
+Cargado models:/retencion-90d@champion -> versión 6
+Probabilidad de comprar en 90 días del cliente de cliente_ejemplo.json: 0.8279

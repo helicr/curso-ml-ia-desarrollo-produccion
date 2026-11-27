@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extra de S5: MCP en notebooks · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--tinta:#1f2937;--suave:#5b6472;--linea:#d6dde6;--fondo:#ffffff;--gris:#f4f6f9;--acento:#0b5cad;--ok:#15803d;--mal:#b91c1c;--aviso:#92400e;
+ --mono:Consolas,"Cascadia Mono","DejaVu Sans Mono",Menlo,monospace;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8ecf1;color:var(--tinta);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#viewport{position:fixed;inset:0 0 48px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#stage{width:1280px;height:720px;flex:none;position:relative;transform:scale(var(--s,1));background:var(--fondo);box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;padding:30px 52px 46px;display:none;flex-direction:column;gap:10px;overflow:hidden}
+.slide.active{display:flex}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acento);font-weight:700}
+h1{font-size:31px;line-height:1.15;font-weight:700;margin-bottom:4px}
+h3{font-size:17px;margin-bottom:5px}
+.sub{font-size:22px;line-height:1.4;color:var(--suave);max-width:1050px}
+.cover{display:flex;flex-direction:column;justify-content:flex-start;padding-top:70px;flex:1}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--tinta)}
+.tag.ok{border-color:#86c79c;background:#ecf8f0;color:var(--ok)}.tag.warn{border-color:#e2b56b;background:#fdf6e9;color:var(--aviso)}
+.card{border:1px solid var(--linea);border-radius:12px;padding:10px 14px;background:#fff}
+.callout{border-left:4px solid var(--acento);background:#eef5fc;padding:9px 14px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.4}
+.small{font-size:15px;line-height:1.42}
+.mono{font-family:var(--mono);font-size:.92em;background:var(--gris);padding:0 4px;border-radius:4px}
+.okc{color:var(--ok)}.malc{color:var(--mal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.thumbs{display:grid;gap:8px}.thumbs.t2{grid-template-columns:1fr 1fr}
+.src{margin:0;padding:7px 11px;font-family:var(--mono);font-size:12px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere}
+.grande .src{font-size:13.5px}
+.split{display:grid;gap:18px;min-height:0}.col,.capcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+.list{list-style:none;display:flex;flex-direction:column;gap:4px}.list li{font-size:15px;line-height:1.38;padding-left:16px;position:relative}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--acento)}
+.ol{padding-left:24px;display:flex;flex-direction:column;gap:5px;font-size:17px}.ol.sm{font-size:15px;gap:3px}
+.mira h3{color:var(--acento);font-size:15.5px}.mira .list li{font-size:14.5px}
+.falla{border-color:#e2b56b;background:#fffaf0}.falla h3{color:var(--aviso);font-size:15.5px}.falla .list li{font-size:14.5px}.falla .list li::before{background:var(--aviso)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);border-bottom:2px solid var(--linea);padding:5px 8px}
+.tbl td{border-bottom:1px solid var(--linea);padding:6px 8px;line-height:1.35;vertical-align:top}
+.term{border:1px solid var(--linea);border-radius:10px;background:var(--gris);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--linea);background:#eaeef3}
+.term .bar em{flex:1;font-style:normal;font-size:12.5px;color:var(--suave)}
+.tls{padding:6px 8px;font-family:var(--mono);font-size:13px;line-height:1.42}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.tln.c{color:var(--suave);font-style:italic}
+.ps{color:var(--ok);font-weight:700}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #b9c3cf;background:#fff;font-size:13px;color:var(--suave)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}.cpall{padding:0 10px;font-size:12px;font-family:var(--sans)}
+.realbox{border:1px solid #86c79c;background:#f3fbf5;border-radius:10px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.rot{margin:-4px 0 0}
+.cap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cap figcaption{font-size:12px;line-height:1.35;color:var(--suave)}
+.cap .nota{color:var(--aviso)}
+.zoom{display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoom img{display:block;max-width:100%;height:auto;border:1px solid var(--linea);border-radius:8px}
+.lupa{position:absolute;right:6px;bottom:6px;font-size:11.5px;background:rgba(255,255,255,.92);border:1px solid var(--linea);border-radius:6px;padding:1px 6px;display:flex;align-items:center;gap:4px;color:var(--suave)}
+.pend{border:2px dashed #c9a65e;background:#fdf9f0;border-radius:10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;text-align:center;font-size:13.5px;color:var(--aviso)}
+.pend b{font-size:16px}
+.grande .small{font-size:17.5px}.grande .list li{font-size:17px}.grande .mira .list li,.grande .falla .list li{font-size:16.5px}.grande .tbl{font-size:16.5px}.grande .tbl td{padding:8px 10px}
+.grande .tls{font-size:14.5px;line-height:1.5}.grande .callout{font-size:18px}.grande .ol{font-size:19px}.grande .ol.sm{font-size:17px}.grande h3{font-size:19px}.grande .mira h3,.grande .falla h3{font-size:17px}
+.grande .card{padding:13px 17px}.grande .grid4 .kpi{min-height:250px;padding-top:20px}.grande .grid4 .kpi .small{font-size:19px}.grande .grid4{margin-top:36px!important}.grande .kpi .n{font-size:30px}.grande .msg{font-size:32px}
+.kpi .n{display:block;font-size:27px;line-height:1.15;color:var(--acento);margin-bottom:4px}.kpi .n.okc{color:var(--ok)}
+.msg{font-size:27px;line-height:1.3;font-weight:600;border-left:6px solid var(--acento);padding:12px 20px;background:#eef5fc;border-radius:0 12px 12px 0}
+svg .nodo{fill:#f4f8fc;stroke:#8fb2d6;stroke-width:1.5}svg .nodo.puerta{fill:#fdf6e9;stroke:#c9a65e}svg .nodo.ok{fill:#ecf8f0;stroke:var(--ok)}svg .nodo.mal{fill:#fdeeee;stroke:var(--mal)}
+svg .fl{stroke:var(--acento);stroke-width:2;fill:none}svg .fl.dis{stroke-dasharray:5 4;stroke:#8fb2d6}
+svg .t1{font:700 15px var(--sans);fill:var(--tinta);text-anchor:middle}svg .t2{font:13px var(--sans);fill:var(--suave);text-anchor:middle}
+svg .tok{fill:var(--ok)}svg .tmal{fill:var(--mal)}
+.card svg{display:block;width:100%;height:auto}
+.foot{position:absolute;left:52px;right:52px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acento);z-index:5}
+#bar{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border-top:1px solid var(--linea);font-size:13px;z-index:6}
+#bar button,#bar a{border:1px solid var(--linea);border-radius:8px;padding:4px 10px;background:#fff;color:var(--tinta);text-decoration:none;font-size:13px}
+#bar .part.on{border-color:var(--acento);color:var(--acento);font-weight:700}
+#bar .sp{flex:1}#count,#clockref{color:var(--suave);padding:0 6px}
+#notes{position:fixed;right:0;top:0;bottom:48px;width:400px;background:#fff;border-left:1px solid var(--linea);padding:18px;overflow:auto;display:none;z-index:7;font-size:15px;line-height:1.5}
+#notes.on{display:block}#notes h3{margin-bottom:8px}
+#index{position:fixed;inset:0 0 48px 0;background:rgba(255,255,255,.98);display:none;z-index:8;padding:28px;overflow:auto}
+#index.on{display:block}#index .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+#index button{border:1px solid var(--linea);border-radius:10px;padding:10px;text-align:left;font-size:14px;background:#fff}
+#index button small{display:block;color:var(--suave);font-size:12px}#index button.cur{border-color:var(--acento)}
+#zoombox{position:fixed;inset:0;background:rgba(20,26,34,.86);display:none;z-index:9;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#zoombox.on{display:flex}#zoombox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#zoombox p{position:fixed;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+@media print{#bar,#notes,#index,#prog,.cp{display:none!important}}
+
+.fuente{font-size:12.5px;line-height:1.35;color:var(--suave);margin-top:2px}
+.fuente .mono{font-size:.95em}
+.tbl td .mono{font-size:12.5px}
+.grid2>.callout{align-self:start}
+.cover .grid3 .card .list li{font-size:14px}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="3" data-title="Portada"
+ data-notes="Portada del extra de la sesión 5. Son tres notebooks y dos servidores MCP. Diga desde el principio lo que se probó y lo que no: los notebooks se ejecutaron en local con sus salidas guardadas y esas son las cifras de esta presentación; BigQuery se probó de verdad el veintiséis de noviembre en Cloud Shell, pero el notebook uno se ejecutó sin BigQuery, así que sus celdas de BigQuery salen saltada. Conectar los servidores a VS Code y ejecutar todo en un Codespace está sin verificar.">
+<p class="kick">1 · Qué vamos a hacer · ML e IA: de desarrollo a producción · S5 · extra</p><h1>MCP en notebooks: que un LLM consulte tus datos y use tu modelo</h1>
+
+<div class="cover">
+ <p class="sub">Construyes <b>dos servidores MCP</b> sin salir de un notebook: uno que consulta la capa <i>master</i> del caso Retail (en <b>SQLite y en BigQuery</b>) y otro que lleva dentro <b>el modelo de retención a 90 días</b>. Y los <b>vigilas</b>: lo que importa de un MCP no es que funcione, sino que no pueda hacer daño.</p>
+ <div class="chips"><span class="tag">3 notebooks</span><span class="tag">2 servidores MCP</span><span class="tag">SQLite y BigQuery</span><span class="tag">Defensa en 4 capas</span><span class="tag">Alias @champion</span><span class="tag">Paridad y rollback</span></div>
+ <div class="grid3" style="margin-top:20px">
+  <div class="card"><h3>Objetivos</h3><ul class="list"><li>Publicar consultas y un modelo como <b>herramientas</b> que un LLM puede llamar.</li><li>Defender un «SQL libre» en <b>capas</b> que no dependen del LLM.</li><li>Comprobar que dos conectores <b>dan lo mismo</b> y que el MCP <b>no inventa</b> nada.</li></ul></div>
+  <div class="card"><h3>Duración propuesta</h3><ul class="list"><li><b>72 min</b> en cinco partes (minuto propuesto en la barra inferior).</li><li>Cada orden con <b>⧉</b> para copiarla; las salidas son las <b>guardadas</b> en los notebooks.</li><li><b>← →</b> avanzan · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa.</li></ul></div>
+  <div class="card"><h3>Honestidad desde el principio</h3><ul class="list"><li><b>BigQuery</b> se probó de verdad el <b>26/11/2026</b> en Cloud Shell; el notebook 01 se ejecutó <b>sin BigQuery</b> (esas celdas salen «saltada»).</li><li><b>Sin verificar:</b> conectar los servidores a VS Code/Copilot y ejecutar los notebooks en un Codespace.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="Qué es MCP"
+ data-notes="Qué es un MCP, sin entrar en el protocolo. Un cliente, que puede ser VS Code, un agente o la clase de treinta líneas del notebook, lanza el servidor como proceso y le pide la lista de herramientas. Cada herramienta tiene un nombre, unos argumentos y una descripción, y la descripción es lo que el LLM lee para decidir cuál usar. El LLM no ve el código ni los datos. En el laboratorio de agentes ya se usó mcp-retencion; aquí se construyen dos servidores desde cero.">
+<p class="kick">1 · Qué vamos a hacer · cliente, servidor y herramientas</p><h1>Un MCP es un contrato: nombre, argumentos y una descripción que lee el LLM</h1>
+
+<div class="card"><svg viewBox="0 0 1100 170" role="img" aria-label="Un cliente MCP pide al servidor sus herramientas y recibe sus descripciones; después llama a una por nombre con argumentos"><defs><marker id="fm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="20" width="250" height="96" rx="12" class="nodo"/><text x="131" y="47" class="t1">Cliente MCP</text><text x="131" y="67" class="t2">VS Code, un agente,</text><text x="131" y="87" class="t2">o tu ClienteMCP de 30 líneas</text><rect x="425" y="20" width="250" height="96" rx="12" class="nodo puerta"/><text x="550" y="47" class="t1">Servidor MCP</text><text x="550" y="67" class="t2">un proceso Python tuyo</text><text x="550" y="87" class="t2">FastMCP, transporte stdio</text><rect x="844" y="20" width="250" height="96" rx="12" class="nodo ok"/><text x="969" y="47" class="t1">Herramientas</text><text x="969" y="67" class="t2">nombre + argumentos</text><text x="969" y="87" class="t2">+ descripción</text><path d="M259 58 L420 58" class="fl" marker-end="url(#fm)"/><text x="340" y="48" class="t2">list_tools</text><path d="M420 84 L259 84" class="fl dis" marker-end="url(#fm)"/><text x="340" y="104" class="t2">las descripciones</text><path d="M678 58 L840 58" class="fl" marker-end="url(#fm)"/><text x="760" y="48" class="t2">las publica</text><text x="550" y="150" class="t2">call_tool(nombre, argumentos) → el servidor ejecuta → devuelve un resultado (JSON)</text></svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Lo que el LLM ve</h3><ul class="list"><li>Una lista de herramientas con su <b>descripción</b>: es lo que lee para decidir cuál usar.</li><li>No ve tu código, ni la base de datos, ni el modelo.</li></ul></div>
+ <div class="card"><h3>Lo que tú controlas</h3><ul class="list"><li>Qué herramientas existen, qué argumentos admiten y <b>qué devuelven</b>.</li><li>Qué pasa con un argumento mal escrito o un SQL que no debería ejecutarse.</li></ul></div>
+ <div class="card"><h3>Dónde encaja en S5</h3><ul class="list"><li>En el laboratorio de agentes usaste <span class="mono">mcp-retencion</span> (<span class="mono">lista_del_dia</span>, <span class="mono">puntuar_online</span>, <span class="mono">puntuar_bajo_demanda</span>…) ya hecho.</li><li>Aquí construyes <b>dos desde cero</b>: datos y modelo.</li></ul></div>
+</div><p class="fuente">Fuente: notebook 01 (introducción y apartado 3) y laboratorio de agentes de S5.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Mapa del extra"
+ data-notes="Mapa del extra. Tres notebooks: el cero solo comprueba el entorno, el uno construye el servidor de datos y el dos construye el del modelo. Cada notebook escribe su servidor con la orden mágica writefile en la carpeta de trabajo, porque un cliente MCP lanza el servidor como proceso aparte. En la carpeta fuentes hay una copia de referencia de los dos servidores, idéntica al código de los notebooks salvo los finales de línea.">
+<p class="kick">1 · Qué vamos a hacer · tres notebooks, dos servidores</p><h1>Tres notebooks y dos servidores: cada notebook escribe el suyo y lo prueba</h1>
+<div class="card"><table class="tbl"><tr><th>Notebook</th><th>Qué haces</th><th>Qué aprendes</th><th>Se guarda en</th></tr><tr><td><b>00</b> · Preparar el entorno</td><td>Compruebas paquetes, datos, modelo registrado y BigQuery (opcional)</td><td>Un «TODO LISTO» o la lista de lo que falta</td><td>—</td></tr><tr><td><b>01</b> · Datos, SQLite y BigQuery</td><td>Escribes y pruebas <b><span class="mono">mcp-datos-master</span></b>: 6 herramientas con nombre y <span class="mono">consulta_sql</span> vigilada</td><td>Dos conectores con la misma interfaz y una defensa en 4 capas</td><td><span class="mono">_trabajo/mcp_datos.py</span></td></tr><tr><td><b>02</b> · El modelo</td><td>Escribes y pruebas <b><span class="mono">mcp-modelo-retencion</span></b>: 4 herramientas</td><td>El alias <span class="mono">@champion</span> de MLflow en cada llamada</td><td><span class="mono">_trabajo/mcp_modelo.py</span></td></tr></table></div>
+<div class="grid2" style="margin-top:12px">
+ <div class="card"><h3>Cómo se escribe un servidor</h3><ul class="list"><li>La celda <span class="mono">%%writefile</span> guarda el servidor en <span class="mono">_trabajo/</span>: así lo lanza <b>un proceso aparte</b>, como hace cualquier cliente MCP.</li><li>Una copia de referencia de los dos está en <span class="mono">fuentes/</span>.</li></ul></div><div class="card"><h3>Qué hace falta</h3><ul class="list"><li>El proyecto del curso con <span class="mono">curso.db</span> y el modelo <span class="mono">retencion-90d</span> registrado en MLflow (S1 y S5).</li><li>SQLite funciona sin nada más; <b>BigQuery es opcional</b>.</li></ul></div>
+</div><p class="fuente">Fuente: los tres notebooks.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Notebook 00"
+ data-notes="El notebook cero no construye nada. Comprueba que están los paquetes, que existe curso punto db con las cuatro tablas master y fs produccion, y que el modelo retencion noventa d está registrado en MLflow. La salida guardada dice todo listo. Hay seis versiones del modelo, todas con el mismo AUC porque se entrenaron con los mismos datos, y todavía ninguna tiene alias. El último apartado comprueba BigQuery: aquí no estaba configurado, y el notebook uno seguirá solo con SQLite.">
+<p class="kick">1 · Qué vamos a hacer · comprobar antes de construir</p><h1>El notebook 00 solo comprueba: «TODO LISTO» o te dice qué falta</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 00 · apartado 2</div><pre>master_clientes    150 filas
+master_facturas    1430 filas
+master_lineas      22117 filas
+master_productos   3077 filas
+fs_produccion      148 filas
+
+Modelo registrado «retencion-90d»: 6 versiones
+  v1   alias: -            valid_auc 0.6982 · test_auc 0.7471
+  v2   alias: -            valid_auc 0.6982 · test_auc 0.7471
+  v3   alias: -            valid_auc 0.6982 · test_auc 0.7471
+  v4   alias: -            valid_auc 0.6982 · test_auc 0.7471
+  v5   alias: -            valid_auc 0.6982 · test_auc 0.7471
+  v6   alias: -            valid_auc 0.6982 · test_auc 0.7471
+Alias: ninguno
+
+TODO LISTO</pre></div><p class="fuente">Fuente: notebook 00, apartados 1 a 3 (paquetes, datos y modelo, BigQuery).</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>150 clientes</b> en <span class="mono">master_clientes</span>, <b>1430</b> facturas, <b>22 117</b> líneas y <b>3077</b> productos; <span class="mono">fs_produccion</span> con <b>148</b> filas.</li><li>El modelo <span class="mono">retencion-90d</span> tiene <b>6 versiones</b>, todas con AUC de validación <b>0,6982</b> y de test <b>0,7471</b>; aún sin alias.</li><li><span class="mono">mcp</span> en la <b>1.30.0</b>: el proyecto la fija a propósito (la 2.x quitó <span class="mono">FastMCP</span>).</li><li>BigQuery: «no configurado (el notebook 01 usará solo SQLite)».</li></ul></div><div class="callout">Si algo falta, el propio notebook dice la orden: por ejemplo, <span class="mono">python -m ia_mlops.pipeline</span> desde <span class="mono">04-Proyecto-Base</span> (unos 30 s con la muestra).</div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="La defensa en cuatro capas"
+ data-notes="El diseño del servidor de datos. Un LLM puede equivocarse o ser engañado, por ejemplo por un texto malicioso dentro de un dato, así que no se le da un SQL libre sin más. Capa uno: herramientas con nombre, donde el SQL lo escribe el servidor y el LLM solo da un número. Capa dos: la herramienta consulta sql, último recurso, vigilada por validar sql. Capa tres: la conexión solo puede leer, SQLite abierto en modo solo lectura y BigQuery con un tope de bytes facturables. Capa cuatro: un tope de cincuenta filas. Las capas tres y cuatro no dependen de las anteriores.">
+<p class="kick">2 · Un MCP que consulta los datos · diseño de mcp-datos-master</p><h1>Un LLM que escribe SQL es peligroso: cuatro capas, y las dos últimas no dependen de nadie</h1>
+
+<div class="card"><svg viewBox="0 0 1100 200" role="img" aria-label="El camino de una consulta: el LLM llama a una herramienta con nombre (capa 1), si es consulta_sql pasa por validar_sql (capa 2), la conexión solo lee (capa 3) y el motor responde; a la vuelta, un tope de 50 filas (capa 4)"><defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="40" width="190" height="96" rx="12" class="nodo"/><text x="101" y="67" class="t1">El LLM</text><text x="101" y="87" class="t2">lee las descripciones</text><text x="101" y="107" class="t2">y pide una herramienta</text><rect x="226" y="40" width="190" height="96" rx="12" class="nodo puerta"/><text x="321" y="67" class="t1">Capa 1</text><text x="321" y="87" class="t2">herramientas con nombre</text><text x="321" y="107" class="t2">el LLM da un número</text><rect x="446" y="40" width="190" height="96" rx="12" class="nodo puerta"/><text x="541" y="67" class="t1">Capa 2 · validar_sql</text><text x="541" y="87" class="t2">solo para consulta_sql:</text><text x="541" y="107" class="t2">SELECT, 1 sentencia, master_*</text><rect x="666" y="40" width="190" height="96" rx="12" class="nodo puerta"/><text x="761" y="67" class="t1">Capa 3</text><text x="761" y="87" class="t2">la conexión solo lee</text><text x="761" y="107" class="t2">mode=ro · bytes facturables</text><rect x="886" y="40" width="190" height="96" rx="12" class="nodo ok"/><text x="981" y="67" class="t1">El motor</text><text x="981" y="87" class="t2">SQLite o BigQuery</text><text x="981" y="107" class="t2">detrás de un conector</text><path d="M196 88 L223 88" class="fl" marker-end="url(#fa)"/><path d="M416 88 L443 88" class="fl" marker-end="url(#fa)"/><path d="M636 88 L663 88" class="fl" marker-end="url(#fa)"/><path d="M856 88 L883 88" class="fl" marker-end="url(#fa)"/><path d="M321 38 L321 14 L761 14 L761 37" class="fl dis" marker-end="url(#fa)"/><text x="556" y="10" class="t2">las 6 herramientas con nombre van directas al conector</text><path d="M981 138 L981 168 L101 168 L101 140" class="fl dis" marker-end="url(#fa)"/><rect x="400" y="148" width="300" height="40" rx="10" class="nodo puerta"/><text x="550" y="173" class="t1">Capa 4 · tope de 50 filas (MAX_FILAS)</text></svg></div>
+<div class="grid2" style="margin-top:12px">
+ <div class="card"><h3>Las capas</h3><ul class="list"><li><b>1 ·</b> herramientas con nombre y argumentos tipados: el SQL lo escribes tú.</li><li><b>2 ·</b> <span class="mono">consulta_sql</span> es el último recurso y la vigila <span class="mono">validar_sql</span>.</li><li><b>3 ·</b> SQLite se abre en <span class="mono">mode=ro</span>; BigQuery lleva un tope de bytes (<span class="mono">maximum_bytes_billed</span>).</li><li><b>4 ·</b> nunca se devuelven más de 50 filas.</li></ul></div>
+ <div class="callout" style="align-self:center"><b>Las capas 3 y 4 no dependen del LLM ni de la capa 2:</b> si la vigilancia falla, siguen protegiendo. Por eso <span class="mono">validar_sql</span> puede ser una expresión regular sin que sea «la» defensa.</div>
+</div><p class="fuente">Fuente: notebook 01, apartado 1 (docstring del servidor) y código de <span class="mono">consulta_sql</span> y <span class="mono">_ejecutar</span>.</p>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Dos conectores, una interfaz"
+ data-notes="Los dos conectores. El servidor llama siempre a tabla, columnas y ejecutar y no sabe qué motor hay detrás. En SQLite, la conexión se abre con mode igual ro, solo lectura. En BigQuery, cada consulta lleva maximum bytes billed: si superase el tope, BigQuery ni la ejecuta. El tope por defecto es cien megabytes y el dataset entero pesa unos dos. La variable MCP BACKEND elige el conector al arrancar el servidor.">
+<p class="kick">2 · Un MCP que consulta los datos · SQLite y BigQuery</p><h1>Dos conectores con la misma interfaz: el servidor no sabe qué motor hay detrás</h1>
+
+<div class="grid2">
+ <div class="col"><div class="term"><div class="bar"><em>ConectorSQLite · extracto del notebook 01 (sin comentarios)</em><button class="cp cpall" data-t="    def _abrir(self):
+        con = sqlite3.connect(self.ruta.resolve().as_uri() + &#x27;?mode=ro&#x27;, uri=True)
+        con.row_factory = sqlite3.Row
+        return con
+
+    def ejecutar(self, sql, params=None):
+        con = self._abrir()
+        try:
+            filas = [dict(f) for f in con.execute(sql, params or {}).fetchmany(MAX_FILAS + 1)]
+        finally:
+            con.close()
+        return [{k: _limpio(v) for k, v in f.items()} for f in filas]">Copiar todo</button></div><pre class="src">    def _abrir(self):
+        con = sqlite3.connect(self.ruta.resolve().as_uri() + &#x27;?mode=ro&#x27;, uri=True)
+        con.row_factory = sqlite3.Row
+        return con
+
+    def ejecutar(self, sql, params=None):
+        con = self._abrir()
+        try:
+            filas = [dict(f) for f in con.execute(sql, params or {}).fetchmany(MAX_FILAS + 1)]
+        finally:
+            con.close()
+        return [{k: _limpio(v) for k, v in f.items()} for f in filas]</pre></div></div>
+ <div class="col"><div class="term"><div class="bar"><em>ConectorBigQuery · extracto del notebook 01 (sin comentarios)</em><button class="cp cpall" data-t="    def ejecutar(self, sql, params=None):
+        tipos = {bool: &#x27;BOOL&#x27;, int: &#x27;INT64&#x27;, float: &#x27;FLOAT64&#x27;, str: &#x27;STRING&#x27;}
+        parametros = [self.bq.ScalarQueryParameter(k, tipos[type(v)], v) for k, v in (params or {}).items()]
+        config = self.bq.QueryJobConfig(query_parameters=parametros, maximum_bytes_billed=MAX_BYTES_BQ)
+        job = self.cliente.query(sql, job_config=config)
+        return [{k: _limpio(v) for k, v in dict(f.items()).items()} for f in job.result(max_results=MAX_FILAS + 1)]">Copiar todo</button></div><pre class="src">    def ejecutar(self, sql, params=None):
+        tipos = {bool: &#x27;BOOL&#x27;, int: &#x27;INT64&#x27;, float: &#x27;FLOAT64&#x27;, str: &#x27;STRING&#x27;}
+        parametros = [self.bq.ScalarQueryParameter(k, tipos[type(v)], v) for k, v in (params or {}).items()]
+        config = self.bq.QueryJobConfig(query_parameters=parametros, maximum_bytes_billed=MAX_BYTES_BQ)
+        job = self.cliente.query(sql, job_config=config)
+        return [{k: _limpio(v) for k, v in dict(f.items()).items()} for f in job.result(max_results=MAX_FILAS + 1)]</pre></div></div>
+</div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>La interfaz</h3><ul class="list"><li>Los dos ofrecen <span class="mono">tabla()</span>, <span class="mono">columnas()</span> y <span class="mono">ejecutar()</span>.</li><li>Las consultas usan parámetros <span class="mono">@nombre</span>: valen para los dos motores.</li></ul></div>
+ <div class="card"><h3>Cómo se elige</h3><ul class="list"><li>Una variable de entorno: <span class="mono">MCP_BACKEND=sqlite</span> (por defecto) o <span class="mono">bigquery</span>.</li><li>Con BigQuery hacen falta <span class="mono">GCP_PROJECT</span> y, si no es <span class="mono">curso_master</span>, <span class="mono">BQ_DATASET</span>.</li></ul></div>
+ <div class="card"><h3>Lo que cambia por motor</h3><ul class="list"><li>SQLite: abre la base en solo lectura (capa 3).</li><li>BigQuery: un tope de <b>100 MB</b> por consulta (<span class="mono">MCP_BQ_MAX_BYTES</span>); el dataset entero pesa unos 2 MB.</li></ul></div>
+</div><p class="fuente">Fuente: notebook 01, apartado 1 (celda que escribe <span class="mono">mcp_datos.py</span>).</p>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="El cliente de 30 líneas"
+ data-notes="El cliente en treinta líneas. Es lo mismo que hacen VS Code, Claude Desktop o un agente: lanzan el servidor como proceso hijo, le piden las herramientas y las llaman por nombre, hablando por la entrada y salida estándar. Dos detalles reales: en Jupyter el stderr no tiene fileno, así que se abre un archivo y se pasa como errlog; y el servidor no puede imprimir por stdout, porque ese es el canal del protocolo, por eso sus avisos van por stderr. Si el SDK rechaza los argumentos por su tipo, el resultado vuelve marcado como error.">
+<p class="kick">2 · Un MCP que consulta los datos · lo que hace VS Code, en un notebook</p><h1>Un cliente MCP son treinta líneas: lanza el servidor y le habla por stdio</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>ClienteMCP · notebook 01, apartado 2 (sin docstring ni comentarios)</em><button class="cp cpall" data-t="class ClienteMCP:
+    def __init__(self, script, **entorno):
+        self.params = StdioServerParameters(command=sys.executable, args=[str(script)], env={**os.environ, **{k: str(v) for k, v in entorno.items()}})
+
+    async def __aenter__(self):
+        self._pila = AsyncExitStack()
+        self._log = open(TRABAJO / &#x27;servidor.err&#x27;, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;)
+        leer, escribir = await self._pila.enter_async_context(stdio_client(self.params, errlog=self._log))
+        self.sesion = await self._pila.enter_async_context(ClientSession(leer, escribir))
+        await self.sesion.initialize()
+        return self
+
+    async def __aexit__(self, *a):
+        await self._pila.aclose()
+        self._log.close()
+
+    async def herramientas(self):
+        return (await self.sesion.list_tools()).tools
+
+    async def llamar(self, nombre, **argumentos):
+        r = await self.sesion.call_tool(nombre, argumentos)
+        if r.isError:
+            return {&#x27;error_del_protocolo&#x27;: r.content[0].text}
+        return r.structuredContent or json.loads(r.content[0].text)">Copiar todo</button></div><pre class="src">class ClienteMCP:
+    def __init__(self, script, **entorno):
+        self.params = StdioServerParameters(command=sys.executable, args=[str(script)], env={**os.environ, **{k: str(v) for k, v in entorno.items()}})
+
+    async def __aenter__(self):
+        self._pila = AsyncExitStack()
+        self._log = open(TRABAJO / &#x27;servidor.err&#x27;, &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;)
+        leer, escribir = await self._pila.enter_async_context(stdio_client(self.params, errlog=self._log))
+        self.sesion = await self._pila.enter_async_context(ClientSession(leer, escribir))
+        await self.sesion.initialize()
+        return self
+
+    async def __aexit__(self, *a):
+        await self._pila.aclose()
+        self._log.close()
+
+    async def herramientas(self):
+        return (await self.sesion.list_tools()).tools
+
+    async def llamar(self, nombre, **argumentos):
+        r = await self.sesion.call_tool(nombre, argumentos)
+        if r.isError:
+            return {&#x27;error_del_protocolo&#x27;: r.content[0].text}
+        return r.structuredContent or json.loads(r.content[0].text)</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El cliente <b>lanza el servidor como proceso hijo</b> y le habla por su entrada y salida estándar (transporte <span class="mono">stdio</span>).</li><li><span class="mono">herramientas()</span> pide la lista y <span class="mono">llamar(nombre, **args)</span> ejecuta una.</li><li>Si el propio protocolo rechaza los argumentos (un tipo mal puesto), <span class="mono">isError</span> lo recoge como <span class="mono">error_del_protocolo</span>.</li></ul></div><div class="callout"><b>Ojo en Jupyter:</b> <span class="mono">stdio_client</span> escribe el <span class="mono">stderr</span> del servidor en <span class="mono">sys.stderr</span>, y el de Jupyter no tiene <span class="mono">fileno</span>. Por eso se abre un <b>archivo</b> (<span class="mono">servidor.err</span>) y se pasa como <span class="mono">errlog</span>.</div><div class="callout">Y un servidor <b>nunca debe usar <span class="mono">print</span></b> hacia la salida estándar: <span class="mono">stdout</span> es el canal del protocolo. Los avisos van por <span class="mono">stderr</span>.</div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Las siete llamadas"
+ data-notes="Las siete llamadas, una por herramienta, con salida real guardada en el notebook. Se ve que cada respuesta dice qué motor la produjo. Un detalle para el aula: ventas por país da ciento treinta y tres clientes en el Reino Unido y la consulta libre da ciento treinta y cinco; no son la misma pregunta, porque la primera cuenta solo clientes con ventas válidas y la segunda cuenta todas las filas de master clientes. Estas mismas siete llamadas son las que se repiten con BigQuery.">
+<p class="kick">2 · Un MCP que consulta los datos · salida real con SQLite</p><h1>Siete herramientas, siete llamadas: todas dicen qué motor las respondió</h1>
+
+<div class="split" style="grid-template-columns:1.2fr .8fr"><div class="col"><div class="card"><table class="tbl"><tr><th>Herramienta y argumentos</th><th>Qué devolvió (SQLite)</th></tr><tr><td><span class="mono">listar_tablas</span></td><td><span class="mono">master_clientes</span> <b>150</b> · <span class="mono">master_facturas</span> <b>1430</b> · <span class="mono">master_lineas</span> <b>22 117</b> · <span class="mono">master_productos</span> <b>3077</b></td></tr><tr><td><span class="mono">describir_tabla</span> · <span class="mono">master_clientes</span></td><td>4 columnas: <span class="mono">cliente_id</span>, <span class="mono">pais</span>, <span class="mono">primer_movimiento</span>, <span class="mono">ultimo_movimiento</span>, y 3 filas de muestra</td></tr><tr><td><span class="mono">resumen_cliente</span> · 12369</td><td>Austria · <b>3</b> facturas · <b>0</b> cancelaciones · monto <b>1511,15</b></td></tr><tr><td><span class="mono">ultimas_facturas</span> · 12369, n=2</td><td>facturas 528576 (<b>183,35</b>) y 522773 (<b>1259,48</b>)</td></tr><tr><td><span class="mono">ventas_por_pais</span> · n=3</td><td>United Kingdom <b>344 244,74</b> · France <b>18 857,36</b> · Portugal <b>10 780,8</b></td></tr><tr><td><span class="mono">top_productos</span> · n=3</td><td>84077 (<b>2720</b> uds) · 22178 (<b>2712</b>) · 85099B (<b>2244</b>)</td></tr><tr><td><span class="mono">consulta_sql</span> · clientes por país</td><td>United Kingdom <b>135</b> · France <b>5</b> · Germany <b>3</b></td></tr></table></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 01 · apartado 4 · resumen_cliente</div><pre>--- resumen_cliente
+{&quot;motor&quot;: &quot;sqlite&quot;, &quot;cliente_id&quot;: 12369, &quot;pais&quot;: &quot;Austria&quot;, &quot;primer_movimiento&quot;: &quot;2010-03-08 08:09:00&quot;, &quot;ultimo_movimiento&quot;: &quot;2010-10-22 13:13:00&quot;, &quot;facturas&quot;: 3, &quot;cancelaciones&quot;: 0, &quot;monto_ventas&quot;: 1511.15}</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Cada respuesta lleva <span class="mono">&quot;motor&quot;: &quot;sqlite&quot;</span>.</li><li>Las 7 se lanzan con <span class="mono">ejecutar_casos(...)</span>: el mismo código servirá para BigQuery.</li></ul></div><p class="fuente">Fuente: notebook 01, apartado 4; la salida completa (7 llamadas) está guardada en esa celda.</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Intentar romperlo"
+ data-notes="Intentar romperlo. Son ocho consultas que nunca deben ejecutarse y las ocho las frena validar sql, la capa dos. Cada una por una regla distinta: la que no empieza por select, la de varias sentencias, la de los comentarios, las tablas que no son master y la de la ruta completa. Insista en que no hay que fiarse de una sola capa, porque una expresión regular no es un analizador de SQL: si una se colase, la capa tres, solo lectura, haría fallar un update. Esa prueba no está en el notebook y es el ejercicio uno.">
+<p class="kick">2 · Un MCP que consulta los datos · ocho consultas que nunca deben ejecutarse</p><h1>Ocho ataques a <span class="mono">consulta_sql</span>: los ocho los frena <span class="mono">validar_sql</span></h1>
+
+<div class="card"><table class="tbl"><tr><th>Intento</th><th>SQL</th><th>Respuesta real</th><th>Qué regla lo frena</th></tr><tr><td><b>borrar una tabla</b></td><td><span class="mono">DROP TABLE master_clientes</span></td><td>Solo se admiten consultas que empiecen por SELECT (o WITH).</td><td>no empieza por SELECT ni WITH</td></tr><tr><td><b>modificar datos</b></td><td><span class="mono">UPDATE master_clientes SET pais = &#x27;X&#x27;</span></td><td>Solo se admiten consultas que empiecen por SELECT (o WITH).</td><td>no empieza por SELECT ni WITH</td></tr><tr><td><b>varias sentencias</b></td><td><span class="mono">SELECT 1; DELETE FROM master_lineas</span></td><td>Solo se admite una sentencia.</td><td>un <span class="mono">;</span> en medio</td></tr><tr><td><b>comentario para esconder algo</b></td><td><span class="mono">SELECT * FROM master_clientes -- WHERE pais = 1</span></td><td>No se admiten comentarios en la consulta.</td><td>lleva <span class="mono">--</span></td></tr><tr><td><b>otra tabla (variables del modelo)</b></td><td><span class="mono">SELECT * FROM fs_produccion</span></td><td>La tabla «fs_produccion» no está permitida</td><td>tabla fuera de la lista <span class="mono">master_*</span></td></tr><tr><td><b>el catálogo del motor</b></td><td><span class="mono">SELECT name FROM sqlite_master</span></td><td>La tabla «sqlite_master» no está permitida</td><td>tabla fuera de la lista <span class="mono">master_*</span></td></tr><tr><td><b>tabla con ruta completa</b></td><td><span class="mono">SELECT * FROM main.master_clientes</span></td><td>Escribe solo el nombre de la tabla, sin proyecto ni dataset: «main.master_clientes».</td><td>un punto en el nombre de la tabla</td></tr><tr><td><b>unir tablas con coma</b></td><td><span class="mono">SELECT * FROM master_clientes, master_facturas</span></td><td>No se admiten listas de tablas separadas por comas: usa JOIN.</td><td>tablas separadas por comas</td></tr></table></div>
+<div style="margin-top:10px"><div class="callout"><b>No te fíes de una sola capa:</b> una expresión regular no es un analizador de SQL. Si una se colase, SQLite abierto en solo lectura (capa 3) frenaría un UPDATE; esa prueba <b>no</b> la hace el notebook: es el ejercicio 1.</div></div><p class="fuente">Fuente: notebook 01, apartado 5 (la columna «Qué regla lo frena» resume el código de <span class="mono">validar_sql</span>).</p>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Topes y protocolo"
+ data-notes="Dos defensas más. El tope de filas: el servidor pide cincuenta y una filas; si llegan cincuenta y una, devuelve cincuenta y marca truncado. Con select estrella sobre las veintidós mil ciento diecisiete líneas devuelve cincuenta. Y el error de protocolo: si el LLM manda abc donde se espera un entero, el SDK lo rechaza antes de llamar a la función, porque la herramienta declara el tipo. El texto del error es el que salió en la ejecución guardada.">
+<p class="kick">2 · Un MCP que consulta los datos · cincuenta filas y un tipo mal puesto</p><h1>Dos defensas más: el tope de 50 filas y el rechazo de un tipo mal puesto</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 01 · apartado 5</div><pre>SELECT * de 22 117 líneas → devuelve 50 filas (truncado: True): el tope de filas protege al LLM y a su contexto
+cliente_id = &quot;abc&quot; → {&#x27;error_del_protocolo&#x27;: &quot;Error executing tool resumen_cliente: 1 validation error for resumen_clienteArguments\ncliente_id\n  Input should be a valid integer, unable to parse string as an integer [type=int_parsing, input_value=&#x27;abc&#x27;, input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/int_parsing&quot;}</pre></div><div class="callout"><b>Capa 4:</b> el servidor pide a la base 51 filas (<span class="mono">fetchmany(MAX_FILAS + 1)</span>) y, si llegan 51, devuelve 50 y marca <span class="mono">truncado: True</span>. El LLM no necesita 22 117 líneas ni su ventana de contexto tampoco.</div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">cliente_id = &quot;abc&quot;</span> no llega a tu función: la herramienta declara <span class="mono">cliente_id: int</span> y <b>el SDK valida el tipo</b> antes de llamar.</li><li>La respuesta es un <span class="mono">error_del_protocolo</span> con el aviso de validación (arriba, tal cual salió).</li><li>En el modelo (notebook 02) el mismo <span class="mono">&quot;abc&quot;</span> da el mismo tipo de error.</li></ul></div><p class="fuente">Fuente: notebook 01, apartado 5 y código de <span class="mono">_ejecutar</span>; notebook 02, apartado 9.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="BigQuery: preparar el proyecto"
+ data-notes="Preparar BigQuery, que es opcional. Hacen falta credenciales de aplicación, un proyecto propio donde se pueda crear un dataset y la variable GCP PROJECT definida antes de abrir el notebook. Insista: no se usa el proyecto del trabajo; el notebook crea y borra un dataset llamado curso master de unas veintidós mil filas y dos megas, que con el nivel gratuito no cuesta nada pero es la cuenta de cada uno. Aclare lo que se hizo: el notebook uno se ejecutó sin BigQuery y por eso esas celdas salen saltada; la prueba real de BigQuery se hizo aparte en Cloud Shell.">
+<p class="kick">3 · El segundo conector: BigQuery · opcional</p><h1>BigQuery es opcional: tu proyecto, tus credenciales y nunca el del trabajo</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Terminal · una orden cada vez · cambia TU_PROYECTO</em><button class="cp cpall" data-t="gcloud auth application-default login
+gcloud config set project TU_PROYECTO
+export GCP_PROJECT=TU_PROYECTO
+set GCP_PROJECT=TU_PROYECTO">Copiar todo</button></div><div class="tls"><div class="tln c"># 1) credenciales de aplicación de Google</div><div class="tln"><span class="ps">$</span> <code>gcloud auth application-default login</code><button class="cp" data-t="gcloud auth application-default login" title="Copiar">⧉</button></div><div class="tln c"># 2) tu proyecto de pruebas, NO el del trabajo</div><div class="tln"><span class="ps">$</span> <code>gcloud config set project TU_PROYECTO</code><button class="cp" data-t="gcloud config set project TU_PROYECTO" title="Copiar">⧉</button></div><div class="tln c"># 3) díselo al notebook (bash) ANTES de abrirlo</div><div class="tln"><span class="ps">$</span> <code>export GCP_PROJECT=TU_PROYECTO</code><button class="cp" data-t="export GCP_PROJECT=TU_PROYECTO" title="Copiar">⧉</button></div><div class="tln c"># en Windows (cmd)</div><div class="tln"><span class="ps">$</span> <code>set GCP_PROJECT=TU_PROYECTO</code><button class="cp" data-t="set GCP_PROJECT=TU_PROYECTO" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: notebook 00, apartado 3.</p><p class="small"><span class="tag warn">Sin verificar</span> que estas órdenes funcionen en un <b>Codespace</b>: la prueba real fue en <b>Cloud Shell</b>.</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El notebook crea y borra el dataset <b><span class="mono">curso_master</span></b>: unas <b>22 000 filas</b>, unos <b>2 MB</b>; con el nivel gratuito de BigQuery no cuesta nada, pero <b>es tu cuenta</b>.</li><li>Opcionales: <span class="mono">BQ_DATASET</span> (por defecto <span class="mono">curso_master</span>) y <span class="mono">BQ_LOCATION</span> (por defecto <span class="mono">US</span>).</li><li>Sin <span class="mono">GCP_PROJECT</span> ni credenciales, las celdas dicen <b>«saltada»</b> y el notebook sigue con SQLite.</li></ul></div><div class="callout"><b>Cómo se ejecutó este notebook:</b> sin BigQuery. Sus salidas guardadas dicen «BigQuery SALTADO» y «saltada». Lo de BigQuery de las diapositivas siguientes viene de <b>otra prueba</b> (Cloud Shell, 26/11/2026).</div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Mismas siete llamadas, mismo resultado"
+ data-notes="La prueba de paridad de BigQuery. La captura es real, de Cloud Shell el veintiséis de noviembre con la cuenta del curso: aparecen las tablas subidas y, para cada una de las siete llamadas, la palabra igual, es decir, BigQuery respondió lo mismo que SQLite. Aclare que se hizo con un script que repite los pasos del notebook y no con el notebook en Jupyter. La comparación ignora el campo motor, tolera una centésima en los decimales y compara solo los nombres de las columnas porque los tipos se llaman distinto. En la captura se ven tres tablas subidas; la línea de master clientes no sale en el recorte.">
+<p class="kick">3 · El segundo conector: BigQuery · prueba real en Cloud Shell</p><h1>El mismo servidor con otro motor: las siete llamadas dan IGUAL</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><figure class="cap" data-img="bq-01-paridad.webp"><button class="zoom" data-src="img/bq-01-paridad.webp" data-alt="Terminal de Cloud Shell (recorte): aparecen subidas las tablas master_facturas (1430 filas), master_lineas (22117) y master_productos (3077), y después las siete llamadas del notebook 01, cada una con «motor=bigquery IGUAL»" title="Ampliar (Esc cierra)"><img src="img/bq-01-paridad.webp" alt="Terminal de Cloud Shell (recorte): aparecen subidas las tablas master_facturas (1430 filas), master_lineas (22117) y master_productos (3077), y después las siete llamadas del notebook 01, cada una con «motor=bigquery IGUAL»" style="max-height:260px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal de Cloud Shell (recorte): aparecen subidas las tablas master_facturas (1430 filas), master_lineas (22117) y master_productos (3077), y después las siete llamadas del notebook 01, cada una con «motor=bigquery IGUAL»</figcaption></figure></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Prueba real del <b>26/11/2026</b> en <b>Cloud Shell</b>, con la cuenta del curso y un <b>dataset temporal</b>, con un script que repite los pasos del notebook (no el notebook en Jupyter).</li><li>Cada línea compara la respuesta de BigQuery con la de SQLite <b>ignorando el campo motor</b>.</li></ul></div><div class="callout"><b>Dos conectores que dan respuestas distintas no son dos conectores, son dos bugs.</b> La comparación (igual) tolera 0,01 en los decimales (los motores suman en otro orden) y de las columnas compara solo los nombres (INTEGER frente a INT64).</div><p class="fuente">Fuente: notebook 01, apartados 7 y 8 (texto y función igual); captura de Cloud Shell, 26/11/2026.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="El tope de bytes y la caché"
+ data-notes="El tope de coste. El servidor fija maximum bytes billed y, si una consulta lo supera, BigQuery ni la ejecuta. Se fuerza con un tope absurdo de un byte y BigQuery contesta que hacen falta al menos veinte megas, veinte millones novecientos setenta y un mil quinientos veinte bytes: cobra por mínimos. La nota importante es la caché: una consulta repetida sale de la caché y no se factura, así que no pasaría por el tope; por eso el notebook usa una consulta nueva, top productos con n igual a siete. La captura no muestra qué consulta se lanzó en Cloud Shell.">
+<p class="kick">3 · El segundo conector: BigQuery · prueba real en Cloud Shell</p><h1>El tope de coste funciona: con 1 byte, BigQuery ni ejecuta la consulta</h1>
+
+<figure class="cap" data-img="bq-02-tope.webp"><button class="zoom" data-src="img/bq-02-tope.webp" data-alt="Terminal de Cloud Shell (recorte): la respuesta de resumen_cliente en BigQuery para el cliente 12369, la línea «con tope de 1 byte» con el error «Query exceeded limit for bytes billed: 1. 20971520 or higher required.» y la línea «RESULTADO: LOS DOS CONECTORES RESPONDEN LO MISMO»" title="Ampliar (Esc cierra)"><img src="img/bq-02-tope.webp" alt="Terminal de Cloud Shell (recorte): la respuesta de resumen_cliente en BigQuery para el cliente 12369, la línea «con tope de 1 byte» con el error «Query exceeded limit for bytes billed: 1. 20971520 or higher required.» y la línea «RESULTADO: LOS DOS CONECTORES RESPONDEN LO MISMO»" style="max-height:120px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal de Cloud Shell (recorte): la respuesta de resumen_cliente en BigQuery para el cliente 12369, la línea «con tope de 1 byte» con el error «Query exceeded limit for bytes billed: 1. 20971520 or higher required.» y la línea «RESULTADO: LOS DOS CONECTORES RESPONDEN LO MISMO»</figcaption></figure>
+<div class="grid2" style="margin-top:8px">
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El tope se fija con <span class="mono">MCP_BQ_MAX_BYTES</span>; la prueba lo baja a <b>1 byte</b> y BigQuery responde «Query exceeded limit for bytes billed: 1. <b>20971520</b> or higher required».</li><li>BigQuery <b>cobra por mínimos</b> (unos 20 MB), no por bytes sueltos: por eso el mensaje pide 20 971 520.</li></ul></div><div class="callout"><b>Truco de la caché:</b> BigQuery guarda el resultado de una consulta repetida y esa respuesta <b>no se factura</b>, así que no pasaría por el tope. El notebook usa una consulta que no se había lanzado antes (<span class="mono">top_productos</span> con <span class="mono">n=7</span>). La captura <b>no</b> enseña qué consulta se usó en la prueba de Cloud Shell.</div>
+</div><p class="fuente">Fuente: notebook 01, apartado 9 (texto y celda); captura de Cloud Shell, 26/11/2026.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="Borrar el dataset"
+ data-notes="Limpiar. Si se subieron las tablas a BigQuery, se borran: así no queda nada a nombre del alumno. La captura es del final de la prueba real en Cloud Shell: dataset borrado, y la lista de datasets que quedan, vacía. En la ejecución local del notebook la salida guardada es nada que borrar, porque no se creó nada.">
+<p class="kick">3 · El segundo conector: BigQuery · que no quede nada a tu nombre</p><h1>Al terminar, se borra el dataset: que no quede nada a tu nombre</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Notebook 01 · apartado 10</em><button class="cp cpall" data-t="BORRAR_DATASET = True
+if HAY_BQ and BORRAR_DATASET:
+    bq.delete_dataset(f&#x27;{GCP_PROJECT}.{BQ_DATASET}&#x27;, delete_contents=True, not_found_ok=True)
+    print(f&#x27;Dataset {BQ_DATASET} borrado.&#x27;)
+else:
+    print(&#x27;Nada que borrar&#x27; if not HAY_BQ else &#x27;Dataset conservado (BORRAR_DATASET = False)&#x27;)">Copiar todo</button></div><pre class="src">BORRAR_DATASET = True
+if HAY_BQ and BORRAR_DATASET:
+    bq.delete_dataset(f&#x27;{GCP_PROJECT}.{BQ_DATASET}&#x27;, delete_contents=True, not_found_ok=True)
+    print(f&#x27;Dataset {BQ_DATASET} borrado.&#x27;)
+else:
+    print(&#x27;Nada que borrar&#x27; if not HAY_BQ else &#x27;Dataset conservado (BORRAR_DATASET = False)&#x27;)</pre></div><p class="fuente">Fuente: notebook 01, apartado 10; la salida guardada en local es «Nada que borrar» (no se creó nada).</p></div><div class="capcol"><figure class="cap" data-img="bq-03-borrado.webp"><button class="zoom" data-src="img/bq-03-borrado.webp" data-alt="Terminal de Cloud Shell (recorte): la línea «dataset borrado: curso_master_prueba | quedan: []», con la que la prueba comprobó que no quedó nada en el proyecto (el notebook crea y borra el dataset curso_master; este nombre era el de la prueba)" title="Ampliar (Esc cierra)"><img src="img/bq-03-borrado.webp" alt="Terminal de Cloud Shell (recorte): la línea «dataset borrado: curso_master_prueba | quedan: []», con la que la prueba comprobó que no quedó nada en el proyecto (el notebook crea y borra el dataset curso_master; este nombre era el de la prueba)" style="max-height:60px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Captura real</span> Terminal de Cloud Shell (recorte): la línea «dataset borrado: curso_master_prueba | quedan: []», con la que la prueba comprobó que no quedó nada en el proyecto (el notebook crea y borra el dataset curso_master; este nombre era el de la prueba)</figcaption></figure><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">delete_contents=True</span> borra las cuatro tablas con el dataset; <span class="mono">not_found_ok=True</span> evita el error si ya no estaba.</li><li>Si quieres conservarlo, pon <span class="mono">BORRAR_DATASET = False</span>.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Un modelo es una función"
+ data-notes="La idea del segundo servidor. Un modelo es una función: variables del cliente a probabilidad, y un MCP la publica como herramienta. Son cuatro herramientas. Una advertencia de lectura que está escrita en las instrucciones del servidor: la probabilidad es de volver a comprar, así que alta es buena noticia y no un riesgo de abandono. El tramo y la recomendación no salen del modelo: son una regla de negocio del proyecto.">
+<p class="kick">4 · Un MCP con el modelo dentro · mcp-modelo-retencion</p><h1>Un modelo es una función: variables del cliente → probabilidad; un MCP la publica</h1>
+
+<div class="grid2">
+ <div class="card"><table class="tbl"><tr><th>Herramienta</th><th>Para qué</th></tr><tr><td><span class="mono">predecir_cliente(cliente_id)</span></td><td>Probabilidad con las variables del último lote (<span class="mono">fs_produccion</span>)</td></tr><tr><td><span class="mono">predecir_variables(variables)</span></td><td>«¿Y si…?»: un cliente <b>inventado</b></td></tr><tr><td><span class="mono">por_que(cliente_id, n)</span></td><td>Qué variables empujan esa probabilidad (exacto)</td></tr><tr><td><span class="mono">modelo_en_uso()</span></td><td>Versión del alias, AUC y cuántas versiones hay</td></tr></table></div>
+ <div class="col"><div class="callout"><b>La probabilidad es de VOLVER A COMPRAR en 90 días.</b> Alta = <b>buena noticia</b>; no es un «riesgo de abandono». Está en las instrucciones del servidor para que el LLM no lo lea al revés.</div><div class="card"><h3>Dos cosas que no vienen del modelo</h3><ul class="list"><li>El <b>tramo</b> (alta, media, baja) y la recomendación son una <b>regla de negocio</b> de <span class="mono">config.py</span>: se acuerda con quien hace la campaña.</li><li>El LLM no ve el modelo ni los datos: pide <span class="mono">predecir_cliente(12369)</span> y recibe un JSON.</li></ul></div></div>
+</div><p class="fuente">Fuente: notebook 02, introducción y apartado 2 (docstring y <span class="mono">instructions</span> del servidor).</p>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="El alias en cada llamada"
+ data-notes="Qué modelo responde. El servidor no abre un archivo fijo: en cada llamada pregunta a MLflow a qué versión apunta el alias champion y solo recarga el modelo si la versión cambió, porque cargarlo es lo caro. Si el alias no existe, devuelve un error con la orden para asignarlo. Con esto un rollback, que es mover el alias, cambia lo que responde el MCP sin reiniciarlo.">
+<p class="kick">4 · Un MCP con el modelo dentro · qué modelo responde</p><h1>No carga un archivo: pregunta al alias <span class="mono">@champion</span> en cada llamada</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>modelo_champion() · notebook 02, apartado 2 (sin comentarios)</em><button class="cp cpall" data-t="def modelo_champion():
+    &quot;&quot;&quot;(modelo, versión, métricas) de lo que apunte el alias AHORA. Solo recarga si la versión cambió.&quot;&quot;&quot;
+    c = _cliente_mlflow()
+    try:
+        mv = c.get_model_version_by_alias(config.MODELO_REGISTRADO, ALIAS)
+    except Exception as e:
+        raise LookupError(f&#x27;«{config.MODELO_REGISTRADO}» no tiene el alias @{ALIAS}: asígnalo (python -m ia_mlops.alias_modelo promover --version N)&#x27;) from e
+    version = int(mv.version)
+    if _cache[&#x27;version&#x27;] != version:
+        import mlflow.sklearn
+        _cache.update(version=version, modelo=mlflow.sklearn.load_model(f&#x27;models:/{config.MODELO_REGISTRADO}/{version}&#x27;),
+                      metricas=c.get_run(mv.run_id).data.metrics if mv.run_id else {})
+    return _cache[&#x27;modelo&#x27;], version, _cache[&#x27;metricas&#x27;]">Copiar todo</button></div><pre class="src">def modelo_champion():
+    &quot;&quot;&quot;(modelo, versión, métricas) de lo que apunte el alias AHORA. Solo recarga si la versión cambió.&quot;&quot;&quot;
+    c = _cliente_mlflow()
+    try:
+        mv = c.get_model_version_by_alias(config.MODELO_REGISTRADO, ALIAS)
+    except Exception as e:
+        raise LookupError(f&#x27;«{config.MODELO_REGISTRADO}» no tiene el alias @{ALIAS}: asígnalo (python -m ia_mlops.alias_modelo promover --version N)&#x27;) from e
+    version = int(mv.version)
+    if _cache[&#x27;version&#x27;] != version:
+        import mlflow.sklearn
+        _cache.update(version=version, modelo=mlflow.sklearn.load_model(f&#x27;models:/{config.MODELO_REGISTRADO}/{version}&#x27;),
+                      metricas=c.get_run(mv.run_id).data.metrics if mv.run_id else {})
+    return _cache[&#x27;modelo&#x27;], version, _cache[&#x27;metricas&#x27;]</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En <b>cada llamada</b> pregunta a MLflow a qué versión apunta <span class="mono">models:/retencion-90d@champion</span>.</li><li>Solo <b>recarga si la versión cambió</b> (la carga es lo caro).</li><li>Si el alias no existe, devuelve un <b>error claro</b> con la orden para asignarlo, no un traceback.</li></ul></div><div class="callout">Así un <b>rollback</b> (mover el alias) cambia lo que responde el MCP <b>sin reiniciarlo y sin tocar el código</b>. Es la parte MLOps: lo que manda es el registro, no un archivo.</div><p class="fuente">Fuente: notebook 02, apartado 2; estado inicial del registro en el apartado 1.</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Predecir un cliente"
+ data-notes="Predecir un cliente. El mismo cliente que en el servidor de datos, el doce mil trescientos sesenta y nueve, de Austria. El modelo da cero coma tres cero tres cinco, tramo baja, con la versión seis y el alias champion, con las variables del corte del diez de diciembre de dos mil once. Recuerde que alta es buena noticia: aquí es poco probable que vuelva a comprar en noventa días.">
+<p class="kick">4 · Un MCP con el modelo dentro · predecir_cliente(12369)</p><h1>El cliente 12369 tiene un 30 % de probabilidad de volver: tramo bajo</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02 · apartado 5</div><pre>{
+  &quot;cliente_id&quot;: 12369,
+  &quot;probabilidad&quot;: 0.3035,
+  &quot;tramo&quot;: &quot;baja&quot;,
+  &quot;recomendacion&quot;: &quot;Poco probable que compre en 90 días: contacto de recuperación de bajo coste o no invertir.&quot;,
+  &quot;version_modelo&quot;: 6,
+  &quot;alias&quot;: &quot;champion&quot;,
+  &quot;corte_de_las_variables&quot;: &quot;2011-12-10&quot;
+}
+
+variables que usó el modelo: {&#x27;recencia_dias&#x27;: 413, &#x27;frecuencia&#x27;: 3, &#x27;monto_total&#x27;: 1511.15, &#x27;ticket_medio&#x27;: 503.72, &#x27;unidades_total&#x27;: 1234, &#x27;productos_distintos&#x27;: 89, &#x27;antiguedad_dias&#x27;: 641, &#x27;frecuencia_90d&#x27;: 0, &#x27;monto_90d&#x27;: 0.0, &#x27;frecuencia_180d&#x27;: 0, &#x27;dias_medios_entre_compras&#x27;: 114.1, &#x27;devoluciones&#x27;: 0, &#x27;es_reino_unido&#x27;: 0}</pre></div><p class="fuente">Fuente: notebook 02, apartado 5.</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Probabilidad <b>0,3035</b>, tramo <b>baja</b>, modelo <b>v6</b> con el alias <span class="mono">champion</span>.</li><li>Las variables son las del <b>corte 2011-12-10</b> de <span class="mono">fs_produccion</span>: <b>413 días</b> sin comprar, 3 facturas, 0 compras en los últimos 180 días.</li><li>Mismo cliente 12369 que en el servidor de datos: <b>Austria</b>, monto <b>1511,15</b>.</li></ul></div><div class="callout">Los números son de <b>este cliente en esta versión</b>; el LLM debería contar el tramo y la recomendación, no inventar el motivo (para eso está <span class="mono">por_que</span>).</div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Por qué sale ese número"
+ data-notes="Por qué sale ese número. Como el modelo es una regresión logística, la probabilidad se reparte de forma exacta: cada variable pesa coeficiente por valor transformado, y el intercepto más la suma de pesos da el logit, menos cero coma ocho tres uno, que equivale a cero coma tres cero tres cinco. Lo que dice la herramienta es qué empuja la cifra, no por qué compra el cliente. Llame la atención sobre la recencia: cuatrocientos trece días sin comprar suma, no resta. Es el hilo de la siguiente diapositiva. Si el modelo no fuera una regresión logística, la herramienta devuelve una nota y no reparte.">
+<p class="kick">4 · Un MCP con el modelo dentro · por_que(12369)</p><h1>Por qué sale 0,3035: el modelo es una regresión logística y se reparte exacto</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02 · apartado 5</div><pre>--- ¿por qué?
+  frecuencia_180d    valor 0        peso -1.339  → baja la probabilidad
+  recencia_dias      valor 413      peso +0.583  → sube la probabilidad
+  devoluciones       valor 0        peso -0.516  → baja la probabilidad
+  es_reino_unido     valor 0        peso +0.390  → sube la probabilidad
+  intercepto +0.225  logit total -0.831  →  probabilidad 0.3035</pre></div><p class="fuente">Fuente: notebook 02, apartado 5 (<span class="mono">por_que</span> con <span class="mono">n=4</span>).</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Cada peso es <b>coeficiente × valor transformado</b>; intercepto <b>+0,225</b> más la suma de todos los pesos = <b>logit −0,831</b>.</li><li>La probabilidad es <span class="mono">1/(1+e^-logit)</span> = <b>0,3035</b>: la descomposición reproduce la cifra del modelo.</li><li>Sin actividad en 180 días <b>baja</b> (−1,339); devoluciones 0 <b>baja</b> (−0,516).</li></ul></div><div class="callout"><b>Dice qué empuja la cifra, no por qué compra el cliente.</b> Y fíjate: <b>413 días</b> sin comprar <b>sube</b> (+0,583). Eso se explora en la siguiente diapositiva.</div><p class="small"><span class="tag warn">Sin verificar</span> que el reparto exacto valga para otro modelo: si no es una regresión logística, la herramienta devuelve una nota y <b>no</b> reparte.</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="¿Y si…?"
+ data-notes="El que pasa si. Se parte del cliente de ejemplo del proyecto y se mueve una sola variable, la recencia. La intuición dice que cuanto más tiempo sin comprar, menos probable que vuelva, pero el modelo dice lo contrario: de cero coma siete cinco tres tres con cinco días a cero coma ocho nueve seis cinco con trescientos sesenta y cinco. No es un fallo del MCP, es lo que aprendió con estos datos, no es causal, y no se ha investigado por qué. Con solo una variable, el modelo imputa el resto con la mediana del entrenamiento y avisa; la probabilidad cambia a cero coma dos tres nueve cinco.">
+<p class="kick">4 · Un MCP con el modelo dentro · predecir_variables</p><h1>Con más días sin comprar, la probabilidad SUBE: al revés que la intuición</h1>
+
+<div class="split" style="grid-template-columns:.85fr 1.15fr"><div class="col"><div class="card"><table class="tbl"><tr><th>recencia_dias</th><th>probabilidad</th><th>tramo</th></tr><tr><td><b>5</b></td><td>0,7533</td><td>alta</td></tr><tr><td><b>35</b></td><td>0,8279</td><td>alta</td></tr><tr><td><b>90</b></td><td>0,8589</td><td>alta</td></tr><tr><td><b>180</b></td><td>0,8787</td><td>alta</td></tr><tr><td><b>365</b></td><td>0,8965</td><td>alta</td></tr></table></div><p class="fuente">Fuente: notebook 02, apartado 6: cliente de ejemplo (<span class="mono">cliente_ejemplo.json</span>) moviendo <b>solo</b> <span class="mono">recencia_dias</span>.</p><div class="realbox"><div class="rk">Salida guardada · con una sola variable</div><pre>Con solo una variable: 0.2395 - Faltaban [&#x27;frecuencia&#x27;, &#x27;monto_total&#x27;, &#x27;ticket_medio&#x27;, &#x27;unidades_total&#x27;, &#x27;productos_distin…</pre></div></div><div class="capcol"><div class="callout"><b>Sorpresa:</b> es lo que el modelo aprendió con estos datos. <b>No es un fallo del MCP</b> (la paridad de la siguiente diapositiva lo comprueba) y <b>no es una relación causal</b>.</div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Con 150 clientes y variables muy relacionadas (recencia, antigüedad, frecuencia), <b>un coeficiente suelto puede engañar</b>.</li><li>Mover <b>una</b> variable no equivale a un cliente real: en la realidad se mueven juntas.</li><li>El notebook <b>no ha investigado por qué ocurre</b>: es una buena pregunta para la tarea.</li></ul></div><p class="small">Con <b>35 días</b> sale <b>0,8279</b>, la misma cifra que el cliente de ejemplo del laboratorio de MLOps (L3).</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Paridad con el modelo a mano"
+ data-notes="La paridad. Se carga el modelo a mano, sin MCP, y se puntúan los mismos doce clientes. Las probabilidades coinciden: la diferencia máxima es cero. Las dos columnas están redondeadas a cuatro decimales, y el notebook exige menos de uno por diez a la menos cuatro. Es la prueba de que el servidor no inventa nada y de que la sorpresa de la recencia viene del modelo.">
+<p class="kick">4 · Un MCP con el modelo dentro · el MCP no inventa nada</p><h1>El MCP da lo mismo que el modelo cargado a mano: diferencia máxima 0,0</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02 · apartado 7 · 12 clientes</div><pre> cliente_id  a mano  por MCP  diferencia
+      12369  0.3035   0.3035         0.0
+      12425  0.6698   0.6698         0.0
+      12430  0.3570   0.3570         0.0
+      12503  0.3104   0.3104         0.0
+      12513  0.5959   0.5959         0.0
+      12523  0.9917   0.9917         0.0
+      12567  0.9351   0.9351         0.0
+      12642  0.6293   0.6293         0.0
+      12654  0.5151   0.5151         0.0
+      12665  0.6014   0.6014         0.0
+      12670  0.7988   0.7988         0.0
+      12692  0.2659   0.2659         0.0
+
+Paridad exacta: la diferencia máxima es 0.0</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Se carga el modelo <b>a mano</b> (<span class="mono">models:/retencion-90d@champion</span>), sin MCP, y se puntúan los <b>mismos 12 clientes</b>.</li><li>Las dos columnas están redondeadas a 4 decimales; la prueba exige una diferencia <b>menor que 1e-4</b> y salió <b>0,0</b>.</li><li>Esto es lo que descarta que la sorpresa del «¿y si…?» sea un fallo del servidor.</li></ul></div><p class="fuente">Fuente: notebook 02, apartado 7.</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Rollback sin reiniciar"
+ data-notes="El rollback sin reiniciar. Con el cliente conectado al servidor, se promueve el alias champion a la versión uno y se vuelve a preguntar: responde la versión uno. Después se hace el rollback con volver y responde otra vez la seis. Todas dan la misma probabilidad porque las seis versiones se entrenaron con los mismos datos, con AUC de validación cero coma seis nueve ocho dos y de test cero coma siete cuatro siete uno. Lo que se demuestra es el mecanismo, no una mejora. Las dos órdenes de terminal son las del laboratorio de MLOps; el notebook usa las mismas funciones.">
+<p class="kick">4 · Un MCP con el modelo dentro · v6 → v1 → v6</p><h1>Con el servidor arrancado, mover el alias cambia la versión que responde</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02 · apartado 8</div><pre>1. el MCP responde con la v6: probabilidad 0.3035
+2. promovemos @champion a la v1, SIN reiniciar el MCP → responde la v1: probabilidad 0.3035
+3. rollback (volver) → responde la v6: probabilidad 0.3035</pre></div><div class="term"><div class="bar"><em>Terminal · desde 04-Proyecto-Base · orden del laboratorio de MLOps</em><button class="cp cpall" data-t="python -m ia_mlops.alias_modelo promover --version 1
+python -m ia_mlops.alias_modelo volver">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo promover --version 1</code><button class="cp" data-t="python -m ia_mlops.alias_modelo promover --version 1" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ia_mlops.alias_modelo volver</code><button class="cp" data-t="python -m ia_mlops.alias_modelo volver" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: notebook 02, apartado 8 (usa las mismas funciones <span class="mono">promover</span> y <span class="mono">volver</span>); las órdenes son las del laboratorio de MLOps (L3).</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El servidor lleva <b>una sola sesión abierta</b>: la misma conexión responde con la v6, luego con la v1 y otra vez con la v6.</li><li><b>Misma probabilidad (0,3035)</b> en las tres porque las 6 versiones se entrenaron con los mismos datos (AUC de validación <b>0,6982</b>, de test <b>0,7471</b>).</li></ul></div><div class="callout"><b>Honestidad:</b> lo que cambia es la <b>versión que responde</b>. Con modelos de verdad distintos cambiaría también la cifra. Esta prueba demuestra el mecanismo, no una mejora.</div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="2" data-title="Cuando algo sale mal"
+ data-notes="Cuando algo sale mal. Cinco entradas malas: un cliente que no existe, un texto en vez de número, una variable que el modelo no conoce, un valor que no es un número y un objeto vacío. En todos los casos el servidor devuelve un mensaje claro en lugar de romperse; el del texto lo rechaza el SDK antes de llamar. Los textos salen recortados porque el propio notebook los recorta a ciento diez caracteres. Un error que incluye la lista de variables válidas permite al LLM corregirse en la siguiente llamada.">
+<p class="kick">4 · Un MCP con el modelo dentro · errores que el LLM puede contar</p><h1>Un MCP bueno no se rompe: devuelve un error claro que el LLM puede contar</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02 · apartado 9</div><pre>cliente que no existe              → El cliente 1 no está en fs_produccion: no hay variables con las que puntuarlo.
+texto en vez de número             → Error executing tool predecir_cliente: 1 validation error for predecir_clienteArguments
+cliente_id
+  Input sho
+variable que el modelo no conoce   → Variables que el modelo no conoce: [&#x27;edad&#x27;]. Las válidas: [&#x27;recencia_dias&#x27;, &#x27;frecuencia&#x27;, &#x27;monto_total&#x27;, &#x27;tick
+valor que no es número             → «frecuencia» debe ser un número, no «muchas».
+sin variables                      → Pasa un objeto con las variables: recencia_dias, frecuencia, monto_total, ticket_medio, unidades_total, produc</pre></div><p class="fuente">Fuente: notebook 02, apartado 9 (los textos salen recortados a 110 caracteres en el propio notebook).</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Un cliente que no existe, una variable que sobra o un texto en vez de número devuelven <b><span class="mono">error</span></b>, no una excepción.</li><li>Las <b>instrucciones</b> del servidor dicen: «si devuelven error, díselo al usuario y no inventes cifras».</li><li>El caso del tipo (<span class="mono">&quot;abc&quot;</span>) lo rechaza el <b>SDK</b> antes de llamar a la función.</li></ul></div><div class="callout">Un error con <b>la lista de valores válidos</b> (como el de <span class="mono">edad</span>) deja al LLM corregirse solo en la siguiente llamada.</div></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Dos servidores juntos"
+ data-notes="Con los dos servidores a la vez, un agente puede contestar preguntas que mezclan datos y modelo, por ejemplo cuánto ha comprado un cliente y qué probabilidad tiene de volver: una llamada a un servidor y otra al otro. El archivo es el ejemplo de los notebooks, con los dos servidores unidos en uno solo. Está sin verificar: no se conectó a VS Code ni a Copilot, y las rutas dependen de que se hayan ejecutado antes los notebooks, porque son ellos los que escriben la carpeta de trabajo.">
+<p class="kick">5 · Juntos, límites y cierre · qué preguntas responden</p><h1>Con los dos servidores a la vez, un agente combina datos y modelo</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>.vscode/mcp.json · los dos servidores (cada uno, del notebook 01 y del 02)</em><button class="cp cpall" data-t="{
+  &quot;servers&quot;: {
+    &quot;datos-master&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [
+        &quot;01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/_trabajo/mcp_datos.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;CURSO_DB&quot;: &quot;04-Proyecto-Base/data/processed/curso.db&quot;,
+        &quot;MCP_BACKEND&quot;: &quot;sqlite&quot;
+      }
+    },
+    &quot;modelo-retencion&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [
+        &quot;01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/_trabajo/mcp_modelo.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;MCP_PROYECTO&quot;: &quot;04-Proyecto-Base&quot;,
+        &quot;CURSO_DB&quot;: &quot;04-Proyecto-Base/data/processed/curso.db&quot;
+      }
+    }
+  }
+}">Copiar todo</button></div><pre class="src">{
+  &quot;servers&quot;: {
+    &quot;datos-master&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [
+        &quot;01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/_trabajo/mcp_datos.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;CURSO_DB&quot;: &quot;04-Proyecto-Base/data/processed/curso.db&quot;,
+        &quot;MCP_BACKEND&quot;: &quot;sqlite&quot;
+      }
+    },
+    &quot;modelo-retencion&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;python&quot;,
+      &quot;args&quot;: [
+        &quot;01-Sesiones/S5-MLOps-y-Operacion/extra-mcp-notebooks/_trabajo/mcp_modelo.py&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;MCP_PROYECTO&quot;: &quot;04-Proyecto-Base&quot;,
+        &quot;CURSO_DB&quot;: &quot;04-Proyecto-Base/data/processed/curso.db&quot;
+      }
+    }
+  }
+}</pre></div><p class="small"><span class="tag warn">Sin verificar</span> <b>nunca se conectó a VS Code ni a Copilot</b>: el JSON es solo el ejemplo de los notebooks, unidos en un archivo.</p></div><div class="capcol"><div class="card"><h3>Quién responde qué</h3><ul class="list"><li>«¿Cuál es el país con más ventas?» → <b>datos-master</b> (lo esperable: <span class="mono">ventas_por_pais</span>; <b>sin verificar</b> con un LLM real).</li><li>«¿Cuánto ha comprado el 12369 y qué probabilidad tiene de volver?» → una llamada a <b>datos-master</b> (<span class="mono">resumen_cliente</span>) y otra a <b>modelo-retencion</b> (<span class="mono">predecir_cliente</span>).</li><li>«¿Por qué sale tan baja?» → <span class="mono">por_que</span>.</li></ul></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Las rutas de <span class="mono">args</span> cuelgan de la <b>raíz del repositorio</b> y <span class="mono">_trabajo/</span> <b>solo existe tras ejecutar</b> los notebooks (<span class="mono">%%writefile</span>).</li><li>Para BigQuery: <span class="mono">MCP_BACKEND</span> a <span class="mono">bigquery</span> y añadir <span class="mono">GCP_PROJECT</span> y <span class="mono">BQ_DATASET</span>.</li></ul></div><p class="fuente">Fuente: notebook 01, apartado 11, y notebook 02, apartado 10.</p></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Ejercicios"
+ data-notes="Los seis ejercicios, tal cual están en los notebooks. Del servidor de datos: quitar una capa y ver que la siguiente aguanta, añadir una herramienta con parámetros sin pegar texto dentro del SQL, y cambiar el tope de filas. Del servidor del modelo: una herramienta nueva para comparar clientes, un límite para la recencia negativa y una pregunta de diseño sobre las variables al vuelo. Recomiende el primero porque es el que demuestra la defensa en capas.">
+<p class="kick">5 · Juntos, límites y cierre · los de los notebooks</p><h1>Seis ejercicios para hacer tú: tres por servidor</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Notebook 01 · el servidor de datos</h3><ol class="ol sm"><li><b>Quita una capa.</b> Edita <span class="mono">validar_sql</span> para que acepte cualquier cosa y lanza <span class="mono">UPDATE master_clientes SET pais = &#x27;X&#x27;</span>: ¿qué responde SQLite? (Debe fallar por ser de solo lectura.) Devuelve la vigilancia a su sitio.</li><li><b>Añade una herramienta</b> <span class="mono">clientes_de_un_pais(pais, n)</span> con parámetros (nunca pegues el texto del país dentro del SQL: es lo que permite la inyección). Pruébala en los dos motores.</li><li><b>Cambia el tope</b> <span class="mono">MAX_FILAS</span> a 5 y observa qué cambia en <span class="mono">consulta_sql</span>.</li></ol></div>
+ <div class="card"><h3>Notebook 02 · el servidor del modelo</h3><ol class="ol sm"><li><b>Una herramienta nueva</b> <span class="mono">comparar_clientes(a, b)</span> que devuelva las dos probabilidades y cuál es mayor.</li><li><b>Un límite:</b> haz que <span class="mono">predecir_variables</span> rechace una <span class="mono">recencia_dias</span> negativa. ¿Dónde pondrías esa regla: en el MCP o en el modelo?</li><li><b>Pensar:</b> <span class="mono">predecir_cliente</span> solo ve el último lote (<span class="mono">fs_produccion</span>). ¿Qué cambiaría si calculase las variables al vuelo, como <span class="mono">puntuar_online</span> en S4?</li></ol></div>
+</div>
+<div class="callout" style="margin-top:14px"><b>El ejercicio 1 del notebook 01 demuestra la capa 3</b>, la que no depende de nadie: sin vigilancia, SQLite abierto en solo lectura sigue frenando un <span class="mono">UPDATE</span>. Es la prueba que el notebook <b>no</b> hace por ti.</div>
+</section>
+
+<section class="slide grande" data-part="E" data-min="3" data-title="Qué quedó sin verificar"
+ data-notes="Diapositiva de honestidad. Lo comprobado: los tres notebooks se ejecutaron en local con sus salidas guardadas; BigQuery se probó de verdad en Cloud Shell el veintiséis de noviembre con siete llamadas iguales y el tope de un byte; la paridad y el rollback del servidor del modelo. Lo no comprobado: las celdas de BigQuery como notebook, la conexión a VS Code y Copilot, un Codespace, y cualquier LLM real llamando a las herramientas. Los límites: validar sql es una expresión regular, la sorpresa de la recencia no está investigada y las seis versiones no son modelos distintos.">
+<p class="kick">5 · Juntos, límites y cierre · qué se comprobó y qué no</p><h1>Qué se comprobó de verdad y qué quedó sin verificar</h1>
+
+<div class="grid2">
+ <div class="card"><h3 class="okc">Comprobado</h3><ul class="list"><li>Los <b>tres notebooks</b> se ejecutaron <b>en local</b> con SQLite y MLflow; las salidas guardadas son las de estas diapositivas.</li><li><b>BigQuery</b> se probó el <b>26/11/2026</b> en <b>Cloud Shell</b>, con la cuenta del curso y un dataset temporal (borrado después): siete llamadas <b>IGUAL</b> y el tope de 1 byte.</li><li><b>Paridad</b> del MCP del modelo con el modelo a mano (12 clientes, diferencia máxima 0,0) y <b>rollback</b> v6 → v1 → v6 sin reiniciar.</li></ul></div>
+ <div class="card"><h3 class="malc">Sin verificar o con límites</h3><ul class="list"><li><b>Las celdas de BigQuery del notebook 01</b> nunca se ejecutaron como notebook: salen «saltada». La prueba fue con un script equivalente.</li><li><b>Conectar los servidores a VS Code/Copilot</b> y <b>ejecutar los notebooks en un Codespace</b>: sin verificar.</li><li><b>Ningún LLM real</b> llamó a las herramientas: el cliente del notebook las llama a mano. Cómo elige un LLM, sin dato.</li><li><span class="mono">validar_sql</span> es una expresión regular, no un analizador. La <b>sorpresa de la recencia</b> no se ha investigado, y las 6 versiones <b>no</b> son modelos distintos.</li></ul></div>
+</div>
+</section>
+
+<section class="slide grande" data-part="E" data-min="2" data-title="Resumen"
+ data-notes="Cierre con un único mensaje: un MCP seguro no se fía de una sola capa y uno de ML sigue al alias y no a un archivo. Las cuatro cifras: cuatro capas de defensa con ocho ataques frenados por la vigilancia; siete de siete llamadas iguales en SQLite y BigQuery, de la prueba de Cloud Shell; diferencia máxima cero coma cero entre el MCP y el modelo a mano en doce clientes; y el rollback de la versión seis a la uno y de vuelta sin reiniciar el servidor.">
+<p class="kick">5 · Juntos, límites y cierre · el mensaje</p><h1>Un MCP seguro no se fía de una capa; uno de ML sigue al alias, no al archivo</h1>
+
+<div class="msg">Un MCP es un <b>contrato vigilado</b>: pocas herramientas, <b>capas que no dependen del LLM</b> y, en el modelo, <b>el alias que manda en MLflow</b>.</div>
+<div class="grid4" style="margin-top:18px">
+ <div class="card kpi"><b class="n ">4 capas</b><p class="small"><span class="mono">validar_sql</span> frenó los <b>8</b> ataques; si fallara, <b>solo lectura</b> y <b>50 filas</b> siguen ahí por diseño (el ejercicio 1 lo prueba)</p></div><div class="card kpi"><b class="n ">7 de 7 IGUAL</b><p class="small">las siete llamadas dan lo mismo en <b>SQLite y BigQuery</b> (prueba en Cloud Shell, 26/11/2026)</p></div><div class="card kpi"><b class="n ">0,0</b><p class="small">diferencia máxima entre el MCP y el modelo a mano en <b>12 clientes</b> (notebook 02)</p></div><div class="card kpi"><b class="n ">v6 → v1 → v6</b><p class="small">rollback <b>sin reiniciar</b> el servidor; misma probabilidad <b>0,3035</b> porque son los mismos datos (notebook 02)</p></div>
+</div>
+<div style="text-align:center;margin-top:44px;font-size:44px;font-weight:700;color:var(--acento)">¿Preguntas?</div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<div id="zoombox" aria-label="Captura ampliada"><p>Esc o clic para cerrar</p><img id="zoomimg" alt=""></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado (propuesta)"></span>
+  <button class="part" data-p="A">Plan</button><button class="part" data-p="B">Servidor de datos</button><button class="part" data-p="C">BigQuery</button><button class="part" data-p="D">Servidor del modelo</button><button class="part" data-p="E">Límites y cierre</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S5">⌂ Índice</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en los tres notebooks de esta carpeta.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "Plan", "B": "Servidor de datos", "C": "BigQuery", "D": "Servidor del modelo", "E": "Límites y cierre"};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S5 · Extra: MCP en notebooks</span><span><b>${esc(PARTES[s.dataset.part]||'')}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N; $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL+' (propuesta)';
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto (propuesta): '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part]||'')} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+function zoom(on,src,alt){const z=$('#zoombox');if(on){$('#zoomimg').src=src;$('#zoomimg').alt=alt||'';}z.classList.toggle('on',!!on)}
+$('#zoombox').onclick=()=>zoom(false);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='Escape'){zoom(false);toggle('#index',false);toggle('#notes',false);return}
+  if($('#zoombox').classList.contains('on')) return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O'){toggle('#index')} else if(k==='s'||k==='S'){toggle('#notes')} else if(k==='f'||k==='F'){$('#bfull').click()}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.zoom'); if(z){e.stopPropagation();zoom(true,z.dataset.src,z.dataset.alt);return}
+  const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+fit();
+const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1)});
+})();
+</script>
+</body>
+</html>

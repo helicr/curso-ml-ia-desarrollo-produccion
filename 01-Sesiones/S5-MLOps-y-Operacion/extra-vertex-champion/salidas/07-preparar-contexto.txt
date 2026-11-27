@@ -1,0 +1,2 @@
+Contexto listo en <trabajo>/build/vertex: 16 archivos; modelo guardado con scikit-learn 1.9.1 (= el del lock).
+Construir:  docker build --platform linux/amd64 -f <trabajo>/build/vertex/Dockerfile.vertex -t retencion-vertex:local <trabajo>/build/vertex

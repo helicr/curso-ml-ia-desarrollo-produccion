@@ -1,0 +1,4 @@
+# Lo que necesita este extra para ejecutar sus scripts y sus pruebas: lo mismo que el proyecto (mlflow, fastapi, scikit-learn, pytest,
+# httpx, pyyaml...). No añade nada nuevo: las versiones exactas son las de 04-Proyecto-Base/requirements-dev.txt.
+#   python -m pip install -r requirements-extra.txt
+-r ../../../04-Proyecto-Base/requirements-dev.txt

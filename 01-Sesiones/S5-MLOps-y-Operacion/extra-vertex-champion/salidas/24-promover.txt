@@ -1,0 +1,9 @@
+$ bash scripts/promover.sh
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== 1. Pasar mlflow-v6 al 100 % del tráfico
+Reparto: 1000=0,1001=100
+1000	mlflow-v5	0%
+1001	mlflow-v6	100%
+
+La versión anterior (si la hay) sigue desplegada con 0 % y SIGUE COBRANDO. Retírala con  scripts/promover.sh --retirar-anterior  o borra todo con scripts/borrar.sh

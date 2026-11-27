@@ -1,0 +1,1 @@
+{"curso": "ml-ia", "mlflow_modelo": "retencion-90d", "mlflow_alias": "champion", "mlflow_version": "6", "mlflow_run": "ddd3b315513e4a3b9b79ae3e80cf1cb7", "huella_datos": "35a94deb4e04ab4a", "auc_valid": "0_6982", "auc_test": "0_7471", "mlflow_version_anterior": "5"}

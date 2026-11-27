@@ -1,0 +1,19 @@
+$ bash scripts/subir_modelo.sh
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== 1. Manifiesto del champion y contexto de la imagen
+«retencion-90d» @champion -> versión 6 de MLflow (anterior: 5)
+  AUC valid 0.6982 · test 0.7471 · huella de datos 35a94deb4e04ab4a
+  imagen: <registro>/retencion-vertex:v6-35a94deb4e04ab4a   alias en Vertex: mlflow-v6
+  etiquetas de Vertex: curso=ml-ia,mlflow_modelo=retencion-90d,mlflow_alias=champion,mlflow_version=6,mlflow_run=ddd3b315513e4a3b9b79ae3e80cf1cb7,huella_datos=35a94deb4e04ab4a,auc_valid=0_6982,auc_test=0_7471,mlflow_version_anterior=5
+Escrito <trabajo>/vertex-manifiesto.json
+Contexto listo en <trabajo>/build/vertex: 16 archivos; modelo guardado con scikit-learn 1.9.1 (= el del lock).
+Construir:  docker build --platform linux/amd64 -f <trabajo>/build/vertex/Dockerfile.vertex -t retencion-vertex:local <trabajo>/build/vertex
+
+== 2. Artifact Registry (curso, southamerica-west1) y la imagen retencion-vertex:v6-35a94deb4e04ab4a
+Ya existe el repositorio curso.
+
+== 3. Modelo en el Model Registry de Vertex AI
+
+Listo: MLflow v6 -> retencion-90d-champion versión 2 (alias mlflow-v6). Sin desplegar: no cobra máquinas.
+Siguiente: scripts/desplegar.sh   y, SIN DEJARLO PARA DESPUÉS, scripts/borrar.sh

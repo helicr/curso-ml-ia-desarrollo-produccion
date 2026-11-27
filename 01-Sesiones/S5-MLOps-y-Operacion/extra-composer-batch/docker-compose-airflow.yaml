@@ -1,0 +1,44 @@
+# Airflow MÍNIMO en local para ensayar el DAG retencion_lote. SIN VERIFICAR: no hay Docker en el ordenador donde se escribió.
+#
+# Está basado en la guía oficial («Running Airflow in Docker», https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html),
+# pero más pequeño: UN solo contenedor (webserver + planificador) con SQLite y SequentialExecutor. Sirve para aprender y ensayar;
+# la guía oficial advierte de que su compose no es para producción, y este lo es todavía menos.
+#
+# Uso, desde esta carpeta (extra-composer-batch):
+#   docker compose -f docker-compose-airflow.yaml up -d
+#   (esperar ~1-2 minutos)  ->  http://localhost:8080   usuario airflow  contraseña airflow
+#   docker compose -f docker-compose-airflow.yaml down -v          # parar y borrar (la base SQLite se pierde: es lo previsto)
+#
+# Para que DockerOperator lance el contenedor del lote hace falta el socket de Docker del equipo:
+#   · Linux/macOS/Codespaces: el usuario del contenedor necesita el grupo del socket:  export DOCKER_GID=$(stat -c %g /var/run/docker.sock)
+#   · Docker Desktop (Windows): el socket se monta igual; si falla con «permission denied», usa  DOCKER_GID=0  (solo en un ordenador de prácticas).
+#   La imagen del lote (retencion-lote:local) debe existir en el Docker del equipo: ver lote.Dockerfile.
+name: airflow-lote
+
+services:
+  airflow:
+    image: ${AIRFLOW_IMAGE:-apache/airflow:2.10.5-python3.11}
+    ports:
+      - "8080:8080"
+    group_add:
+      - "${DOCKER_GID:-0}"
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"    # sin esto el DAG nace en pausa y un run nuevo se queda en cola
+      AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"   # API REST con usuario y contraseña (Airflow 2)
+      _PIP_ADDITIONAL_REQUIREMENTS: "apache-airflow-providers-docker"   # solo para ensayar: la guía oficial lo permite, no es para producción
+      LOTE_MODO: docker
+      LOTE_IMAGEN_DEFECTO: retencion-lote:local
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      bash -c "airflow db migrate &&
+               airflow users create --username airflow --password airflow --firstname Curso --lastname Curso --role Admin --email curso@example.com || true;
+               airflow scheduler & exec airflow webserver"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s

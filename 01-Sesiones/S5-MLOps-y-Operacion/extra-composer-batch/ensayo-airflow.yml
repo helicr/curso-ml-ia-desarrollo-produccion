@@ -1,0 +1,90 @@
+# EXTRA S5 · ENSAYO del DAG SIN Cloud Composer: Airflow en el runner de GitHub y `airflow dags test` con DockerOperator.
+#
+# ESTADO: SIN ENSAYAR. Se escribió sin poder ejecutarlo (ni Docker ni Actions donde se redactó). Es la forma honesta de ver el
+# DAG funcionando de verdad sin pagar un entorno de Composer.
+#
+#   construir la API y la imagen del lote  ──►  instalar Airflow con las restricciones oficiales  ──►  airflow dags test
+#
+# Se copia en:  .github/workflows/ensayo-airflow.yml
+# Se lanza a mano (Actions → «Ensayo del DAG sin Composer» → Run workflow) o con un push a una rama lab/composer/** que cambie el DAG.
+# Receta exacta para ensayarlo cuando el profesor autorice el push, y qué debes ver: README.md, sección «Ensayo en Actions».
+name: Ensayo del DAG sin Composer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['lab/composer/**']
+    paths:
+      - '01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags/**'
+      - '.github/workflows/ensayo-airflow.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ensayo-airflow
+  cancel-in-progress: true
+
+env:
+  AIRFLOW_VERSION: "2.10.5"
+  PYTHON: "3.11"
+  EXTRA: 01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch
+  CURSO_SIN_PANTALLA: "1"
+
+jobs:
+  ensayo:
+    name: Airflow en el runner · airflow dags test
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON }}" }
+
+      - name: Datos y modelo del proyecto (operacional + pipeline)
+        working-directory: 04-Proyecto-Base
+        run: |
+          pip install -q -r requirements-dev.txt && pip install -q -e . --no-deps
+          python -m ia_mlops.operacional
+          python -m ia_mlops.pipeline
+
+      - name: Construir la imagen de la API y la imagen del lote
+        working-directory: 04-Proyecto-Base
+        run: |
+          docker build -f deploy/docker/Dockerfile -t retencion-api:local .
+          docker build -f "../$EXTRA/lote.Dockerfile" --build-arg IMAGEN_API=retencion-api:local -t retencion-lote:local .
+
+      - name: Instalar Airflow con las restricciones oficiales
+        run: |
+          pip install -q "apache-airflow==${AIRFLOW_VERSION}" apache-airflow-providers-docker \
+            --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON}.txt"
+          echo "AIRFLOW_HOME=$RUNNER_TEMP/airflow" >> "$GITHUB_ENV"
+
+      - name: Preparar Airflow (base SQLite, solo nuestros DAG) y comprobar que el DAG se importa
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags
+          LOTE_MODO: docker
+          LOTE_IMAGEN_DEFECTO: retencion-lote:local
+        run: |
+          airflow db migrate
+          airflow dags list-import-errors
+          airflow dags list | grep retencion_lote
+
+      - name: Ejecutar el DAG entero con airflow dags test
+        env:
+          AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/01-Sesiones/S5-MLOps-y-Operacion/extra-composer-batch/dags
+          LOTE_MODO: docker
+          LOTE_IMAGEN_DEFECTO: retencion-lote:local
+        run: |
+          airflow dags test retencion_lote 2011-12-10 --conf '{"corte": "2011-12-10", "imagen": "retencion-lote:local", "capacidad": 0.1}' | tee ensayo.txt
+          {
+            echo "## Ensayo del DAG sin Composer"
+            echo
+            echo "\`airflow dags test retencion_lote\` con Airflow ${AIRFLOW_VERSION} y DockerOperator en el runner."
+            echo
+            echo '```'
+            grep -E "Lote de retención|Clientes puntuados|Tramos de negocio|Probabilidad:|Marking task as|DagRun Finished" ensayo.txt | tail -20 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

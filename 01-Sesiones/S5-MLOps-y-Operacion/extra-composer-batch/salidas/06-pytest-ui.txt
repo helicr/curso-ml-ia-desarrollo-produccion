@@ -1,0 +1,9 @@
+$ python -m pytest ui/pruebas -q -p no:cacheprovider   (en extra-mcp-notebooks)
+    sqlalchemy.orm.configure_mappers()
+
+ui/pruebas/test_interfaz.py::test_chat_con_ollama_real_no_rompe_el_bucle
+  C:\bk\bankinter-cowork\utils\miniconda3\envs\env-ia-mlops\Lib\site-packages\httpx2\_client.py:1203: StarletteDeprecationWarning: You should not use the 'timeout' argument with the TestClient. See https://github.com/Kludex/starlette/issues/1108 for more information.
+    return self.request(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+57 passed, 2 warnings in 89.62s (0:01:29)

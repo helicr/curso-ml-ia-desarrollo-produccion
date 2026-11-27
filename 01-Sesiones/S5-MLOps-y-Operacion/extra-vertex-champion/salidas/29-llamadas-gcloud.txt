@@ -1,0 +1,86 @@
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud services enable aiplatform.googleapis.com artifactregistry.googleapis.com --project project-prueba
+gcloud artifacts repositories describe curso --location southamerica-west1 --project project-prueba
+gcloud artifacts repositories create curso --repository-format docker --location southamerica-west1 --project project-prueba --description Imagenes del curso ML e IA --labels curso=ml-ia
+gcloud artifacts docker images describe southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v5-35a94deb4e04ab4a --project project-prueba
+docker build --platform linux/amd64 -f <trabajo>/build/vertex/Dockerfile.vertex -t southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v5-35a94deb4e04ab4a <trabajo>/build/vertex
+gcloud auth configure-docker southamerica-west1-docker.pkg.dev --quiet
+docker push southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v5-35a94deb4e04ab4a
+gcloud ai models describe retencion-90d-champion --region southamerica-west1 --project project-prueba
+gcloud ai models upload --project project-prueba --region southamerica-west1 --display-name retencion-90d-champion --container-image-uri southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v5-35a94deb4e04ab4a --container-ports 8080 --container-predict-route /predict --container-health-route /salud --labels curso=ml-ia,mlflow_modelo=retencion-90d,mlflow_alias=champion,mlflow_version=5,mlflow_run=8aee8bf0ee3745949fc6dc573d127b4f,huella_datos=35a94deb4e04ab4a,auc_valid=0_6982,auc_test=0_7471 --version-description MLflow retencion-90d v5, huella 35a94deb4e04ab4a --model-id retencion-90d-champion --version-aliases champion,mlflow-v5
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba
+gcloud ai endpoints create --project project-prueba --region southamerica-west1 --endpoint-id retencion-90d-champion-ep --display-name retencion-90d-champion-ep --labels curso=ml-ia
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints deploy-model retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --model retencion-90d-champion@1 --display-name mlflow-v5 --machine-type e2-standard-2 --min-replica-count 1 --max-replica-count 1 --traffic-split 0=100
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints predict retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --json-request <trabajo>/instancias.json --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints predict retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --json-request <trabajo>/instancias.json --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud services enable aiplatform.googleapis.com artifactregistry.googleapis.com --project project-prueba
+gcloud artifacts repositories describe curso --location southamerica-west1 --project project-prueba
+gcloud artifacts docker images describe southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v6-35a94deb4e04ab4a --project project-prueba
+docker build --platform linux/amd64 -f <trabajo>/build/vertex/Dockerfile.vertex -t southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v6-35a94deb4e04ab4a <trabajo>/build/vertex
+gcloud auth configure-docker southamerica-west1-docker.pkg.dev --quiet
+docker push southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v6-35a94deb4e04ab4a
+gcloud ai models describe retencion-90d-champion --region southamerica-west1 --project project-prueba
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud ai models upload --project project-prueba --region southamerica-west1 --display-name retencion-90d-champion --container-image-uri southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex:v6-35a94deb4e04ab4a --container-ports 8080 --container-predict-route /predict --container-health-route /salud --labels curso=ml-ia,mlflow_modelo=retencion-90d,mlflow_alias=champion,mlflow_version=6,mlflow_run=ddd3b315513e4a3b9b79ae3e80cf1cb7,huella_datos=35a94deb4e04ab4a,auc_valid=0_6982,auc_test=0_7471,mlflow_version_anterior=5 --version-description MLflow retencion-90d v6, huella 35a94deb4e04ab4a --parent-model projects/project-prueba/locations/southamerica-west1/models/retencion-90d-champion --version-aliases champion,mlflow-v6
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints deploy-model retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --model retencion-90d-champion@2 --display-name mlflow-v6 --machine-type e2-standard-2 --min-replica-count 1 --max-replica-count 1 --traffic-split 0=10,1000=90
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints predict retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --json-request <trabajo>/instancias.json --format json
+gcloud ai endpoints predict retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --json-request <trabajo>/instancias.json --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints update retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --traffic-split 1000=0,1001=100
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints update retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --traffic-split 1000=100,1001=0
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints update retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --traffic-split 1000=0,1001=100
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints undeploy-model retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --deployed-model-id 1000 --quiet
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai models list-version retencion-90d-champion --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints deploy-model retencion-90d-champion-ep --project project-prueba --region southamerica-west1 --model retencion-90d-champion@1 --display-name mlflow-v5 --machine-type e2-standard-2 --min-replica-count 1 --max-replica-count 1 --traffic-split 0=100,1001=0
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud config set project project-prueba --quiet
+gcloud config get-value project
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba
+gcloud ai endpoints describe retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --format json
+gcloud ai endpoints undeploy-model retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --deployed-model-id 1001 --quiet
+gcloud ai endpoints undeploy-model retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --deployed-model-id 1002 --quiet
+gcloud ai endpoints delete retencion-90d-champion-ep --region southamerica-west1 --project project-prueba --quiet
+gcloud ai models describe retencion-90d-champion --region southamerica-west1 --project project-prueba
+gcloud ai models delete retencion-90d-champion --region southamerica-west1 --project project-prueba --quiet
+gcloud artifacts docker images list southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex --project project-prueba --format value(version)
+gcloud artifacts docker images delete southamerica-west1-docker.pkg.dev/project-prueba/curso/retencion-vertex --delete-tags --project project-prueba --quiet
+gcloud ai endpoints list --region southamerica-west1 --project project-prueba
+gcloud ai models list --region southamerica-west1 --project project-prueba
+gcloud artifacts docker images list southamerica-west1-docker.pkg.dev/project-prueba/curso --project project-prueba

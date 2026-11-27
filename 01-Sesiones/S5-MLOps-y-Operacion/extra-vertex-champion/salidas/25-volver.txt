@@ -1,0 +1,12 @@
+$ bash scripts/volver.sh --sin-mlflow
+Proyecto: project-prueba | región: southamerica-west1 | trabajo: <trabajo>/trabajo2
+
+== 1. A qué versión volver
+Sirve ahora: mlflow-v6 (modelo desplegado 1001)  ->  vuelve a: mlflow-v5
+
+== 2. Tráfico del endpoint
+mlflow-v5 sigue desplegada: se mueve el tráfico.
+1000	mlflow-v5	100%
+1001	mlflow-v6	0%
+
+mlflow-v6 sigue desplegada con 0 % y SIGUE COBRANDO. Retírala con  scripts/volver.sh --retirar-actual  o borra todo con scripts/borrar.sh

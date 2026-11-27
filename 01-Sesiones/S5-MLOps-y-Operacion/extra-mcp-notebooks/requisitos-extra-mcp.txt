@@ -1,0 +1,7 @@
+# Lo que añade el extra «MCP en notebooks» (S5). El resto (pandas, mlflow, scikit-learn) ya viene con el entorno del curso (env-ia-mlops).
+# SDK oficial de Model Context Protocol, FIJADO a la 1.x como en el laboratorio de agentes (la 2.x cambia el import y el cliente). Probada la 1.30.0.
+mcp==1.30.0
+# Solo para el conector de BigQuery del notebook 01 (opcional; sin él, el notebook sigue con SQLite).
+google-cloud-bigquery
+pyarrow
+db-dtypes

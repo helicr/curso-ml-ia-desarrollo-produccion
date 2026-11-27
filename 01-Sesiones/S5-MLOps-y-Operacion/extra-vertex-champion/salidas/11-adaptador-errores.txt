@@ -1,0 +1,8 @@
+$ curl ... -d '{"instances": [{"recencia_dias": 35}]}'
+{"error": "El cuerpo no cumple el contrato de entrada.", "errores": [{"instancia": 0, "campo": null, "mensaje": "Cada instancia debe ser una LISTA de 13 números en este orden: recencia_dias, frecuencia, monto_total, ticket_medio, unidades_total, productos_distintos, antiguedad_dias, frecuencia_90d, monto_90d, frecuencia_180d, dias_medios_entre_compras, devoluciones, es_reino_unido. No un diccionario."}]}
+
+$ curl ... -d '{"instances": [[1, 2, 3]]}'
+{"error": "El cuerpo no cumple el contrato de entrada.", "errores": [{"instancia": 0, "campo": null, "mensaje": "Cada instancia debe ser una lista de 13 números; esta tiene 3."}]}
+
+$ curl ... -d '{"instances": [[35, 6, 1250.4, 208.4, 410, 38, 310, 2, 380.5, 4, 55.0, 1, 2]]}'  # es_reino_unido = 2
+{"error": "El cuerpo no cumple el contrato de entrada.", "errores": [{"instancia": 0, "campo": "es_reino_unido", "mensaje": "Input should be 0 or 1"}]}

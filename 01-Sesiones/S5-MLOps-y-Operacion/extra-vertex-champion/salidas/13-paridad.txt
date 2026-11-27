@@ -1,0 +1,6 @@
+instancia   probabilidad (Vertex)   probabilidad (local)   diferencia   clase   tramo   versión MLflow
+0           0.8278889192            0.8278889192          0.00e+00     1/1   alta/alta   6  IGUAL
+1           0.2759763413            0.2759763413          0.00e+00     0/0   baja/baja   6  IGUAL
+2           0.2851673633            0.2851673633          0.00e+00     0/0   baja/baja   6  IGUAL
+PARIDAD: las predicciones del endpoint y las del modelo local coinciden.
+salida: 0

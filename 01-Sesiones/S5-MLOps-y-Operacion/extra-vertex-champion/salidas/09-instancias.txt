@@ -1,0 +1,2 @@
+Escrito <trabajo>/instancias.json: 3 instancias (activo, dormido, una_factura), 13 números cada una
+{"instances": [[35, 6, 1250.4, 208.4, 410, 38, 310, 2, 380.5, 4, 55.0, 1, 1], [300, 2, 90.0, 45.0, 30, 8, 340, 0, 0.0, 0, 200.0, 0, 0], [20, 1, 85.5, 85.5, 12, 5, 20, 1, 85.5, 1, null, 0, 1]]}

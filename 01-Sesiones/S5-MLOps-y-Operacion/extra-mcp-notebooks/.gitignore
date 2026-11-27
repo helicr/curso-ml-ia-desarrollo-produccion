@@ -1,0 +1,5 @@
+﻿# Lo que escriben los notebooks al ejecutarse (los servidores y su registro)
+_trabajo/
+__pycache__/
+.ipynb_checkpoints/
+

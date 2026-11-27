@@ -1,0 +1,37 @@
+$ python lanzar_lote.py --url http://127.0.0.1:8099 --corte 2011-12-10 --imagen retencion-lote:local   (servidor Airflow DE PRUEBA)
+Airflow en http://127.0.0.1:8099 · API v1 · autenticación ninguna
+Lanzado retencion_lote · run lanzar-20261127T095933
+Seguimiento: http://127.0.0.1:8099/dags/retencion_lote/grid?dag_run_id=lanzar-20261127T095933
+  tarea entradas       success
+  tarea comprobar      running
+  tarea comprobar      success
+  tarea ejecutar_lote  running
+  tarea ejecutar_lote  success
+  tarea validar        running
+  tarea validar        success
+  tarea resumir        running
+  tarea resumir        success
+Run lanzar-20261127T095933: success en 4 s
+--- registro de resumir ---
+[servidor de prueba] Registro SIMULADO de resumir (intento 1). Aquí no se ha ejecutado ningún contenedor.
+[código de salida 0]
+
+$ python lanzar_lote.py ... --imagen retencion-lote:falla
+Airflow en http://127.0.0.1:8099 · API v1 · autenticación ninguna
+Lanzado retencion_lote · run lanzar-20261127T095937
+Seguimiento: http://127.0.0.1:8099/dags/retencion_lote/grid?dag_run_id=lanzar-20261127T095937
+  tarea entradas       success
+  tarea comprobar      running
+  tarea comprobar      success
+  tarea ejecutar_lote  failed
+  tarea validar        upstream_failed
+  tarea resumir        upstream_failed
+Run lanzar-20261127T095937: failed en 1 s
+--- registro de la tarea que falló: ejecutar_lote ---
+[servidor de prueba] Registro SIMULADO de ejecutar_lote (intento 1). Aquí no se ha ejecutado ningún contenedor.
+[servidor de prueba] ERROR simulado: la imagen no se pudo bajar (ImagePullBackOff).
+[código de salida 1]
+
+$ (con el servidor parado)
+ERROR: No respondió ni /api/v2/version ni /api/v1/version: No se pudo conectar con http://127.0.0.1:8099: [WinError 10061] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión. ¿Está Airflow en marcha y es esa la URL?
+[código de salida 3]

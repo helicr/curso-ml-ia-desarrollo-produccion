@@ -1,0 +1,29 @@
+$ curl http://127.0.0.1:8080/salud
+{"estado":"ok"}
+
+$ curl http://127.0.0.1:8080/modelo
+{"variables":["recencia_dias","frecuencia","monto_total","ticket_medio","unidades_total","productos_distintos","antiguedad_dias","frecuencia_90d","monto_90d","frecuencia_180d","dias_medios_entre_compras","devoluciones","es_reino_unido"],"umbral_clase":0.5,"modelo":"retencion-90d","alias":"champion","mlflow_version":6,"run_id":"ddd3b315513e4a3b9b79ae3e80cf1cb7","huella_datos":"35a94deb4e04ab4a","valid_auc":0.6982009925558312,"test_auc":0.747092830088378,"version_anterior":5,"etiqueta_imagen":"v6-35a94deb4e04ab4a"}
+
+$ curl -X POST http://127.0.0.1:8080/predict -H "content-type: application/json" -d @instancias.json
+{
+ "predictions": [
+  {
+   "probabilidad": 0.8278889191932137,
+   "clase": 1,
+   "tramo": "alta",
+   "version_mlflow": 6
+  },
+  {
+   "probabilidad": 0.2759763412994004,
+   "clase": 0,
+   "tramo": "baja",
+   "version_mlflow": 6
+  },
+  {
+   "probabilidad": 0.28516736331641934,
+   "clase": 0,
+   "tramo": "baja",
+   "version_mlflow": 6
+  }
+ ]
+}

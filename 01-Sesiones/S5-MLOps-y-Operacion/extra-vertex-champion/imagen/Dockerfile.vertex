@@ -1,0 +1,42 @@
+# Imagen de PREDICCIÓN PROPIA para Vertex AI: lleva dentro el modelo de la versión champion de MLflow.
+#
+# El contexto de construcción NO es el proyecto: lo prepara `python preparar_contexto.py` (carpeta build/vertex) con
+#   Dockerfile.vertex · requirements-api.lock · vertex_adaptador.py · ia_mlops/{__init__,config,api/esquemas}.py · modelo/
+# Por eso sirve igual si la imagen de la API se construye con el Dockerfile de develop (COPY de models/modelo_mlflow) o con el
+# multietapa (--build-context modelo=models): esta imagen no usa ninguno de los dos, solo el mismo requirements-api.lock.
+#
+#   python preparar_contexto.py --manifiesto vertex-manifiesto.json
+#   docker build --platform linux/amd64 -f build/vertex/Dockerfile.vertex -t retencion-vertex:local build/vertex
+#   docker run --rm -p 8080:8080 retencion-vertex:local          # y en otra terminal: curl http://127.0.0.1:8080/salud
+#
+# Contrato de Vertex (https://docs.cloud.google.com/vertex-ai/docs/predictions/custom-container-requirements):
+#   · escucha en 0.0.0.0 y en el puerto AIP_HTTP_PORT (8080 si no existe): la ruta y el puerto se declaran al SUBIR el modelo
+#     (--container-ports, --container-health-route, --container-predict-route) y Vertex los pasa en AIP_*;
+#   · NO se definen aquí variables AIP_*: la documentación dice «don't set your own variables with the AIP_ prefix»;
+#   · el modelo va dentro de la imagen, así que al subirlo NO se usa --artifact-uri (es opcional con un contenedor propio).
+# La plataforma de Vertex es linux/amd64: en un Mac con chip ARM hay que construir con --platform linux/amd64.
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    CURSO_MODELO_DIR=/app/modelo
+
+WORKDIR /app
+
+# 1) Dependencias: las MISMAS versiones exactas que la imagen de la API (scikit-learn 1.9.1: el modelo se guardó con ella).
+COPY requirements-api.lock .
+RUN pip install -r requirements-api.lock
+
+# 2) Lo mínimo del código, el adaptador y el modelo de la versión del manifiesto.
+COPY ia_mlops/ ia_mlops/
+COPY vertex_adaptador.py .
+COPY modelo/ modelo/
+
+# 3) No se ejecuta como root.
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin apiuser
+USER 10001
+
+EXPOSE 8080
+CMD ["python", "vertex_adaptador.py"]
