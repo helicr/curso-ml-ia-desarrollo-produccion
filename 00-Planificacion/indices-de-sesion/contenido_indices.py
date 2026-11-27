@@ -272,6 +272,7 @@ SESIONES = [
              'y el extra de dos agentes (solo planteado). Extra opcional: dos servidores MCP solo con notebooks (carpeta extra-mcp-notebooks/; BigQuery probado en Cloud Shell el 26/11/2026, los notebooks no en un Codespace). El MLOps clásico (deriva, alias champion y alerta) tiene su laboratorio, ensayado en GitHub Actions el 26/11/2026; los costes se explican en la teoría.',
         enlaces=[
             instructor('README de S5', f'{S5}/README.md'),
+            instructor('Guion de la jornada del 27/11 (maratón): replicar repositorios, Dockerfiles, Actions de S4, recap de S4 y S5', f'{S5}/guion-jornada-27-11.md', 'Orden, qué decir, qué teclear, qué debes ver y si falla; sin recortes de tiempo.'),
             deck('Laboratorio de MLOps clásico: deriva, alias champion y alerta (diapositivas)', f'{S5}/laboratorio-mlops/index.html',
                  '27 diapositivas, unos 140 min: PSI y KS, AUC por corte, alias champion y rollback, y el workflow de monitoreo con issue de alerta; capturas de runs reales.', volver=True),
             alumno('Laboratorio de MLOps clásico: guía paso a paso', f'{S5}/laboratorio-mlops/guia.md', 'Cada orden, qué debes ver y si falla.'),
