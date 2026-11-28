@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extra de S5: RAG en notebooks · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--tinta:#1f2937;--suave:#5b6472;--linea:#d6dde6;--fondo:#ffffff;--gris:#f4f6f9;--acento:#0b5cad;--ok:#15803d;--mal:#b91c1c;--aviso:#92400e;
+ --mono:Consolas,"Cascadia Mono","DejaVu Sans Mono",Menlo,monospace;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8ecf1;color:var(--tinta);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#viewport{position:fixed;inset:0 0 48px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#stage{width:1280px;height:720px;flex:none;position:relative;transform:scale(var(--s,1));background:var(--fondo);box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;padding:30px 52px 46px;display:none;flex-direction:column;gap:10px;overflow:hidden}
+.slide.active{display:flex}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acento);font-weight:700}
+h1{font-size:31px;line-height:1.15;font-weight:700;margin-bottom:4px}
+h3{font-size:17px;margin-bottom:5px}
+.sub{font-size:22px;line-height:1.4;color:var(--suave);max-width:1050px}
+.cover{display:flex;flex-direction:column;justify-content:flex-start;padding-top:70px;flex:1}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--tinta)}
+.tag.ok{border-color:#86c79c;background:#ecf8f0;color:var(--ok)}.tag.warn{border-color:#e2b56b;background:#fdf6e9;color:var(--aviso)}
+.card{border:1px solid var(--linea);border-radius:12px;padding:10px 14px;background:#fff}
+.callout{border-left:4px solid var(--acento);background:#eef5fc;padding:9px 14px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.4}
+.small{font-size:15px;line-height:1.42}
+.mono{font-family:var(--mono);font-size:.92em;background:var(--gris);padding:0 4px;border-radius:4px}
+.okc{color:var(--ok)}.malc{color:var(--mal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.thumbs{display:grid;gap:8px}.thumbs.t2{grid-template-columns:1fr 1fr}
+.src{margin:0;padding:7px 11px;font-family:var(--mono);font-size:12px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere}
+.grande .src{font-size:13.5px}
+.split{display:grid;gap:18px;min-height:0}.col,.capcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+.list{list-style:none;display:flex;flex-direction:column;gap:4px}.list li{font-size:15px;line-height:1.38;padding-left:16px;position:relative}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--acento)}
+.ol{padding-left:24px;display:flex;flex-direction:column;gap:5px;font-size:17px}.ol.sm{font-size:15px;gap:3px}
+.mira h3{color:var(--acento);font-size:15.5px}.mira .list li{font-size:14.5px}
+.falla{border-color:#e2b56b;background:#fffaf0}.falla h3{color:var(--aviso);font-size:15.5px}.falla .list li{font-size:14.5px}.falla .list li::before{background:var(--aviso)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);border-bottom:2px solid var(--linea);padding:5px 8px}
+.tbl td{border-bottom:1px solid var(--linea);padding:6px 8px;line-height:1.35;vertical-align:top}
+.term{border:1px solid var(--linea);border-radius:10px;background:var(--gris);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--linea);background:#eaeef3}
+.term .bar em{flex:1;font-style:normal;font-size:12.5px;color:var(--suave)}
+.tls{padding:6px 8px;font-family:var(--mono);font-size:13px;line-height:1.42}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.tln.c{color:var(--suave);font-style:italic}
+.ps{color:var(--ok);font-weight:700}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #b9c3cf;background:#fff;font-size:13px;color:var(--suave)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}.cpall{padding:0 10px;font-size:12px;font-family:var(--sans)}
+.realbox{border:1px solid #86c79c;background:#f3fbf5;border-radius:10px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.rot{margin:-4px 0 0}
+.cap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cap figcaption{font-size:12px;line-height:1.35;color:var(--suave)}
+.cap .nota{color:var(--aviso)}
+.zoom{display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoom img{display:block;max-width:100%;height:auto;border:1px solid var(--linea);border-radius:8px}
+.lupa{position:absolute;right:6px;bottom:6px;font-size:11.5px;background:rgba(255,255,255,.92);border:1px solid var(--linea);border-radius:6px;padding:1px 6px;display:flex;align-items:center;gap:4px;color:var(--suave)}
+.pend{border:2px dashed #c9a65e;background:#fdf9f0;border-radius:10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;text-align:center;font-size:13.5px;color:var(--aviso)}
+.pend b{font-size:16px}
+.grande .small{font-size:17.5px}.grande .list li{font-size:17px}.grande .mira .list li,.grande .falla .list li{font-size:16.5px}.grande .tbl{font-size:16.5px}.grande .tbl td{padding:8px 10px}
+.grande .tls{font-size:14.5px;line-height:1.5}.grande .callout{font-size:18px}.grande .ol{font-size:19px}.grande .ol.sm{font-size:17px}.grande h3{font-size:19px}.grande .mira h3,.grande .falla h3{font-size:17px}
+.grande .card{padding:13px 17px}.grande .grid4 .kpi{min-height:250px;padding-top:20px}.grande .grid4 .kpi .small{font-size:19px}.grande .grid4{margin-top:36px!important}.grande .kpi .n{font-size:30px}.grande .msg{font-size:32px}
+.kpi .n{display:block;font-size:27px;line-height:1.15;color:var(--acento);margin-bottom:4px}.kpi .n.okc{color:var(--ok)}
+.msg{font-size:27px;line-height:1.3;font-weight:600;border-left:6px solid var(--acento);padding:12px 20px;background:#eef5fc;border-radius:0 12px 12px 0}
+svg .nodo{fill:#f4f8fc;stroke:#8fb2d6;stroke-width:1.5}svg .nodo.puerta{fill:#fdf6e9;stroke:#c9a65e}svg .nodo.ok{fill:#ecf8f0;stroke:var(--ok)}svg .nodo.mal{fill:#fdeeee;stroke:var(--mal)}
+svg .fl{stroke:var(--acento);stroke-width:2;fill:none}svg .fl.dis{stroke-dasharray:5 4;stroke:#8fb2d6}
+svg .t1{font:700 15px var(--sans);fill:var(--tinta);text-anchor:middle}svg .t2{font:13px var(--sans);fill:var(--suave);text-anchor:middle}
+svg .tok{fill:var(--ok)}svg .tmal{fill:var(--mal)}
+.card svg{display:block;width:100%;height:auto}
+.foot{position:absolute;left:52px;right:52px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acento);z-index:5}
+#bar{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border-top:1px solid var(--linea);font-size:13px;z-index:6}
+#bar button,#bar a{border:1px solid var(--linea);border-radius:8px;padding:4px 10px;background:#fff;color:var(--tinta);text-decoration:none;font-size:13px}
+#bar .part.on{border-color:var(--acento);color:var(--acento);font-weight:700}
+#bar .sp{flex:1}#count,#clockref{color:var(--suave);padding:0 6px}
+#notes{position:fixed;right:0;top:0;bottom:48px;width:400px;background:#fff;border-left:1px solid var(--linea);padding:18px;overflow:auto;display:none;z-index:7;font-size:15px;line-height:1.5}
+#notes.on{display:block}#notes h3{margin-bottom:8px}
+#index{position:fixed;inset:0 0 48px 0;background:rgba(255,255,255,.98);display:none;z-index:8;padding:28px;overflow:auto}
+#index.on{display:block}#index .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+#index button{border:1px solid var(--linea);border-radius:10px;padding:10px;text-align:left;font-size:14px;background:#fff}
+#index button small{display:block;color:var(--suave);font-size:12px}#index button.cur{border-color:var(--acento)}
+#zoombox{position:fixed;inset:0;background:rgba(20,26,34,.86);display:none;z-index:9;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#zoombox.on{display:flex}#zoombox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#zoombox p{position:fixed;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+@media print{#bar,#notes,#index,#prog,.cp{display:none!important}}
+
+.fuente{font-size:12.5px;line-height:1.35;color:var(--suave);margin-top:2px}
+.fuente .mono{font-size:.95em}
+.tbl td .mono{font-size:12.5px}
+.grid2>.callout{align-self:start}
+.cover .grid3 .card .list li{font-size:14px}
+.cap .origen{color:var(--suave);font-style:italic}
+.cap img{max-width:100%}
+.zoom{display:flex;flex-direction:column;align-items:flex-start}
+.zoom .lupa{position:static;margin:3px 0 0 auto}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="3" data-title="Portada"
+ data-notes="Portada del extra de la sesión 5. Es un laboratorio: el alumnado replica cada paso en su portátil. Se monta un RAG completo en CPU con siete notebooks: preparación, vectores, troceado e índice, recuperación, generación con un modelo pequeño, pipeline con evaluación y ejercicios. Diga desde el principio lo que se probó y lo que no: los notebooks se ejecutaron en Linux, solo CPU y en modo rápido, y las cifras de esta presentación son las guardadas en ellos. Windows, Codespace, el alumnado y un modelo mayor están sin verificar. Pulse S para ver estas notas en cada diapositiva.">
+<p class="kick">1 · Qué es RAG y por qué · ML e IA: de desarrollo a producción · S5 · extra</p><h1>RAG en notebooks: que el LLM conteste con tus documentos y cite de dónde</h1>
+
+<div class="cover">
+ <p class="sub">Montas un <b>RAG completo en CPU</b>, sin API de pago: troceas y indexas un corpus en español, recuperas con <b>BM25, vectores y los dos juntos</b>, se lo das a un <b>LLM de 0,5B</b> y <b>mides</b> qué mejora (y qué no) con y sin recuperación.</p>
+ <div class="chips"><span class="tag">7 notebooks (00-06)</span><span class="tag">9 documentos · 77 fragmentos</span><span class="tag">BM25 · denso · híbrido</span><span class="tag">FAISS y NumPy</span><span class="tag">Con y sin RAG</span><span class="tag">Solo CPU</span></div>
+ <div class="grid3" style="margin-top:20px">
+  <div class="card"><h3>Objetivos</h3><ul class="list"><li>Entender las <b>dos tuberías</b> de un RAG: ingesta y consulta.</li><li>Ejecutar y <b>leer</b> cada notebook: qué orden, qué salida, qué debes ver.</li><li>Medir <b>recuperación</b> (recall@k, MRR) y <b>generación</b> (cobertura de hechos) por separado.</li></ul></div>
+  <div class="card"><h3>Cómo se usa</h3><ul class="list"><li>Cada bloque: la <b>orden o celda</b> (botón <b>⧉</b> para copiarla), la <b>salida guardada</b> y «si falla».</li><li>Las cifras salen de los notebooks y de <span class="mono">resultados/</span>; cada una <b>con su fuente</b>.</li><li><b>← →</b> avanzan · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa.</li></ul></div>
+  <div class="card"><h3>Honestidad desde el principio</h3><ul class="list"><li>Los notebooks se ejecutaron en <b>Linux, solo CPU, modo rápido</b> (salida del notebook 00).</li><li>Corpus de <b>9 documentos</b> y <b>18 preguntas</b> de recuperación: una <b>brújula</b>, no un benchmark.</li><li><b>Sin verificar:</b> Windows, Codespace, alumnado y un LLM mayor.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Por qué RAG"
+ data-notes="Por qué hace falta RAG. Tres problemas: alucinaciones, conocimiento que caduca y conocimiento privado. La tabla es real: son las respuestas del modelo pequeño sin contexto, guardadas en el notebook 4. Cada respuesta suena segura y está mal: quince días en vez de veintidós, un nombre inventado para la delegada de datos y un teléfono inventado para una cafetería que no existe en el corpus. Ojo: es un modelo de 0,5B parámetros; los grandes aciertan más, pero el problema de fondo, no conocer tus datos, es el mismo. RAG no sustituye al ajuste fino ni a los agentes; es la opción más directa cuando el conocimiento está en documentos.">
+<p class="kick">1 · Qué es RAG y por qué · el LLM no sabe tus datos</p><h1>Un LLM no conoce tus documentos: sin ellos, inventa con total seguridad</h1>
+
+<div class="grid3">
+ <div class="card"><h3>Alucinaciones</h3><ul class="list"><li>Afirma cifras, nombres o normas que <b>no existen</b>, con tono seguro.</li><li>Aquí se usa una empresa <b>ficticia</b> (NubeAndina): no puede haberla memorizado.</li></ul></div>
+ <div class="card"><h3>Conocimiento que caduca</h3><ul class="list"><li>El modelo se entrenó con un <b>corte de fecha</b>.</li><li>El reglamento de <i>este</i> semestre o el alias del modelo campeón no están en sus pesos.</li></ul></div>
+ <div class="card"><h3>Conocimiento privado</h3><ul class="list"><li>Políticas internas, entregas o experimentos <b>no deben</b> estar en un modelo público.</li><li>Van en un <b>corpus que tú indexas</b> y controlas.</li></ul></div>
+</div>
+<div class="card" style="margin-top:10px"><h3>Lo que respondió el LLM de 0,5B SIN contexto (salida guardada)</h3><table class="tbl"><tr><th>Pregunta</th><th>Sin RAG respondió</th><th>El corpus dice</th></tr><tr><td><b>q11</b> · días de vacaciones de un empleado de NubeAndina</td><td>Un empleado de NubeAndina puede tener 15 días de vacaciones totales.</td><td><b>22 días laborables</b></td></tr><tr><td><b>q13</b> · quién es la Delegada de Protección de Datos</td><td>La Delegada de Protección de Datos de NubeAndina es María José García.</td><td><b>Elena Quispe</b></td></tr><tr><td><b>q19</b> · teléfono de la cafetería de la sede</td><td>El número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas es 0123456789.</td><td>No está en el corpus: <b>debería abstenerse</b></td></tr></table></div>
+<div style="margin-top:8px"><div class="callout">RAG no es la única respuesta (también existen el ajuste fino, la destilación, las herramientas y los agentes), pero es la <b>más directa cuando la información vive en documentos y cambia más rápido que el modelo</b>.</div></div><p class="fuente">Fuente: notebook 00 (apartado «Por qué hace falta»); respuestas sin RAG en <span class="mono">resultados/generacion.json</span> (notebook 04, celda [5]).</p>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="La tubería de ingesta"
+ data-notes="La primera tubería, la de ingesta. Se hace una vez y se repite cuando cambian los documentos. Los documentos markdown se trocean en fragmentos de cuatrocientos caracteres con ochenta de solape; cada fragmento se convierte en un vector de trescientos ochenta y cuatro números con un modelo multilingüe pequeño; y los vectores se guardan en un índice, con FAISS y también con NumPy, que aquí hacen lo mismo. Todo esto ocurre en los notebooks uno y dos, y el índice se guarda en la carpeta modelos para no repetirlo.">
+<p class="kick">1 · Qué es RAG y por qué · documentos → vectores → índice</p><h1>Ingesta: se trocean los documentos y cada trozo pasa a ser un vector en un índice</h1>
+
+<div class="card"><svg viewBox="0 0 1100 190" role="img" aria-label="Tubería de ingesta: los documentos se trocean, cada trozo se convierte en un vector y los vectores se guardan en un índice"><defs><marker id="fi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="40" width="218" height="96" rx="12" class="nodo"/><text x="115" y="67" class="t1">Documentos</text><text x="115" y="87" class="t2">9 archivos .md</text><text x="115" y="107" class="t2">datos/corpus/</text><rect x="296" y="40" width="218" height="96" rx="12" class="nodo puerta"/><text x="405" y="67" class="t1">Trocear (chunking)</text><text x="405" y="87" class="t2">400 caracteres</text><text x="405" y="107" class="t2">solape de 80</text><rect x="586" y="40" width="218" height="96" rx="12" class="nodo puerta"/><text x="695" y="67" class="t1">Embeddings</text><text x="695" y="87" class="t2">MiniLM multilingüe</text><text x="695" y="107" class="t2">384 números por trozo</text><rect x="876" y="40" width="218" height="96" rx="12" class="nodo ok"/><text x="985" y="67" class="t1">Índice vectorial</text><text x="985" y="87" class="t2">FAISS y NumPy</text><text x="985" y="107" class="t2">77 fragmentos</text><path d="M224 88 L293 88" class="fl" marker-end="url(#fi)"/><path d="M514 88 L583 88" class="fl" marker-end="url(#fi)"/><path d="M804 88 L873 88" class="fl" marker-end="url(#fi)"/><text x="115" y="166" class="t2">antes de todo</text><text x="405" y="166" class="t2">notebook 02</text><text x="695" y="166" class="t2">notebooks 01 y 02</text><text x="985" y="166" class="t2">notebook 02: modelos/</text><text x="550" y="14" class="t2">INGESTA: se hace una vez, y de nuevo cuando cambian los documentos</text></svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Qué es un trozo</h3><ul class="list"><li>Un <i>chunk</i> es la unidad que se <b>embebe y se recupera</b>: aquí, 400 caracteres con 80 de solape.</li><li>Muy grande: la pregunta encaja con una esquina. Muy pequeño: se <b>corta un hecho</b> por la mitad.</li></ul></div>
+ <div class="card"><h3>Qué es un embedding</h3><ul class="list"><li>Un <b>vector de 384 números</b> que intenta capturar el significado de un texto corto.</li><li>Dos textos de significado parecido quedan <b>cerca</b>, aunque no compartan palabras.</li></ul></div>
+ <div class="card"><h3>Qué es el índice</h3><ul class="list"><li>Una matriz de vectores + los textos: se busca por <b>similitud coseno</b>.</li><li>Se guarda en <span class="mono">modelos/</span> (FAISS y NumPy) y los notebooks siguientes lo <b>reutilizan</b>.</li></ul></div>
+</div><p class="fuente">Fuente: <span class="mono">resultados/indexado.json</span> (9 documentos, 77 fragmentos, dimensión 384) y notebooks 01 y 02.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="La tubería de consulta"
+ data-notes="La segunda tubería, la de consulta. La pregunta se usa para recuperar los k fragmentos más parecidos del índice, con BM25, con vectores o con las dos cosas fusionadas. Con ellos se arma un prompt: unas reglas de sistema que prohíben inventar y piden citar, los fragmentos y la pregunta. El modelo local redacta la respuesta y cita los fragmentos. La línea de puntos es el control: la misma pregunta enviada directamente al modelo, sin contexto. Comparar las dos es lo que enseña el cuaderno 4.">
+<p class="kick">1 · Qué es RAG y por qué · recuperar → prompt → LLM</p><h1>Consulta: la pregunta trae k fragmentos, y el LLM responde solo con ellos y los cita</h1>
+
+<div class="card"><svg viewBox="0 0 1100 245" role="img" aria-label="Tubería de consulta: la pregunta recupera fragmentos del índice, se arma un prompt con ellos, el LLM local redacta la respuesta con citas; el desvío sin RAG envía la pregunta directa al LLM"><defs><marker id="fc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="24" width="190" height="96" rx="12" class="nodo"/><text x="101" y="51" class="t1">Pregunta</text><text x="101" y="71" class="t2">en lenguaje natural</text><text x="101" y="91" class="t2"></text><rect x="226" y="24" width="190" height="96" rx="12" class="nodo puerta"/><text x="321" y="51" class="t1">Recuperar top-k</text><text x="321" y="71" class="t2">BM25 + vectores</text><text x="321" y="91" class="t2">fusión RRF</text><rect x="446" y="24" width="190" height="96" rx="12" class="nodo puerta"/><text x="541" y="51" class="t1">Prompt</text><text x="541" y="71" class="t2">reglas + fragmentos</text><text x="541" y="91" class="t2">+ pregunta</text><rect x="666" y="24" width="190" height="96" rx="12" class="nodo"/><text x="761" y="51" class="t1">LLM local</text><text x="761" y="71" class="t2">Qwen2.5-0.5B-Instruct</text><text x="761" y="91" class="t2">en CPU</text><rect x="886" y="24" width="190" height="96" rx="12" class="nodo ok"/><text x="981" y="51" class="t1">Respuesta</text><text x="981" y="71" class="t2">con citas</text><text x="981" y="91" class="t2">[doc::#n]</text><path d="M196 72 L223 72" class="fl" marker-end="url(#fc)"/><path d="M416 72 L443 72" class="fl" marker-end="url(#fc)"/><path d="M636 72 L663 72" class="fl" marker-end="url(#fc)"/><path d="M856 72 L883 72" class="fl" marker-end="url(#fc)"/><rect x="226" y="150" width="190" height="40" rx="12" class="nodo ok"/><text x="321" y="177" class="t1">Índice de la ingesta</text><text x="321" y="197" class="t2"></text><text x="321" y="217" class="t2"></text><path d="M321 150 L321 122" class="fl dis" marker-end="url(#fc)"/><path d="M101 122 L101 232 L761 232 L761 124" class="fl dis" marker-end="url(#fc)"/><text x="430" y="226" class="t2">SIN RAG: la pregunta va directa al LLM y responde de memoria (la prueba de control)</text></svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Recuperar</h3><ul class="list"><li><b>BM25</b> (palabras), <b>denso</b> (vectores) o <b>híbrido</b> (fusión RRF de las dos listas).</li><li>Se queda con los <b>k mejores</b> (en la generación, k = 4).</li></ul></div>
+ <div class="card"><h3>El prompt</h3><ul class="list"><li>El sistema le <b>prohíbe inventar</b> y le pide citas <span class="mono">[doc::#n]</span>.</li><li>Si la respuesta no está, debe decir exactamente que <b>no la encuentra</b>.</li></ul></div>
+ <div class="card"><h3>El control</h3><ul class="list"><li>Para saber qué aporta RAG hay que comparar con <b>la misma pregunta sin contexto</b>.</li><li>Lo hace el notebook 04, y mide la <b>cobertura de hechos</b>.</li></ul></div>
+</div><p class="fuente">Fuente: notebook 00 (diagrama del pipeline) y notebook 04 (apartados 2 y 3).</p>
+</section>
+
+<section class="slide" data-part="A" data-min="2" data-title="Mapa del extra"
+ data-notes="Mapa de los siete notebooks. El cero comprueba el entorno; el uno enseña embeddings y similitud; el dos trocea el corpus y construye el índice; el tres compara las tres formas de recuperar y mide recall y MRR; el cuatro genera con y sin contexto; el cinco junta todo en un pipeline y mide los mandos de tamaño de trozo y k; el seis son ejercicios con soluciones. El orden importa porque el tres lee el índice del dos y el cuatro y el cinco usan ese índice. Cada notebook deja archivos en modelos y en resultados, que son los que aparecen en esta presentación.">
+<p class="kick">1 · Qué es RAG y por qué · siete notebooks, en orden</p><h1>Siete notebooks que se ejecutan en orden: cada uno deja algo que usa el siguiente</h1>
+<div class="card"><table class="tbl"><tr><th>Notebook</th><th>Qué haces</th><th>Qué deja guardado</th></tr><tr><td><b>00</b></td><td>Qué es RAG, por qué (alucinaciones, conocimiento fresco o privado), entorno, proxy y Hugging Face</td><td>nada (solo comprueba)</td></tr><tr><td><b>01</b></td><td>Embeddings, similitud coseno y PCA en 2-D, con frases en español</td><td><span class="mono">embeddings.json</span>, <span class="mono">fig_similitud_coseno</span>, <span class="mono">fig_pca_embeddings</span></td></tr><tr><td><b>02</b></td><td>Corpus, estrategias de <i>chunking</i>, índice NumPy y FAISS</td><td><span class="mono">indexado.json</span>, <span class="mono">modelos/indice_faiss</span>, <span class="mono">modelos/indice_numpy</span>, <span class="mono">fig_chunking_longitudes</span></td></tr><tr><td><b>03</b></td><td>BM25, búsqueda densa, híbrida (RRF), <i>recall@k</i> y MRR</td><td><span class="mono">recuperacion.json</span>, <span class="mono">fig_recall_at_k</span>, <span class="mono">fig_mrr</span></td></tr><tr><td><b>04</b></td><td>LLM local: la misma pregunta <b>sin RAG</b> y <b>con RAG</b></td><td><span class="mono">generacion.json</span>, <span class="mono">fig_con_sin_rag</span></td></tr><tr><td><b>05</b></td><td><i>Pipeline</i> de extremo a extremo, mandos (<i>chunk</i>, <i>k</i>), notas de MLOps</td><td><span class="mono">pipeline.json</span>, <span class="mono">fig_mandos_chunk_k</span>, <span class="mono">fig_latencia_etapas</span></td></tr><tr><td><b>06</b></td><td>Ejercicios (con soluciones al final)</td><td>nada (ejercicios con soluciones)</td></tr></table></div><div class="callout" style="margin-top:10px"><b>El orden importa:</b> el 03 lee el índice que genera el 02; el 04 y el 05 usan ese índice y un LLM local; el 06 se puede abrir después del 02 (varias soluciones reutilizan el índice).</div><p class="fuente">Fuente: README.md (tabla «Índice y orden de ejecución») y las celdas que guardan cada archivo (<span class="mono">guardar_json</span>, <span class="mono">savefig</span>).</p>
+</section>
+
+<section class="slide" data-part="B" data-min="2" data-title="Requisitos e instalación"
+ data-notes="El primer paso es el entorno. En el aula se activa el entorno del curso, env-ia-mlops, y se instalan encima los requisitos del extra, porque trae paquetes que el proyecto base no tiene: torch solo CPU, sentence-transformers, faiss, rank-bm25 y transformers. Las versiones del archivo son las que mostró el notebook cero en la ejecución guardada. Hacen falta unos cuatro gigas de disco y de memoria libre. Si no hay entorno del curso, el README explica cómo crear uno nuevo con Python 3.12. Todo esto se ejecutó en Linux; en Windows está sin verificar.">
+<p class="kick">2 · Preparar el entorno · entorno del curso o uno nuevo</p><h1>Primero el entorno: activas <span class="mono">env-ia-mlops</span> e instalas encima los requisitos del extra</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Terminal · entorno del curso · desde la carpeta extra-rag-notebooks</em><button class="cp cpall" data-t="conda activate env-ia-mlops
+pip install -r requisitos-extra-rag.txt">Copiar todo</button></div><div class="tls"><div class="tln c"># 1) activa el entorno del curso</div><div class="tln"><span class="ps">$</span> <code>conda activate env-ia-mlops</code><button class="cp" data-t="conda activate env-ia-mlops" title="Copiar">⧉</button></div><div class="tln c"># 2) instala los paquetes del extra (aparte del proyecto base)</div><div class="tln"><span class="ps">$</span> <code>pip install -r requisitos-extra-rag.txt</code><button class="cp" data-t="pip install -r requisitos-extra-rag.txt" title="Copiar">⧉</button></div></div></div><div class="card"><h3>Paquetes clave del archivo de requisitos</h3><table class="tbl"><tr><th>Paquete</th><th>Versión fijada</th></tr><tr><td><span class="mono">torch</span></td><td><span class="mono">2.15.0+cpu</span></td></tr><tr><td><span class="mono">faiss-cpu</span></td><td><span class="mono">1.16.0</span></td></tr><tr><td><span class="mono">sentence-transformers</span></td><td><span class="mono">6.3.0</span></td></tr><tr><td><span class="mono">transformers</span></td><td><span class="mono">5.24.1</span></td></tr><tr><td><span class="mono">rank-bm25</span></td><td><span class="mono">0.2.2</span></td></tr><tr><td><span class="mono">scikit-learn</span></td><td><span class="mono">1.9.1</span></td></tr></table></div><p class="fuente">Fuente: README.md (apartado «Entorno recomendado») y <span class="mono">requisitos-extra-rag.txt</span>.</p></div><div class="capcol"><div class="card mira"><h3>Qué necesitas</h3><ul class="list"><li><b>Python 3.12</b> (recomendado) o 3.11; unos <b>4 GB</b> de disco y unos <b>4 GB de RAM</b> libres para el LLM de 0,5B.</li><li>El archivo ya trae <span class="mono">--extra-index-url</span> para las <b>ruedas CPU</b> de PyTorch.</li><li>Salida a Internet <b>la primera vez</b> (embeddings y LLM).</li><li>Estas son las versiones que mostró el notebook 00 en la ejecución guardada.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Si pip no encuentra <span class="mono">torch==…+cpu</span>, falta el <span class="mono">--extra-index-url</span> (viene en el archivo) o pip no es el del kernel.</li><li>Sin el entorno del curso: entorno nuevo con Python 3.12 (README, «Preparar un entorno nuevo»).</li></ul></div><p class="small"><span class="tag warn">Sin verificar</span> que la instalación funcione en <b>Windows</b>: la ejecución guardada es de Linux.</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Proxy y modelos"
+ data-notes="El proxy y los modelos. Si la red del alumno sale por un proxy corporativo, hay que definir las variables en la misma sesión antes de instalar y antes de abrir Jupyter. El host que aparece es un marcador genérico: cada uno pone el suyo. Sin proxy se omiten esas líneas. Se descargan cuatro modelos: el de embeddings, unos quinientos megas; el LLM de cero coma cinco B, alrededor de un giga; uno de reserva más pequeño, y un reranker opcional que en modo rápido se omite. En la ejecución guardada no había proxy, así que su funcionamiento con un proxy real está sin verificar.">
+<p class="kick">2 · Preparar el entorno · solo si tu red lo exige</p><h1>Detrás de un proxy defínelo antes de instalar; y se descargan cuatro modelos</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>PowerShell · solo si tu red sale por un proxy · sustituye el host por el tuyo</em><button class="cp cpall" data-t="$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;
+$env:HTTPS_PROXY = $env:HTTP_PROXY
+$env:NO_PROXY    = &quot;localhost,127.0.0.1,.miempresa.example&quot;
+pip install --proxy $env:HTTP_PROXY -r requisitos-extra-rag.txt --extra-index-url https://download.pytorch.org/whl/cpu">Copiar todo</button></div><div class="tls"><div class="tln c"># en la misma sesión, ANTES de instalar o de abrir Jupyter</div><div class="tln"><span class="ps">PS&gt;</span> <code>$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;</code><button class="cp" data-t="$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">PS&gt;</span> <code>$env:HTTPS_PROXY = $env:HTTP_PROXY</code><button class="cp" data-t="$env:HTTPS_PROXY = $env:HTTP_PROXY" title="Copiar">⧉</button></div><div class="tln"><span class="ps">PS&gt;</span> <code>$env:NO_PROXY    = &quot;localhost,127.0.0.1,.miempresa.example&quot;</code><button class="cp" data-t="$env:NO_PROXY    = &quot;localhost,127.0.0.1,.miempresa.example&quot;" title="Copiar">⧉</button></div><div class="tln c"># pip también necesita el proxy</div><div class="tln"><span class="ps">PS&gt;</span> <code>pip install --proxy $env:HTTP_PROXY -r requisitos-extra-rag.txt --extra-index-url https://download.pytorch.org/whl/cpu</code><button class="cp" data-t="pip install --proxy $env:HTTP_PROXY -r requisitos-extra-rag.txt --extra-index-url https://download.pytorch.org/whl/cpu" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: notebook 00, apartado 3 (marcador genérico <span class="mono">proxy.miempresa.example</span>) y README.md. <b>Sin proxy, omite estas líneas.</b></p><p class="small"><span class="tag warn">Sin verificar</span> con un <b>proxy corporativo real</b>: en la ejecución guardada <span class="mono">HTTP_PROXY</span> estaba sin definir y el Hub respondió <b>200</b> directamente.</p></div><div class="capcol"><div class="card"><h3>Modelos que se descargan (la primera vez)</h3><table class="tbl"><tr><th>Uso</th><th>Identificador en el Hub</th><th>Tamaño</th></tr><tr><td>Embeddings (español, por defecto)</td><td><span class="mono">sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</span></td><td>~500 MB</td></tr><tr><td>LLM instructivo (cuadernos 04 y 05)</td><td><span class="mono">Qwen/Qwen2.5-0.5B-Instruct</span></td><td>~1 GB</td></tr><tr><td>Reserva si el 0,5B no cabe</td><td><span class="mono">HuggingFaceTB/SmolLM2-135M-Instruct</span></td><td>más ligero, peor en español</td></tr><tr><td><i>Reranker</i> opcional (se omite en modo rápido)</td><td><span class="mono">cross-encoder/ms-marco-MiniLM-L-6-v2</span></td><td>~80 MB, entrenado en inglés</td></tr></table></div><div class="callout">Si ya están en <span class="mono">cache-hf/</span>, puedes <b>trabajar sin red</b> con <span class="mono">HF_HUB_OFFLINE=1</span>.</div><div class="callout">Una API de pago es <b>opcional</b> y no se usa: el pipeline es el mismo, solo cambia el paso de generación.</div><p class="fuente">Fuente: README.md (apartado «Modelos que se descargan»).</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Orden y tiempos"
+ data-notes="Orden y tiempos. Se ejecutan en orden. La columna del medio es la validación del README, en CPU con los modelos ya descargados: el cuatro es el lento, unos cinco minutos y medio, porque es el que genera texto con el modelo. Las cifras de la última columna son las que el propio notebook guardó. Tenga paciencia con la primera ejecución: descarga el modelo de embeddings y el LLM. El modo rápido está activo por defecto: menos preguntas generadas y menos tokens; para desactivarlo, la variable RAG modo rápido a cero. Los tiempos son de esta ejecución en Linux; los de un portátil del alumnado o de Windows están sin verificar.">
+<p class="kick">2 · Preparar el entorno · cuánto tarda cada notebook</p><h1>Siete notebooks en orden: el 04 es el lento (≈ 5,5 min en CPU, con los modelos ya descargados)</h1>
+
+<div class="card"><table class="tbl"><tr><th>Notebook</th><th>Orientativo (README)</th><th>Validación de la copia (README)</th><th>Medido y guardado en el notebook</th></tr><tr><td><b>00</b></td><td>1 min</td><td>≈ 10 s</td><td>—</td></tr><tr><td><b>01</b></td><td>1–5 min (la primera vez descarga el modelo, unos 500 MB)</td><td>≈ 15 s</td><td>carga 3,5 s · 16 frases 1,86 s</td></tr><tr><td><b>02</b></td><td>1–2 min</td><td>≈ 19 s</td><td>77 fragmentos en 9,13 s</td></tr><tr><td><b>03</b></td><td>2–5 min</td><td>≈ 4 min</td><td>— (no guarda tiempos)</td></tr><tr><td><b>04</b></td><td>5–15 min (la primera vez descarga el LLM, unos 1 GB)</td><td>≈ 5,5 min</td><td>LLM cargado en 0,9 s · 31,3 s de media por respuesta con RAG</td></tr><tr><td><b>05</b></td><td>2–8 min</td><td>≈ 17 s</td><td>evaluación breve: 1,4 s de media (3 preguntas)</td></tr><tr><td><b>06</b></td><td>1–3 min</td><td>≈ 9 s</td><td>caché: la primera consulta tardó 0,0095 s</td></tr></table></div>
+<div class="grid2" style="margin-top:10px">
+ <div class="card"><h3>El modo rápido</h3><ul class="list"><li><span class="mono">RAG_MODO_RAPIDO=1</span> (activo por defecto) reduce las preguntas que se generan y los tokens nuevos: <b>64</b> en lugar de 120, y <b>4</b> preguntas en el 04.</li><li>La recuperación y las métricas del conjunto a mano <b>no</b> se recortan; el <i>reranker</i> <b>se omite</b>.</li><li>La serie completa <b>en frío</b>: del orden de <b>15–30 min</b> (estimación del README).</li></ul></div><div class="term"><div class="bar"><em>Reejecutar todos (opcional) · Linux/macOS · desde la raíz</em><button class="cp cpall" data-t="bash scripts/ejecutar_cuadernos.sh">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>bash scripts/ejecutar_cuadernos.sh</code><button class="cp" data-t="bash scripts/ejecutar_cuadernos.sh" title="Copiar">⧉</button></div></div></div>
+</div><p class="fuente">Fuente: README.md (tabla y párrafo de validación); salidas y JSON guardados: <span class="mono">embeddings.json</span>, <span class="mono">indexado.json</span>, <span class="mono">generacion.json</span>, <span class="mono">pipeline.json</span> y notebook 06, celda [13].</p><p class="small"><span class="tag warn">Sin verificar</span> <b>tiempos en un portátil del alumnado</b> o en Windows: los de esta tabla son de la ejecución guardada.</p>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Notebook 00"
+ data-notes="El notebook cero no construye nada: localiza la raíz del proyecto, comprueba que están los paquetes obligatorios y hace una petición ligera al Hub de Hugging Face. La salida guardada dice entorno listo, dispositivo CPU, semilla cuarenta y dos y modo rápido activo, y el Hub contesta con estado doscientos. Las filas de CUDA, proxy y token salen en falso, y es lo esperado en un portátil sin GPU y sin proxy. Si falta un paquete, el propio notebook dice qué instalar; si no se llega al Hub, hay que revisar proxy y certificado antes del notebook uno.">
+<p class="kick">2 · Preparar el entorno · comprobar antes de construir</p><h1>Notebook 00: no construye nada, comprueba el entorno y que llegas a Hugging Face</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Terminal · abrir el notebook (kernel «Python (rag)»)</em><button class="cp cpall" data-t="python -m ipykernel install --user --name rag --display-name &quot;Python (rag)&quot;
+jupyter notebook notebooks\00-introduccion-y-setup.ipynb">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python -m ipykernel install --user --name rag --display-name &quot;Python (rag)&quot;</code><button class="cp" data-t="python -m ipykernel install --user --name rag --display-name &quot;Python (rag)&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>jupyter notebook notebooks\00-introduccion-y-setup.ipynb</code><button class="cp" data-t="jupyter notebook notebooks\00-introduccion-y-setup.ipynb" title="Copiar">⧉</button></div></div></div><div class="realbox"><div class="rk">Salida guardada · notebook 00, celda [1] (últimas 4 líneas)</div><pre>Raiz:        /workspace/rag
+Dispositivo: cpu
+Semilla:     42
+Modo rapido: True</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 00, celda [3] (2 líneas)</div><pre>Entorno listo. Paquetes obligatorios disponibles.
+Filas informativas (no bloquean): CUDA, proxy y token de Hugging Face. En CPU, sin proxy y sin token, es el resultado esperado.</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 00, celda [5]</div><pre>{&#x27;url&#x27;: &#x27;https://huggingface.co&#x27;, &#x27;ok&#x27;: True, &#x27;estado&#x27;: 200, &#x27;error&#x27;: None}
+Conexion al Hub correcta. El cuaderno 01 podra descargar el modelo de embeddings si no esta en cache.</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>«<b>Entorno listo. Paquetes obligatorios disponibles.</b>»: puedes pasar al 01.</li><li><span class="mono">Dispositivo: cpu</span>, <span class="mono">Semilla: 42</span> y <span class="mono">Modo rapido: True</span>: es lo esperado.</li><li>El Hub responde <b>estado 200</b>; CUDA, proxy y token salen en <span class="mono">False</span> y <b>no bloquean</b>.</li><li>Los 9 documentos del corpus están en <span class="mono">datos/corpus/</span>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><b>Falta un paquete:</b> instálalo en el entorno del kernel (<span class="mono">pip install -r requisitos-extra-rag.txt</span>) y reejecuta la celda.</li><li><b>No llegas al Hub:</b> revisa el proxy y el certificado, o coloca los modelos en <span class="mono">cache-hf/</span> y activa <span class="mono">HF_HUB_OFFLINE=1</span>.</li></ul></div><p class="fuente">Fuente: notebook 00, apartados 1 a 4.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Notebook 01: vectores"
+ data-notes="Notebook uno: del texto al vector. Se carga el modelo multilingüe de MiniLM, que ocupa unos quinientos megas la primera vez y luego queda en caché, y se codifican dieciséis frases en español de varios temas: Docker, Kubernetes, MLflow, el reglamento del curso y la empresa ficticia. El resultado es una matriz de dieciséis por trescientos ochenta y cuatro, con norma uno. Que la norma sea uno importa: así el coseno y el producto interno coinciden y el índice puede usar producto interno. Los tiempos son los guardados en el notebook; la primera vez, con descarga, será más.">
+<p class="kick">3 · Ingesta: vectores e índice · cargar el modelo y codificar</p><h1>Notebook 01: 16 frases pasan a ser 16 vectores de 384 números, normalizados</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>notebook 01 · celda [3] · cargar el modelo</em><button class="cp cpall" data-t="t0 = time.perf_counter()
+codificador = Codificador(MODELO_EMB, dispositivo_destino=str(DEVICE))
+t_carga = time.perf_counter() - t0
+print(f&quot;Cargado en {t_carga:.1f} s&quot;)
+print(f&quot;Dimensión del vector: {codificador.dim}&quot;)
+print(f&quot;Dispositivo del modelo: {codificador.dispositivo}&quot;)
+">Copiar todo</button></div><pre class="src">t0 = time.perf_counter()
+codificador = Codificador(MODELO_EMB, dispositivo_destino=str(DEVICE))
+t_carga = time.perf_counter() - t0
+print(f&quot;Cargado en {t_carga:.1f} s&quot;)
+print(f&quot;Dimensión del vector: {codificador.dim}&quot;)
+print(f&quot;Dispositivo del modelo: {codificador.dispositivo}&quot;)</pre></div><div class="term"><div class="bar"><em>notebook 01 · celda [4] · codificar (extracto)</em><button class="cp cpall" data-t="E = codificador.codificar(frases, progreso=False)">Copiar todo</button></div><pre class="src">E = codificador.codificar(frases, progreso=False)</pre></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 01, celda [3]</div><pre>Cargado en 3.5 s
+Dimensión del vector: 384
+Dispositivo del modelo: cpu</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 01, celda [4]</div><pre>Matriz de embeddings: (16, 384)  (codificadas en 1.86 s)
+Norma media de los vectores (deberia ser ~1 si estan normalizados): 1.0000</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Dimensión 384</b>, dispositivo <span class="mono">cpu</span>; cargar el modelo tardó <b>3,5 s</b> (ya en caché) y codificar las 16 frases, <b>1,86 s</b>.</li><li>La <b>norma media es 1,0000</b>: con vectores normalizados, el coseno es el producto interno.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>La primera vez descarga <b>~500 MB</b>: tarda más y necesita red (o proxy).</li><li>Si cambias a <span class="mono">intfloat/multilingual-e5-small</span>, hay que usar los prefijos <span class="mono">query:</span> y <span class="mono">passage:</span> (MiniLM no los pide).</li></ul></div></div></div><p class="fuente">Fuente: notebook 01, apartados 3 y 4; <span class="mono">resultados/embeddings.json</span> (carga 3,5 s, codificar 1,86 s).</p>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Notebook 01: similitud"
+ data-notes="La similitud coseno entre frases. A la izquierda, la matriz real: la diagonal vale uno y los bloques por tema se ven algo más claros, aunque la cercanía dentro de un tema ronda cero coma tres a cero coma seis, no uno. A la derecha, tres consultas que no están en la lista. En la de vacaciones gana la frase correcta con cero coma setenta y cuatro. Pero en las otras dos gana una frase del tema correcto que no es la que contiene el dato: en el puerto gana la que nombra la imagen, y en MLflow, la del tracking URI. Esa es la razón de recuperar varios fragmentos y no solo el primero.">
+<p class="kick">3 · Ingesta: vectores e índice · el coseno entre frases</p><h1>La similitud coseno acierta el tema, pero no siempre la frase que contesta</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="fig_similitud_coseno.webp"><button class="zoom" data-src="img/fig_similitud_coseno.webp" data-alt="Mapa de calor «Similitud coseno entre frases de ejemplo»: 16 frases (01 a 16) en filas y columnas, rotuladas por tema (Docker, Kubernetes, MLflow/CI, Curso, NubeAndina); la diagonal es amarilla (coseno 1) y la barra de color va de 0 a 1" title="Ampliar (Esc cierra)"><img src="img/fig_similitud_coseno.webp" alt="Mapa de calor «Similitud coseno entre frases de ejemplo»: 16 frases (01 a 16) en filas y columnas, rotuladas por tema (Docker, Kubernetes, MLflow/CI, Curso, NubeAndina); la diagonal es amarilla (coseno 1) y la barra de color va de 0 a 1" style="max-height:400px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Mapa de calor «Similitud coseno entre frases de ejemplo»: 16 frases (01 a 16) en filas y columnas, rotuladas por tema (Docker, Kubernetes, MLflow/CI, Curso, NubeAndina); la diagonal es amarilla (coseno 1) y la barra de color va de 0 a 1. <span class="origen">Sale del notebook 01, celda [5] → resultados/fig_similitud_coseno.png.</span></figcaption></figure></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 01, celda [6] · 2 primeros de cada consulta</div><pre>Consulta: ¿En qué puerto escucha la API del contenedor?
+  1. cos=0.514  [Docker] La imagen Docker de la API se llama retencion-api:local.
+  2. cos=0.469  [Docker] El contenedor expone el puerto 8080 y el healthcheck consulta /salud.
+Consulta: ¿Cuántos días de vacaciones tiene un trabajador de NubeAndina?
+  1. cos=0.744  [NubeAndina] Un empleado de NubeAndina tiene 22 dias laborables de vacaciones al año.
+  2. cos=0.278  [Curso] La asistencia minima exigida es del 70 por ciento de las sesiones.
+Consulta: ¿Cómo se llama el experimento de MLflow del laboratorio?
+  1. cos=0.580  [MLflow/CI] El tracking URI de MLflow en el laboratorio es http://127.0.0.1:5000.
+  2. cos=0.398  [MLflow/CI] El experimento se llama retencion-clientes y el alias del modelo es champion.</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Vacaciones:</b> gana la frase correcta (<b>0,744</b>), y la 2.ª baja a <b>0,278</b>.</li><li><b>Puerto de la API:</b> gana «la imagen se llama…» (<b>0,514</b>), no la frase que dice el puerto 8080 (<b>0,469</b>).</li><li><b>Experimento de MLflow:</b> gana la del <i>tracking URI</i> (<b>0,580</b>), no la que nombra el experimento (<b>0,398</b>).</li></ul></div><div class="callout">Dos de tres veces el vecino más cercano es <b>del tema correcto pero no la frase con el dato</b>: por eso se recuperan <b>k fragmentos</b>, no uno.</div><p class="fuente">Fuente: notebook 01, apartados 5 y 6.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="Notebook 01: PCA"
+ data-notes="La PCA a dos dimensiones. No es el espacio real, que tiene trescientas ochenta y cuatro dimensiones; perdemos información, y las dos componentes recogen solo el veinticinco por ciento de la varianza. Aun así se ve que Docker, Kubernetes y MLflow se juntan a la izquierda, mientras que las frases de NubeAndina, que hablan de cosas muy distintas, quedan más dispersas. Los ejes no tienen un nombre como eje Docker. Conviene no sacar conclusiones fuertes de esta figura; es una foto de intuición.">
+<p class="kick">3 · Ingesta: vectores e índice · una foto en 2-D</p><h1>En 2-D los temas se agrupan a medias: dos componentes recogen solo el 25 % de la varianza</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><figure class="cap" data-img="fig_pca_embeddings.webp"><button class="zoom" data-src="img/fig_pca_embeddings.webp" data-alt="Dispersión «Frases de ejemplo proyectadas con PCA (2-D)»: las mismas 16 frases, numeradas y con un color por tema, sobre los ejes PCA 1 y PCA 2" title="Ampliar (Esc cierra)"><img src="img/fig_pca_embeddings.webp" alt="Dispersión «Frases de ejemplo proyectadas con PCA (2-D)»: las mismas 16 frases, numeradas y con un color por tema, sobre los ejes PCA 1 y PCA 2" style="max-height:420px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dispersión «Frases de ejemplo proyectadas con PCA (2-D)»: las mismas 16 frases, numeradas y con un color por tema, sobre los ejes PCA 1 y PCA 2. <span class="origen">Sale del notebook 01, celda [7] → resultados/fig_pca_embeddings.png.</span></figcaption></figure></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 01, celda [7]</div><pre>Varianza explicada por las 2 componentes: [0.141 0.112]
+Suma: 0.25282418727874756</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Varianza explicada: <b>14,1 %</b> y <b>11,2 %</b>; suma <b>25,3 %</b>.</li><li>A la <b>izquierda</b> se juntan 1, 3, 5, 6 y 7 (Docker, Kubernetes, MLflow/CI); 2, 4 y 8 quedan más al centro; las de NubeAndina (12 a 16) están <b>dispersas</b>.</li><li>Los ejes no tienen nombre semántico: son las direcciones de mayor varianza.</li></ul></div><div class="callout">Una PCA a 2-D <b>pierde ~75 % de la información</b>: sirve para <i>ver</i> cúmulos, no para medir distancias.</div><p class="fuente">Fuente: notebook 01, apartado 7 y <span class="mono">resultados/embeddings.json</span> (<span class="mono">varianza_pca</span>).</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Notebook 02: trocear"
+ data-notes="Notebook dos: trocear. El corpus son nueve documentos cortos, unos veinticuatro mil caracteres. Se comparan tres estrategias con el mismo tamaño objetivo de cuatrocientos caracteres: fijo, sin solape; solape, con ochenta caracteres compartidos, que es la que se usa por defecto; y párrafos, que agrupa párrafos sin pasar del tamaño. Salen sesenta y siete, setenta y siete y ochenta y siete fragmentos. Un detalle: se trocea por caracteres y no por tokens, porque es más fácil de explicar; en producción es más honesto hacerlo por tokens.">
+<p class="kick">3 · Ingesta: vectores e índice · tres estrategias</p><h1>Notebook 02: el mismo corpus, tres formas de trocear, de 67 a 87 fragmentos</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>notebook 02 · celda [2] · mandos</em><button class="cp cpall" data-t="TAMANO_CHUNK = 400
+SOLAPE = 80
+ESTRATEGIA_DEFECTO = &quot;solape&quot;">Copiar todo</button></div><pre class="src">TAMANO_CHUNK = 400
+SOLAPE = 80
+ESTRATEGIA_DEFECTO = &quot;solape&quot;</pre></div><div class="term"><div class="bar"><em>notebook 02 · celda [5] · tres estrategias</em><button class="cp cpall" data-t="estrategias = {
+    &quot;fijo&quot;: dict(estrategia=&quot;fijo&quot;, tamano=TAMANO_CHUNK, solape=0),
+    &quot;solape&quot;: dict(estrategia=&quot;solape&quot;, tamano=TAMANO_CHUNK, solape=SOLAPE),
+    &quot;parrafos&quot;: dict(estrategia=&quot;parrafos&quot;, tamano=TAMANO_CHUNK, solape=SOLAPE),
+}
+
+resumenes = []
+fragmentos_por = {}
+for nombre, kwargs in estrategias.items():
+    frags = fragmentar_documentos(documentos, **kwargs)
+    fragmentos_por[nombre] = frags
+    r = resumen_fragmentos(frags)
+    r[&quot;nombre&quot;] = nombre
+    resumenes.append(r)
+    print(f&quot;\n=== {nombre} ===&quot;)
+    print(f&quot;  fragmentos: {r[&#x27;n_fragmentos&#x27;]}  media={r[&#x27;longitud_media&#x27;]:.0f}  min={r[&#x27;longitud_min&#x27;]}  max={r[&#x27;longitud_max&#x27;]}&quot;)">Copiar todo</button></div><pre class="src">estrategias = {
+    &quot;fijo&quot;: dict(estrategia=&quot;fijo&quot;, tamano=TAMANO_CHUNK, solape=0),
+    &quot;solape&quot;: dict(estrategia=&quot;solape&quot;, tamano=TAMANO_CHUNK, solape=SOLAPE),
+    &quot;parrafos&quot;: dict(estrategia=&quot;parrafos&quot;, tamano=TAMANO_CHUNK, solape=SOLAPE),
+}
+
+resumenes = []
+fragmentos_por = {}
+for nombre, kwargs in estrategias.items():
+    frags = fragmentar_documentos(documentos, **kwargs)
+    fragmentos_por[nombre] = frags
+    r = resumen_fragmentos(frags)
+    r[&quot;nombre&quot;] = nombre
+    resumenes.append(r)
+    print(f&quot;\n=== {nombre} ===&quot;)
+    print(f&quot;  fragmentos: {r[&#x27;n_fragmentos&#x27;]}  media={r[&#x27;longitud_media&#x27;]:.0f}  min={r[&#x27;longitud_min&#x27;]}  max={r[&#x27;longitud_max&#x27;]}&quot;)</pre></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [3]</div><pre>9 documentos, 24091 caracteres, 3851 palabras</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [5]</div><pre>=== fijo ===
+  fragmentos: 67  media=359  min=10  max=400
+
+=== solape ===
+  fragmentos: 77  media=382  min=182  max=400
+
+=== parrafos ===
+  fragmentos: 87  media=282  min=32  max=400</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>fijo:</b> ventanas de 400 caracteres sin solape (67 fragmentos, el menor de <b>10</b> caracteres).</li><li><b>solape:</b> igual con 80 compartidos (<b>77</b>, ninguno por debajo de 182): la que se usa por defecto.</li><li><b>párrafos:</b> agrupa párrafos (<b>87</b>, media de <b>282</b>).</li><li>Se trocea por <b>caracteres</b>, no por tokens: más simple; en producción, por tokens.</li></ul></div></div></div><p class="fuente">Fuente: notebook 02, apartados 1 y 2; <span class="mono">resultados/indexado.json</span> (<span class="mono">resumenes_estrategias</span>); corpus de 9 documentos, 24 091 caracteres, 3 851 palabras.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Notebook 02: el hecho partido"
+ data-notes="Qué pasa con un hecho concreto al trocear. Se busca la frase veintidós días laborables. Con ventanas fijas aparece entera en un solo fragmento; con solape, en dos; con párrafos, en uno. Más abajo se ve el corte real de las ventanas fijas: acaba en a ellos se y el siguiente empieza en suman tres días, así que se parte la frase de los tres días del cierre andino. Con solape, el inicio del segundo fragmento repite el final del primero. En el ejercicio uno, con ventanas de ciento cincuenta caracteres, se ve lo mismo: uno sin solape, dos con solape de sesenta.">
+<p class="kick">3 · Ingesta: vectores e índice · por qué el solape</p><h1>El solape es un seguro barato: el hecho «22 días laborables» aparece entero en 2 fragmentos, no en 1</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [6]</div><pre>fijo        fragmentos que contienen el hecho entero: 1
+    nubeandina-vacaciones-y-trabajo::#0  (397 caracteres)
+solape      fragmentos que contienen el hecho entero: 2
+    nubeandina-vacaciones-y-trabajo::#0  (397 caracteres)
+    nubeandina-vacaciones-y-trabajo::#1  (390 caracteres)
+parrafos    fragmentos que contienen el hecho entero: 1
+    nubeandina-vacaciones-y-trabajo::#1  (308 caracteres)</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [7] (líneas seleccionadas: el corte y el solape)</div><pre>A ellos se
+suman **3 días** de **«cierre andino»** en **julio**, fijos para toda la
+--- Con SOLAPE: el inicio de nubeandina-vacaciones-y-trabajo::#1 repite el final de nubeandina-vacaciones-y-trabajo::#0 ---
+final de A: &#x27;e jornada completa tiene **22 días laborables** de vacaciones al año.\nA ellos se&#x27;
+inicio de B: &#x27;jornada completa tiene **22 días laborables** de vacaciones al año.\nA ellos se s&#x27;</pre></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 06, celda [9] · ejercicio 1 (tamaño 150)</div><pre>tamano=150 solape=0: 1 fragmentos cubren el hecho (total 169)
+tamano=150 solape=60: 2 fragmentos cubren el hecho (total 276)</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Sin solape, el corte cae justo en «<b>A ellos se | suman 3 días…</b>»: se parte la frase siguiente al hecho.</li><li>Con solape, el inicio de un fragmento <b>repite el final</b> del anterior y el hecho viaja en <b>dos</b>.</li><li>Con ventanas de 150 caracteres: <b>1</b> fragmento sin solape y <b>2</b> con solape de 60.</li></ul></div><div class="callout">Un hecho corto cerca del borde de la ventana puede <b>partirse y desaparecer</b> de todos los fragmentos: el <i>recall</i> de esa pregunta cae aunque el documento correcto esté en el corpus.</div></div></div><p class="fuente">Fuente: notebook 02, apartado 3; notebook 06, solución del ejercicio 1.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="2" data-title="Notebook 02: longitudes"
+ data-notes="El histograma de longitudes. La estrategia fija y la de solape se concentran en torno a cuatrocientos caracteres; la fija deja algún resto minúsculo, de diez caracteres, al final de un documento. La de párrafos produce más fragmentos y de longitud muy variable, porque respeta los párrafos. No hay una estrategia mejor en abstracto: se elige midiendo la recuperación, como se hace en el cuaderno cinco con el tamaño del trozo.">
+<p class="kick">3 · Ingesta: vectores e índice · el histograma</p><h1>Párrafos da más fragmentos y más cortos; el solape evita los trozos minúsculos</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><figure class="cap" data-img="fig_chunking_longitudes.webp"><button class="zoom" data-src="img/fig_chunking_longitudes.webp" data-alt="Histograma «Distribución de longitudes según la estrategia»: longitud del fragmento (de 0 a 400 caracteres) frente a frecuencia, con tres series superpuestas: fijo, solape y parrafos" title="Ampliar (Esc cierra)"><img src="img/fig_chunking_longitudes.webp" alt="Histograma «Distribución de longitudes según la estrategia»: longitud del fragmento (de 0 a 400 caracteres) frente a frecuencia, con tres series superpuestas: fijo, solape y parrafos" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Histograma «Distribución de longitudes según la estrategia»: longitud del fragmento (de 0 a 400 caracteres) frente a frecuencia, con tres series superpuestas: fijo, solape y parrafos. <span class="origen">Sale del notebook 02, celda [8] → resultados/fig_chunking_longitudes.png.</span></figcaption></figure></div><div class="capcol"><div class="card"><table class="tbl"><tr><th>Estrategia</th><th>Fragmentos</th><th>Media</th><th>Mínima</th><th>Máxima</th></tr><tr><td><b>fijo</b></td><td>67</td><td>359</td><td>10</td><td>400</td></tr><tr><td><b>solape</b></td><td>77</td><td>382</td><td>182</td><td>400</td></tr><tr><td><b>parrafos</b></td><td>87</td><td>282</td><td>32</td><td>400</td></tr></table></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>fijo</b> deja trozos de <b>10</b> caracteres: restos del final de un documento.</li><li><b>solape</b> no baja de <b>182</b> y casi todos están en 380-400.</li><li><b>párrafos</b> reparte casi todo entre ~100 y 400 (mínimo <b>32</b>): respeta la estructura, pero con <b>más</b> variación.</li></ul></div><p class="fuente">Fuente: <span class="mono">resultados/indexado.json</span> (<span class="mono">resumenes_estrategias</span>) y notebook 02, apartado 4.</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Notebook 02: el índice"
+ data-notes="Embeber e indexar. Se codifican los setenta y siete fragmentos de la estrategia con solape y se construyen dos índices: uno de NumPy, que es una matriz de vectores y un producto interno, y otro de FAISS en modo exacto. Con un corpus tan pequeño no hay ganancia de tiempo; FAISS importa con cientos de miles de vectores o con índices aproximados. Lo que se comprueba es que los dos devuelven los mismos identificadores en el mismo orden. Los índices se guardan en la carpeta modelos para que los notebooks siguientes no tengan que volver a embeber el corpus.">
+<p class="kick">3 · Ingesta: vectores e índice · NumPy y FAISS</p><h1>Notebook 02: se indexan 77 fragmentos y NumPy y FAISS devuelven lo mismo</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>notebook 02 · celda [9] · embeber e indexar</em><button class="cp cpall" data-t="fragmentos = fragmentos_por[ESTRATEGIA_DEFECTO]
+codificador = Codificador(MODELO_EMB, dispositivo_destino=str(DEVICE))
+t0 = time.perf_counter()
+vectores = codificador.codificar([f.texto for f in fragmentos], lote=16, progreso=True)
+t_emb = time.perf_counter() - t0
+indice_np = IndiceNumpy(vectores, fragmentos)
+indice_faiss = IndiceFAISS(vectores, fragmentos)">Copiar todo</button></div><pre class="src">fragmentos = fragmentos_por[ESTRATEGIA_DEFECTO]
+codificador = Codificador(MODELO_EMB, dispositivo_destino=str(DEVICE))
+t0 = time.perf_counter()
+vectores = codificador.codificar([f.texto for f in fragmentos], lote=16, progreso=True)
+t_emb = time.perf_counter() - t0
+indice_np = IndiceNumpy(vectores, fragmentos)
+indice_faiss = IndiceFAISS(vectores, fragmentos)</pre></div><div class="term"><div class="bar"><em>notebook 02 · celda [10] · buscar (extracto)</em><button class="cp cpall" data-t="top_np = indice_np.buscar(qv, k=4)
+top_fa = indice_faiss.buscar(qv, k=4)">Copiar todo</button></div><pre class="src">top_np = indice_np.buscar(qv, k=4)
+top_fa = indice_faiss.buscar(qv, k=4)</pre></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [9]</div><pre>Indexando 77 fragmentos (solape)
+Embeddings: (77, 384) en 9.13 s
+Indices listos (NumPy y FAISS).</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 02, celda [10] (última línea)</div><pre>¿Mismos identificadores, en el mismo orden? True</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>77 fragmentos × 384</b> dimensiones, embebidos en <b>9,13 s</b>.</li><li>Los dos índices dan los <b>mismos 4 identificadores en el mismo orden</b> (<span class="mono">coinciden: true</span>): ambos hacen búsqueda exacta por producto interno.</li><li>Quedan guardados en <span class="mono">modelos/indice_faiss</span> y <span class="mono">modelos/indice_numpy</span>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Si cambias el troceado, <b>regenera el índice</b>: los notebooks 03-05 leen el de <span class="mono">modelos/</span>.</li></ul></div></div></div><p class="fuente">Fuente: notebook 02, apartado 5; <span class="mono">resultados/indexado.json</span> (<span class="mono">coinciden</span>, <span class="mono">ids_numpy</span>, <span class="mono">ids_faiss</span>: <b>nubeandina-vacaciones-y-trabajo::#0</b> primero).</p>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="Notebook 03: tres búsquedas"
+ data-notes="Las tres búsquedas sobre el mismo índice. A la izquierda el código: buscar con BM25, con vectores y con la fusión de las dos listas por rango recíproco, RRF. A la derecha, la pregunta de las vacaciones: los identificadores que devuelve cada método. BM25 pone en segundo lugar el fragmento número uno, que es el que contiene los veintidós días laborables. La búsqueda densa trae otros cuatro fragmentos del mismo documento y no incluye ese. El híbrido lo recupera en cuarto lugar. Lo importante: el recall del notebook se mide por documento, así que esa diferencia no se ve en las métricas.">
+<p class="kick">4 · Consulta: recuperar · BM25, denso e híbrido</p><h1>Para «vacaciones», BM25 trae el fragmento de los «22 días» 2.º; el denso ni lo trae en el top-4</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>notebook 03 · celda [4] · las tres búsquedas</em><button class="cp cpall" data-t="def buscar_denso(pregunta, k=K):
+    qv = codificador.codificar([pregunta], progreso=False)[0]
+    return indice.buscar(qv, k=k)
+
+def buscar_bm25(pregunta, k=K):
+    return indice_bm25.buscar(pregunta, k=k)
+
+def buscar_hibrido(pregunta, k=K):
+
+    denso = buscar_denso(pregunta, k=max(k, 8))
+    lex = buscar_bm25(pregunta, k=max(k, 8))
+    return fusion_rrf([denso, lex], k=k, k_rrf=K_RRF)">Copiar todo</button></div><pre class="src">def buscar_denso(pregunta, k=K):
+    qv = codificador.codificar([pregunta], progreso=False)[0]
+    return indice.buscar(qv, k=k)
+
+def buscar_bm25(pregunta, k=K):
+    return indice_bm25.buscar(pregunta, k=k)
+
+def buscar_hibrido(pregunta, k=K):
+
+    denso = buscar_denso(pregunta, k=max(k, 8))
+    lex = buscar_bm25(pregunta, k=max(k, 8))
+    return fusion_rrf([denso, lex], k=k, k_rrf=K_RRF)</pre></div><div class="card"><h3>Cómo se combinan</h3><ul class="list"><li><b>BM25</b> puntúa por palabras compartidas; el <b>denso</b>, por cercanía de significado.</li><li><b>RRF</b> suma <span class="mono">1/(k + rango)</span> de cada lista (aquí <span class="mono">k_rrf = 60</span>): no promedia puntuaciones.</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 03, celda [4] · pregunta de vacaciones · sin el extracto de texto · el fragmento con los 22 días es el #1</div><pre>  BM25:
+    1. 16.747  nubeandina-vacaciones-y-trabajo::#0
+    2. 12.426  nubeandina-vacaciones-y-trabajo::#1
+    3. 10.717  nubeandina-vacaciones-y-trabajo::#6
+    4. 10.658  nubeandina-vacaciones-y-trabajo::#7
+  denso:
+    1. 0.729  nubeandina-vacaciones-y-trabajo::#0
+    2. 0.673  nubeandina-vacaciones-y-trabajo::#7
+    3. 0.666  nubeandina-vacaciones-y-trabajo::#6
+    4. 0.656  nubeandina-vacaciones-y-trabajo::#2
+  hibrido:
+    1. 0.033  nubeandina-vacaciones-y-trabajo::#0
+    2. 0.032  nubeandina-vacaciones-y-trabajo::#7
+    3. 0.032  nubeandina-vacaciones-y-trabajo::#6
+    4. 0.032  nubeandina-vacaciones-y-trabajo::#1</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>BM25:</b> el fragmento <span class="mono">#1</span> («22 días laborables») es el <b>2.º</b>.</li><li><b>Denso:</b> trae <span class="mono">#0</span>, <span class="mono">#7</span>, <span class="mono">#6</span>, <span class="mono">#2</span>; <b><span class="mono">#1</span> no entra</b> en el top-4.</li><li><b>Híbrido:</b> lo recupera, pero <b>4.º</b>.</li></ul></div><div class="callout">El <i>recall</i> de este notebook se mide por <b>documento</b>: acertar el documento <b>no garantiza</b> que el fragmento con el dato viaje al LLM.</div></div></div><p class="fuente">Fuente: notebook 03, apartados 1 y 2 (la salida completa, con los extractos de texto, está guardada en esa celda).</p>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Notebook 03: métricas"
+ data-notes="Las métricas de recuperación sobre las dieciocho preguntas hechas a mano. Con k igual a cinco los tres métodos tienen recall uno: siempre cae algún fragmento del documento correcto entre los cinco primeros. La diferencia aparece en el MRR: BM25 y el híbrido, cero coma noventa y seis; el denso, cero coma noventa y uno. Es una diferencia de una pregunta en el segundo puesto, no un benchmark. El conjunto es pequeño y hecho a mano; las cifras son una brújula para este laboratorio. El reranker no se midió porque el modo rápido lo omite.">
+<p class="kick">4 · Consulta: recuperar · recall@5 y MRR</p><h1>Con k = 5 los tres métodos aciertan el documento; solo el MRR los distingue: 0,96 · 0,91 · 0,96</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="card"><table class="tbl"><tr><th>Método</th><th>recall@5</th><th>MRR</th><th>Preguntas</th></tr><tr><td><b>BM25</b></td><td>1,000</td><td>0,963</td><td>18</td></tr><tr><td><b>denso</b></td><td>1,000</td><td>0,907</td><td>18</td></tr><tr><td><b>híbrido (RRF)</b></td><td>1,000</td><td>0,963</td><td>18</td></tr></table></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><i>Recall@k</i>: vale 1 si <b>al menos un</b> documento de referencia está en los k primeros.</li><li><b>MRR</b>: media de 1/r, con r el rango del primer documento relevante: premia lo que queda <b>arriba</b>.</li><li>Son <b>18</b> preguntas de tipo «hecho»; las 2 «no está» no tienen documento de referencia.</li></ul></div><div class="card"><h3>Qué no se midió</h3><ul class="list"><li>El <i>reranker</i>: en modo rápido se omite (<span class="mono">rerank: null</span> en el JSON).</li></ul></div><p class="fuente">Fuente: <span class="mono">resultados/recuperacion.json</span> y notebook 03, apartado 3.</p></div><div class="capcol"><figure class="cap" data-img="fig_mrr.webp"><button class="zoom" data-src="img/fig_mrr.webp" data-alt="Barras «MRR (primer documento relevante)»: BM25 0,96, denso 0,91 e híbrido 0,96" title="Ampliar (Esc cierra)"><img src="img/fig_mrr.webp" alt="Barras «MRR (primer documento relevante)»: BM25 0,96, denso 0,91 e híbrido 0,96" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Barras «MRR (primer documento relevante)»: BM25 0,96, denso 0,91 e híbrido 0,96. <span class="origen">Sale del notebook 03, celda [6] → resultados/fig_mrr.png.</span></figcaption></figure></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Notebook 03: recall@k"
+ data-notes="Qué pasa al cambiar k. Con k igual a uno, BM25 y el híbrido aciertan diecisiete de las dieciocho preguntas y el denso, quince; son dos preguntas de diferencia. Desde k igual a tres, los tres métodos llegan a uno. En la figura solo se ve una línea para BM25 y el híbrido porque coinciden en todos los puntos y una tapa a la otra. La lección: con k pequeño el método importa; con k suficiente casi cualquier método cumple en este corpus tan pequeño, y eso no quiere decir que pase lo mismo con miles de documentos.">
+<p class="kick">4 · Consulta: recuperar · qué pasa al cambiar k</p><h1>Con k = 1 el denso falla 2 preguntas más que BM25 (0,833 frente a 0,944); desde k = 3, todos llegan a 1,0</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><figure class="cap" data-img="fig_recall_at_k.webp"><button class="zoom" data-src="img/fig_recall_at_k.webp" data-alt="Líneas «Recall@k según el método de recuperación» para k = 1, 3, 5 y 8 con BM25, denso e híbrido; la línea de BM25 queda tapada por la del híbrido porque valen lo mismo" title="Ampliar (Esc cierra)"><img src="img/fig_recall_at_k.webp" alt="Líneas «Recall@k según el método de recuperación» para k = 1, 3, 5 y 8 con BM25, denso e híbrido; la línea de BM25 queda tapada por la del híbrido porque valen lo mismo" style="max-height:340px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Líneas «Recall@k según el método de recuperación» para k = 1, 3, 5 y 8 con BM25, denso e híbrido; la línea de BM25 queda tapada por la del híbrido porque valen lo mismo. <span class="origen">Sale del notebook 03, celda [6] → resultados/fig_recall_at_k.png.</span></figcaption></figure></div><div class="capcol"><div class="card"><table class="tbl"><tr><th>k</th><th>BM25</th><th>denso</th><th>híbrido</th></tr><tr><td><b>1</b></td><td>0,944</td><td>0,833</td><td>0,944</td></tr><tr><td><b>3</b></td><td>1,000</td><td>1,000</td><td>1,000</td></tr><tr><td><b>5</b></td><td>1,000</td><td>1,000</td><td>1,000</td></tr><tr><td><b>8</b></td><td>1,000</td><td>1,000</td><td>1,000</td></tr></table></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>0,944 son <b>17 de 18</b> preguntas; 0,833, <b>15 de 18</b> (derivado de la tabla).</li><li>BM25 y el híbrido valen <b>lo mismo</b> en todos los k: por eso en la figura se ve una sola línea.</li><li>Con 18 preguntas, <b>una</b> pregunta mueve el recall 0,056: no saques conclusiones finas.</li></ul></div><p class="fuente">Fuente: <span class="mono">resultados/recuperacion.json</span> (<span class="mono">recall_por_k</span>) y notebook 03, celda [6].</p></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Notebook 04: el prompt"
+ data-notes="El prompt. Con RAG, el mensaje de sistema le prohíbe inventar cifras, nombres, fechas y políticas, le pide citar el identificador del fragmento entre corchetes y le obliga a decir exactamente una frase si la respuesta no está en el contexto. El usuario recibe el contexto, con cada fragmento marcado con su id, y la pregunta. Sin RAG solo va la pregunta: es el control. Insista en que el prompt es parte del sistema: no es un adorno y se versiona y se prueba como el resto.">
+<p class="kick">5 · Generar y evaluar · las reglas del sistema</p><h1>Notebook 04: el prompt es parte del sistema: «responde SOLO con el contexto» y cita</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>notebook 04 · celda [4] · prompt con y sin contexto (extracto)</em><button class="cp cpall" data-t="pregunta_ejemplo = demo[0][&quot;pregunta&quot;]
+qv = codificador.codificar([pregunta_ejemplo], progreso=False)[0]
+hits = indice.buscar(qv, k=K)
+mensajes_con = construir_mensajes(pregunta_ejemplo, hits, con_rag=True)
+mensajes_sin = construir_mensajes(pregunta_ejemplo, None, con_rag=False)">Copiar todo</button></div><pre class="src">pregunta_ejemplo = demo[0][&quot;pregunta&quot;]
+qv = codificador.codificar([pregunta_ejemplo], progreso=False)[0]
+hits = indice.buscar(qv, k=K)
+mensajes_con = construir_mensajes(pregunta_ejemplo, hits, con_rag=True)
+mensajes_sin = construir_mensajes(pregunta_ejemplo, None, con_rag=False)</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Con RAG, el <b>sistema</b> prohíbe inventar y exige abstenerse con una <b>frase exacta</b>.</li><li>El <b>usuario</b> recibe el contexto (fragmentos con su id) y la pregunta.</li><li>Sin RAG solo va la pregunta: es el <b>control</b> de la comparación.</li></ul></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 04, celda [4] (líneas seleccionadas)</div><pre>===== SISTEMA (con RAG) =====
+Eres un asistente del curso taller &#x27;De Modelo a Producción&#x27; (UNTRM). Respondes SOLO con la información del contexto que se te proporciona. Si la respuesta no está en el contexto, di exactamente: &#x27;No encuentro esa información en los documentos.&#x27; Cita el identificador del fragmento entre corchetes, por ejemplo [guia-docker::#1]. No inventes cifras, nombres, fechas ni políticas. Sé breve (3 a 6 frases).
+===== USUARIO (sin RAG) =====
+¿Cuántos días laborables de vacaciones tiene un empleado de NubeAndina y qué es el cierre andino?</pre></div></div></div><p class="fuente">Fuente: notebook 04, apartado 2 (el contexto con los fragmentos está en la salida guardada completa).</p>
+</section>
+
+<section class="slide" data-part="E" data-min="4" data-title="Notebook 04: con y sin RAG"
+ data-notes="La comparación con y sin RAG, con las respuestas reales guardadas. Sin contexto, el modelo inventa en las cuatro. Con contexto mejora, pero no es perfecto: en la primera da los veintidós días pero se deja los tres días del cierre andino y julio; en la segunda da la longitud de la contraseña pero no el nombre de la delegada; en la tercera da el nombre de la imagen y no el puerto. Las fuentes recuperadas eran las correctas, así que el fallo es del modelo pequeño al redactar. En la cuarta, que no está en el corpus, el éxito es abstenerse, y con RAG lo hace. Un modelo mayor con el mismo patrón de recuperación debería ir mejor, pero eso está sin medir.">
+<p class="kick">5 · Generar y evaluar · cuatro preguntas</p><h1>La misma pregunta, con y sin RAG: sin contexto inventa; con contexto cita… aunque a veces incompleto</h1>
+
+<div class="card"><table class="tbl"><tr><th>Pregunta</th><th>Sin RAG</th><th>Con RAG</th><th>Cobertura</th></tr><tr><td><b>q11</b> · ¿Cuántos días laborables de vacaciones tiene un empleado de NubeAndina y qué es el cierre andino?</td><td>Un empleado de NubeAndina puede tener 15 días de vacaciones totales. El cierre andino se refiere al proceso de cancelación de las horas extras que se realizan en el trabajo por parte de los empleados.</td><td>Un empleado de NubeAndina tiene 22 días laborables de vacaciones al año. El cierre andino de 2026 se comunica cada enero y no es un puente móvil elegido por la persona.</td><td>0,00 → 0,33</td></tr><tr><td><b>q13</b> · ¿Quién es la Delegada de Protección de Datos de NubeAndina y cuál es la longitud mínima de las contraseñas?</td><td>La Delegada de Protección de Datos de NubeAndina es María José García. La longitud mínima de las contraseñas que se deben utilizar para acceder a esta función es de 12 caracteres.</td><td>Longitud mínima de contraseña: 14 caracteres.</td><td>0,00 → 0,50</td></tr><tr><td><b>q03</b> · ¿Cómo se llama la imagen Docker de la API de ejemplo y en qué puerto escucha?</td><td>La imagen Docker de la API de ejemplo está llamada &quot;docker&quot; y está configurada para escuchar en el puerto 80.</td><td>retencion-api:local</td><td>0,00 → 0,50</td></tr><tr><td><b>q19</b> · ¿Cuál es el número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas?</td><td>El número de teléfono de la cafetería de la sede de NubeAndina en Chachapoyas es 0123456789.</td><td>No encuentro esa información en los documentos.</td><td>0,00 → 1,00</td></tr></table></div>
+<div class="grid2" style="margin-top:8px">
+ <div class="callout"><b>Con RAG sigue incompleto:</b> q11 da los 22 días pero no los 3 días ni julio; q13, la contraseña (14) pero no a Elena Quispe; q03, la imagen pero no el puerto. Falla el <b>modelo pequeño</b>: las fuentes eran las correctas.</div><div class="callout"><b>q19</b> (una cafetería que no existe): sin RAG inventa <b>0123456789</b>; con RAG se abstiene, y su cobertura <b>1,00</b> significa <b>abstención</b>.</div>
+</div><p class="fuente">Fuente: <span class="mono">resultados/generacion.json</span> (<span class="mono">detalle</span>) y notebook 04, celda [5]; los hechos esperados salen de <span class="mono">datos/preguntas.json</span>.</p>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Notebook 04: cobertura"
+ data-notes="La figura y las medias. Las barras rojas, sin RAG, valen cero en las cuatro preguntas y por eso no se ven. Las verdes, con RAG, valen cero coma treinta y tres, cero coma cinco, cero coma cinco y uno; este último es la abstención de la pregunta que no está en el corpus. La media pasa de cero a cero coma cincuenta y ocho. Es una comprobación de cadenas, no un juez semántico, con cuatro preguntas y un modelo de cero coma cinco B. Sirve para ver la dirección, no para publicar una cifra. La latencia media por respuesta, en CPU, es de varios segundos; se discute en la diapositiva de latencia.">
+<p class="kick">5 · Generar y evaluar · la figura y las medias</p><h1>Cobertura media de hechos: 0,00 sin RAG y 0,58 con RAG (4 preguntas, un LLM de 0,5B)</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="fig_con_sin_rag.webp"><button class="zoom" data-src="img/fig_con_sin_rag.webp" data-alt="Barras «Misma pregunta, con y sin RAG»: cobertura de hechos (o abstención) en q11, q13, q03 y q19; las barras «sin RAG» (rojas) valen 0 y no se ven; las «con RAG» (verdes) valen 0,33, 0,5, 0,5 y 1,0" title="Ampliar (Esc cierra)"><img src="img/fig_con_sin_rag.webp" alt="Barras «Misma pregunta, con y sin RAG»: cobertura de hechos (o abstención) en q11, q13, q03 y q19; las barras «sin RAG» (rojas) valen 0 y no se ven; las «con RAG» (verdes) valen 0,33, 0,5, 0,5 y 1,0" style="max-height:330px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Barras «Misma pregunta, con y sin RAG»: cobertura de hechos (o abstención) en q11, q13, q03 y q19; las barras «sin RAG» (rojas) valen 0 y no se ven; las «con RAG» (verdes) valen 0,33, 0,5, 0,5 y 1,0. <span class="origen">Sale del notebook 04, celda [6] → resultados/fig_con_sin_rag.png.</span></figcaption></figure></div><div class="capcol"><div class="grid2"><div class="card kpi"><b class="n ">0,00 → 0,58</b><p class="small">cobertura media de hechos <b>sin RAG → con RAG</b> (4 preguntas)</p></div><div class="card kpi"><b class="n ">46,7 s · 31,3 s</b><p class="small">latencia media por respuesta <b>sin RAG · con RAG</b> en CPU</p></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Cobertura = fracción de <b>hechos esperados</b> que aparecen como texto en la respuesta (<span class="mono">contiene_hechos</span>): <b>no es un juez semántico</b>.</li><li>En q19 (no está en el corpus) mide si <b>se abstiene</b>.</li><li>Solo <b>4 preguntas</b> (modo rápido): una anécdota, no un benchmark.</li></ul></div><p class="fuente">Fuente: <span class="mono">resultados/generacion.json</span> (Qwen/Qwen2.5-0.5B-Instruct, k = 4, 64 tokens nuevos) y notebook 04, celda [6].</p></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="4" data-title="Notebook 05: el pipeline"
+ data-notes="El pipeline como objeto. Una clase junta el codificador, el índice denso, el índice BM25 y el generador, con k igual a cuatro y el método híbrido. Su método preguntar hace la recuperación y la generación y devuelve la respuesta, las fuentes y las latencias por etapa; es la unidad que más adelante se envolvería en una ruta HTTP, por ejemplo la API del curso. La salida guardada: los cuatro fragmentos recuperados, con puntuaciones de fusión, que no son cosenos, y una respuesta que esta vez acierta los dos hechos, Elena Quispe y catorce caracteres. Recuperar tarda milisegundos; generar, algo más de un segundo.">
+<p class="kick">5 · Generar y evaluar · una función</p><h1>Notebook 05: <span class="mono">PipelineRAG.preguntar()</span> es una función: pregunta → respuesta, fuentes y latencias</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>notebook 05 · celda [3] · el pipeline (extracto)</em><button class="cp cpall" data-t="pipeline = PipelineRAG(
+    codificador=codificador,
+    indice_denso=indice,
+    indice_bm25=indice_bm25,
+    generador=generador,
+    k=K,
+    metodo=&quot;hibrido&quot;,
+)
+
+hits = pipeline.recuperar(q_demo, k=K)">Copiar todo</button></div><pre class="src">pipeline = PipelineRAG(
+    codificador=codificador,
+    indice_denso=indice,
+    indice_bm25=indice_bm25,
+    generador=generador,
+    k=K,
+    metodo=&quot;hibrido&quot;,
+)
+
+hits = pipeline.recuperar(q_demo, k=K)</pre></div><div class="term"><div class="bar"><em>notebook 05 · celda [4]</em><button class="cp cpall" data-t="out = pipeline.preguntar(q_demo, con_rag=True, max_nuevos=MAX_NUEVOS)
+print(&quot;Respuesta:&quot;)
+print(out[&quot;respuesta&quot;])
+print(&quot;\nLatencias (s):&quot;, out[&quot;latencias_s&quot;])">Copiar todo</button></div><pre class="src">out = pipeline.preguntar(q_demo, con_rag=True, max_nuevos=MAX_NUEVOS)
+print(&quot;Respuesta:&quot;)
+print(out[&quot;respuesta&quot;])
+print(&quot;\nLatencias (s):&quot;, out[&quot;latencias_s&quot;])</pre></div></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 05, celda [3]</div><pre>Pregunta: ¿Quién es la DPO de NubeAndina y cuál es la longitud mínima de las contraseñas?
+  1. 0.033  nubeandina-datos-y-seguridad::#4
+  2. 0.016  nubeandina-datos-y-seguridad::#5
+  3. 0.016  curso-reglamento::#3
+  4. 0.016  curso-reglamento::#2</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 05, celda [4]</div><pre>Respuesta:
+La DPO de NubeAndina es Elena Quispe. La longitud mínima de las contraseñas es de 14 caracteres.
+
+Latencias (s): {&#x27;recuperacion&#x27;: 0.0089, &#x27;generacion&#x27;: 1.5196, &#x27;total&#x27;: 1.5285}</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Los 4 fragmentos son de <span class="mono">nubeandina-datos-y-seguridad</span> y <span class="mono">curso-reglamento</span>; los números <b>0,033 y 0,016</b> son puntuaciones <b>RRF</b>, no cosenos.</li><li>Esta vez el LLM acierta <b>los dos hechos</b>: «Elena Quispe» y «14 caracteres».</li><li>Recuperar tardó <b>0,0089 s</b>; generar, <b>1,52 s</b>.</li></ul></div></div></div><p class="fuente">Fuente: notebook 05, apartado 1.</p>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Notebook 05: mandos"
+ data-notes="Los dos mandos del RAG: el tamaño del trozo y k. A la izquierda, tres tamaños, doscientos, cuatrocientos y ochocientos caracteres, con ciento tres, setenta y siete y treinta y siete fragmentos. El recall a cinco es uno en los tres y el MRR sube a cero coma novecientos cuarenta y cuatro con trozos de doscientos. A la derecha, k de uno a ocho con el índice por defecto: con k igual a uno el recall es cero coma ochocientos treinta y tres y desde tres es uno. Aquí solo se mide recuperación. Con dieciocho preguntas, una pregunta mueve las cifras: son pistas para decidir qué probar, no un óptimo.">
+<p class="kick">5 · Generar y evaluar · tamaño de chunk y k</p><h1>Con chunk de 200 el MRR sube a 0,944; con k = 1 el recall cae a 0,833: los mandos se miden</h1>
+
+<div class="split" style="grid-template-columns:1.2fr .8fr"><div class="col"><figure class="cap" data-img="fig_mandos_chunk_k.webp"><button class="zoom" data-src="img/fig_mandos_chunk_k.webp" data-alt="Dos paneles: «Efecto del tamaño de fragmento» (chunk de 200, 400 y 800 caracteres, con recall@5 y MRR) y «Efecto de k (índice por defecto)» (k de 1 a 8, con recall@k y MRR)" title="Ampliar (Esc cierra)"><img src="img/fig_mandos_chunk_k.webp" alt="Dos paneles: «Efecto del tamaño de fragmento» (chunk de 200, 400 y 800 caracteres, con recall@5 y MRR) y «Efecto de k (índice por defecto)» (k de 1 a 8, con recall@k y MRR)" style="max-height:280px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos paneles: «Efecto del tamaño de fragmento» (chunk de 200, 400 y 800 caracteres, con recall@5 y MRR) y «Efecto de k (índice por defecto)» (k de 1 a 8, con recall@k y MRR). <span class="origen">Sale del notebook 05, celda [5] → resultados/fig_mandos_chunk_k.png.</span></figcaption></figure><div class="card"><table class="tbl"><tr><th>Chunk</th><th>Fragmentos</th><th>recall@5</th><th>MRR</th></tr><tr><td><b>200</b></td><td>203</td><td>1,000</td><td>0,944</td></tr><tr><td><b>400</b></td><td>77</td><td>1,000</td><td>0,907</td></tr><tr><td><b>800</b></td><td>37</td><td>1,000</td><td>0,907</td></tr></table></div></div><div class="capcol"><div class="card"><table class="tbl"><tr><th>k</th><th>recall</th><th>MRR</th></tr><tr><td><b>1</b></td><td>0,833</td><td>0,833</td></tr><tr><td><b>2</b></td><td>0,944</td><td>0,889</td></tr><tr><td><b>3</b></td><td>1,000</td><td>0,907</td></tr><tr><td><b>5</b></td><td>1,000</td><td>0,907</td></tr><tr><td><b>8</b></td><td>1,000</td><td>0,907</td></tr></table></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Solo se mide la <b>recuperación</b> (denso, 18 preguntas): así no se paga la generación en cada punto.</li><li>Más chunks pequeños (<b>203</b> con 200 caracteres) no cambian el recall, pero <b>suben el MRR</b>.</li><li>Un <i>k</i> alto mete más contexto: más probabilidad de que el hecho viaje, pero también más <b>ruido</b> y <b>latencia</b>.</li></ul></div><p class="fuente">Fuente: <span class="mono">resultados/pipeline.json</span> (<span class="mono">estudio_chunk</span>, <span class="mono">estudio_k</span>) y notebook 05, celda [5].</p></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="3" data-title="Notebook 05: latencia"
+ data-notes="La latencia por etapa. En el notebook cinco, recuperar una pregunta tarda unos nueve milisegundos y generar la respuesta algo más de un segundo y medio. En la evaluación breve de tres preguntas, la media total es de un segundo y medio aproximadamente. Pero en el notebook cuatro las latencias fueron de varias decenas de segundos por respuesta, hasta noventa y cuatro en una. Las respuestas son del mismo estilo, así que la diferencia no se explica por el modelo, y no se ha investigado la causa: puede ser el calentamiento o la carga de la máquina, pero eso es una hipótesis. Lo que sí se puede decir es que la recuperación es barata y la generación en CPU es lo caro, y que cada uno debe medir en su equipo.">
+<p class="kick">5 · Generar y evaluar · por etapa, en CPU</p><h1>Recuperar tarda milisegundos y generar, segundos: la latencia está en el LLM</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><figure class="cap" data-img="fig_latencia_etapas.webp"><button class="zoom" data-src="img/fig_latencia_etapas.webp" data-alt="Barras «Latencia por etapa (CPU, LLM local)»: segundos de media en recuperación (barra casi invisible) y en generación (barra cercana a 1,4 s)" title="Ampliar (Esc cierra)"><img src="img/fig_latencia_etapas.webp" alt="Barras «Latencia por etapa (CPU, LLM local)»: segundos de media en recuperación (barra casi invisible) y en generación (barra cercana a 1,4 s)" style="max-height:300px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Barras «Latencia por etapa (CPU, LLM local)»: segundos de media en recuperación (barra casi invisible) y en generación (barra cercana a 1,4 s). <span class="origen">Sale del notebook 05, celda [6] → resultados/fig_latencia_etapas.png.</span></figcaption></figure></div><div class="capcol"><div class="grid2"><div class="card kpi"><b class="n ">0,0089 s</b><p class="small">recuperación de una pregunta (notebook 05)</p></div><div class="card kpi"><b class="n ">1,5196 s</b><p class="small">generación de esa misma pregunta (notebook 05)</p></div></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Evaluación breve (q11, q13 y q19): <b>1,4 s</b> de media total; cobertura media <b>0,61</b> y <b>1 de 3</b> completas.</li><li>En el notebook 04 las mismas preguntas dieron <b>31,3 s</b> de media con RAG (cuatro preguntas; de <b>0,7 s</b> a <b>94,2 s</b> según la pregunta).</li></ul></div><div class="callout"><b>Las dos medidas no cuadran</b> y no se ha investigado por qué: las coberturas coinciden (media 0,61 = (0,33 + 0,50 + 1,00) / 3) y las latencias son de órdenes distintos. Mide <b>por etapa</b> en tu máquina antes de fiarte.</div><p class="fuente">Fuente: <span class="mono">resultados/pipeline.json</span> (<span class="mono">fidelidad_breve</span>), <span class="mono">resultados/generacion.json</span> y notebook 05, celda [6].</p></div></div>
+</section>
+
+<section class="slide" data-part="F" data-min="5" data-title="Ejercicios"
+ data-notes="Los seis ejercicios del notebook seis, con las salidas de las soluciones. Primero se intentan y después se baja a las soluciones. Uno: un hecho frágil con ventanas de ciento cincuenta caracteres. Dos: añadir un documento nuevo y reindexar, y comprobar que sale en el top tres. Tres: k igual a uno frente a cinco. Cuatro: BM25 frente a denso con un identificador literal. Cinco: un prompt más estricto, que se razona sin ejecutar. Seis: una caché de consultas, con su clave. Dos avisos de lectura honestos: en el tres, la salida real muestra que el primer fragmento ya trae los dos hechos, y en el cuatro la conclusión escrita va más allá de un solo ejemplo. Conviene decirlo en clase.">
+<p class="kick">6 · Practicar, fallos y límites · notebook 06</p><h1>Seis ejercicios para hacer tú: pruébalos antes de bajar a las soluciones</h1>
+<div class="card"><table class="tbl"><tr><th>#</th><th>Ejercicio</th><th>Qué salió en la solución guardada</th></tr><tr><td><b>1</b></td><td>Tamaño de <i>chunk</i> y un hecho frágil</td><td>tamano=150 solape=0: 1 fragmentos cubren el hecho (total 169) · tamano=150 solape=60: 2 fragmentos cubren el hecho (total 276)</td></tr><tr><td><b>2</b></td><td>Añade un documento y reindexa</td><td>rango 1. nubeandina-tickets-comida  0.633 · ¿Aparece el documento nuevo? True</td></tr><tr><td><b>3</b></td><td><i>k</i> = 1 frente a <i>k</i> = 5</td><td>rango 1. nubeandina-vacaciones-y-trabajo::#1  22dias=True  cierre=True</td></tr><tr><td><b>4</b></td><td>BM25 frente a denso en un identificador</td><td>«¿Qué es gke-prod-andina-01?» → BM25: nubeandina-empresa; denso: nubeandina-datos-y-seguridad</td></tr><tr><td><b>5</b></td><td>Un <i>prompt</i> más estricto</td><td>sin código: se razona sobre la tasa de abstención y la cobertura (cuaderno 04)</td></tr><tr><td><b>6</b></td><td>Una caché de consultas</td><td>primera (miss=True): 0.0095s   segunda (hit=True): 0.0000s</td></tr></table></div><div class="callout" style="margin-top:10px"><b>Nota de lectura:</b> en el ejercicio 3 el texto de la solución habla de un caso hipotético; en la salida real <b>el top-1 (<span class="mono">#1</span>) ya trae los dos hechos</b> (22 días y cierre andino). Y en el 4 la solución escrita (BM25 gana con identificadores, el denso con paráfrasis) va <b>más allá</b> de este único ejemplo.</div><p class="fuente">Fuente: notebook 06 (enunciados y soluciones con salida guardada).</p>
+</section>
+
+<section class="slide" data-part="F" data-min="4" data-title="Cómo falla un RAG"
+ data-notes="Cómo falla un RAG. Seis fallos y, en cada fila, el notebook donde se ve. La recuperación mala: con k igual a uno el denso acierta quince de dieciocho y el fragmento con los veintidós días no entra en su top cuatro. El troceado que corta hechos. El modelo que ignora el contexto aunque las fuentes sean las correctas. El falso no lo encuentro de un prompt demasiado estricto. Y dos que el notebook cinco solo menciona: los datos obsoletos, que exigen versionar y reindexar, y la inyección de instrucciones escondidas en un documento. Esos dos no se prueban en esta serie; no se han verificado con este corpus.">
+<p class="kick">6 · Practicar, fallos y límites · y qué falta en producción</p><h1>Cómo falla un RAG: seis fallos, y el notebook donde se ve cada uno</h1>
+<div class="card"><table class="tbl"><tr><th>Fallo</th><th>Dónde se ve en los notebooks</th><th>Qué lo frena</th></tr><tr><td><b>Recuperación mala</b></td><td>Notebook 03: con k = 1 el denso acierta 15 de 18; el fragmento de los «22 días» no entra en su top-4.</td><td>Híbrido, k ≥ 3, medir recall@k con un conjunto de preguntas.</td></tr><tr><td><b>Troceado que corta hechos</b></td><td>Notebook 02: el corte cae en «A ellos se | suman 3 días».</td><td>Solape; trocear por tokens en producción.</td></tr><tr><td><b>El modelo ignora el contexto</b></td><td>Notebook 04: con las fuentes correctas, cobertura 0,33 y 0,50.</td><td>Modelo más capaz con el mismo patrón; medir la fidelidad.</td></tr><tr><td><b>Falso «no lo encuentro»</b></td><td>Notebook 06, ej. 5: un prompt muy estricto puede abstenerse aunque el dato esté.</td><td>Medir abstención y cobertura <b>a la vez</b>.</td></tr><tr><td><b>Datos obsoletos</b></td><td>Notebook 05: «si el reglamento cambia el viernes, el índice del jueves está mal».</td><td>Versionar corpus e índice; reindexar; caché con la versión.</td></tr><tr><td><b>Inyección de instrucciones</b></td><td>Notebook 05 (guardarraíles): obedecer órdenes escondidas <b>dentro de un documento</b>.</td><td>No obedecerlas, filtrar PII, registrar la fuente de cada afirmación.</td></tr></table></div><p class="small" style="margin-top:6px">Los dos últimos fallos <b>solo se mencionan</b> en las notas del notebook 05: ningún notebook los provoca ni los mide.</p><p class="small"><span class="tag warn">Sin verificar</span> <b>inyección de instrucciones</b> y <b>datos obsoletos</b>: descritos, <b>no probados</b> con este corpus.</p><p class="fuente">Fuente: notebooks 02 a 06 (en cada fila) y <span class="mono">resultados/</span>.</p>
+</section>
+
+<section class="slide" data-part="F" data-min="3" data-title="Relación con S5 y el curso"
+ data-notes="Relación con el resto de la sesión y del curso. La clase de fundamentos de la sesión cinco tiene las diapositivas de teoría: texto a vector, similitud del coseno, bases vectoriales y troceado, las dos tuberías del RAG y cómo falla y se evalúa. Aquí no se repite esa teoría: se ejecuta. El corpus mezcla guías del propio curso con una empresa ficticia, para poder comprobar si una respuesta está fundada. Y el notebook cinco recuerda que RAG no vive solo: convive con el registro de modelos, el contenedor y la integración continua, y el recuperador y el generador también son modelos que se miden y se retiran.">
+<p class="kick">6 · Practicar, fallos y límites · teoría, práctica y MLOps</p><h1>Esta práctica ejecuta lo que la clase de fundamentos de S5 explica, con el corpus del propio curso</h1>
+
+<div class="grid3">
+ <div class="card"><h3>Clase de fundamentos de S5 (teoría)</h3><ul class="list"><li>Diapositivas <b>«De texto a vector»</b>, <b>«Similitud del coseno»</b>, <b>«Bases vectoriales y troceado»</b> y <b>«RAG: dos tuberías»</b>: el qué y el porqué.</li><li><b>«Cómo falla un RAG y cómo se evalúa»</b>: el marco que aquí se <b>mide</b> con recall@k, MRR y cobertura.</li></ul></div><div class="card"><h3>Este extra (práctica)</h3><ul class="list"><li>Los mismos conceptos, <b>ejecutados</b> en CPU sobre un corpus pequeño que cabe en la cabeza.</li><li>El corpus mezcla guías del curso (Docker, Kubernetes, MLflow, GitHub Actions, Avance 3) con la empresa <b>ficticia</b> NubeAndina.</li></ul></div><div class="card"><h3>El resto del curso (MLOps)</h3><ul class="list"><li>El notebook 05 lo dice: RAG <b>convive</b> con el registro de modelos (alias <span class="mono">champion</span>), el contenedor, la CI y un despliegue reversible.</li><li>El recuperador y el generador <b>también son modelos</b>: se promocionan, se miden y se retiran como el resto.</li></ul></div>
+</div>
+<div style="margin-top:12px"><div class="callout"><b>Lo que no cambia con una API de pago:</b> recuperas aquí (CPU, FAISS, tu corpus) y solo cambias el paso de generación. El contexto y las citas <b>siguen siendo tuyos</b>; y los datos privados <b>no</b> deben salir a un proveedor no acordado.</div></div><p class="fuente">Fuente: notebooks 04 (apartado 5) y 05 (apartado 4); títulos de las diapositivas de <span class="mono">clase-fundamentos-ia-agentes/index.html</span>. No se copia su contenido.</p>
+</section>
+
+<section class="slide grande" data-part="F" data-min="3" data-title="Qué no está verificado"
+ data-notes="Diapositiva de honestidad. Lo comprobado: los siete notebooks se ejecutaron en Linux, solo CPU, con Python tres doce, en modo rápido; los índices de FAISS y de NumPy devuelven lo mismo; la recuperación se midió sobre dieciocho preguntas y la generación sobre cuatro. Lo no comprobado: Windows, Codespace, el alumnado, un proxy corporativo real, la GPU, el reranker, el modo completo y cualquier modelo mayor o por API. Los límites: un corpus de nueve documentos, cobertura medida por cadenas y no por un juez, recall por documento, y latencias de dos notebooks que no cuadran y no se han investigado.">
+<p class="kick">6 · Practicar, fallos y límites · qué se comprobó y qué no</p><h1>Qué se comprobó de verdad y qué quedó sin verificar</h1>
+
+<div class="grid2">
+ <div class="card"><h3 class="okc">Comprobado (salidas guardadas)</h3><ul class="list"><li>Los <b>7 notebooks</b> se ejecutaron <b>en Linux, solo CPU, Python 3.12.8</b>, en modo rápido; la presentación lee esas salidas.</li><li>Índices FAISS y NumPy: <b>mismos 4 identificadores</b> (<span class="mono">coinciden: true</span>). Recuperación sobre <b>18 preguntas</b>.</li><li>Generación con y sin RAG: <b>4 preguntas</b>, cobertura media <b>0,00 → 0,58</b>.</li></ul></div>
+ <div class="card"><h3 class="malc">Sin verificar o con límites</h3><ul class="list"><li><b>Windows</b> (instalación con conda o venv, PowerShell), <b>Codespace</b> y <b>el alumnado</b>: tiempos, dificultades y dudas, sin dato.</li><li><b>Proxy corporativo real</b>, GPU, el <b>reranker</b> (se omitió) y el <b>modo completo</b> (<span class="mono">RAG_MODO_RAPIDO=0</span>).</li><li><b>Un LLM mayor o por API</b>: solo se probó un modelo de <b>0,5B</b>; qué ganaría, sin dato.</li><li>Corpus de <b>9 documentos</b>, 18 preguntas con hecho y 2 de abstención: una <b>brújula</b>. Cobertura = <b>cadenas</b>, no un juez; el recall es por <b>documento</b>.</li><li>Las <b>latencias</b> de los notebooks 04 y 05 no cuadran y <b>no se ha investigado</b>.</li></ul></div>
+</div><p class="fuente">Fuente: salidas guardadas de los notebooks 00, 04 y 05; <span class="mono">resultados/*.json</span>; README.md.</p>
+</section>
+
+<section class="slide grande" data-part="F" data-min="2" data-title="Resumen"
+ data-notes="Cierre con un único mensaje: un RAG se mide dos veces, y por separado. Primero, si el contexto llegó, con recall y MRR; después, si el modelo lo usó, con la cobertura de hechos y la abstención. Las cuatro cifras: recall uno a cinco en los tres métodos, con MRR de cero coma noventa y seis, cero coma noventa y uno y cero coma noventa y seis; cobertura de cero a cero coma cincuenta y ocho con RAG, con cuatro preguntas; recall cero coma ochocientos treinta y tres con un solo fragmento; y recuperar en milisegundos frente a generar en segundos. Recuerde que todo es de una ejecución en Linux y que lo demás está sin verificar.">
+<p class="kick">6 · Practicar, fallos y límites · el mensaje</p><h1>Un RAG se mide dos veces: ¿llegó el contexto? ¿lo usó el modelo?</h1>
+
+<div class="msg">RAG = <b>recuperar bien</b> (recall@k, MRR) y <b>redactar fiel</b> (cobertura de hechos, abstención): se evalúan <b>por separado</b>, con tus datos y en tu máquina.</div>
+<div class="grid4" style="margin-top:18px">
+ <div class="card kpi"><b class="n ">recall@5 = 1,0</b><p class="small">los tres métodos aciertan el documento (<b>18</b> preguntas); el MRR los separa: <b>0,96 · 0,91 · 0,96</b> (<span class="mono">recuperacion.json</span>)</p></div><div class="card kpi"><b class="n ">0,00 → 0,58</b><p class="small">cobertura media de hechos <b>sin → con RAG</b> con un LLM de 0,5B (4 preguntas; <span class="mono">generacion.json</span>)</p></div><div class="card kpi"><b class="n ">k = 1: 0,833</b><p class="small">recall del denso con un solo fragmento; desde <b>k = 3</b>, 1,0 (<span class="mono">pipeline.json</span>)</p></div><div class="card kpi"><b class="n ">0,009 s · 1,5 s</b><p class="small">recuperar frente a generar una respuesta en CPU (notebook 05, celda [4])</p></div>
+</div>
+<div style="text-align:center;margin-top:44px;font-size:44px;font-weight:700;color:var(--acento)">¿Preguntas?</div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del ponente"><h3>Notas del ponente</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<div id="zoombox" aria-label="Captura ampliada"><p>Esc o clic para cerrar</p><img id="zoomimg" alt=""></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado (propuesta)"></span>
+  <button class="part" data-p="A">Idea</button><button class="part" data-p="B">Preparar</button><button class="part" data-p="C">Indexar</button><button class="part" data-p="D">Recuperar</button><button class="part" data-p="E">Generar</button><button class="part" data-p="F">Límites</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S5">⌂ Índice</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en los siete notebooks de esta carpeta.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "Idea", "B": "Preparar", "C": "Indexar", "D": "Recuperar", "E": "Generar", "F": "Límites"};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S5 · Extra: RAG en notebooks</span><span><b>${esc(PARTES[s.dataset.part]||'')}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N; $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL+' (propuesta)';
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto (propuesta): '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part]||'')} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+function zoom(on,src,alt){const z=$('#zoombox');if(on){$('#zoomimg').src=src;$('#zoomimg').alt=alt||'';}z.classList.toggle('on',!!on)}
+$('#zoombox').onclick=()=>zoom(false);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='Escape'){zoom(false);toggle('#index',false);toggle('#notes',false);return}
+  if($('#zoombox').classList.contains('on')) return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O'){toggle('#index')} else if(k==='s'||k==='S'){toggle('#notes')} else if(k==='f'||k==='F'){$('#bfull').click()}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.zoom'); if(z){e.stopPropagation();zoom(true,z.dataset.src,z.dataset.alt);return}
+  const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+fit();
+const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1)});
+})();
+</script>
+</body>
+</html>

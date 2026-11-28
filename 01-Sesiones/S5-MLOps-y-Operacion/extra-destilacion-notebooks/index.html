@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extra de S5: Destilación de modelos en notebooks · ML e IA: de desarrollo a producción</title>
+<!-- Generado por generar.py: no se edita a mano. -->
+<style>
+:root{--tinta:#1f2937;--suave:#5b6472;--linea:#d6dde6;--fondo:#ffffff;--gris:#f4f6f9;--acento:#0b5cad;--ok:#15803d;--mal:#b91c1c;--aviso:#92400e;
+ --mono:Consolas,"Cascadia Mono","DejaVu Sans Mono",Menlo,monospace;--sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#e8ecf1;color:var(--tinta);font-family:var(--sans)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#viewport{position:fixed;inset:0 0 48px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#stage{width:1280px;height:720px;flex:none;position:relative;transform:scale(var(--s,1));background:var(--fondo);box-shadow:0 2px 14px rgba(0,0,0,.12)}
+.slide{position:absolute;inset:0;padding:30px 52px 46px;display:none;flex-direction:column;gap:10px;overflow:hidden}
+.slide.active{display:flex}
+.kick{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--acento);font-weight:700}
+h1{font-size:31px;line-height:1.15;font-weight:700;margin-bottom:4px}
+h3{font-size:17px;margin-bottom:5px}
+.sub{font-size:22px;line-height:1.4;color:var(--suave);max-width:1050px}
+.cover{display:flex;flex-direction:column;justify-content:flex-start;padding-top:70px;flex:1}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--linea);background:var(--gris);color:var(--tinta)}
+.tag.ok{border-color:#86c79c;background:#ecf8f0;color:var(--ok)}.tag.warn{border-color:#e2b56b;background:#fdf6e9;color:var(--aviso)}
+.card{border:1px solid var(--linea);border-radius:12px;padding:10px 14px;background:#fff}
+.callout{border-left:4px solid var(--acento);background:#eef5fc;padding:9px 14px;border-radius:0 10px 10px 0;font-size:15.5px;line-height:1.4}
+.small{font-size:15px;line-height:1.42}
+.mono{font-family:var(--mono);font-size:.92em;background:var(--gris);padding:0 4px;border-radius:4px}
+.okc{color:var(--ok)}.malc{color:var(--mal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.thumbs{display:grid;gap:8px}.thumbs.t2{grid-template-columns:1fr 1fr}
+.src{margin:0;padding:7px 11px;font-family:var(--mono);font-size:12px;line-height:1.38;white-space:pre-wrap;overflow-wrap:anywhere}
+.grande .src{font-size:13.5px}
+.split{display:grid;gap:18px;min-height:0}.col,.capcol{display:flex;flex-direction:column;gap:9px;min-width:0}
+.list{list-style:none;display:flex;flex-direction:column;gap:4px}.list li{font-size:15px;line-height:1.38;padding-left:16px;position:relative}
+.list li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:50%;background:var(--acento)}
+.ol{padding-left:24px;display:flex;flex-direction:column;gap:5px;font-size:17px}.ol.sm{font-size:15px;gap:3px}
+.mira h3{color:var(--acento);font-size:15.5px}.mira .list li{font-size:14.5px}
+.falla{border-color:#e2b56b;background:#fffaf0}.falla h3{color:var(--aviso);font-size:15.5px}.falla .list li{font-size:14.5px}.falla .list li::before{background:var(--aviso)}
+.tbl{width:100%;border-collapse:collapse;font-size:14.5px}.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--suave);border-bottom:2px solid var(--linea);padding:5px 8px}
+.tbl td{border-bottom:1px solid var(--linea);padding:6px 8px;line-height:1.35;vertical-align:top}
+.term{border:1px solid var(--linea);border-radius:10px;background:var(--gris);overflow:hidden}
+.term .bar{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--linea);background:#eaeef3}
+.term .bar em{flex:1;font-style:normal;font-size:12.5px;color:var(--suave)}
+.tls{padding:6px 8px;font-family:var(--mono);font-size:13px;line-height:1.42}
+.tln{display:flex;align-items:flex-start;gap:6px;padding:2px 4px}
+.tln code{flex:1;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.tln.c{color:var(--suave);font-style:italic}
+.ps{color:var(--ok);font-weight:700}
+.cp{flex:none;min-width:26px;height:24px;border-radius:6px;border:1px solid #b9c3cf;background:#fff;font-size:13px;color:var(--suave)}
+.cp.ok{border-color:var(--ok);color:var(--ok)}.cpall{padding:0 10px;font-size:12px;font-family:var(--sans)}
+.realbox{border:1px solid #86c79c;background:#f3fbf5;border-radius:10px;padding:8px 12px}
+.realbox .rk{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ok);font-weight:700;margin-bottom:3px}
+.realbox pre{font-family:var(--mono);font-size:12.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.rot{margin:-4px 0 0}
+.cap{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cap figcaption{font-size:12px;line-height:1.35;color:var(--suave)}
+.cap .nota{color:var(--aviso)}
+.zoom{display:block;position:relative;cursor:zoom-in;text-align:left}
+.zoom img{display:block;max-width:100%;height:auto;border:1px solid var(--linea);border-radius:8px}
+.lupa{position:absolute;right:6px;bottom:6px;font-size:11.5px;background:rgba(255,255,255,.92);border:1px solid var(--linea);border-radius:6px;padding:1px 6px;display:flex;align-items:center;gap:4px;color:var(--suave)}
+.pend{border:2px dashed #c9a65e;background:#fdf9f0;border-radius:10px;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;text-align:center;font-size:13.5px;color:var(--aviso)}
+.pend b{font-size:16px}
+.grande .small{font-size:17.5px}.grande .list li{font-size:17px}.grande .mira .list li,.grande .falla .list li{font-size:16.5px}.grande .tbl{font-size:16.5px}.grande .tbl td{padding:8px 10px}
+.grande .tls{font-size:14.5px;line-height:1.5}.grande .callout{font-size:18px}.grande .ol{font-size:19px}.grande .ol.sm{font-size:17px}.grande h3{font-size:19px}.grande .mira h3,.grande .falla h3{font-size:17px}
+.grande .card{padding:13px 17px}.grande .grid4 .kpi{min-height:250px;padding-top:20px}.grande .grid4 .kpi .small{font-size:19px}.grande .grid4{margin-top:36px!important}.grande .kpi .n{font-size:30px}.grande .msg{font-size:32px}
+.kpi .n{display:block;font-size:27px;line-height:1.15;color:var(--acento);margin-bottom:4px}.kpi .n.okc{color:var(--ok)}
+.msg{font-size:27px;line-height:1.3;font-weight:600;border-left:6px solid var(--acento);padding:12px 20px;background:#eef5fc;border-radius:0 12px 12px 0}
+svg .nodo{fill:#f4f8fc;stroke:#8fb2d6;stroke-width:1.5}svg .nodo.puerta{fill:#fdf6e9;stroke:#c9a65e}svg .nodo.ok{fill:#ecf8f0;stroke:var(--ok)}svg .nodo.mal{fill:#fdeeee;stroke:var(--mal)}
+svg .fl{stroke:var(--acento);stroke-width:2;fill:none}svg .fl.dis{stroke-dasharray:5 4;stroke:#8fb2d6}
+svg .t1{font:700 15px var(--sans);fill:var(--tinta);text-anchor:middle}svg .t2{font:13px var(--sans);fill:var(--suave);text-anchor:middle}
+svg .tok{fill:var(--ok)}svg .tmal{fill:var(--mal)}
+.card svg{display:block;width:100%;height:auto}
+.foot{position:absolute;left:52px;right:52px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;color:var(--suave);border-top:1px solid var(--linea);padding-top:6px}
+#prog{position:fixed;left:0;top:0;height:3px;background:var(--acento);z-index:5}
+#bar{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border-top:1px solid var(--linea);font-size:13px;z-index:6}
+#bar button,#bar a{border:1px solid var(--linea);border-radius:8px;padding:4px 10px;background:#fff;color:var(--tinta);text-decoration:none;font-size:13px}
+#bar .part.on{border-color:var(--acento);color:var(--acento);font-weight:700}
+#bar .sp{flex:1}#count,#clockref{color:var(--suave);padding:0 6px}
+#notes{position:fixed;right:0;top:0;bottom:48px;width:400px;background:#fff;border-left:1px solid var(--linea);padding:18px;overflow:auto;display:none;z-index:7;font-size:15px;line-height:1.5}
+#notes.on{display:block}#notes h3{margin-bottom:8px}
+#index{position:fixed;inset:0 0 48px 0;background:rgba(255,255,255,.98);display:none;z-index:8;padding:28px;overflow:auto}
+#index.on{display:block}#index .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+#index button{border:1px solid var(--linea);border-radius:10px;padding:10px;text-align:left;font-size:14px;background:#fff}
+#index button small{display:block;color:var(--suave);font-size:12px}#index button.cur{border-color:var(--acento)}
+#zoombox{position:fixed;inset:0;background:rgba(20,26,34,.86);display:none;z-index:9;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#zoombox.on{display:flex}#zoombox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#zoombox p{position:fixed;top:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+@media print{#bar,#notes,#index,#prog,.cp{display:none!important}}
+
+.fuente{font-size:12.5px;line-height:1.35;color:var(--suave);margin-top:2px}
+.fuente .mono{font-size:.95em}
+.tbl td .mono{font-size:12.5px}
+.grid2>.callout{align-self:start}
+.cover .grid3 .card .list li{font-size:14px}
+
+.tbl.sm td{font-size:13.5px;padding:4px 8px}.tbl.sm th{font-size:11.5px}
+.orig{color:#5b6472}.orig .mono{font-size:.95em}
+.dec{display:inline-block;font-weight:700;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid}
+.dec.ok{color:var(--ok);border-color:#86c79c;background:#ecf8f0}.dec.mal{color:var(--mal);border-color:#e5a3a3;background:#fdeeee}
+.thumbs .cap img{width:100%;object-fit:contain}
+.slide .small .tag{margin-right:4px}
+.cap .zoom{display:inline-block;align-self:flex-start;max-width:100%}
+.tbl.nw td{white-space:nowrap}.tbl.nw td:first-child{white-space:normal}
+.grande .card .list li{font-size:19px;line-height:1.45}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+<div id="viewport"><div id="stage">
+
+<section class="slide" data-part="A" data-min="3" data-title="Portada"
+ data-notes="Portada del extra de la sesión 5. Son ocho notebooks que se hacen en CPU: la versión uno, del cero al cinco, con MNIST y con sentimiento, y la versión dos, el seis y el siete, con TinyBERT. Diga desde el principio lo que se probó y lo que no: la ejecución guardada es una sola, en Linux con Python tres doce; Windows, Codespace, alumnado y GPU están sin verificar. Las cifras de toda la presentación salen de los notebooks y de la carpeta de resultados, no de memoria.">
+<p class="kick">1 · Qué es destilar · ML e IA: de desarrollo a producción · S5 · extra</p><h1>Destilación de modelos en notebooks: que un modelo pequeño aprenda de uno grande</h1>
+
+<div class="cover">
+ <p class="sub">Un laboratorio para <b>replicar paso a paso</b>: un modelo <b>profesor</b>, ya entrenado, enseña a un <b>estudiante</b> más pequeño con <b>etiquetas blandas</b>. Ocho notebooks en CPU: la <b>v1</b> (00-05) con MNIST y con sentimiento, y la <b>v2</b> (06-07) con TinyBERT.</p>
+ <div class="chips"><span class="tag">8 notebooks</span><span class="tag">v1 y v2</span><span class="tag">Solo CPU</span><span class="tag">Profesor DistilBERT</span><span class="tag">Estudiantes GRU y TinyBERT</span><span class="tag">Puertas de promoción</span></div>
+ <div class="grid3" style="margin-top:20px">
+  <div class="card"><h3>Objetivos</h3><ul class="list"><li>Entender <b>etiquetas blandas</b>, temperatura y la pérdida de destilación.</li><li>Ejecutar los ocho notebooks <b>en orden</b> y leer sus salidas.</li><li>Decidir si un estudiante <b>se promociona</b>: calidad y latencia a la vez.</li></ul></div>
+  <div class="card"><h3>Cómo se usa</h3><ul class="list"><li><b>124 min</b> propuestos en seis partes (minuto en la barra inferior).</li><li>Cada orden con <b>⧉</b> para copiarla; las salidas son las <b>guardadas</b> en los notebooks.</li><li><b>← →</b> avanzan · <b>O</b> índice · <b>S</b> notas · <b>F</b> pantalla completa.</li></ul></div>
+  <div class="card"><h3>Honestidad desde el principio</h3><ul class="list"><li>Todo se ejecutó <b>una vez</b>, en CPU, con Python <b>3.12.8</b> en <b>Linux</b>; aquí no se reejecuta nada.</li><li><b>Sin verificar:</b> Windows, Codespace, alumnado y GPU.</li></ul></div>
+ </div>
+</div>
+</section>
+
+<section class="slide" data-part="A" data-min="4" data-title="Qué es destilar"
+ data-notes="Qué es destilar, con un ejemplo real del notebook tres. Una frase entra en dos sitios: en el profesor, que es DistilBERT con casi sesenta y siete millones de parámetros y no se toca, y en el dataset, que da la etiqueta dura. El profesor devuelve una etiqueta blanda, la distribución entera: aquí cero coma cero cuarenta y siete negativo y cero coma novecientos cincuenta y tres positivo a temperatura tres. El estudiante, un GRU de dos millones de parámetros, aprende de las dos con una pérdida que mezcla una divergencia KL y la entropía cruzada. La utilidad en producción es mover el coste de la petición.">
+<p class="kick">1 · Qué es destilar · profesor, estudiante y etiquetas blandas</p><h1>Destilar es que un profesor ya entrenado enseñe a un estudiante pequeño con algo más que la etiqueta</h1>
+
+<div class="card"><svg viewBox="0 0 1100 236" role="img" aria-label="El profesor produce una etiqueta blanda con toda la distribución; el dataset aporta la etiqueta dura; el estudiante aprende de las dos con una pérdida que mezcla KL a temperatura T y entropía cruzada"><defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="62" width="170" height="96" rx="12" class="nodo"/><text x="91" y="89" class="t1">Una frase</text><text x="91" y="109" class="t2">de SST-2</text><text x="91" y="129" class="t2">entra en los dos</text><rect x="236" y="6" width="270" height="96" rx="12" class="nodo puerta"/><text x="371" y="33" class="t1">Profesor</text><text x="371" y="53" class="t2">DistilBERT · 66 955 010 parámetros</text><text x="371" y="73" class="t2">ya entrenado: no se toca</text><rect x="566" y="6" width="270" height="96" rx="12" class="nodo ok"/><text x="701" y="33" class="t1">Etiqueta blanda (T = 3)</text><text x="701" y="53" class="t2">negativo 0,047 · positivo 0,953</text><text x="701" y="73" class="t2">toda la distribución</text><rect x="566" y="138" width="270" height="90" rx="12" class="nodo"/><text x="701" y="165" class="t1">Etiqueta dura del dataset</text><text x="701" y="185" class="t2">1 (positivo)</text><text x="701" y="205" class="t2">solo la clase correcta</text><rect x="896" y="62" width="198" height="96" rx="12" class="nodo puerta"/><text x="995" y="89" class="t1">Estudiante</text><text x="995" y="109" class="t2">GRU · 2 003 586</text><text x="995" y="129" class="t2">parámetros: aprende de las dos</text><path d="M179 96 L233 54" class="fl" marker-end="url(#fa)"/><path d="M509 54 L563 54" class="fl" marker-end="url(#fa)"/><path d="M839 54 L893 90" class="fl" marker-end="url(#fa)"/><text x="900" y="40" class="t2">α · T² · KL</text><path d="M179 132 L563 182" class="fl dis" marker-end="url(#fa)"/><path d="M839 182 L893 140" class="fl" marker-end="url(#fa)"/><text x="900" y="198" class="t2">(1 − α) · CE</text></svg></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card"><h3>Etiqueta dura</h3><ul class="list"><li>La clase correcta: un 3, un «positivo».</li><li>Es lo único que ve un estudiante «duro».</li></ul></div>
+ <div class="card"><h3>Etiqueta blanda</h3><ul class="list"><li>La <b>distribución</b> que el profesor da a <i>todas</i> las clases.</li><li>Si ante un 3 da algo al 8 y al 5 y casi nada al 0, el estudiante aprende esa semejanza: el <b>conocimiento oscuro</b>.</li></ul></div>
+ <div class="card"><h3>Por qué en producción</h3><ul class="list"><li>En el camino de la petición pesan <b>latencia, memoria y coste</b>.</li><li>El profesor puede quedar <b>fuera</b> de la petición: por lotes, para etiquetar o para auditar.</li></ul></div>
+</div><p class="fuente">Fuente: notebook 00, apartados «La idea, en una frase» y «Por qué importa en producción»; las cifras del diagrama, notebook 03 (salida de la celda de ejemplos) y resultados/sentimiento.json.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="La temperatura"
+ data-notes="La temperatura. El softmax convierte logits en probabilidades; con la temperatura se divide cada logit por T antes. Con T igual a cero coma cinco casi toda la masa está en la clase tres, casi una etiqueta dura. Con T igual a cinco el tres sigue ganando pero el ocho y el cinco son claramente más probables que el cero o el uno: esa es la información que queremos que el estudiante reciba. Aviso: los logits de este ejemplo están inventados a propósito en el notebook, para fijar la idea.">
+<p class="kick">1 · Qué es destilar · softmax con T</p><h1>La temperatura T suaviza el softmax: ahí aparece lo que el profesor sabe de las clases perdedoras</h1>
+
+<figure class="cap" data-img="fig_softmax_temperatura.webp"><button class="zoom" data-src="img/fig_softmax_temperatura.webp" data-alt="Cinco paneles de barras (T = 0.5 · 1 · 2 · 5 · 10) con las probabilidades de las 10 clases para el mismo vector de logits de un profesor; título de la figura «El mismo vector de logits, suavizado con distintas temperaturas»" title="Ampliar (Esc cierra)"><img src="img/fig_softmax_temperatura.webp" alt="Cinco paneles de barras (T = 0.5 · 1 · 2 · 5 · 10) con las probabilidades de las 10 clases para el mismo vector de logits de un profesor; título de la figura «El mismo vector de logits, suavizado con distintas temperaturas»" style="max-height:250px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Cinco paneles de barras (T = 0.5 · 1 · 2 · 5 · 10) con las probabilidades de las 10 clases para el mismo vector de logits de un profesor; título de la figura «El mismo vector de logits, suavizado con distintas temperaturas»<br><span class="orig">Sale de: notebook 01, celda 5 → <span class="mono">resultados/fig_softmax_temperatura.png</span></span></figcaption></figure>
+<div class="grid3" style="margin-top:8px">
+ <div class="card"><h3>Qué hace T</h3><ul class="list"><li><span class="mono">softmax(z / T)</span>. Con <b>T = 1</b> es el softmax de siempre.</li><li>Con <b>T &gt; 1</b> las clases no ganadoras reciben más masa.</li></ul></div>
+ <div class="card"><h3>Lo que dicen las cifras</h3><ul class="list"><li>Clase 3: <b>0,974</b> a T = 0,5 y <b>0,208</b> a T = 5.</li><li>Clase 8 (se parece al 3): <b>0,022</b> a T = 0,5 y <b>0,142</b> a T = 5.</li></ul></div>
+ <div class="callout">Los logits son <b>inventados</b> a propósito: un profesor muy seguro del 3 que ve algún parecido con el 8 y el 5. Sirven para fijar la idea, no son un modelo real.</div>
+</div><p class="fuente">Fuente: notebook 01, apartado 2: celda que guarda <span class="mono">resultados/fig_softmax_temperatura.png</span>; la tabla de probabilidades, salida de esa celda.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="Entropía y KL"
+ data-notes="Dos medidas de lo mismo. A la izquierda, la entropía de la distribución frente a la temperatura: sube con T y se acerca al límite de la distribución uniforme, que es el logaritmo de diez. A la derecha, la KL entre profesor y estudiante: con T igual a uno el estudiante que apuesta por el ocho tiene una KL de dos coma siete, y el cercano de cero coma cero dos; al subir T las dos bajan mucho. Por eso T y alfa son hiperparámetros que se eligen con un conjunto de validación.">
+<p class="kick">1 · Qué es destilar · más T, distribución más plana</p><h1>A más temperatura sube la entropía y baja la KL entre profesor y estudiante</h1>
+
+<div class="thumbs t2"><figure class="cap" data-img="fig_entropia_temperatura.webp"><button class="zoom" data-src="img/fig_entropia_temperatura.webp" data-alt="Curva de la entropía (nats) frente a la temperatura T, con puntos rotulados T=0.5 · T=1 · T=2 · T=5 · T=10 y una línea discontinua en la entropía uniforme (log 10); título «A mayor T, más se acerca la distribución a la uniforme»" title="Ampliar (Esc cierra)"><img src="img/fig_entropia_temperatura.webp" alt="Curva de la entropía (nats) frente a la temperatura T, con puntos rotulados T=0.5 · T=1 · T=2 · T=5 · T=10 y una línea discontinua en la entropía uniforme (log 10); título «A mayor T, más se acerca la distribución a la uniforme»" style="max-height:230px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Curva de la entropía (nats) frente a la temperatura T, con puntos rotulados T=0.5 · T=1 · T=2 · T=5 · T=10 y una línea discontinua en la entropía uniforme (log 10); título «A mayor T, más se acerca la distribución a la uniforme»<br><span class="orig">Sale de: notebook 01, celda 7 → <span class="mono">resultados/fig_entropia_temperatura.png</span></span></figcaption></figure><figure class="cap" data-img="fig_kl_temperatura.webp"><button class="zoom" data-src="img/fig_kl_temperatura.webp" data-alt="Dos líneas con la KL (nats) entre profesor y estudiante para T = 1 · 2 · 3 · 5 · 8, una para el estudiante «cercano» y otra para el que «apuesta al 8»; título «KL entre profesor y estudiante a distintas T»" title="Ampliar (Esc cierra)"><img src="img/fig_kl_temperatura.webp" alt="Dos líneas con la KL (nats) entre profesor y estudiante para T = 1 · 2 · 3 · 5 · 8, una para el estudiante «cercano» y otra para el que «apuesta al 8»; título «KL entre profesor y estudiante a distintas T»" style="max-height:230px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos líneas con la KL (nats) entre profesor y estudiante para T = 1 · 2 · 3 · 5 · 8, una para el estudiante «cercano» y otra para el que «apuesta al 8»; título «KL entre profesor y estudiante a distintas T»<br><span class="orig">Sale de: notebook 01, celda 11 → <span class="mono">resultados/fig_kl_temperatura.png</span></span></figcaption></figure></div>
+<div class="grid2" style="margin-top:10px">
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>La <b>entropía</b> crece con T y se satura cerca de log 10 (uniforme en 10 clases).</li><li>La <b>KL</b> del estudiante que apuesta mal baja de <b>2,712</b> (T = 1) a <b>0,022</b> (T = 8); la del cercano, de <b>0,019</b> a <b>0,001</b>.</li></ul></div>
+ <div class="callout">Con T = 1 la KL <b>separa muy bien</b> al estudiante cercano del que apuesta al 8; con T alta casi no los distingue. <b>T y α se eligen con validación</b>, no a ojo en test.</div>
+</div><p class="fuente">Fuente: notebook 01, apartados 2 y 3: celdas que guardan las dos figuras; la tabla de KL, salida de la segunda.</p>
+</section>
+
+<section class="slide" data-part="A" data-min="3" data-title="La pérdida de destilación"
+ data-notes="La pérdida de destilación de Hinton y compañía. Dos términos: la divergencia KL entre la distribución suave del profesor y la del estudiante, a temperatura T, y la entropía cruzada con la etiqueta dura. Alfa mezcla los dos: con alfa uno solo se destila y con alfa cero es el entrenamiento supervisado habitual. El factor T al cuadrado compensa que el gradiente se encoge al suavizar. En la tabla se ven los valores que usa cada notebook; en el uno se dice que tres y cero coma siete son valores de partida, no un óptimo.">
+<p class="kick">1 · Qué es destilar · KL a temperatura T más entropía cruzada</p><h1>La pérdida mezcla copiar al profesor (KL a temperatura T) y acertar la etiqueta (entropía cruzada)</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="callout"><span class="mono">L = α · T² · KL( p_prof(T) ‖ p_est(T) ) + (1 − α) · CE(z_est, y)</span>  (Hinton, Vinyals y Dean, 2015)</div><div class="term"><div class="bar"><em>perdida_destilacion · src/destilacion_utils.py (núcleo)</em><button class="cp cpall" data-t="log_p_est = F.log_softmax(logits_estudiante / temperature, dim=-1)
+p_prof = F.softmax(logits_profesor / temperature, dim=-1)
+kl = F.kl_div(log_p_est, p_prof, reduction=&quot;batchmean&quot;) * (temperature ** 2)
+
+if alpha &gt;= 1.0 or etiquetas is None:
+    return kl
+
+ce = F.cross_entropy(logits_estudiante, etiquetas)
+return alpha * kl + (1.0 - alpha) * ce">Copiar todo</button></div><pre class="src">log_p_est = F.log_softmax(logits_estudiante / temperature, dim=-1)
+p_prof = F.softmax(logits_profesor / temperature, dim=-1)
+kl = F.kl_div(log_p_est, p_prof, reduction=&quot;batchmean&quot;) * (temperature ** 2)
+
+if alpha &gt;= 1.0 or etiquetas is None:
+    return kl
+
+ce = F.cross_entropy(logits_estudiante, etiquetas)
+return alpha * kl + (1.0 - alpha) * ce</pre></div><ul class="list"><li><b>α = 1</b>: solo destilación. <b>α = 0</b>: entrenamiento supervisado de siempre.</li><li><b>T²</b> compensa que el gradiente de la KL se encoge como 1/T² al suavizar.</li></ul></div><div class="capcol"><table class="tbl "><tr><th>Notebook</th><th>T</th><th>Alfa</th><th>Estudiante</th></tr><tr><td>02 · MNIST</td><td>4</td><td>0,5</td><td>MLP de 400 etiquetas</td></tr><tr><td>03 · sentimiento v1</td><td>3</td><td>0,7</td><td>GRU, 3 000 frases</td></tr><tr><td>06 · sentimiento v2</td><td>3</td><td>0,5</td><td>TinyBERT, 20 000 frases</td></tr></table><div class="realbox"><div class="rk">Salida guardada · notebook 01 · la pérdida de dos estudiantes</div><pre>alpha                              0.0    0.7    1.0
+caso                        T                       
+estudiante cercano          1.0  0.332  0.113  0.019
+                            3.0  0.332  0.137  0.054
+                            5.0  0.332  0.135  0.051
+estudiante que apuesta al 8 1.0  3.902  3.069  2.712
+                            3.0  3.902  2.576  2.007
+                            5.0  3.902  2.304  1.618</pre></div><div class="callout">En el 01, <b>T = 3 y α = 0,7</b> son «valores de partida razonables, no un óptimo universal».</div><p class="fuente">Fuente: notebook 01, apartado 3; <span class="mono">src/destilacion_utils.py</span>; T y α de cada notebook, de resultados/mnist.json, sentimiento.json y v2_sentimiento.json.</p></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="4" data-title="Mapa y tiempos"
+ data-notes="Mapa del extra. Los ocho notebooks se siguen en orden porque el cuatro lee lo que dejan el dos y el tres, y el siete lee lo del tres y el seis. La columna de tiempo guardado no es una estimación: es la suma de lo que tardó cada celda en la ejecución que quedó guardada en el propio notebook, en total unos 14 min 34 s, y casi todo es el notebook seis, que tardó 12 min 51 s con los logits del profesor ya en caché. La columna orientativa es la del README y es para CPU.">
+<p class="kick">2 · Requisitos y preparación · ocho notebooks, un orden</p><h1>Ocho notebooks que se siguen en orden: el 04 y el 07 leen lo que dejan los anteriores</h1>
+
+<div class="card"><svg viewBox="0 0 1100 124" role="img" aria-label="Los ocho notebooks en orden; el 04 lee los resultados del 02 y del 03, y el 07 los del 03 y del 06"><defs><marker id="fb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0b5cad"/></marker></defs><rect x="6" y="10" width="116" height="84" rx="10" class="nodo"/><text x="64" y="38" class="t1">00</text><text x="64" y="58" class="t2">Intro y setup</text><path d="M124 52 L140 52" class="fl" marker-end="url(#fb)"/><rect x="142" y="10" width="116" height="84" rx="10" class="nodo"/><text x="200" y="38" class="t1">01</text><text x="200" y="58" class="t2">Teoría</text><path d="M260 52 L276 52" class="fl" marker-end="url(#fb)"/><rect x="278" y="10" width="116" height="84" rx="10" class="nodo"/><text x="336" y="38" class="t1">02</text><text x="336" y="58" class="t2">MNIST</text><path d="M396 52 L412 52" class="fl" marker-end="url(#fb)"/><rect x="414" y="10" width="116" height="84" rx="10" class="nodo"/><text x="472" y="38" class="t1">03</text><text x="472" y="58" class="t2">Sentimiento</text><path d="M532 52 L548 52" class="fl" marker-end="url(#fb)"/><rect x="550" y="10" width="116" height="84" rx="10" class="nodo"/><text x="608" y="38" class="t1">04</text><text x="608" y="58" class="t2">Comparativa</text><text x="608" y="80" class="t2" style="fill:#0b5cad;font-weight:700">lee lo de 02 y 03</text><path d="M668 52 L684 52" class="fl" marker-end="url(#fb)"/><rect x="686" y="10" width="116" height="84" rx="10" class="nodo"/><text x="744" y="38" class="t1">05</text><text x="744" y="58" class="t2">Ejercicios</text><path d="M804 52 L820 52" class="fl" marker-end="url(#fb)"/><rect x="822" y="10" width="116" height="84" rx="10" class="nodo ok"/><text x="880" y="38" class="t1">06</text><text x="880" y="58" class="t2">v2 TinyBERT</text><path d="M940 52 L956 52" class="fl" marker-end="url(#fb)"/><rect x="958" y="10" width="116" height="84" rx="10" class="nodo ok"/><text x="1016" y="38" class="t1">07</text><text x="1016" y="58" class="t2">v1 vs v2</text><text x="1016" y="80" class="t2" style="fill:#0b5cad;font-weight:700">lee lo de 03 y 06</text><text x="6" y="116" class="t2" style="text-anchor:start">azul: v1 (notebooks 00-05) · verde: v2 (06-07) · el 04 y el 07 no entrenan: leen resultados/</text></svg></div>
+<div style="margin-top:8px" class="card"><table class="tbl sm"><tr><th>Nº</th><th>Qué hace (README)</th><th>Tiempo guardado</th><th>Orientativo (README)</th></tr><tr><td><b>00</b></td><td>Intuición, comprobación del entorno, proxy y Hugging Face</td><td>3,8 s</td><td>1-2 min</td></tr><tr><td><b>01</b></td><td>Softmax, temperatura, «conocimiento oscuro», pérdida de destilación y figuras</td><td>2,9 s</td><td>1-2 min</td></tr><tr><td><b>02</b></td><td>Calentamiento: MLP profesor (30 000 imágenes) y estudiante pequeño (400 etiquetas)</td><td>29 s</td><td>1-3 min</td></tr><tr><td><b>03</b></td><td>Profesor de Hugging Face (DistilBERT, SST-2) hacia un estudiante diminuto</td><td>58 s</td><td>2-15 min (la primera vez descarga el modelo, unos 250 MB)</td></tr><tr><td><b>04</b></td><td>Exactitud, tamaño, latencia y conclusiones de MLOps</td><td>3,3 s</td><td>1-3 min</td></tr><tr><td><b>05</b></td><td>Ejercicios (con soluciones al final). La v1 de sentimiento no promociona</td><td>4,1 s</td><td>2-10 min</td></tr><tr><td><b>06</b></td><td>v2: TinyBERT + más datos + logits cacheados + int8. <span class="mono">MODO_RAPIDO</span> por defecto</td><td>12 min 51 s</td><td>10-20 min (menos si los logits ya están en <span class="mono">modelos/</span>)</td></tr><tr><td><b>07</b></td><td>Ablación v1 frente a v2 y decisión de promoción</td><td>2,4 s</td><td>1-3 min</td></tr></table></div>
+<p class="fuente">Tiempo guardado = suma de lo que tardó cada celda, según la metadata de ejecución de cada .ipynb (total: <b>14 min 34 s</b>; el 06 usó los logits ya en caché). Fuente: README (tabla) y los ocho notebooks.</p>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Entorno"
+ data-notes="Preparar el entorno. Lo recomendado es reutilizar el entorno del curso, que se llama env guion ia guion mlops, y encima instalar los requisitos del extra, porque el extra necesita paquetes que ese entorno no trae: PyTorch solo CPU, transformers, datasets. El archivo de requisitos fija la versión de torch y trae el índice extra para las ruedas de CPU. Necesita unos tres gigas de disco y salida a Internet la primera vez. Lo único que garantiza que funciona es que las versiones que imprime el notebook cero coinciden con las del archivo; instalar desde cero en una máquina limpia no se presenció aquí.">
+<p class="kick">2 · Requisitos y preparación · el del curso, más los requisitos del extra</p><h1>Un solo entorno: el del curso, y encima los requisitos del extra</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Terminal · desde la carpeta del extra · una orden cada vez</em><button class="cp cpall" data-t="conda activate env-ia-mlops
+pip install -r requisitos-extra-destilacion.txt">Copiar todo</button></div><div class="tls"><div class="tln c"># entorno del curso (véase 03-Entorno/)</div><div class="tln"><span class="ps">$</span> <code>conda activate env-ia-mlops</code><button class="cp" data-t="conda activate env-ia-mlops" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>pip install -r requisitos-extra-destilacion.txt</code><button class="cp" data-t="pip install -r requisitos-extra-destilacion.txt" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: README, «Entorno recomendado: el del curso (<span class="mono">env-ia-mlops</span>)».</p><div class="callout">El archivo fija <b>torch==2.15.0+cpu</b> y ya incluye el <span class="mono">--extra-index-url</span> de las ruedas CPU: sin él, pip no encuentra esa rueda.</div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Python 3.12</b> (recomendado) o 3.11; la ejecución guardada fue con <b>3.12.8</b>.</li><li>Unos <b>3 GB</b> de disco: entorno, caché de Hugging Face y MNIST.</li><li>Salida a Internet <b>la primera vez</b>: MNIST y el profesor de sentimiento.</li></ul></div><div class="card"><h3>Versiones: requisitos frente a notebook 00</h3><table class="tbl sm"><tr><th>Paquete</th><th>requisitos</th><th>notebook 00</th><th></th></tr><tr><td><span class="mono">numpy</span></td><td>2.5.4</td><td>2.5.4</td><td>✓</td></tr><tr><td><span class="mono">pandas</span></td><td>3.1.1</td><td>3.1.1</td><td>✓</td></tr><tr><td><span class="mono">scikit-learn</span></td><td>1.9.1</td><td>1.9.1</td><td>✓</td></tr><tr><td><span class="mono">torch</span></td><td>2.15.0+cpu</td><td>2.15.0+cpu</td><td>✓</td></tr><tr><td><span class="mono">torchvision</span></td><td>0.29.2+cpu</td><td>0.29.2+cpu</td><td>✓</td></tr><tr><td><span class="mono">transformers</span></td><td>5.24.1</td><td>5.24.1</td><td>✓</td></tr><tr><td><span class="mono">datasets</span></td><td>5.2.0</td><td>5.2.0</td><td>✓</td></tr><tr><td><span class="mono">accelerate</span></td><td>1.16.0</td><td>1.16.0</td><td>✓</td></tr></table></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li><span class="mono">pip</span> no encuentra <span class="mono">torch</span>: falta el <span class="mono">--extra-index-url</span> (el archivo ya lo lleva).</li><li>Falta algún paquete: el notebook 00 lo dice y pide <span class="mono">pip install -r requisitos-extra-destilacion.txt</span> con el <b>mismo Python que el kernel</b>.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Entorno nuevo"
+ data-notes="Si no se dispone del entorno del curso, se crea uno nuevo con Python tres doce. A la izquierda, Linux o macOS, que es donde se ejecutó el material; a la derecha, Windows con PowerShell, que está en el README pero sin verificar: no se probó en Windows. En Windows, si la política de ejecución bloquea la activación, se cambia una vez para el usuario actual. Una nota práctica: los notebooks buscan la raíz del proyecto, así que da igual desde qué carpeta se abran.">
+<p class="kick">2 · Requisitos y preparación · si no tienes el del curso</p><h1>Si no tienes el entorno del curso, crea uno nuevo: Linux o macOS por un lado, Windows por otro</h1>
+
+<div class="grid2">
+ <div class="col"><div class="term"><div class="bar"><em>Linux o macOS · una orden cada vez</em><button class="cp cpall" data-t="python3.12 -m venv venv
+source venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu
+python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;
+jupyter notebook notebooks/00-introduccion-y-setup.ipynb">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>python3.12 -m venv venv</code><button class="cp" data-t="python3.12 -m venv venv" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>source venv/bin/activate</code><button class="cp" data-t="source venv/bin/activate" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m pip install --upgrade pip</code><button class="cp" data-t="python -m pip install --upgrade pip" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu</code><button class="cp" data-t="pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;</code><button class="cp" data-t="python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>jupyter notebook notebooks/00-introduccion-y-setup.ipynb</code><button class="cp" data-t="jupyter notebook notebooks/00-introduccion-y-setup.ipynb" title="Copiar">⧉</button></div></div></div></div>
+ <div class="col"><div class="term"><div class="bar"><em>Windows (PowerShell) · una orden cada vez</em><button class="cp cpall" data-t="py -3.12 -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu
+python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;
+jupyter notebook notebooks\00-introduccion-y-setup.ipynb">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>py -3.12 -m venv venv</code><button class="cp" data-t="py -3.12 -m venv venv" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>.\venv\Scripts\Activate.ps1</code><button class="cp" data-t=".\venv\Scripts\Activate.ps1" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m pip install --upgrade pip</code><button class="cp" data-t="python -m pip install --upgrade pip" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu</code><button class="cp" data-t="pip install -r requisitos-extra-destilacion.txt --extra-index-url https://download.pytorch.org/whl/cpu" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;</code><button class="cp" data-t="python -m ipykernel install --user --name destilacion --display-name &quot;Python (destilacion)&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>jupyter notebook notebooks\00-introduccion-y-setup.ipynb</code><button class="cp" data-t="jupyter notebook notebooks\00-introduccion-y-setup.ipynb" title="Copiar">⧉</button></div></div></div><p class="small"><span class="tag warn">Sin verificar</span> <b>Windows</b>: las órdenes salen del README, pero la ejecución guardada fue en <b>Linux</b> (Linux-6.12.113+-x86_64-with-glibc2.41). Nadie las ha probado en Windows aquí.</p></div>
+</div>
+<div style="margin-top:10px"><div class="callout">Si Windows bloquea la activación del entorno, <span class="mono">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</span> (solo para tu usuario). Los notebooks localizan la raíz del proyecto aunque el directorio de trabajo sea <span class="mono">notebooks/</span>.</div></div><p class="fuente">Fuente: README, «Preparar un entorno nuevo» (Linux o macOS y Windows).</p>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Proxy y Hugging Face"
+ data-notes="Proxy y Hugging Face. Solo hace falta si la red lo exige. El proxy que se ve es un nombre de ejemplo genérico, no el de ninguna empresa: cada uno pone el suyo. El notebook cero solo informa de si hay proxy, certificado y token, sin imprimir ningún secreto, y prueba la conexión con una petición HEAD. En la ejecución guardada no había proxy ni certificado ni token, así que el camino con proxy corporativo está sin verificar. Si el profesor ya está en la caché local, las variables de modo offline permiten trabajar sin red.">
+<p class="kick">2 · Requisitos y preparación · solo si tu red lo exige</p><h1>Detrás de un proxy corporativo, defínelo antes de descargar nada: MNIST y el profesor vienen de Internet</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>PowerShell · solo esta sesión · cambia el proxy por el tuyo</em><button class="cp cpall" data-t="conda activate env-ia-mlops
+$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;
+$env:HTTPS_PROXY = $env:HTTP_PROXY
+$env:NO_PROXY    = &quot;localhost,127.0.0.1&quot;
+pip install --proxy $env:HTTP_PROXY -r requisitos-extra-destilacion.txt">Copiar todo</button></div><div class="tls"><div class="tln c"># ejemplo con un proxy genérico: no es el de ninguna empresa real</div><div class="tln"><span class="ps">$</span> <code>conda activate env-ia-mlops</code><button class="cp" data-t="conda activate env-ia-mlops" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;</code><button class="cp" data-t="$env:HTTP_PROXY  = &quot;http://proxy.miempresa.example:8080&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>$env:HTTPS_PROXY = $env:HTTP_PROXY</code><button class="cp" data-t="$env:HTTPS_PROXY = $env:HTTP_PROXY" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>$env:NO_PROXY    = &quot;localhost,127.0.0.1&quot;</code><button class="cp" data-t="$env:NO_PROXY    = &quot;localhost,127.0.0.1&quot;" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>pip install --proxy $env:HTTP_PROXY -r requisitos-extra-destilacion.txt</code><button class="cp" data-t="pip install --proxy $env:HTTP_PROXY -r requisitos-extra-destilacion.txt" title="Copiar">⧉</button></div></div></div><div class="term"><div class="bar"><em>Si el profesor ya está en cache-hf/ · sin red</em><button class="cp cpall" data-t="export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1">Copiar todo</button></div><div class="tls"><div class="tln c"># bash</div><div class="tln"><span class="ps">$</span> <code>export HF_HUB_OFFLINE=1</code><button class="cp" data-t="export HF_HUB_OFFLINE=1" title="Copiar">⧉</button></div><div class="tln"><span class="ps">$</span> <code>export TRANSFORMERS_OFFLINE=1</code><button class="cp" data-t="export TRANSFORMERS_OFFLINE=1" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: README, «Proxy corporativo y Hugging Face».</p><p class="small"><span class="tag warn">Sin verificar</span> <b>proxy corporativo</b>: la ejecución guardada fue <b>sin proxy</b>, sin certificado y sin token (notebook 00).</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El notebook 00 <b>solo informa</b> de si hay proxy, certificado y token (sí o no); no imprime secretos.</li><li>Si <span class="mono">HF_HOME</span> no estaba definido, lo apunta a <span class="mono">cache-hf/</span> dentro del proyecto.</li><li>La conexión a Hugging Face se prueba con un <span class="mono">HEAD</span> (sin descargar): salió <b>200</b>.</li><li>El profesor <span class="mono">distilbert-base-uncased-finetuned-sst-2-english</span> se descarga <b>una vez</b>; el conjunto SST-2 viene de <span class="mono">nyu-mll/glue</span>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Hugging Face no se alcanza: define el proxy, o <span class="mono">HF_HUB_OFFLINE=1</span> si el profesor <b>ya</b> está en <span class="mono">cache-hf/</span>.</li><li>Un proxy que inspecciona HTTPS necesita el certificado: <span class="mono">SSL_CERT_FILE</span> y <span class="mono">REQUESTS_CA_BUNDLE</span> (README).</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="B" data-min="3" data-title="Ejecutar los ocho"
+ data-notes="Se pueden leer los notebooks sin reentrenar, porque ya incluyen las salidas de una ejecución en CPU, o reejecutarlos todos en orden con el script de bash. Reejecutar regenera las carpetas de modelos y resultados. Avise de que el notebook seis es el que más tarda: más de doce minutos en la ejecución guardada, y eso con los logits del profesor ya calculados. El bucle de PowerShell del README está sin verificar. En esta preparación no se volvió a ejecutar ningún notebook: todo lo que se enseña es lo guardado.">
+<p class="kick">2 · Requisitos y preparación · o leerlos sin reentrenar</p><h1>Los notebooks ya traen salidas: léelos sin reentrenar, o reejecútalos todos en orden</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Linux o macOS · desde la raíz del extra, con el entorno activado</em><button class="cp cpall" data-t="bash scripts/ejecutar_cuadernos.sh">Copiar todo</button></div><div class="tls"><div class="tln"><span class="ps">$</span> <code>bash scripts/ejecutar_cuadernos.sh</code><button class="cp" data-t="bash scripts/ejecutar_cuadernos.sh" title="Copiar">⧉</button></div></div></div><p class="fuente">Fuente: README y scripts/ejecutar_cuadernos.sh.</p><div class="callout"><b>Reejecutar tarda</b>: la ejecución guardada sumó <b>14 min 34 s</b> y casi todo es el notebook 06 (<b>12 min 51 s</b>, con los logits ya en caché). En esta preparación <b>no se reejecutó nada</b>: se usan las salidas guardadas.</div></div><div class="capcol"><div class="term"><div class="bar"><em>Windows (PowerShell) · bucle del README, con el entorno activado</em><button class="cp cpall" data-t="$env:HF_HOME = &quot;$PWD\cache-hf&quot;
+$env:TOKENIZERS_PARALLELISM = &quot;false&quot;
+foreach ($nb in @(
+  &quot;notebooks\00-introduccion-y-setup.ipynb&quot;,
+  &quot;notebooks\01-teoria-softmax-temperatura.ipynb&quot;,
+  &quot;notebooks\02-destilacion-mnist-mlp.ipynb&quot;,
+  &quot;notebooks\03-destilacion-bert-sentimiento.ipynb&quot;,
+  &quot;notebooks\04-comparativa-y-produccion.ipynb&quot;,
+  &quot;notebooks\05-ejercicios.ipynb&quot;,
+  &quot;notebooks\06-destilacion-v2-sentimiento.ipynb&quot;,
+  &quot;notebooks\07-comparativa-v1-vs-v2.ipynb&quot;
+)) {
+  python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout 1800 $nb
+}">Copiar todo</button></div><pre class="src">$env:HF_HOME = &quot;$PWD\cache-hf&quot;
+$env:TOKENIZERS_PARALLELISM = &quot;false&quot;
+foreach ($nb in @(
+  &quot;notebooks\00-introduccion-y-setup.ipynb&quot;,
+  &quot;notebooks\01-teoria-softmax-temperatura.ipynb&quot;,
+  &quot;notebooks\02-destilacion-mnist-mlp.ipynb&quot;,
+  &quot;notebooks\03-destilacion-bert-sentimiento.ipynb&quot;,
+  &quot;notebooks\04-comparativa-y-produccion.ipynb&quot;,
+  &quot;notebooks\05-ejercicios.ipynb&quot;,
+  &quot;notebooks\06-destilacion-v2-sentimiento.ipynb&quot;,
+  &quot;notebooks\07-comparativa-v1-vs-v2.ipynb&quot;
+)) {
+  python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout 1800 $nb
+}</pre></div><p class="small"><span class="tag warn">Sin verificar</span> el bucle de <b>PowerShell</b> no se ha ejecutado aquí (solo la versión <span class="mono">.sh</span>, en Linux).</p></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Notebook 00"
+ data-notes="El notebook cero no entrena nada. Primero comprueba que están los paquetes obligatorios y deja una tabla con las versiones; si falta alguno, la celda siguiente se para con un mensaje que dice qué instalar. Después prueba que Hugging Face se alcanza con una petición HEAD, sin descargar. En la ejecución guardada todo está disponible, no hay GPU, proxy ni token, y Hugging Face responde doscientos. Si estas dos celdas pasan, se puede seguir con el notebook uno.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · comprobar el entorno</p><h1>Notebook 00: solo comprueba el entorno, no entrena nada</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Celda · comprobar el entorno</em><button class="cp cpall" data-t="tabla_entorno = comprobar_entorno()
+tabla_entorno">Copiar todo</button></div><pre class="src">tabla_entorno = comprobar_entorno()
+tabla_entorno</pre></div><div class="term"><div class="bar"><em>Celda · alcanzar Hugging Face (un HEAD)</em><button class="cp cpall" data-t="conexion_hf = probar_conexion_hf()">Copiar todo</button></div><pre class="src">conexion_hf = probar_conexion_hf()</pre></div><p class="fuente">Fuente: notebook 00, apartados 2 y 3.</p></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 00</div><pre>Entorno listo. Paquetes obligatorios disponibles.
+{&#x27;url&#x27;: &#x27;https://huggingface.co&#x27;, &#x27;ok&#x27;: True, &#x27;estado&#x27;: 200, &#x27;error&#x27;: None}
+Hugging Face es alcanzable. El cuaderno 03 podrá descargar el profesor si no está en el caché.</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Python <b>3.12.8</b> sobre <b>Linux</b>; torch <b>2.15.0+cpu</b>, dispositivo <b>cpu</b>.</li><li>CUDA «cpu-only», proxy y token: <b>no</b> (informativos, no bloquean).</li><li>Hugging Face responde con estado <b>200</b>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>«Faltan paquetes»: instala <span class="mono">requisitos-extra-destilacion.txt</span> en el entorno del kernel.</li><li>No se alcanza Hugging Face: proxy o <span class="mono">HF_HUB_OFFLINE=1</span> (diapositiva del proxy).</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Notebook 01"
+ data-notes="El notebook uno es teoría ejecutable y no necesita red ni datos. Se calcula el softmax de tres formas: una ingenua, una estable que resta el máximo y la del módulo compartido, y se comprueba que coinciden. La ventaja de restar el máximo es no desbordar la exponencial con logits grandes. Las figuras de temperatura, entropía y KL, y la tabla de pérdidas, son las de las diapositivas anteriores.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · softmax a mano</p><h1>Notebook 01: tres softmax que coinciden, la base de la temperatura y de la pérdida</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Celda · softmax ingenuo, estable y del módulo</em><button class="cp cpall" data-t="logits = np.array([2.0, 1.0, 0.1])
+
+def softmax_ingenua(z):
+    e = np.exp(z)
+    return e / e.sum()
+
+def softmax_estable(z):
+    z = z - z.max()
+    e = np.exp(z)
+    return e / e.sum()
+
+p_ingenua = softmax_ingenua(logits)
+p_estable = softmax_estable(logits)
+p_util = softmax_temperatura(logits, temperature=1.0)
+
+tabla = pd.DataFrame(
+    {&quot;clase&quot;: [0, 1, 2], &quot;logit&quot;: logits, &quot;ingenua&quot;: p_ingenua, &quot;estable&quot;: p_estable, &quot;util&quot;: p_util}
+)
+print(tabla.to_string(index=False))
+print(&quot;sumas:&quot;, p_ingenua.sum(), p_estable.sum(), p_util.sum())
+np.testing.assert_allclose(p_ingenua, p_estable)
+np.testing.assert_allclose(p_estable, p_util)
+print(&quot;Las tres implementaciones coinciden (T = 1).&quot;)">Copiar todo</button></div><pre class="src">logits = np.array([2.0, 1.0, 0.1])
+
+def softmax_ingenua(z):
+    e = np.exp(z)
+    return e / e.sum()
+
+def softmax_estable(z):
+    z = z - z.max()
+    e = np.exp(z)
+    return e / e.sum()
+
+p_ingenua = softmax_ingenua(logits)
+p_estable = softmax_estable(logits)
+p_util = softmax_temperatura(logits, temperature=1.0)
+
+tabla = pd.DataFrame(
+    {&quot;clase&quot;: [0, 1, 2], &quot;logit&quot;: logits, &quot;ingenua&quot;: p_ingenua, &quot;estable&quot;: p_estable, &quot;util&quot;: p_util}
+)
+print(tabla.to_string(index=False))
+print(&quot;sumas:&quot;, p_ingenua.sum(), p_estable.sum(), p_util.sum())
+np.testing.assert_allclose(p_ingenua, p_estable)
+np.testing.assert_allclose(p_estable, p_util)
+print(&quot;Las tres implementaciones coinciden (T = 1).&quot;)</pre></div><p class="fuente">Fuente: notebook 01, apartado 1.</p></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 01</div><pre> clase  logit  ingenua  estable     util
+     0    2.0 0.659001 0.659001 0.659001
+     1    1.0 0.242433 0.242433 0.242433
+     2    0.1 0.098566 0.098566 0.098566
+sumas: 1.0 1.0 1.0
+Las tres implementaciones coinciden (T = 1).</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Restar el máximo antes de exponenciar <b>no cambia</b> el resultado y evita desbordar <span class="mono">exp</span>.</li><li>Las tres versiones <b>coinciden</b> con T = 1 (el <span class="mono">assert_allclose</span> lo exige).</li><li>El resto del notebook son las figuras y la pérdida de las diapositivas de teoría; <b>no necesita red</b>.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Notebook 02 · el profesor"
+ data-notes="El notebook dos es el calentamiento en visión. Un profesor MLP con doscientos treinta y cinco mil parámetros se entrena con treinta mil imágenes; el estudiante es un MLP diez veces más pequeño que ve solo cuatrocientas. A propósito: con pocas etiquetas el estudiante duro tiende a memorizar, y el destilado recibe en cada imagen una distribución rica. Los dos estudiantes arrancan del mismo estado inicial, para que la diferencia no sea suerte de la inicialización. El profesor llega a casi noventa y siete por ciento en test, y el notebook tiene una aserción que exige más de noventa.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · calentamiento en MNIST</p><h1>Notebook 02: un profesor MLP con 30 000 imágenes y un estudiante con solo 400</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Celda · parámetros del experimento</em><button class="cp cpall" data-t="N_TRAIN_PROFESOR = 30_000
+N_TRAIN_ESTUDIANTE = 400
+N_TEST = 5_000
+EPOCHS_PROFESOR = 4
+EPOCHS_ESTUDIANTE = 25
+BATCH = 64
+LR_PROFESOR = 1e-3
+LR_ESTUDIANTE = 1e-3
+ANCHOS_PROFESOR = [784, 256, 128, 10]
+ANCHOS_ESTUDIANTE = [784, 32, 10]
+T_DISTIL = 4.0
+ALPHA = 0.5
+DROP_PROFESOR = 0.2
+DROP_ESTUDIANTE = 0.0">Copiar todo</button></div><pre class="src">N_TRAIN_PROFESOR = 30_000
+N_TRAIN_ESTUDIANTE = 400
+N_TEST = 5_000
+EPOCHS_PROFESOR = 4
+EPOCHS_ESTUDIANTE = 25
+BATCH = 64
+LR_PROFESOR = 1e-3
+LR_ESTUDIANTE = 1e-3
+ANCHOS_PROFESOR = [784, 256, 128, 10]
+ANCHOS_ESTUDIANTE = [784, 32, 10]
+T_DISTIL = 4.0
+ALPHA = 0.5
+DROP_PROFESOR = 0.2
+DROP_ESTUDIANTE = 0.0</pre></div><p class="fuente">Fuente: notebook 02, apartados 1 a 4.</p></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 02</div><pre>       modelo               anchos  parametros  ratio_respecto_profesor
+0    profesor  [784, 256, 128, 10]      235146                 1.000000
+1  estudiante        [784, 32, 10]       25450                 0.108231
+El estudiante tiene 10.8% de los parámetros del profesor.
+profesor               época  4/4  train acc=0.968  test acc=0.969  pérdida=0.101
+profesor en test: {&#x27;exactitud&#x27;: 0.9692, &#x27;perdida_ce&#x27;: 0.1, &#x27;n&#x27;: 5000}</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Profesor <b>[784, 256, 128, 10]</b>; estudiante <b>[784, 32, 10]</b>: el <b>10,8 %</b> de los parámetros.</li><li>Se <b>diseña a propósito</b> con pocas etiquetas para el estudiante (400).</li><li>Los dos estudiantes arrancan del <b>mismo estado inicial</b>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>«El profesor debería superar el 90 % en test de MNIST. Revisa el entorno o aumenta las épocas.»</li><li>MNIST se descarga una vez a <span class="mono">datos/mnist/</span>: la primera vez hace falta red.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Notebook 02 · los estudiantes"
+ data-notes="El experimento central del notebook dos. Dos estudiantes con la misma arquitectura, los mismos cuatrocientos ejemplos y los mismos pesos iniciales: uno aprende solo de etiquetas duras y el otro copia las blandas del profesor con temperatura cuatro y alfa cero coma cinco. En train el duro llega a casi cien por cien, que es memorizar; en test el destilado queda por encima, unos dos puntos y cuarto. No lo venda como milagro: es una sola ejecución con una semilla, y el propio notebook dice que si la diferencia fuera pequeña o de otro signo no se fuerce.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · duro frente a destilado</p><h1>Notebook 02: con los mismos 400 ejemplos, el destilado acierta 86,38 % y el duro 84,12 %</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>Celda · dos estudiantes, mismo estado inicial</em><button class="cp cpall" data-t="estudiante_duro = construir_mlp(ANCHOS_ESTUDIANTE, dropout=DROP_ESTUDIANTE).to(DEVICE)
+estudiante_duro.load_state_dict(estado_inicial)
+hist_duro = entrenar(
+    estudiante_duro, loader_est, EPOCHS_ESTUDIANTE, LR_ESTUDIANTE, etiqueta=&quot;estudiante duro&quot;
+)
+
+estudiante_kd = construir_mlp(ANCHOS_ESTUDIANTE, dropout=DROP_ESTUDIANTE).to(DEVICE)
+estudiante_kd.load_state_dict(estado_inicial)
+hist_kd = entrenar(
+    estudiante_kd,
+    loader_est,
+    EPOCHS_ESTUDIANTE,
+    LR_ESTUDIANTE,
+    profesor_fijo=profesor,
+    temperature=T_DISTIL,
+    alpha=ALPHA,
+    etiqueta=&quot;estudiante destilado&quot;,
+)">Copiar todo</button></div><pre class="src">estudiante_duro = construir_mlp(ANCHOS_ESTUDIANTE, dropout=DROP_ESTUDIANTE).to(DEVICE)
+estudiante_duro.load_state_dict(estado_inicial)
+hist_duro = entrenar(
+    estudiante_duro, loader_est, EPOCHS_ESTUDIANTE, LR_ESTUDIANTE, etiqueta=&quot;estudiante duro&quot;
+)
+
+estudiante_kd = construir_mlp(ANCHOS_ESTUDIANTE, dropout=DROP_ESTUDIANTE).to(DEVICE)
+estudiante_kd.load_state_dict(estado_inicial)
+hist_kd = entrenar(
+    estudiante_kd,
+    loader_est,
+    EPOCHS_ESTUDIANTE,
+    LR_ESTUDIANTE,
+    profesor_fijo=profesor,
+    temperature=T_DISTIL,
+    alpha=ALPHA,
+    etiqueta=&quot;estudiante destilado&quot;,
+)</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 02 (última época)</div><pre>estudiante duro        época 25/25  train acc=1.000  test acc=0.841  pérdida=0.084
+estudiante destilado   época 25/25  train acc=0.968  test acc=0.864  pérdida=0.822</pre></div><p class="fuente">Fuente: notebook 02, apartados 5 y 6; resultados/mnist.json.</p></div><div class="capcol"><figure class="cap" data-img="fig_mnist_curvas.webp"><button class="zoom" data-src="img/fig_mnist_curvas.webp" data-alt="Dos paneles, «Exactitud en train» y «Exactitud en test», con una línea por época para el profesor, el estudiante duro y el estudiante destilado de MNIST" title="Ampliar (Esc cierra)"><img src="img/fig_mnist_curvas.webp" alt="Dos paneles, «Exactitud en train» y «Exactitud en test», con una línea por época para el profesor, el estudiante duro y el estudiante destilado de MNIST" style="max-height:190px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos paneles, «Exactitud en train» y «Exactitud en test», con una línea por época para el profesor, el estudiante duro y el estudiante destilado de MNIST<br><span class="orig">Sale de: notebook 02, celda 13 → <span class="mono">resultados/fig_mnist_curvas.png</span></span></figcaption></figure><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En <b>train</b> el duro llega a casi todo (memoriza 400 ejemplos); lo que cuenta es <b>test</b>.</li><li>Destilado frente a duro: <b>+2,26 puntos</b> (84,12 % → 86,38 %), con 5 000 imágenes de test.</li><li>El profesor sigue en <b>96,92 %</b>: el destilado no lo iguala.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Conocimiento oscuro"
+ data-notes="Aquí se ve el conocimiento oscuro. Son seis dígitos de test y, debajo, las barras del profesor a temperatura cuatro. La clase correcta domina, pero queda masa repartida en otras clases, y esa masa es información que la etiqueta dura no contiene. El notebook explica que el destilado suele quedar por encima del duro en test porque la señal es más rica y de paso regulariza, y pide anotar el resultado aunque salga distinto en otra ejecución.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · las blandas del profesor de MNIST</p><h1>La masa residual de las etiquetas blandas es el conocimiento oscuro que recibe el estudiante</h1>
+
+<figure class="cap" data-img="fig_mnist_blandas.webp"><button class="zoom" data-src="img/fig_mnist_blandas.webp" data-alt="Seis dígitos de test y, debajo de cada uno, barras con las etiquetas blandas del profesor a T = 4; título «Etiquetas blandas del profesor (la masa residual es el conocimiento oscuro)»" title="Ampliar (Esc cierra)"><img src="img/fig_mnist_blandas.webp" alt="Seis dígitos de test y, debajo de cada uno, barras con las etiquetas blandas del profesor a T = 4; título «Etiquetas blandas del profesor (la masa residual es el conocimiento oscuro)»" style="max-height:290px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Seis dígitos de test y, debajo de cada uno, barras con las etiquetas blandas del profesor a T = 4; título «Etiquetas blandas del profesor (la masa residual es el conocimiento oscuro)»<br><span class="orig">Sale de: notebook 02, celda 13 → <span class="mono">resultados/fig_mnist_blandas.png</span></span></figcaption></figure>
+<div class="grid2" style="margin-top:8px">
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Las barras son la distribución del profesor a <b>T = 4</b> sobre seis dígitos de test.</li><li>La clase ganadora domina, pero <b>queda masa</b> en otras clases: eso es lo que la etiqueta dura no contiene.</li></ul></div>
+ <div class="callout">El notebook lo advierte: el destilado «suele quedar por encima del duro» en test porque las blandas son «una señal más rica (y, de paso, como regularizador)»; si en tu ejecución no ocurre, <b>anótalo y no lo fuerces</b>.</div>
+</div><p class="fuente">Fuente: notebook 02, apartado 6.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Notebook 03 · el profesor"
+ data-notes="El notebook tres repite la idea con lenguaje. El profesor es DistilBERT ya afinado en SST-2, y no se retoca. Para no tenerlo en memoria mientras se entrena el estudiante, se calculan una sola vez sus logits, se guardan en disco y se libera el modelo. Se usan tres mil frases de train y las ochocientas setenta y dos de validación como test. Un detalle de producción que repite el notebook: el tokenizador es parte del artefacto. La primera ejecución descarga el modelo, que es de unos doscientos sesenta megas.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · DistilBERT, logits precalculados</p><h1>Notebook 03: DistilBERT enseña; sus logits se calculan una vez y el profesor se libera de la memoria</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Celda · parámetros del experimento</em><button class="cp cpall" data-t="MODELO_PROFESOR = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+N_TRAIN = 3_000
+MAX_LEN = 64
+BATCH_PROFESOR = 16
+BATCH_ESTUDIANTE = 32
+EPOCHS_ESTUDIANTE = 5
+T_DISTIL = 3.0
+ALPHA = 0.7
+LR_ESTUDIANTE = 1e-3
+DIM_EMB = 64
+DIM_OCULTA = 64
+N_CAPAS = 1">Copiar todo</button></div><pre class="src">MODELO_PROFESOR = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+N_TRAIN = 3_000
+MAX_LEN = 64
+BATCH_PROFESOR = 16
+BATCH_ESTUDIANTE = 32
+EPOCHS_ESTUDIANTE = 5
+T_DISTIL = 3.0
+ALPHA = 0.7
+LR_ESTUDIANTE = 1e-3
+DIM_EMB = 64
+DIM_OCULTA = 64
+N_CAPAS = 1</pre></div><p class="fuente">Fuente: notebook 03, apartados 1 a 3.</p></div><div class="capcol"><div class="realbox"><div class="rk">Salida guardada · notebook 03</div><pre>train=3000  test=872
+ejemplo train: steals the show  → 1
+clases train:  neg= 1320  pos= 1680
+clases test:   neg= 428  pos= 444
+parámetros del profesor: 66,955,010
+etiquetas: {0: &#x27;NEGATIVE&#x27;, 1: &#x27;POSITIVE&#x27;}
+listo en 24.8 s  exactitud profesor: train=0.987  test=0.911
+latencia profesor: {&#x27;ms_lote_media&#x27;: 139.109, &#x27;ms_lote_p50&#x27;: 127.717, &#x27;ms_lote_p95&#x27;: 233.252, &#x27;ms_por_ejemplo_media&#x27;: 8.694, &#x27;n_reps&#x27;: 20, &#x27;tamano_lote&#x27;: 16}</pre></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>3 000</b> frases de train y el <b>validation</b> de SST-2 (<b>872</b>) como test: no se usa para elegir nada.</li><li>El estudiante usa el <b>mismo tokenizador</b>; en producción debe viajar con él.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>La primera vez <b>descarga</b> el profesor (la barra marca <b>268 MB</b>; el README dice «unos 250 MB»).</li><li>Sin red: proxy, o <span class="mono">HF_HUB_OFFLINE=1</span> con el modelo ya en <span class="mono">cache-hf/</span>.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Notebook 03 · el estudiante"
+ data-notes="El estudiante del notebook tres es un GRU bidireccional con un embedding: dos millones de parámetros, un tres por ciento de los del profesor. Entrena cinco épocas con tres mil frases. El destilado mejora al duro unos dos puntos y medio, pero se queda más de veintitrés puntos por debajo de DistilBERT. Es el motivo de la versión dos: no es un problema de velocidad, es de calidad.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · un GRU diminuto</p><h1>Notebook 03: el GRU destilado mejora al duro (65,0 % → 67,4 %), pero queda lejos del profesor</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>Celda · dos estudiantes, mismo estado inicial</em><button class="cp cpall" data-t="estudiante_duro = construir_estudiante_sentimiento(
+    vocab_size=vocab, n_clases=2, dim_emb=DIM_EMB, dim_oculta=DIM_OCULTA,
+    n_capas=N_CAPAS, pad_id=pad_id,
+).to(DEVICE)
+estudiante_duro.load_state_dict(estado_inicial)
+hist_duro = entrenar_estudiante(estudiante_duro, usar_destilacion=False, etiqueta=&quot;estudiante duro&quot;)
+
+estudiante_kd = construir_estudiante_sentimiento(
+    vocab_size=vocab, n_clases=2, dim_emb=DIM_EMB, dim_oculta=DIM_OCULTA,
+    n_capas=N_CAPAS, pad_id=pad_id,
+).to(DEVICE)
+estudiante_kd.load_state_dict(estado_inicial)
+hist_kd = entrenar_estudiante(estudiante_kd, usar_destilacion=True, etiqueta=&quot;estudiante destilado&quot;)">Copiar todo</button></div><pre class="src">estudiante_duro = construir_estudiante_sentimiento(
+    vocab_size=vocab, n_clases=2, dim_emb=DIM_EMB, dim_oculta=DIM_OCULTA,
+    n_capas=N_CAPAS, pad_id=pad_id,
+).to(DEVICE)
+estudiante_duro.load_state_dict(estado_inicial)
+hist_duro = entrenar_estudiante(estudiante_duro, usar_destilacion=False, etiqueta=&quot;estudiante duro&quot;)
+
+estudiante_kd = construir_estudiante_sentimiento(
+    vocab_size=vocab, n_clases=2, dim_emb=DIM_EMB, dim_oculta=DIM_OCULTA,
+    n_capas=N_CAPAS, pad_id=pad_id,
+).to(DEVICE)
+estudiante_kd.load_state_dict(estado_inicial)
+hist_kd = entrenar_estudiante(estudiante_kd, usar_destilacion=True, etiqueta=&quot;estudiante destilado&quot;)</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 03</div><pre>parámetros del estudiante: 2,003,586  (3.0% del profesor)
+estudiante duro        época  5/5  train acc=0.866  test acc=0.650  pérdida=0.321
+estudiante destilado   época  5/5  train acc=0.863  test acc=0.674  pérdida=1.206
+test duro: {&#x27;exactitud&#x27;: 0.6502293577981652, &#x27;perdida_ce&#x27;: 0.8162359885119517, &#x27;n&#x27;: 872}
+test destilado: {&#x27;exactitud&#x27;: 0.6743119266055045, &#x27;perdida_ce&#x27;: 1.197930276940722, &#x27;n&#x27;: 872}
+test profesor: 0.9105504587155964</pre></div><p class="fuente">Fuente: notebook 03, apartados 4 y 5; resultados/sentimiento.json.</p></div><div class="capcol"><figure class="cap" data-img="fig_sentimiento_curvas.webp"><button class="zoom" data-src="img/fig_sentimiento_curvas.webp" data-alt="Dos paneles, «Exactitud en train» y «Exactitud en test (validation SST-2)», con las épocas del GRU duro y del GRU destilado y una línea discontinua con la exactitud del profesor DistilBERT" title="Ampliar (Esc cierra)"><img src="img/fig_sentimiento_curvas.webp" alt="Dos paneles, «Exactitud en train» y «Exactitud en test (validation SST-2)», con las épocas del GRU duro y del GRU destilado y una línea discontinua con la exactitud del profesor DistilBERT" style="max-height:175px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos paneles, «Exactitud en train» y «Exactitud en test (validation SST-2)», con las épocas del GRU duro y del GRU destilado y una línea discontinua con la exactitud del profesor DistilBERT<br><span class="orig">Sale de: notebook 03, celda 11 → <span class="mono">resultados/fig_sentimiento_curvas.png</span></span></figcaption></figure><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>GRU de <b>2 003 586</b> parámetros: el <b>3,0 %</b> del profesor.</li><li>Hueco con el profesor: <b>23,62 puntos</b>. El notebook dice que el éxito aquí es <b>acercarse más que el duro</b>, no igualarlo.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="4" data-title="Notebook 04"
+ data-notes="El notebook cuatro no entrena: lee los dos archivos de resultados y calcula tres cosas. El hueco, que es la exactitud del destilado menos la del profesor. La mejora respecto al duro, que es lo que se puede atribuir a destilar, porque los dos estudiantes son el mismo modelo con los mismos pesos iniciales. Y la aceleración de latencia. En sentimiento sale una aceleración de unas cien veces, pero ojo con la lectura: profesor y estudiante se midieron con lotes distintos, así que es un orden de magnitud y no una medida oficial; la versión dos corrige eso.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · comparar sin reentrenar</p><h1>Notebook 04: lee los JSON y calcula hueco, mejora y aceleración; no vuelve a entrenar</h1>
+
+<div class="split" style="grid-template-columns:.8fr 1.2fr"><div class="col"><div class="term"><div class="bar"><em>Celda · el resumen (extracto)</em><button class="cp cpall" data-t="resumen.append(
+    {
+        &quot;problema&quot;: nombre,
+        &quot;acc_profesor&quot;: acc_p,
+        &quot;acc_estudiante_duro&quot;: acc_d,
+        &quot;acc_estudiante_destilado&quot;: acc_k,
+        &quot;hueco_destilado_vs_profesor&quot;: acc_k - acc_p,
+        &quot;mejora_vs_duro&quot;: acc_k - acc_d,
+        &quot;params_profesor&quot;: par_p,
+        &quot;params_estudiante&quot;: par_k,
+        &quot;ratio_params_est/prof&quot;: par_k / par_p,
+        &quot;aceleracion_latencia_prof/est&quot;: lat_p / lat_k if lat_k else None,
+    }
+)">Copiar todo</button></div><pre class="src">resumen.append(
+    {
+        &quot;problema&quot;: nombre,
+        &quot;acc_profesor&quot;: acc_p,
+        &quot;acc_estudiante_duro&quot;: acc_d,
+        &quot;acc_estudiante_destilado&quot;: acc_k,
+        &quot;hueco_destilado_vs_profesor&quot;: acc_k - acc_p,
+        &quot;mejora_vs_duro&quot;: acc_k - acc_d,
+        &quot;params_profesor&quot;: par_p,
+        &quot;params_estudiante&quot;: par_k,
+        &quot;ratio_params_est/prof&quot;: par_k / par_p,
+        &quot;aceleracion_latencia_prof/est&quot;: lat_p / lat_k if lat_k else None,
+    }
+)</pre></div><p class="fuente">Fuente: notebook 04, apartado 2; cifras de resultados/mnist.json y resultados/sentimiento.json (idénticas a la salida guardada del notebook).</p><div class="card falla"><h3>Si falla</h3><ul class="list"><li>«Faltan resultados de cuadernos anteriores»: ejecuta el 02 y el 03 en ese orden.</li></ul></div></div><div class="capcol"><div class="card"><table class="tbl sm nw"><tr><th>Problema</th><th>Profesor</th><th>Duro</th><th>Destilado</th><th>Hueco (puntos)</th><th>Mejora vs duro</th><th>Aceleración</th></tr><tr><td>MNIST / MLP</td><td>96,92 %</td><td>84,12 %</td><td>86,38 %</td><td>-10,54</td><td>+2,26</td><td>3,38×</td></tr><tr><td>SST-2 / DistilBERT→GRU</td><td>91,06 %</td><td>65,02 %</td><td>67,43 %</td><td>-23,62</td><td>+2,41</td><td>108,13×</td></tr></table></div><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>Hueco</b>: destilado menos profesor. <b>Mejora</b>: destilado menos duro, la parte atribuible a destilar.</li><li><b>Aceleración</b> = latencia por ejemplo del profesor / la del destilado, en esta CPU (lote 64 en MNIST, 16 y 32 en sentimiento).</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="C" data-min="3" data-title="Calidad, tamaño y latencia"
+ data-notes="Las dos figuras del notebook cuatro. A la izquierda, calidad, tamaño en escala logarítmica y latencia para los tres modelos de cada problema. A la derecha, el frente de calidad contra tamaño. En MNIST la latencia casi no importa porque son redes diminutas: el valor del experimento es la calidad con pocos datos. En sentimiento el ahorro de parámetros y de milisegundos es enorme y el precio es el hueco de exactitud. Y recuerde que la latencia es de esta máquina concreta.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · figuras del notebook 04</p><h1>En sentimiento el ahorro de tamaño y latencia es enorme y el precio es el hueco de calidad</h1>
+
+<div class="split" style="grid-template-columns:1.5fr 1fr"><div class="col"><figure class="cap" data-img="fig_comparativa_global.webp"><button class="zoom" data-src="img/fig_comparativa_global.webp" data-alt="Tres paneles, «Calidad», «Tamaño» (parámetros, escala log) y «Latencia (esta máquina)», con barras de profesor, estudiante duro y estudiante destilado para MNIST y para SST-2" title="Ampliar (Esc cierra)"><img src="img/fig_comparativa_global.webp" alt="Tres paneles, «Calidad», «Tamaño» (parámetros, escala log) y «Latencia (esta máquina)», con barras de profesor, estudiante duro y estudiante destilado para MNIST y para SST-2"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Tres paneles, «Calidad», «Tamaño» (parámetros, escala log) y «Latencia (esta máquina)», con barras de profesor, estudiante duro y estudiante destilado para MNIST y para SST-2<br><span class="orig">Sale de: notebook 04, celda 5 → <span class="mono">resultados/fig_comparativa_global.png</span></span></figcaption></figure></div><div class="col"><figure class="cap" data-img="fig_comparativa_pareto.webp"><button class="zoom" data-src="img/fig_comparativa_pareto.webp" data-alt="Gráfico de puntos con los parámetros (escala log) frente a la exactitud en test de los seis modelos de MNIST y SST-2; título «Frente calidad / tamaño»" title="Ampliar (Esc cierra)"><img src="img/fig_comparativa_pareto.webp" alt="Gráfico de puntos con los parámetros (escala log) frente a la exactitud en test de los seis modelos de MNIST y SST-2; título «Frente calidad / tamaño»" style="max-height:250px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Gráfico de puntos con los parámetros (escala log) frente a la exactitud en test de los seis modelos de MNIST y SST-2; título «Frente calidad / tamaño»<br><span class="orig">Sale de: notebook 04, celda 5 → <span class="mono">resultados/fig_comparativa_pareto.png</span></span></figcaption></figure></div></div>
+<div class="grid2" style="margin-top:10px">
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>En MNIST el contraste de latencia es pequeño: son MLP diminutos. El valor está en la <b>calidad con pocos datos</b>.</li><li>En sentimiento cuentan <b>tamaño y latencia</b>; el hueco de exactitud es el precio.</li></ul></div>
+ <div class="callout">La latencia es de <b>esta máquina</b>, no un SLO de producción: sirve para comparar modelos entre sí en las mismas condiciones.</div>
+</div><p class="fuente">Fuente: notebook 04, apartado 2 («Cómo leerlo»); las dos figuras salen de la celda de resumen.</p>
+</section>
+
+<section class="slide" data-part="C" data-min="5" data-title="Notebook 05 · ejercicios"
+ data-notes="El notebook cinco tiene cinco ejercicios con soluciones al final. El uno, el softmax estable a mano. El dos, leer las etiquetas blandas del profesor de MNIST, que es la figura de la derecha. El tres es el más instructivo: se destila una época con alfa uno a partir de un profesor real y de un profesor de ruido, y el de ruido arrastra al estudiante a un once por ciento. El cuatro registra un run y el cinco aplica las puertas de promoción a la versión uno, y la respuesta es no promocionar.">
+<p class="kick">3 · v1: MNIST y sentimiento (notebooks 00-05) · cinco ejercicios con soluciones</p><h1>Notebook 05: el ejercicio 3 enseña que destilar un profesor inútil arrastra al estudiante</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>Ejercicio 3 · un profesor de ruido</em><button class="cp cpall" data-t="class ProfesorRuido(torch.nn.Module):
+    def forward(self, x):
+        return torch.randn(x.size(0), 10, device=x.device)">Copiar todo</button></div><pre class="src">class ProfesorRuido(torch.nn.Module):
+    def forward(self, x):
+        return torch.randn(x.size(0), 10, device=x.device)</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 05 (ejercicios 1, 2, 3 y 5)</div><pre>Ejercicio 1: tu softmax coincide con el del módulo en todos los casos.
+Predicción dura: [7 2 1 0 4 1 4 9] etiquetas: [7 2 1 0 4 1 4 9]
+destilado de un profesor real (1 época, alpha=1): 0.425
+destilado de un profesor de ruido (1 época, alpha=1): 0.113
+hueco de exactitud: 23.62 puntos  (máx. admitido: 4)  → calidad ok=False
+aceleración p95 aprox.: 166.6×  (mín. exigido: 5×)  → latencia ok=True
+decisión según el enunciado: NO PROMOCIONAR</pre></div><p class="fuente">Fuente: notebook 05, ejercicios 1 a 5; el 4 está en la diapositiva «Qué registrar».</p><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>1</b> softmax estable a mano · <b>2</b> leer blandas reales · <b>3</b> profesor inútil · <b>4</b> qué registrar en un run · <b>5</b> un criterio de promoción.</li></ul></div></div><div class="capcol"><figure class="cap" data-img="fig_ejercicio2_blandas_mnist.webp"><button class="zoom" data-src="img/fig_ejercicio2_blandas_mnist.webp" data-alt="Ocho dígitos de test y, debajo, las probabilidades del profesor de MNIST a T = 1 y a T = 5; título «Profesor de MNIST: la misma predicción, dos temperaturas»" title="Ampliar (Esc cierra)"><img src="img/fig_ejercicio2_blandas_mnist.webp" alt="Ocho dígitos de test y, debajo, las probabilidades del profesor de MNIST a T = 1 y a T = 5; título «Profesor de MNIST: la misma predicción, dos temperaturas»" style="max-height:250px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Ocho dígitos de test y, debajo, las probabilidades del profesor de MNIST a T = 1 y a T = 5; título «Profesor de MNIST: la misma predicción, dos temperaturas»<br><span class="orig">Sale de: notebook 05, celda 5 → <span class="mono">resultados/fig_ejercicio2_blandas_mnist.png</span></span></figcaption></figure><div class="callout">Con α = 1 el estudiante <b>solo copia</b>: un profesor de ruido deja la exactitud cerca de la de un clasificador aleatorio (en torno a 0,10 en diez clases). <b>No destiles un profesor que no hayas evaluado.</b></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="Por qué falló la v1"
+ data-notes="La versión dos nace de reconocer por qué falló la uno. El estudiante era un GRU desde cero con tres mil frases y quedaba a veintitrés puntos del profesor. Los cambios, uno por uno: un transformer pequeño ya preentrenado, que es TinyBERT de cuatro capas; veinte mil frases en lugar de tres mil; los logits del profesor cacheados; la latencia medida con el mismo lote y los mismos hilos; y la cuantización a int8 como recorte extra. La idea de fondo: destilar no arregla un estudiante sin capacidad ni buen punto de partida.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · qué cambia la v2</p><h1>La v1 falló por calidad, no por velocidad: la v2 cambia el punto de partida, los datos y la medida</h1>
+
+<div class="card"><table class="tbl sm"><tr><th>Decisión de la v1</th><th>Efecto que vimos</th><th>Cambio en la v2</th></tr><tr><td>Estudiante GRU desde cero (~2 M parámetros, embeddings aleatorios)</td><td>67 % frente al 91 % del profesor</td><td>Partir de un <b>transformer pequeño ya preentrenado</b> (<span class="mono">TinyBERT</span> 4 capas), no de una red en blanco</td></tr><tr><td>Solo 3 000 frases</td><td>Poca señal, el estudiante se quedaba corto</td><td>Usar <b>20 000</b> frases de SST-2 (hay 67 349; 20 000 bastan en nuestras pruebas)</td></tr><tr><td>Logits del profesor recalculados en la sesión</td><td>Coste aceptable con 3 000, no con 20 000</td><td><b>Precomputar y cachear</b> los logits una vez</td></tr><tr><td>Latencia con lotes distintos (16 vs 32)</td><td>La aceleración del ejercicio 5 no era del todo justa</td><td>Medir profesor y estudiante con el <b>mismo lote y los mismos hilos</b></td></tr><tr><td>Sin cuantización</td><td>El GRU ya era muy rápido; el hueco era de calidad, no de velocidad</td><td>Añadir <b>cuantización dinámica int8</b> como recorte extra, y mencionar ONNX</td></tr></table></div>
+<div style="margin-top:10px"><div class="callout"><b>La intuición:</b> destilar no arregla un estudiante que no tiene capacidad ni un buen punto de partida. TinyBERT ya fue destilado, en preentrenamiento, a partir de un BERT grande.</div></div>
+<div class="grid3" style="margin-top:12px">
+ <div class="card kpi"><b class="n ">67,43 % frente a 91,06 %</b><p class="small">v1: el GRU destilado y el profesor (resultados/sentimiento.json)</p></div>
+ <div class="card kpi"><b class="n ">23,62 puntos</b><p class="small">hueco de la v1: la puerta de calidad admite <b>4</b> (resultados/ejercicio5_promocion.json)</p></div>
+ <div class="card kpi"><b class="n ">3 000 → 20 000</b><p class="small">frases de entrenamiento de la v1 a la v2 (SST-2 tiene 67 349, según el notebook 06)</p></div>
+</div><p class="fuente">Fuente: notebook 06, apartado «Por qué falló la v1 (y qué vamos a cambiar)»; las cifras de la v1, de resultados/sentimiento.json.</p>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Notebook 06 · preparar"
+ data-notes="El notebook seis prepara la versión dos. El modo rápido es el valor por defecto, con dos épocas, y subirlo a tres épocas no mejora necesariamente el test. El estudiante necesita ochenta y siete coma cero seis por ciento de exactitud, que es la del profesor menos cuatro puntos. TinyBERT tiene catorce millones de parámetros, un veintiuno por ciento de los del profesor, y no está afinado en SST-2, así que hay que entrenarlo. Los logits del profesor se cachean en disco: si no estuvieran, el notebook los recalcularía y serían unos tres minutos.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · TinyBERT, 20 000 frases y logits en caché</p><h1>Notebook 06: TinyBERT de 4 capas como estudiante, 20 000 frases y los logits del profesor en caché</h1>
+
+<div class="split" style="grid-template-columns:1fr 1fr"><div class="col"><div class="term"><div class="bar"><em>Celda · parámetros y modo rápido</em><button class="cp cpall" data-t="MODO_RAPIDO = True
+
+PROFESOR_ID = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+ESTUDIANTE_ID = &quot;huawei-noah/TinyBERT_General_4L_312D&quot;
+MAX_LEN = 64
+BATCH = 16
+LR = 5e-5
+T_DISTIL = 3.0
+ALPHA = 0.5
+N_HILOS = 4
+N_TRAIN = 20_000
+EPOCHS = 2 if MODO_RAPIDO else 3">Copiar todo</button></div><pre class="src">MODO_RAPIDO = True
+
+PROFESOR_ID = &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;
+ESTUDIANTE_ID = &quot;huawei-noah/TinyBERT_General_4L_312D&quot;
+MAX_LEN = 64
+BATCH = 16
+LR = 5e-5
+T_DISTIL = 3.0
+ALPHA = 0.5
+N_HILOS = 4
+N_TRAIN = 20_000
+EPOCHS = 2 if MODO_RAPIDO else 3</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 06</div><pre>modo_rapido: True n_train: 20000 épocas: 2
+profesor: distilbert-base-uncased-finetuned-sst-2-english
+estudiante: huawei-noah/TinyBERT_General_4L_312D
+Reutilizo caché v2_sentimiento_logits_profesor.pt (n_pool=20000).
+n_train=20000  n_test=872
+exactitud del profesor en test: 0.9106
+el estudiante necesita ≥ 0.8706  (hueco máximo 4 puntos)
+parámetros estudiante: 14,350,874  (21.4% del profesor)</pre></div><p class="fuente">Fuente: notebook 06, apartados 1 a 3.</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><span class="mono">MODO_RAPIDO = True</span> es el valor por defecto: <b>2 épocas</b>. A <span class="mono">False</span> sube a 3 épocas: «no necesariamente más exactitud en test».</li><li>El estudiante necesita <b>≥ 87,06 %</b> (profesor menos 4 puntos).</li><li>TinyBERT: <b>14 350 874</b> parámetros, el <b>21,4 %</b> del profesor.</li><li>Los logits se <b>cachean</b> en <span class="mono">modelos/v2_sentimiento_logits_profesor.pt</span>.</li></ul></div><div class="card falla"><h3>Si falla</h3><ul class="list"><li>Sin la caché, el notebook <b>recalcula</b> los logits: «en esta máquina, 20 000 ejemplos fueron unos 3 minutos».</li><li>Sin red la primera vez: mismo proxy o modo offline que en el 03.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="5" data-title="Notebook 06 · entrenar"
+ data-notes="El entrenamiento de la versión dos. Dos estudiantes con la misma arquitectura, los mismos datos y los mismos pesos iniciales: uno con entropía cruzada y otro con la pérdida de destilación a temperatura tres y alfa cero coma cinco. Los dos superan la puerta de calidad. Y aquí viene un resultado honesto que hay que contar tal cual: la destilación no gana al duro. El notebook lo explica: TinyBERT ya llegó predestilado de un BERT grande. Cada época tarda unos tres minutos en CPU.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · duro frente a destilado</p><h1>Notebook 06: duro y destilado empatan (88,42 % y 88,30 %): las blandas no ganan al duro</h1>
+
+<div class="split" style="grid-template-columns:1.05fr .95fr"><div class="col"><div class="term"><div class="bar"><em>Celda · la pérdida según el modo (extracto de «entrenar»)</em><button class="cp cpall" data-t="if usar_kd:
+    loss = perdida_destilacion(
+        out, lote[&quot;logits_prof&quot;].to(DEVICE), lote[&quot;labels&quot;].to(DEVICE),
+        temperature=T_DISTIL, alpha=ALPHA,
+    )
+else:
+    loss = torch.nn.functional.cross_entropy(out, lote[&quot;labels&quot;].to(DEVICE))">Copiar todo</button></div><pre class="src">if usar_kd:
+    loss = perdida_destilacion(
+        out, lote[&quot;logits_prof&quot;].to(DEVICE), lote[&quot;labels&quot;].to(DEVICE),
+        temperature=T_DISTIL, alpha=ALPHA,
+    )
+else:
+    loss = torch.nn.functional.cross_entropy(out, lote[&quot;labels&quot;].to(DEVICE))</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 06</div><pre>v2 duro                época 1/2  train=0.840  test=0.884  t=187s  PASS
+v2 duro                época 2/2  train=0.910  test=0.880  t=374s  PASS
+v2 destilado           época 1/2  train=0.841  test=0.877  t=187s  PASS
+v2 destilado           época 2/2  train=0.911  test=0.883  t=376s  PASS
+mejor test  duro=0.8842  destilado=0.8830  profesor=0.9106  puerta=0.8706</pre></div><p class="fuente">Fuente: notebook 06, apartado 4; resultados/v2_sentimiento.json.</p></div><div class="capcol"><figure class="cap" data-img="fig_v2_curvas.webp"><button class="zoom" data-src="img/fig_v2_curvas.webp" data-alt="Dos paneles, «Train» y «Test (validation SST-2)», con las épocas del TinyBERT duro y del TinyBERT destilado, la línea del profesor y la línea de la puerta (−4 puntos)" title="Ampliar (Esc cierra)"><img src="img/fig_v2_curvas.webp" alt="Dos paneles, «Train» y «Test (validation SST-2)», con las épocas del TinyBERT duro y del TinyBERT destilado, la línea del profesor y la línea de la puerta (−4 puntos)" style="max-height:190px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos paneles, «Train» y «Test (validation SST-2)», con las épocas del TinyBERT duro y del TinyBERT destilado, la línea del profesor y la línea de la puerta (−4 puntos)<br><span class="orig">Sale de: notebook 06, celda 11 → <span class="mono">resultados/fig_v2_curvas.png</span></span></figcaption></figure><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Mejor época: duro <b>88,42 %</b>, destilado <b>88,30 %</b>, profesor <b>91,06 %</b>.</li><li>El notebook lo explica: «TinyBERT ya llega predestilado de un BERT grande».</li><li>Cada época tardó unos <b>187 s</b> en CPU.</li></ul></div></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="6" data-title="Notebook 06 · latencia y puertas"
+ data-notes="Latencia y puertas, que es lo más delicado del notebook seis. Se mide al profesor y a cada variante con el mismo lote, los mismos cuatro hilos y las mismas repeticiones. Con lote dieciséis el profesor tarda unos ciento veintisiete milisegundos en el p95 y el TinyBERT en fp32 unos dieciséis y medio: casi ocho veces menos. La cuantización a int8 recorta poco y cuesta dos puntos y medio de exactitud, por debajo de la puerta. Con lote uno no se llega a cinco veces. Un detalle de honestidad: la primera decisión del notebook, con int8, era no promocionar; el apartado diez la corrige con las cifras medidas. ONNX no se llegó a exportar porque faltaba un paquete.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · mismo lote, mismos hilos</p><h1>Latencia justa: mismo lote y 4 hilos; el fp32 pasa las dos puertas y el int8 suspende en calidad</h1>
+
+<div class="split" style="grid-template-columns:1.15fr .85fr"><div class="col"><div class="realbox"><div class="rk">Salida guardada · notebook 06 · latencias (ms)</div><pre>            variante  ms_lote_p50  ms_lote_p95  ms_ex_p95  lote
+0  profesor_fp32_b16       125.62       127.35      7.960    16
+1   profesor_fp32_b1        14.36        14.46     14.460     1
+2        kd_fp32_b16        16.43        16.60      1.038    16
+3         kd_fp32_b1         3.61         3.69      3.689     1
+4        kd_int8_b16        15.14        15.22      0.951    16
+5         kd_int8_b1         3.67         3.72      3.716     1
+6      duro_fp32_b16        16.41        16.55      1.035    16
+7       duro_fp32_b1         3.62         3.66      3.659     1
+8      duro_int8_b16        15.13        15.21      0.951    16
+9       duro_int8_b1         3.67         3.74      3.737     1</pre></div><div class="realbox"><div class="rk">Salida guardada · notebook 06 · puertas</div><pre>estudiante_duro fp32           acc=0.8842  hueco=2.64  acel=7.69×  PROMOCIONAR
+estudiante_destilado fp32      acc=0.8830  hueco=2.75  acel=7.67×  PROMOCIONAR
+estudiante_duro int8           acc=0.8589  hueco=5.16  acel=8.37×  NO PROMOCIONAR
+estudiante_destilado int8      acc=0.8589  hueco=5.16  acel=8.37×  NO PROMOCIONAR
+OFICIAL: estudiante_duro fp32 PROMOCIONAR hueco=2.64 puntos  aceleración=7.69×</pre></div></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>Profesor lote 16: p95 <b>127,35 ms</b>; TinyBERT duro fp32: <b>16,55 ms</b>.</li><li><b>int8</b> baja la exactitud de 88,42 % a 85,89 % y apenas recorta el p95: <b>no se promociona</b>.</li><li><b>Lote 1</b>: ni fp32 ni int8 llegan a 5× en esta máquina; por eso el protocolo oficial es el lote 16.</li><li>ONNX <b>no se exportó</b>: «No module named &#x27;onnxscript&#x27;».</li></ul></div><div class="card mira"><h3>Ojo: la decisión cambió</h3><ul class="list"><li>La primera decisión del notebook (variante int8) fue «NO PROMOCIONAR»; el apartado 10 la <b>recalcula</b> con las cifras medidas y elige el duro fp32.</li><li>Lo que manda es lo <b>guardado y medido</b>, no la primera impresión.</li></ul></div><p class="fuente">Fuente: notebook 06, apartados 6 y 10; src/destilacion_utils.py (<span class="mono">evaluar_puertas_promocion</span>).</p></div></div>
+</section>
+
+<section class="slide" data-part="D" data-min="4" data-title="Notebook 07 · ablación"
+ data-notes="El notebook siete pone todo junto. La figura tiene dos paneles: a la izquierda la calidad de cada variante con las líneas del profesor y de la puerta, y a la derecha una aceleración aproximada. Tres mensajes, en orden: la destilación de la versión uno sí aportó algo pero no bastó; un BERT pequeño genérico con más datos queda en torno al ochenta por ciento, todavía por debajo de la puerta; y lo que abre la puerta es el punto de partida, TinyBERT, más datos suficientes, no las etiquetas blandas. Las barras de latencia de la versión uno se midieron con otro lote, así que son orden de magnitud.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · qué cambió de verdad</p><h1>Notebook 07: lo que abre la puerta es el punto de partida y los datos, no las etiquetas blandas</h1>
+
+<figure class="cap" data-img="fig_v2_ablacion.webp"><button class="zoom" data-src="img/fig_v2_ablacion.webp" data-alt="Dos paneles de barras horizontales: «Calidad» (exactitud en test de cada variante, con las líneas del profesor y de la puerta) y «Latencia (comparación aproximada)» (aceleración del p95 frente al profesor, con la línea de 5×)" title="Ampliar (Esc cierra)"><img src="img/fig_v2_ablacion.webp" alt="Dos paneles de barras horizontales: «Calidad» (exactitud en test de cada variante, con las líneas del profesor y de la puerta) y «Latencia (comparación aproximada)» (aceleración del p95 frente al profesor, con la línea de 5×)" style="max-height:245px"><span class="lupa"><svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12.5 12.5 L18 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> Ampliar</span></button><figcaption><span class="tag ok">Figura real</span> Dos paneles de barras horizontales: «Calidad» (exactitud en test de cada variante, con las líneas del profesor y de la puerta) y «Latencia (comparación aproximada)» (aceleración del p95 frente al profesor, con la línea de 5×)<br><span class="orig">Sale de: notebook 07, celda 5 → <span class="mono">resultados/fig_v2_ablacion.png</span></span></figcaption></figure>
+<div class="grid2" style="margin-top:8px">
+ <div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li><b>1.</b> La destilación de la v1 <b>sí aportó algo</b>, pero no bastó.</li><li><b>2.</b> Un BERT pequeño genérico con 16 000 frases se queda en el <b>80-81 %</b>: por debajo de la puerta.</li><li><b>3.</b> TinyBERT + 20 000 frases abre la puerta; <b>la destilación de salidas no gana al duro</b>.</li></ul></div>
+ <div class="callout">En otras palabras (notebook 07): la v1 fallaba por <b>calidad</b>, no por latencia; el GRU era rapidísimo.</div>
+</div><p class="fuente">Fuente: notebook 07, apartado 2 («Cómo leer la ablación»); la sonda, de resultados/v2_probe.json.</p>
+</section>
+
+<section class="slide" data-part="D" data-min="3" data-title="Notebook 07 · tabla"
+ data-notes="La tabla de ablación del notebook siete, tal cual está guardada en el archivo de comparativa. Diez variantes: el profesor de referencia, los dos GRU de la versión uno, las dos sondas con un BERT pequeño genérico, y las variantes de TinyBERT duro y destilado en fp32 e int8, más la fila oficial, que es el duro en fp32 repetido. Solo cumplen la calidad, entre los estudiantes, las de fp32 de TinyBERT. Las sondas no tienen latencia porque se midieron antes, y el p95 de la versión uno es de otro lote.">
+<p class="kick">4 · v2: TinyBERT (notebooks 06-07) · diez variantes</p><h1>Diez variantes en una tabla: solo las de TinyBERT en fp32 cumplen la calidad entre los estudiantes</h1>
+
+<div class="card"><table class="tbl sm"><tr><th>Variante</th><th>Exactitud</th><th>Hueco (puntos)</th><th>Parámetros</th><th>p95 lote (ms)</th><th>Calidad ≤ 4</th></tr><tr><td>Profesor DistilBERT (SST-2)</td><td>91,06 %</td><td>0,00</td><td>66 955 010</td><td>127,35</td><td>sí</td></tr><tr><td>v1 GRU duro (3 000 frases)</td><td>65,02 %</td><td>26,03</td><td>2 003 586</td><td>2,77</td><td>no</td></tr><tr><td>v1 GRU destilado (3 000 frases)</td><td>67,43 %</td><td>23,62</td><td>2 003 586</td><td>2,80</td><td>no</td></tr><tr><td>Sonda: BERT L-4 H-256 duro, 16 000, 2 épocas</td><td>80,73 %</td><td>10,32</td><td>11 171 074</td><td>—</td><td>no</td></tr><tr><td>Sonda: BERT L-4 H-256 destilado, 16 000, 2 épocas</td><td>80,50 %</td><td>10,55</td><td>11 171 074</td><td>—</td><td>no</td></tr><tr><td>v2 TinyBERT duro (20 000 frases)</td><td>88,42 %</td><td>2,64</td><td>14 350 874</td><td>16,55</td><td>sí</td></tr><tr><td>v2 TinyBERT destilado fp32</td><td>88,30 %</td><td>2,75</td><td>14 350 874</td><td>16,60</td><td>sí</td></tr><tr><td>v2 TinyBERT destilado int8</td><td>85,89 %</td><td>5,16</td><td>14 350 874</td><td>15,22</td><td>no</td></tr><tr><td>v2 TinyBERT duro int8</td><td>85,89 %</td><td>5,16</td><td>14 350 874</td><td>15,21</td><td>no</td></tr><tr><td>v2 TinyBERT duro fp32 (oficial)</td><td>88,42 %</td><td>2,64</td><td>14 350 874</td><td>16,55</td><td>sí</td></tr></table></div>
+<div class="grid2" style="margin-top:10px">
+ <div class="callout">Las filas «Sonda» salen de <b>resultados/v2_probe.json</b> (otro BERT pequeño, 11 171 074 parámetros): se midieron antes, <b>sin latencia</b>.</div>
+ <div class="callout">El p95 de la v1 se midió con <b>lote 32</b> y el de la v2 con <b>lote 16</b>: no son comparables entre sí.</div>
+</div><p class="fuente">Fuente: resultados/v2_comparativa.json (campo «ablacion»), que escribe el notebook 07.</p>
+</section>
+
+<section class="slide" data-part="E" data-min="4" data-title="Cómo se promociona"
+ data-notes="Cómo se promociona un estudiante, con las cifras guardadas. La regla del ejercicio cinco: no alejarse más de cuatro puntos del profesor y ser al menos cinco veces más rápido en el p95. La versión uno suspende en calidad, con más de veintitrés puntos; su aceleración de ciento sesenta y siete veces lleva una daga porque se midió con lotes distintos. En la versión dos se promociona el TinyBERT duro en fp32, con dos coma seis puntos y siete coma siete veces. El destilado en fp32 también cumpliría; el int8 no cumple calidad, y con lote uno no cumple ni la latencia. El criterio es siempre las dos puertas.">
+<p class="kick">5 · De los notebooks a producción · dos puertas a la vez</p><h1>Un estudiante se promociona si cumple a la vez calidad (≤ 4 puntos) y latencia (≥ 5×), no solo exactitud</h1>
+
+<div class="card"><table class="tbl sm"><tr><th>Candidato</th><th>Hueco (puntos)</th><th>Aceleración p95</th><th>Calidad</th><th>Latencia</th><th>Decisión</th></tr><tr><td>v1 · GRU destilado (ejercicio 5)</td><td>23,62</td><td>166,6× †</td><td>no</td><td>sí</td><td><span class="dec mal">NO PROMOCIONAR</span></td></tr><tr><td>v2 · TinyBERT <b>duro fp32</b>, lote 16 (oficial)</td><td>2,64</td><td>7,69×</td><td>sí</td><td>sí</td><td><span class="dec ok">PROMOCIONAR</span></td></tr><tr><td>v2 · TinyBERT destilado fp32, lote 16</td><td>2,75</td><td>7,67×</td><td>sí</td><td>sí</td><td><span class="dec ok">PROMOCIONAR</span></td></tr><tr><td>v2 · TinyBERT int8, lote 16</td><td>5,16</td><td>8,37×</td><td>no</td><td>sí</td><td><span class="dec mal">NO PROMOCIONAR</span></td></tr><tr><td>v2 · TinyBERT int8, lote 1</td><td>5,16</td><td>3,87×</td><td>no</td><td>no</td><td><span class="dec mal">NO PROMOCIONAR</span></td></tr></table></div>
+<div class="grid2" style="margin-top:10px">
+ <div class="callout"><b>† La v1 no es comparable</b>: p95 con lotes distintos (16 y 32). Suspende en calidad con cualquier protocolo: <b>23,62 puntos</b> frente a 4.</div>
+ <div class="card mira"><h3>Por qué las dos</h3><ul class="list"><li>Solo exactitud: el profesor siempre gana y <b>no se despliega nada más barato</b>.</li><li>Solo latencia: se promociona un modelo que <b>incumple el acuerdo de calidad</b>.</li><li>Entre los que cumplen, el oficial es el de <b>mayor exactitud</b>: el duro fp32.</li></ul></div>
+</div><p class="fuente">Fuente: resultados/ejercicio5_promocion.json (v1) y resultados/v2_sentimiento.json (v2); las filas del destilado fp32 coinciden con la salida del notebook 06, apartado 10.</p>
+</section>
+
+<section class="slide" data-part="E" data-min="4" data-title="Qué registrar"
+ data-notes="Qué debe quedar registrado junto al estudiante, según el notebook cuatro: la identidad del profesor, con su revisión; la del estudiante, con su arquitectura; los datos, con su semilla; los hiperparámetros de destilación; las métricas de los tres roles y la latencia en un hardware descrito; y el tokenizador, que es parte del modelo. A la derecha está lo que escribe el ejercicio cuatro con las cifras reales de la versión uno. El profesor y el estudiante se promocionan como pareja.">
+<p class="kick">5 · De los notebooks a producción · el estudiante y el profesor, juntos</p><h1>Se promociona la pareja: profesor y estudiante, con tokenizador, T, α, semilla y protocolo de latencia</h1>
+
+<div class="split" style="grid-template-columns:.9fr 1.1fr"><div class="col"><ul class="list"><li>Identidad del <b>profesor</b>: nombre o ruta, revisión (<span class="mono">commit</span> del Hub o hash del fichero), número de parámetros.</li><li>Identidad del <b>estudiante</b>: arquitectura, hiperparámetros, hash de pesos.</li><li><b>Datos:</b> origen, recuento, partición, semilla, identificador o hash del subconjunto.</li><li><b>Hiperparámetros de destilación:</b> T, α, épocas, lote, tasa de aprendizaje.</li><li><b>Métricas:</b> exactitud (o la métrica de negocio) del profesor, del estudiante duro y del destilado, en validación y en test; acuerdo profesor-estudiante; tamaño; latencia p50 y p95 en un hardware descrito.</li><li>El <b>tokenizador</b> o el preprocesamiento, versionado con el estudiante. No es un detalle: es parte del modelo.</li></ul><p class="fuente">Fuente: notebook 04, apartado 4 («Qué registrar junto al estudiante»); el ejemplo, el ejercicio 4 del notebook 05.</p></div><div class="capcol"><div class="term"><div class="bar"><em>resultados/ejercicio4_registro_run.json · lo que escribe el ejercicio 4</em><button class="cp cpall" data-t="{
+  &quot;params&quot;: {
+    &quot;profesor_id&quot;: &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;,
+    &quot;estudiante_arquitectura&quot;: &quot;embedding-gru-bidireccional&quot;,
+    &quot;temperature&quot;: 3.0,
+    &quot;alpha&quot;: 0.7,
+    &quot;semilla&quot;: 42,
+    &quot;n_train&quot;: 3000,
+    &quot;n_test&quot;: 872,
+    &quot;max_len&quot;: 64,
+    &quot;dispositivo&quot;: &quot;cpu&quot;
+  },
+  &quot;metrics&quot;: {
+    &quot;acc_profesor&quot;: 0.9105504587155964,
+    &quot;acc_estudiante_duro&quot;: 0.6502293577981652,
+    &quot;acc_estudiante_destilado&quot;: 0.6743119266055045,
+    &quot;ms_por_ejemplo_profesor&quot;: 8.694339081330327,
+    &quot;ms_por_ejemplo_estudiante_destilado&quot;: 0.08040869922751881,
+    &quot;params_profesor&quot;: 66955010,
+    &quot;params_estudiante&quot;: 2003586
+  }
+}">Copiar todo</button></div><pre class="src">{
+  &quot;params&quot;: {
+    &quot;profesor_id&quot;: &quot;distilbert-base-uncased-finetuned-sst-2-english&quot;,
+    &quot;estudiante_arquitectura&quot;: &quot;embedding-gru-bidireccional&quot;,
+    &quot;temperature&quot;: 3.0,
+    &quot;alpha&quot;: 0.7,
+    &quot;semilla&quot;: 42,
+    &quot;n_train&quot;: 3000,
+    &quot;n_test&quot;: 872,
+    &quot;max_len&quot;: 64,
+    &quot;dispositivo&quot;: &quot;cpu&quot;
+  },
+  &quot;metrics&quot;: {
+    &quot;acc_profesor&quot;: 0.9105504587155964,
+    &quot;acc_estudiante_duro&quot;: 0.6502293577981652,
+    &quot;acc_estudiante_destilado&quot;: 0.6743119266055045,
+    &quot;ms_por_ejemplo_profesor&quot;: 8.694339081330327,
+    &quot;ms_por_ejemplo_estudiante_destilado&quot;: 0.08040869922751881,
+    &quot;params_profesor&quot;: 66955010,
+    &quot;params_estudiante&quot;: 2003586
+  }
+}</pre></div></div></div>
+</section>
+
+<section class="slide" data-part="E" data-min="4" data-title="Relación con S5"
+ data-notes="La relación con el resto de la sesión cinco. El notebook cuatro propone que lo que aquí es un JSON con parámetros y métricas sea, en producción, un run de MLflow, y que la promoción sea mover un alias del registro, con el rollback como moverlo de vuelta. Es una propuesta del notebook: este extra no usa MLflow ni mueve ningún alias, y eso está sin verificar. Tres ideas de producción del notebook: el profesor como sombra sobre una muestra del tráfico para detectar deriva, redestilar si cambia el profesor, y recordar que el estudiante hereda los sesgos del profesor. Para ver un alias funcionando, está el extra de MCP en notebooks.">
+<p class="kick">5 · De los notebooks a producción · MLflow, alias y producción</p><h1>En S5 esto es un run de MLflow y un alias que se mueve; aquí son un JSON y un archivo</h1>
+
+<div class="split" style="grid-template-columns:1.1fr .9fr"><div class="col"><table class="tbl "><tr><th>En este extra</th><th>En producción (propuesta del notebook 04)</th></tr><tr><td><span class="mono">resultados/*.json</span> con parámetros y métricas</td><td>Parámetros, métricas y artefactos de <b>un mismo run</b> en MLflow</td></tr><tr><td><span class="mono">modelos/*.pt</span> y el tokenizador</td><td>Artefactos del run; el profesor y el estudiante <b>como pareja</b></td></tr><tr><td>Decisión PROMOCIONAR / NO PROMOCIONAR</td><td>Mover el <b>alias</b> del registro (y el rollback, moverlo de vuelta)</td></tr><tr><td>Latencia medida en esta CPU</td><td>Volver a medir en el <b>contenedor real</b>, con el lote real, en caliente</td></tr></table><p class="small"><span class="tag warn">Sin verificar</span> <b>MLflow y alias</b>: son la propuesta del notebook 04. <b>Este extra no los usa</b>: no registra ningún run ni mueve ningún alias.</p></div><div class="capcol"><div class="card mira"><h3>Qué debes ver</h3><ul class="list"><li>El profesor puede actuar de <b>sombra</b> sobre una muestra del tráfico: su desacuerdo con el estudiante es señal de <b>deriva</b>.</li><li>Si <b>actualizas al profesor</b>, hay que redestilar, evaluar y promover otra vez.</li><li>El estudiante <b>hereda sesgos</b> y errores del profesor.</li></ul></div><div class="callout">Para ver un servicio que sigue un alias en producción, ver el extra de <b>MCP en notebooks</b> (modelo <span class="mono">retencion-90d</span> y <span class="mono">@champion</span>).</div><p class="fuente">Fuente: notebook 04, apartado 4; notebook 07, apartado 4.</p></div></div>
+</section>
+
+<section class="slide grande" data-part="F" data-min="3" data-title="Qué quedó sin verificar"
+ data-notes="Diapositiva de honestidad. Lo comprobado: los ocho notebooks se ejecutaron una sola vez, en CPU, con Python tres doce en Linux; las versiones que imprime el notebook cero coinciden con las del archivo de requisitos; y cada figura y cada cifra de esta presentación sale del notebook o del archivo de resultados que la produjo. Lo no comprobado: Windows, Codespace, alumnado, GPU, proxy corporativo, la instalación desde cero, la exportación a ONNX y el uso de MLflow con alias. Los tiempos son de una máquina.">
+<p class="kick">6 · Límites y cierre · qué se comprobó y qué no</p><h1>Qué se comprobó de verdad y qué quedó sin verificar</h1>
+
+<div class="grid2">
+ <div class="card"><h3 class="okc">Comprobado</h3><ul class="list"><li>Los <b>ocho notebooks</b> se ejecutaron <b>una vez</b>, en <b>CPU</b>, con Python <b>3.12.8</b> en <b>Linux</b>; las salidas y los JSON de las diapositivas son esas.</li><li>Las <b>versiones</b> que imprime el notebook 00 coinciden con las del archivo de requisitos.</li><li>Cada figura es <b>la que produce su notebook</b>; cada cifra, la de su JSON o su salida.</li></ul></div>
+ <div class="card"><h3 class="malc">Sin verificar</h3><ul class="list"><li><b>Windows</b> (PowerShell, venv, el bucle de ejecución): solo está en el README.</li><li><b>Codespace</b> y cualquier otro entorno remoto: no se probó.</li><li><b>Alumnado</b>: nadie del curso lo ha hecho; los tiempos son de <b>una</b> CPU y pueden variar mucho.</li><li><b>GPU</b>: el notebook 00 salió «cpu-only»; que acelere el 03 es lo que dice el README, no algo medido.</li><li><b>Proxy corporativo</b>, <b>instalar desde cero</b> con el archivo de requisitos, <b>ONNX</b> y <b>MLflow/alias</b>: sin comprobar.</li></ul></div>
+</div>
+</section>
+
+<section class="slide" data-part="F" data-min="4" data-title="Límites honestos"
+ data-notes="Los límites, dichos sin adorno. Es una sola ejecución con una semilla, sin barras de error. Con ochocientas setenta y dos frases de test, una frase vale poco más de once centésimas de punto, y la diferencia entre el duro y el destilado de la versión dos es exactamente una frase: no se puede decir que uno gane al otro. El notebook seis guarda la mejor época mirando el test, lo que hace la cifra algo optimista. La latencia es de una CPU con cuatro hilos. Y los casos son acotados: MNIST con cuatrocientas etiquetas es un montaje didáctico y la temperatura y el alfa no se afinaron.">
+<p class="kick">6 · Límites y cierre · qué no prueban estas cifras</p><h1>Estas cifras son una sola ejecución en CPU con muestras pequeñas: sirven para entender, no para concluir</h1>
+
+<div class="grid2">
+ <div class="card"><h3>Una ejecución, una semilla</h3><ul class="list"><li>Semilla <b>42</b>, sin repeticiones ni barras de error.</li><li>Con <b>872</b> frases de test, <b>una</b> frase son <b>0,115 puntos</b>; duro y destilado de la v2 distan <b>0,115 puntos</b>: una frase.</li></ul></div>
+ <div class="card"><h3>Mejor época en test</h3><ul class="list"><li>El notebook 06 guarda «la mejor época en test» de cada run, no la última: la cifra es algo <b>optimista</b>.</li><li>Un conjunto de validación aparte lo evitaría.</li></ul></div>
+ <div class="card"><h3>CPU y latencia</h3><ul class="list"><li>Latencia de <b>una</b> CPU con <b>4 hilos</b>; en producción hay que <b>remedirla</b>.</li><li>Con <b>lote 1</b> no se llega a 5×.</li><li><b>GPU</b>: sin verificar; el 03 no se midió con GPU.</li></ul></div>
+ <div class="card"><h3>Casos acotados</h3><ul class="list"><li>MNIST con <b>400 etiquetas</b> es un montaje didáctico, a propósito.</li><li>Solo <b>SST-2</b> (inglés, binario), con <b>un</b> profesor y <b>dos</b> estudiantes.</li><li>T y α <b>no se afinaron</b>: son valores de partida.</li></ul></div>
+</div><p class="fuente">Fuente: resultados/*.json; notebook 06 (apartado 4: «Se guarda la mejor época en test»); notebook 01 («valores de partida razonables»).</p>
+</section>
+
+<section class="slide grande" data-part="F" data-min="3" data-title="Resumen"
+ data-notes="Cierre con un único mensaje: un estudiante se promociona cuando cumple calidad y latencia a la vez, y en esta ejecución lo hace el TinyBERT duro en fp32, no el GRU de la versión uno. Las cuatro cifras: el GRU de la versión uno pasa de sesenta y cinco a sesenta y siete por ciento con destilación, lejos del noventa y uno del profesor; el TinyBERT duro llega a ochenta y ocho coma cuatro; el oficial cumple las dos puertas con dos coma seis puntos y siete coma siete veces; y la destilación no gana al duro en la versión dos, porque la diferencia es una frase de ochocientas setenta y dos.">
+<p class="kick">6 · Límites y cierre · el mensaje</p><h1>Destilar ayuda si el profesor merece copiarse y el estudiante parte bien; lo decide la medida</h1>
+
+<div class="msg">Un estudiante <b>se promociona</b> cuando cumple <b>calidad y latencia a la vez</b>: en esta ejecución lo hace <b>TinyBERT duro en fp32</b>, no el GRU de la v1.</div>
+<div class="grid4" style="margin-top:18px">
+ <div class="card kpi"><b class="n ">65,0 % → 67,4 %</b><p class="small">v1: el GRU <b>duro</b> frente al <b>destilado</b>; el profesor, 91,1 % (resultados/sentimiento.json)</p></div><div class="card kpi"><b class="n ">88,42 %</b><p class="small">v2: <b>TinyBERT duro fp32</b>; el profesor, 91,06 % (resultados/v2_sentimiento.json)</p></div><div class="card kpi"><b class="n ">2,64 pts · 7,69×</b><p class="small">hueco y aceleración p95 del oficial frente a las puertas: <b>≤ 4 puntos</b> y <b>≥ 5×</b></p></div><div class="card kpi"><b class="n ">1 frase</b><p class="small">es la diferencia entre el duro y el destilado de la v2 (<b>872</b> frases de test): la destilación no gana</p></div>
+</div>
+<div style="text-align:center;margin-top:44px;font-size:44px;font-weight:700;color:var(--acento)">¿Preguntas?</div>
+</section>
+
+</div></div>
+
+<aside id="notes" aria-label="Notas del profesor"><h3>Notas del profesor</h3><div id="notetext"></div><p class="small" id="notemin"></p></aside>
+<div id="index" aria-label="Índice"><h2>Índice</h2><div class="grid" id="idxgrid"></div></div>
+<div id="zoombox" aria-label="Figura ampliada"><p>Esc o clic para cerrar</p><img id="zoomimg" alt=""></div>
+<nav id="bar" aria-label="Controles">
+  <button id="bprev" aria-label="Anterior">←</button><button id="bnext" aria-label="Siguiente">→</button>
+  <span id="count">1 / 1</span><span id="clockref" title="Minuto planificado acumulado (propuesta)"></span>
+  <button class="part" data-p="A">La idea</button><button class="part" data-p="B">Preparación</button><button class="part" data-p="C">v1 · 00-05</button><button class="part" data-p="D">v2 · 06-07</button><button class="part" data-p="E">Producción</button><button class="part" data-p="F">Límites</button>
+  <span class="sp"></span>
+  <a id="bhome" href="../index.html" title="Volver al índice de la sesión S5">⌂ Índice</a><button id="bidx">Índice (O)</button><button id="bnotes">Notas (S)</button><button id="bfull">Pantalla completa (F)</button>
+</nav>
+<noscript>Esta presentación necesita JavaScript. El mismo contenido está en los ocho notebooks de esta carpeta.</noscript>
+
+<script>
+(function(){
+'use strict';
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>[...(r||document).querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PARTES={"A": "La idea", "B": "Preparación", "C": "v1 · 00-05", "D": "v2 · 06-07", "E": "Producción", "F": "Límites"};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();return true}catch(e2){return false}}}
+const slides=$$('.slide'), N=slides.length; let cur=0;
+slides.forEach((s,i)=>{const f=document.createElement('div');f.className='foot';
+  f.innerHTML=`<span>ML e IA · S5 · Extra: Destilación en notebooks</span><span><b>${esc(PARTES[s.dataset.part]||'')}</b> · ${i+1} / ${N}</span>`;s.appendChild(f)});
+const cum=[];(()=>{let t=0;slides.forEach(s=>{cum.push(t);t+=+s.dataset.min||0})})();
+const TOTAL=cum[N-1]+(+slides[N-1].dataset.min||0);
+function go(i){i=Math.max(0,Math.min(N-1,i));cur=i;slides.forEach((s,k)=>s.classList.toggle('active',k===i));chrome();try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function chrome(){const s=slides[cur];
+  $('#count').textContent=(cur+1)+' / '+N; $('#clockref').textContent='min '+cum[cur]+' de '+TOTAL+' (propuesta)';
+  $('#prog').style.width=((cur+1)/N*100)+'%';
+  $$('#bar .part').forEach(b=>b.classList.toggle('on',b.dataset.p===s.dataset.part));
+  $('#notetext').innerHTML='<p>'+esc(s.dataset.notes||'')+'</p>';
+  $('#notemin').textContent='Tiempo previsto (propuesta): '+(s.dataset.min||0)+' min · acumulado '+cum[cur]+' min de '+TOTAL;
+  $$('#idxgrid button').forEach((b,k)=>b.classList.toggle('cur',k===cur));}
+function fit(){const v=$('#viewport');$('#stage').style.setProperty('--s',Math.min(v.clientWidth/1280,v.clientHeight/720).toFixed(4))}
+addEventListener('resize',fit);
+$('#idxgrid').innerHTML=slides.map((s,i)=>`<button data-i="${i}"><small>${esc(PARTES[s.dataset.part]||'')} · ${s.dataset.min||0} min</small>${i+1}. ${esc(s.dataset.title||'')}</button>`).join('');
+$('#idxgrid').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;toggle('#index',false);go(+b.dataset.i)});
+function toggle(sel,force){$(sel).classList.toggle('on',force)}
+$('#bprev').onclick=()=>go(cur-1); $('#bnext').onclick=()=>go(cur+1);
+$('#bidx').onclick=()=>toggle('#index'); $('#bnotes').onclick=()=>toggle('#notes');
+$('#bfull').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()};
+$$('#bar .part').forEach(b=>b.onclick=()=>go(slides.findIndex(s=>s.dataset.part===b.dataset.p)));
+function zoom(on,src,alt){const z=$('#zoombox');if(on){$('#zoomimg').src=src;$('#zoomimg').alt=alt||'';}z.classList.toggle('on',!!on)}
+$('#zoombox').onclick=()=>zoom(false);
+addEventListener('keydown',e=>{
+  const t=e.target; if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const k=e.key;
+  if(k==='Escape'){zoom(false);toggle('#index',false);toggle('#notes',false);return}
+  if($('#zoombox').classList.contains('on')) return;
+  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!/^(BUTTON|A)$/.test(t.tagName))){e.preventDefault();go(cur+1)}
+  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(k==='Home'){e.preventDefault();go(0)} else if(k==='End'){e.preventDefault();go(N-1)}
+  else if(k==='o'||k==='O'){toggle('#index')} else if(k==='s'||k==='S'){toggle('#notes')} else if(k==='f'||k==='F'){$('#bfull').click()}
+});
+let tx=null;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>60){dx<0?go(cur+1):go(cur-1)}},{passive:true});
+document.addEventListener('click',async e=>{
+  const z=e.target.closest('.zoom'); if(z){e.stopPropagation();zoom(true,z.dataset.src,z.dataset.alt);return}
+  const b=e.target.closest('.cp'); if(!b) return; e.stopPropagation();
+  const ok=await copyText(b.dataset.t); const t=b.textContent; b.classList.add('ok'); b.textContent=ok?'✓':'✗'; setTimeout(()=>{b.classList.remove('ok');b.textContent=t},1200)});
+fit();
+const h=parseInt((location.hash||'').slice(1),10); go(isNaN(h)?0:h-1);
+addEventListener('hashchange',()=>{const n=parseInt((location.hash||'').slice(1),10);if(!isNaN(n)&&n-1!==cur)go(n-1)});
+})();
+</script>
+</body>
+</html>
