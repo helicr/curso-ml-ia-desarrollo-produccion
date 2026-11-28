@@ -330,7 +330,7 @@ def imagenes_incrustadas(cuerpo, origen):
     """Las imagenes locales (rutas relativas al Markdown) se incrustan como data: URI: el documento se carga sin ruta base
     y en el PDF no puede quedar ninguna ruta file:///."""
     base = PurePosixPath(origen).parent
-    tipos = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.gif': 'image/gif'}
+    tipos = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.webp': 'image/webp'}
 
     def cambiar(m):
         src = html.unescape(m.group(2))
@@ -438,7 +438,7 @@ def texto_leeme():
     lineas = [
         '# PDF del curso',
         '',
-        f'PDF de las sesiones S0, S1 y S2 de «{C.CURSO}». Los exige la institución. Se generan desde las fuentes '
+        f'PDF de las sesiones S0 a S5 de «{C.CURSO}». Los exige la institución. Se generan desde las fuentes '
         '(presentaciones HTML y documentos Markdown): **no los edites a mano**, cambia la fuente y vuelve a generar.',
         '',
         '## Cómo se regeneran',

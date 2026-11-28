@@ -329,3 +329,99 @@ SESIONES = [
         ],
     },
 ]
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# S3, S4 y S5 (añadidas el 28/11/2026). Mismo formato que S0 a S2; solo cambia que se construyen con dos ayudantes.
+# ----------------------------------------------------------------------------------------------------------------------
+def _pres(origen, titulo, archivo, espera_ms=700):
+    return {'origen': origen, 'tipo': 'presentacion', 'grupo': 'presentaciones', 'titulo': titulo, 'archivo': archivo,
+            'espera_ms': espera_ms, 'nota': PERDIDO_EN_PRESENTACIONES}
+
+
+def _doc(origen, grupo, titulo, archivo):
+    return {'origen': origen, 'tipo': 'documento', 'grupo': grupo, 'titulo': titulo, 'archivo': archivo}
+
+
+_S3 = '01-Sesiones/S3-Despliegue-y-Redes-Neuronales/'
+_S4 = '01-Sesiones/S4-Orquestacion-y-CI-CD/'
+_S5 = '01-Sesiones/S5-MLOps-y-Operacion/'
+
+SESIONES += [
+    {
+        'id': 'S3',
+        'carpeta': 'S3-Despliegue-y-Redes-Neuronales',
+        'titulo': 'Laboratorios: el servicio de S2, MLflow, GitHub Actions y una red neuronal',
+        'horas': '4 h',
+        'elementos': [
+            _pres(_S3 + 'laboratorio-recap-s2/index.html', 'Laboratorio-recap de S2: el servicio', '01-laboratorio-recap-de-s2.pdf'),
+            _pres(_S3 + 'laboratorio-mlflow/index.html', 'Laboratorio de MLflow', '02-laboratorio-de-mlflow.pdf'),
+            _pres(_S3 + 'laboratorio-github-actions/index.html', 'Laboratorio de GitHub Actions', '03-laboratorio-de-github-actions.pdf'),
+            _pres(_S3 + 'laboratorio-red-neuronal/index.html', 'Laboratorio de red neuronal: ¿perro o gato?', '04-laboratorio-de-red-neuronal.pdf'),
+            _doc(_S3 + 'laboratorio-recap-s2/guia.md', 'alumno', 'Guía del laboratorio-recap de S2', '01-guia-recap-de-s2.pdf'),
+            _doc(_S3 + 'laboratorio-mlflow/guia.md', 'alumno', 'Guía del laboratorio de MLflow', '02-guia-de-mlflow.pdf'),
+            _doc(_S3 + 'laboratorio-github-actions/guia.md', 'alumno', 'Guía del laboratorio de GitHub Actions', '03-guia-de-github-actions.pdf'),
+            _doc(_S3 + 'laboratorio-red-neuronal/guia.md', 'alumno', 'Guía del laboratorio de red neuronal', '04-guia-de-red-neuronal.pdf'),
+            _doc(_S3 + 'preparar-gcp-para-s4.md', 'alumno', 'Activa Google Cloud para S4', '05-activa-google-cloud-para-s4.pdf'),
+            _doc(_S3 + 'tarea/README.md', 'alumno', 'Tarea de S3 (avance 3)', '06-tarea.pdf'),
+            _doc(_S3 + 'tarea/rubrica.md', 'alumno', 'Rúbrica de S3', '07-rubrica.pdf'),
+            _doc(_S3 + 'evidencias/plantilla-avance-3.md', 'alumno', 'Plantilla de la evidencia del avance 3', '08-plantilla-de-la-evidencia.pdf'),
+            _doc(_S3 + 'checklist.md', 'alumno', 'Checklist de S3', '09-checklist.pdf'),
+            _doc(_S3 + 'README.md', 'instructor', 'README de S3', '01-readme-s3.pdf'),
+            _doc(_S3 + 'guion.md', 'instructor', 'Guion de S3', '02-guion-s3.pdf'),
+        ],
+    },
+    {
+        'id': 'S4',
+        'carpeta': 'S4-Orquestacion-y-CI-CD',
+        'titulo': 'Orquestación y CI/CD con GitHub Actions',
+        'horas': '4 h',
+        'elementos': [
+            _pres(_S4 + 'clase-onpremise-a-nube/index.html', 'Clase: de on-premise a la nube', '01-clase-de-on-premise-a-la-nube.pdf'),
+            _pres(_S4 + 'laboratorio-produccion-e2e/index.html', 'Laboratorio de producción de punta a punta', '02-laboratorio-de-produccion-e2e.pdf'),
+            _pres(_S4 + 'laboratorio-cloud-journey/index.html', 'Laboratorio Cloud Journey: la API en Google Cloud sin claves', '03-laboratorio-cloud-journey.pdf'),
+            _pres(_S4 + 'practicas-gcp/index.html', 'Prácticas en Google Cloud, paso a paso', '04-practicas-en-google-cloud.pdf'),
+            _doc(_S4 + 'teoria/README.md', 'alumno', 'Teoría de S4', '01-teoria.pdf'),
+            _doc(_S4 + 'practica/guia-laboratorio.md', 'alumno', 'Hoja de ruta de los laboratorios de S4', '02-hoja-de-ruta-de-laboratorios.pdf'),
+            _doc(_S4 + 'clase-onpremise-a-nube/guia.md', 'alumno', 'Clase de on-premise a la nube (texto)', '03-clase-de-la-nube-en-texto.pdf'),
+            _doc(_S4 + 'laboratorio-produccion-e2e/guia.md', 'alumno', 'Guía del laboratorio de producción e2e', '04-guia-de-produccion-e2e.pdf'),
+            _doc(_S4 + 'laboratorio-produccion-e2e/CONFIGURAR-REPOSITORIO.md', 'alumno', 'Configurar el repositorio (environment y permisos)', '05-configurar-el-repositorio.pdf'),
+            _doc(_S4 + 'laboratorio-cloud-journey/guia.md', 'alumno', 'Guía del laboratorio Cloud Journey', '06-guia-de-cloud-journey.pdf'),
+            _doc(_S4 + 'laboratorio-cloud-journey/CONFIGURAR-GCP.md', 'alumno', 'Configurar Google Cloud para Cloud Journey', '07-configurar-google-cloud.pdf'),
+            _doc(_S4 + 'practicas-gcp/README.md', 'alumno', 'Prácticas en Google Cloud (crear, probar, borrar)', '08-practicas-en-google-cloud-texto.pdf'),
+            _doc(_S4 + 'tarea/README.md', 'alumno', 'Tarea de S4 (avance 4)', '09-tarea.pdf'),
+            _doc(_S4 + 'tarea/rubrica.md', 'alumno', 'Rúbrica de S4', '10-rubrica.pdf'),
+            _doc(_S4 + 'evidencias/plantilla-avance-4.md', 'alumno', 'Plantilla de la evidencia del avance 4', '11-plantilla-de-la-evidencia.pdf'),
+            _doc(_S4 + 'checklist.md', 'alumno', 'Checklist de S4', '12-checklist.pdf'),
+            _doc(_S4 + 'README.md', 'instructor', 'README de S4', '01-readme-s4.pdf'),
+            _doc(_S4 + 'guion.md', 'instructor', 'Guion de S4', '02-guion-s4.pdf'),
+            _doc(_S4 + 'guion-ensayo-profesor.md', 'instructor', 'Guion de ensayo del profesor (recrear S4)', '03-guion-de-ensayo-del-profesor.pdf'),
+        ],
+    },
+    {
+        'id': 'S5',
+        'carpeta': 'S5-MLOps-y-Operacion',
+        'titulo': 'MLOps y operación',
+        'horas': '4 h',
+        'elementos': [
+            _pres(_S5 + 'teoria/index.html', 'Teoría de S5: operar el modelo y el agente', '01-teoria-de-s5.pdf'),
+            _pres(_S5 + 'laboratorio-mlops/index.html', 'Laboratorio A: MLOps clásico', '02-laboratorio-mlops-clasico.pdf'),
+            _pres(_S5 + 'laboratorio-agentes/index.html', 'Laboratorio B: agentes', '03-laboratorio-de-agentes.pdf'),
+            _pres(_S5 + 'clase-fundamentos-ia-agentes/index.html', 'Clase de cierre: fundamentos de IA, LLM, RAG y agentes', '04-clase-fundamentos-de-ia-y-agentes.pdf'),
+            _pres('01-Sesiones/recap/recap-final/index.html', 'Recap final del curso', '05-recap-final-del-curso.pdf', espera_ms=900),
+            _doc(_S5 + 'teoria/README.md', 'alumno', 'Teoría de S5', '01-teoria.pdf'),
+            _doc(_S5 + 'practica/guia-laboratorio.md', 'alumno', 'Hoja de ruta de los laboratorios de S5', '02-hoja-de-ruta-de-laboratorios.pdf'),
+            _doc(_S5 + 'laboratorio-mlops/guia.md', 'alumno', 'Guía del laboratorio de MLOps clásico', '03-guia-de-mlops-clasico.pdf'),
+            _doc(_S5 + 'laboratorio-agentes/guia.md', 'alumno', 'Guía del laboratorio de agentes', '04-guia-de-agentes.pdf'),
+            _doc(_S5 + 'laboratorio-agentes/CONFIGURAR-REPOSITORIO.md', 'alumno', 'Configurar el repositorio para los workflows del agente', '05-configurar-el-repositorio.pdf'),
+            _doc(_S5 + 'clase-fundamentos-ia-agentes/glosario.md', 'alumno', 'Glosario de IA, LLM, RAG y agentes', '06-glosario.pdf'),
+            _doc(_S5 + 'tarea/README.md', 'alumno', 'Tarea de S5 (avance 5)', '07-tarea.pdf'),
+            _doc(_S5 + 'tarea/rubrica.md', 'alumno', 'Rúbrica de S5', '08-rubrica.pdf'),
+            _doc(_S5 + 'evidencias/plantilla-avance-5.md', 'alumno', 'Plantilla de la evidencia del avance 5', '09-plantilla-de-la-evidencia.pdf'),
+            _doc(_S5 + 'checklist.md', 'alumno', 'Checklist de S5', '10-checklist.pdf'),
+            _doc(_S5 + 'README.md', 'instructor', 'README de S5', '01-readme-s5.pdf'),
+            _doc(_S5 + 'guion.md', 'instructor', 'Guion de S5', '02-guion-s5.pdf'),
+            _doc(_S5 + 'guion-jornada-27-11.md', 'instructor', 'Guion de la jornada del 27/11', '03-guion-de-la-jornada.pdf'),
+        ],
+    },
+]

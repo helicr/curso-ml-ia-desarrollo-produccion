@@ -43,7 +43,7 @@ def texto_pagina(ruta, n):
 # ---------------------------------------------------------------------------
 class TestManifiesto:
     def test_hay_s0_s1_y_s2(self):
-        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1', 'S2']
+        assert [s['id'] for s in C.SESIONES] == ['S0', 'S1', 'S2', 'S3', 'S4', 'S5']
 
     @pytest.mark.parametrize('sesion,e', todos(), ids=[f"{s['id']}-{e['archivo']}" for s, e in todos()])
     def test_cada_origen_existe(self, sesion, e):
@@ -279,7 +279,7 @@ class TestPdfGenerados:
         assert 'Copia cada línea y pégala en la terminal del Codespace' in todo
         # lo esencial del laboratorio sigue en el PDF
         for debe in ('docker version', 'docker build -f deploy/docker/Dockerfile', '--build-context modelo=models', '10001'):
-            assert debe in todo.replace('\n', ' '), debe
+            assert debe in todo.replace('--\n', '--').replace('\n', ' '), debe     # el PDF parte las órdenes largas justo después de «--»
 
     def test_s2_conserva_las_cifras_reales_de_la_practica(self):
         from pypdf import PdfReader

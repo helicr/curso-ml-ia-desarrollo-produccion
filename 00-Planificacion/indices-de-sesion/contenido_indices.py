@@ -240,6 +240,7 @@ SESIONES = [
                  '29 diapositivas: preparar Google Cloud, variables de GitHub, desplegar con aprobación, probar la URL, el modelo en Vertex AI y borrar todo; '
                  'run real y capturas de la consola.', volver=True),
             alumno('Laboratorio Cloud Journey: guía paso a paso', f'{S4}/laboratorio-cloud-journey/guia.md', 'Cada orden, qué debes ver y si falla; lo mismo que las diapositivas, en texto.'),
+            alumno('Cloud Journey: configurar Google Cloud', f'{S4}/laboratorio-cloud-journey/CONFIGURAR-GCP.md', 'El proyecto, la facturación y las cinco variables de GitHub, con capturas.'),
             deck('Laboratorio de cierre: producción e2e del caso Retail (diapositivas)', f'{S4}/laboratorio-produccion-e2e/index.html',
                  '26 diapositivas: los tres modos de explotación, el panel, configurar el repositorio, versión nueva con puerta de calidad y aprobación, y rollback; capturas de runs reales.', volver=True),
             alumno('Laboratorio de cierre: guía paso a paso', f'{S4}/laboratorio-produccion-e2e/guia.md', 'Cada orden, qué debes ver y si falla.'),
