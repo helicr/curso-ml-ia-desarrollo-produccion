@@ -2,6 +2,8 @@
 
 Todo lo de esta lista **no se ha podido capturar** porque requiere ejecutar el extra de verdad (GitHub Actions o Vertex AI) y aún no se ha hecho. Las diapositivas dibujan hoy un recuadro **«Captura pendiente»** con el nombre del archivo; cuando exista el `.webp` en `img/` basta ejecutar `python generar.py` y el recuadro se convierte en la imagen (con lupa para ampliar). **Nunca se ha puesto una imagen inventada.**
 
+**Intento de ensayo del 28/11/2026 (sin terminar, sin recursos de pago creados):** en Cloud Shell salió bien clonar `develop`, crear el entorno, instalar `requirements-dev.txt` y entrenar la v1 (AUC de validación 0.6982 y de test 0.7471), y `docker version` responde. **Falló** el `docker build` de `scripts/subir_modelo.sh`: el `docker pull python:3.11-slim` (desde Docker Hub y desde `mirror.gcr.io`) se quedó parado y el build estuvo más de 24 minutos sin usar CPU. No se creó ningún modelo ni endpoint. Lo único que dejó es el repositorio de Artifact Registry `curso` (vacío, en `southamerica-west1`), que crea la propia `subir_modelo.sh`. **Propuesta, sin probar:** construir la imagen con Cloud Build (`gcloud builds submit`) en lugar del Docker de Cloud Shell. Las 13 capturas siguen pendientes.
+
 **Antes de capturar:** hacer el **ensayo real** (`guia.md`, apartado 9) en la rama `lab/vertex-champion/ensayo`, con borrado inmediato. Encuadrar sin la barra de crédito de la prueba gratuita; **difuminar el correo y el nombre del proyecto**; guardar los originales **fuera** del repositorio; convertir a `.webp` (calidad 85) y poner el nombre exacto de la lista.
 
 | # | Archivo (en `img/`) | Paso del laboratorio | Dónde |
