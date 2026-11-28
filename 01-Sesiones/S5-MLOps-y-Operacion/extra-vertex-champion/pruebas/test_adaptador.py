@@ -300,7 +300,7 @@ def test_compatible_con_las_dos_formas_de_construir_la_api(contexto):
     texto = '\n'.join(_instrucciones(DOCKERFILE))
     assert '--from=' not in texto and 'build-context' not in DOCKERFILE.split('FROM python')[1] and 'models/modelo_mlflow' not in texto
     develop = (PROYECTO / 'deploy' / 'docker' / 'Dockerfile').read_text(encoding='utf-8')
-    assert 'requirements-api.lock' in develop and 'COPY ia_mlops/ ia_mlops/' in develop        # el lock y el código que también usa esta imagen
+    assert 'requirements-api.lock' in develop and re.search(r'COPY (--from=\w+ )?(/src/)?ia_mlops/ ', develop)   # el lock y el código que también usa esta imagen (multietapa o no)
     assert not (contexto / 'models').exists()
 
 
