@@ -18,7 +18,7 @@ Revisión hecha el 28/11/2026 sobre `develop` = `11cb2b8` y `main` = `6f33465`. 
 
 ## 3. Limpieza antes de que sea la rama «de cara al alumnado»
 - [x] **Identificador de facturación** de la cuenta del curso: **[hecho 28/11]** los scripts traen ahora `FACTURACION="${FACTURACION:-PON-AQUI-TU-ACCOUNT_ID}"` y una guarda, y una prueba lo vigila (`FACTURACION=XXXXXX-XXXXXX-XXXXXX bash preparar-gcp-s4.sh`). **Sigue en el historial de git** (desde el 25/11); quitarlo exige reescribir historia.
-- [ ] **Historial con el proxy corporativo** (`proxysscc…`): ya no está en `HEAD` **[hecho]**, pero sigue en el commit `1a1d0b2`. Quitarlo exige reescribir historia (`force push`): **decisión tuya**.
+- [ ] **Historial de git con el proxy corporativo y el ID de facturación del profesor:** ya no están en `HEAD` **[hecho]**; la reescritura del historial de `develop` para borrarlos está en curso (28/11).
 - [ ] **Correo de la cuenta del curso** (`cursomlops@gmail.com`) en `00-Planificacion/classroom/` y `validar-antes-de-subir.md`; **rutas locales** (`C:\bk\…`) en notebooks del proyecto base y en informes de `00-Planificacion/*/_pico`. Decidir si `00-Planificacion` (notas internas del profesor) viaja a `main` o se queda en `develop`.
 - [ ] **Identificadores de la cuenta del curso** (proyecto `project-curso-ml-ia`, nº de proyecto, proveedor WIF) en las guías de Google Cloud: son los valores del profesor para el laboratorio; no son secretos, pero conviene decidir si se publican.
 - [ ] **`04-Proyecto-Base/comparar_fs.py`**: sin versionar; borrar.
