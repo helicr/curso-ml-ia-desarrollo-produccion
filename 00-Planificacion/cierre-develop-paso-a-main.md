@@ -25,7 +25,7 @@ Revisión hecha el 28/11/2026 sobre `develop` = `11cb2b8` y `main` = `6f33465`. 
 
 ## 4. Contenido que falta o está a medias
 - [x] **Presentaciones** de los extras de **destilación** (32 diapositivas) y **RAG** (30) **[hecho 28/11]**, enlazadas en el índice de S5.
-- [ ] **Deck de teoría de S5** (hoy: `teoria/README.md` y las primeras diapositivas del laboratorio A).
+- [x] **Deck de teoría de S5** (26 diapositivas, 28 min, 81 pruebas) **[hecho 28/11]**, enlazado en el índice. La guía del laboratorio A queda alineada con los ensayos reales en Actions del 26/11.
 - [ ] **PDF de S3, S4 y S5** (al final de la última sesión; instalar `pypdf`).
 - [ ] **Capturas pendientes** de Composer (11) y Vertex (13), con su receta en `capturas-pendientes.md`.
 - [ ] **READMEs desfasados:** el de la raíz y los de S0, S3 y S4 ya están al día **[hecho el 27/11]**; revisa S1 y S2.

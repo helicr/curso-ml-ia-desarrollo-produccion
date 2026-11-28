@@ -279,6 +279,8 @@ SESIONES = [
             alumno('Workflow: monitoreo del modelo', f'{S5}/laboratorio-mlops/monitoreo.yml'),
             alumno('MLOps clásico (detalle técnico)', '04-Proyecto-Base/docs/mlops-clasico.md'),
             alumno('Dónde se usa el modelo', '04-Proyecto-Base/docs/donde-se-usa-el-modelo.md', 'Los sitios donde se carga y se llama al modelo, y qué cambia con el alias champion.'),
+            deck('Teoría de S5: operar el modelo y el agente (diapositivas)', f'{S5}/teoria/index.html',
+                 '26 diapositivas, ~28 min: las cinco preguntas, huella → ficha → imagen, servicio frente a modelo, las dos derivas, PSI y KS, alias y rollback, alertas, costes, y agentes operados como software; con autoevaluación.', volver=True),
             alumno('Teoría de S5', f'{S5}/teoria/README.md'),
             alumno('Guía de laboratorio de S5', f'{S5}/practica/guia-laboratorio.md'),
             alumno('Tarea de S5 (avance 5)', f'{S5}/tarea/README.md'),

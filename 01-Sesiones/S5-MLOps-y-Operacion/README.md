@@ -21,7 +21,7 @@ Entrega posterior a S5: viernes 11 de diciembre, a las 10:00 (hora de Perú).
 
 | Carpeta o archivo | Qué es | Estado |
 |---|---|---|
-| `teoria/`, `practica/`, `tarea/`, `evidencias/`, `guion.md`, `checklist.md` | Los siete documentos de la sesión | Escritos; los pesos de la rúbrica y la demostración final (vídeo o en vivo) **están por decidir** por el profesor |
+| `teoria/` (con **presentación de 26 diapositivas**), `practica/`, `tarea/`, `evidencias/`, `guion.md`, `checklist.md` | Los siete documentos de la sesión | Escritos; los pesos de la rúbrica y la demostración final (vídeo o en vivo) **están por decidir** por el profesor |
 | `laboratorio-mlops/` | MLOps clásico: deriva (PSI y KS), AUC por corte, alias `champion`, rollback y workflow de monitoreo con issue de alerta (27 diapositivas, ~140 min) | Ensayado en GitHub Actions el 26/11/2026 (estable en verde, deriva en rojo, el segundo run comenta en el mismo issue) |
 | `laboratorio-agentes/` | Agente con servidor MCP, LLM local (Ollama), trazas, skills, evaluación y despliegue en GitHub | Cuatro workflows ensayados el 22 y 23/11/2026; el extra de dos agentes solo está planteado |
 | `extra-mcp-notebooks/` | Extra opcional: dos servidores MCP solo con notebooks (datos en SQLite y BigQuery; el modelo con predicción), 26 diapositivas y una interfaz web (`ui/`) | Notebooks ejecutados en Windows; BigQuery probado en Cloud Shell con un script equivalente; **sin verificar** en Codespace, con VS Code/Copilot y con un LLM real eligiendo herramienta |

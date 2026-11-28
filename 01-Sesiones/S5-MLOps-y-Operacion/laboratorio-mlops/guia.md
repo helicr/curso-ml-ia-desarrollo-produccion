@@ -14,7 +14,7 @@ Presentación: [`index.html`](index.html) (cada orden se copia con **⧉**). Wor
 | **L4** · Alertas con GitHub Actions | El workflow `monitoreo.yml` y dos ramas de ensayo | La alerta **es el rojo** y un *issue* |
 | **L5** · Costes y orden | Lo de S4: presupuesto y borrado | Avisar no es cortar; lo que creas, lo borras |
 
-> **Estado de validación.** Todo lo de **L1 a L3** (las órdenes y las salidas de «Qué debes ver») se ejecutó el **26/11/2026** sobre una copia de ensayo del proyecto, en **Windows** con Python 3.11 y la muestra de 150 clientes: las cifras son reales. **Sin verificar:** las mismas órdenes **en un Codespace (Linux)**; **todo lo de GitHub Actions** (los dos runs, el *issue*, el comentario del segundo run y el permiso `issues: write`), cuyas capturas están **pendientes**; el tiempo de `--fuente completo` en un Codespace (**437 s** en el ensayo) y los minutos de Actions (**sin dato**). Del workflow sí se comprobó **en local**: YAML, permisos, órdenes y opciones, `bash -n` de cada paso, que el escenario `estable` da **salida 0** y el `deriva` **salida 1** sobre los datos reales, y que el resumen y el cuerpo del *issue* se generan bien.
+> **Estado de validación.** Todo lo de **L1 a L3** (las órdenes y las salidas de «Qué debes ver») se ejecutó el **26/11/2026** sobre una copia de ensayo del proyecto, en **Windows** con Python 3.11 y la muestra de 150 clientes: las cifras son reales. **GitHub Actions, ensayado el 26/11/2026** (repositorio del profesor): el escenario `estable` (run 45732881261) terminó en **verde en 2 min 29 s**; el escenario `deriva` (run 45732890272) dejó el trabajo 3 en **rojo** y abrió el *issue* #6; al repetir el run, el trabajo 3 **comentó** en ese mismo *issue* y no abrió otro (funciona con solo el permiso `issues: write`); las capturas `m-01` a `m-06` están en las diapositivas. **Sin verificar:** las mismas órdenes **en un Codespace (Linux)** y el tiempo de `--fuente completo` allí (**437 s** en el ensayo en Windows). Del workflow sí se comprobó **en local**: YAML, permisos, órdenes y opciones, `bash -n` de cada paso, que el escenario `estable` da **salida 0** y el `deriva` **salida 1** sobre los datos reales, y que el resumen y el cuerpo del *issue* se generan bien.
 
 > **Orden:** haz **L1 y L2 antes que L3**. L3 entrena una v2 con los **datos completos** y tu base local deja de ser la de la muestra, así que los números de L1 y L2 cambiarían. Al final de L3 se explica cómo volver a la muestra.
 
@@ -433,7 +433,7 @@ git switch -c lab/monitoreo/estable
 git push -u origin lab/monitoreo/estable
 ```
 
-**Qué se espera ver** (**sin verificar en Actions** hasta que el profesor lo ensaye; **captura pendiente** `m-01-estable-verde`): los trabajos 1 y 2 en **verde** y el 3 **omitido** (gris). Mide la pareja **2010-08-01 → 2010-09-01** con umbral **0,50**: `antiguedad_dias` (0,410) queda «moderada» y la salida de `deriva datos` es **0** (**comprobado en local**). El resumen dice **«Sin alerta»** y enseña el AUC por corte (0.6982, 0.7534, 0.7423) (**captura pendiente** `m-02-resumen-estable`). **No se abre ningún *issue*.**
+**Qué debes ver** (ensayado en Actions el 26/11/2026; captura `m-01-estable-verde` en las diapositivas): los trabajos 1 y 2 en **verde** y el 3 **omitido** (gris). Mide la pareja **2010-08-01 → 2010-09-01** con umbral **0,50**: `antiguedad_dias` (0,410) queda «moderada» y la salida de `deriva datos` es **0** (**comprobado en local**). El resumen dice **«Sin alerta»** y enseña el AUC por corte (0.6982, 0.7534, 0.7423) (captura `m-02-resumen-estable` en las diapositivas). **No se abre ningún *issue*.**
 
 > **Honestidad:** «estable» **no** es «sin cambios»: es un par de cortes cercano **y un umbral más laxo**. Con 0,25 también habría alertado (apartado 2.5).
 
@@ -445,19 +445,19 @@ git switch -c lab/monitoreo/deriva
 git push -u origin lab/monitoreo/deriva
 ```
 
-**Qué se espera ver** (**sin verificar en Actions**; **capturas pendientes** `m-03-deriva-rojo` y `m-04-resumen-deriva`): los trabajos 1 y 2 en **verde** y el **3 · Alerta en ROJO**. Mide **2010-12-01 frente a 2011-12-10** con umbral **0,25**: la misma medición de L1, **salida 1**, **5 de 13** variables. El resumen dice **«ALERTA»** y marca las cinco variables con «**supera el umbral**» (PSI 2.830, 0.437, 0.400, 0.293 y 0.276). **La alerta es el rojo**: sin él, nadie se entera.
+**Qué debes ver** (ensayado en Actions el 26/11/2026; capturas `m-03-deriva-rojo` y `m-04-resumen-deriva` en las diapositivas): los trabajos 1 y 2 en **verde** y el **3 · Alerta en ROJO**. Mide **2010-12-01 frente a 2011-12-10** con umbral **0,25**: la misma medición de L1, **salida 1**, **5 de 13** variables. El resumen dice **«ALERTA»** y marca las cinco variables con «**supera el umbral**» (PSI 2.830, 0.437, 0.400, 0.293 y 0.276). **La alerta es el rojo**: sin él, nadie se entera.
 
 **Si falla.** `Rama de ensayo desconocida: …`: el nombre de la rama no es `lab/monitoreo/estable` ni `lab/monitoreo/deriva`; el workflow lo rechaza a propósito para que un error al teclear no pase en silencio.
 
 ### 5.5 El *issue* de alerta
 
-Se espera (**sin verificar en Actions**; **captura pendiente** `m-05-issue-alerta`) un *issue* nuevo en la pestaña **Issues**, con la etiqueta **`alerta-deriva`** (se crea sola si no existe), de título **«Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)»** y un cuerpo con la tabla de las cinco variables (PSI y KS), el **enlace al run** y qué hacer. **Sin verificar:** que `gh issue create` funcione con solo `issues: write`.
+Debes ver (ensayado en Actions el 26/11/2026; captura `m-05-issue-alerta` en las diapositivas) un *issue* nuevo en la pestaña **Issues**, con la etiqueta **`alerta-deriva`** (se crea sola si no existe), de título **«Alerta de deriva: 5 variables superan el PSI 0.25 (referencia 2010-12-01, actual 2011-12-10)»** y un cuerpo con la tabla de las cinco variables (PSI y KS), el **enlace al run** y qué hacer. **Comprobado el 26/11/2026:** `gh issue create` funciona con solo `issues: write`.
 
 **Qué hacer con una alerta:** abre el run, lee el resumen y decide si la deriva es **esperable** (`antiguedad_dias`) o **de comportamiento** (`recencia_dias`, `frecuencia_90d`…). Si el AUC de cortes de **prueba** cae, reentrena y promueve la versión nueva con alias (L3); si sale mal, `volver`.
 
 ### 5.6 Repetir el run: ningún *issue* nuevo
 
-En la página del run, **Re-run all jobs**. Se espera (**sin verificar en Actions**; **captura pendiente** `m-06-segunda-alerta`) que el trabajo 3 **comente** en el *issue* ya abierto («Nueva medición con deriva») y **no abra otro**: una deriva que sigue ahí no llena la lista; hay **una alerta abierta** hasta que alguien la cierre.
+En la página del run, **Re-run all jobs**. Se ve (ensayado en Actions el 26/11/2026; captura `m-06-segunda-alerta` en las diapositivas) que el trabajo 3 **comente** en el *issue* ya abierto («Nueva medición con deriva») y **no abra otro**: una deriva que sigue ahí no llena la lista; hay **una alerta abierta** hasta que alguien la cierre.
 
 **Si falla.** `gh: Resource not accessible by integration` (**sin verificar**): faltan permisos de escritura de *issues*; en **Settings › Actions › General** comprueba los permisos del workflow.
 
@@ -502,10 +502,11 @@ De Google Cloud (S4), **sin repetirlo**: un **presupuesto** con alertas (en S4, 
 
 ## 8. Qué se comprobó de verdad y qué falta
 
-**Comprobado el 26/11/2026** (copia de ensayo, Windows, Python 3.11): `cortes`, `datos` (salida 1, 5 de 13), `rendimiento` (salidas 0 y 1); la v2 con datos completos (AUC de test **0.7956** frente a **0.7471**), `promover`, `cargar` (**0.7245** y **0.8279**) y `volver`; el workflow (YAML, permisos, órdenes y opciones, `bash -n`, escenarios `estable` → 0 y `deriva` → 1 sobre los datos reales, resumen y cuerpo del *issue*).
+**Comprobado el 26/11/2026** (copia de ensayo, Windows, Python 3.11; y **en GitHub Actions**, runs 45732881261 en verde y 45732890272 en rojo con el *issue* #6 y un segundo run que comenta en él): `cortes`, `datos` (salida 1, 5 de 13), `rendimiento` (salidas 0 y 1); la v2 con datos completos (AUC de test **0.7956** frente a **0.7471**), `promover`, `cargar` (**0.7245** y **0.8279**) y `volver`; el workflow (YAML, permisos, órdenes y opciones, `bash -n`, escenarios `estable` → 0 y `deriva` → 1 sobre los datos reales, resumen y cuerpo del *issue*).
 
 **Sin verificar o sin dato:**
-- **Todo lo de GitHub Actions**: los dos runs, el *issue*, el comentario del segundo run y los permisos (`issues: write`). Las capturas `m-01` a `m-06` están **pendientes**.
+- El mensaje `gh: Resource not accessible by integration` cuando faltan permisos: es la causa **esperada**, no se provocó en el ensayo.
+- Los **minutos de Actions** que consume el workflow de monitoreo: **sin dato**. Capturas de Actions **pendientes**: ninguna (m-01 a m-06 están hechas); lo que sigue pendiente es repetir el ensayo en un fork de alumno.
 - Las órdenes **en un Codespace** (Linux): se ejecutaron en Windows.
 - El tiempo de `--fuente completo` en un Codespace (**437 s** en el ensayo) y los minutos de Actions: **sin dato**.
 - Un **umbral de PSI** o una **tolerancia de AUC** razonables para el negocio: son convenciones, no salen de ninguna medición.
