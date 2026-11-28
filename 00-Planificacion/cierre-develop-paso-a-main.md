@@ -14,17 +14,17 @@ Revisión hecha el 28/11/2026 sobre `develop` = `11cb2b8` y `main` = `6f33465`. 
   2. `S1/slides/caso-propio`: «la presentación está al día» (**ya fallaba antes**; desfasada).
   3. `S4/laboratorio-cloud-journey`: `desplegar-gcp.yml` con CRLF **en el árbol de trabajo de Windows** (`core.autocrlf=true`); el archivo en el repositorio es LF. No afecta a GitHub.
   4. `S5/extra-vertex-champion`: una prueba que miraba el texto del Dockerfile antiguo **[hecho: arreglada el 28/11]**.
-- **No ejecutadas** (a propósito): la suite de `04-Proyecto-Base/tests` (≈ 13 min, consume memoria) y `extra-mcp-notebooks/ui/pruebas` (toca el registro de MLflow y lo restaura). **Pásalas antes de fusionar.**
+- **Suite grande de `04-Proyecto-Base/tests`: 465 pasan y 1 se omite** (28/11/2026, 10 min 42 s) **[hecho]**. **Interfaz web (`ui/pruebas`): 72 pasan** y el registro de MLflow queda sin alias **[hecho]**.
 
 ## 3. Limpieza antes de que sea la rama «de cara al alumnado»
-- [ ] **Identificador de facturación** de la cuenta del curso (`010A93-…`) escrito en `preparar-gcp-s4.sh` y `borrar-gcp-s4.sh`. Propuesta: valor por defecto genérico (`TU-ID-DE-FACTURACION`) o variable de entorno. **Decisión tuya** (cambia lo que tecleas en el laboratorio).
+- [x] **Identificador de facturación** de la cuenta del curso: **[hecho 28/11]** los scripts traen ahora `FACTURACION="${FACTURACION:-PON-AQUI-TU-ACCOUNT_ID}"` y una guarda, y una prueba lo vigila (`FACTURACION=XXXXXX-XXXXXX-XXXXXX bash preparar-gcp-s4.sh`). **Sigue en el historial de git** (desde el 25/11); quitarlo exige reescribir historia.
 - [ ] **Historial con el proxy corporativo** (`proxysscc…`): ya no está en `HEAD` **[hecho]**, pero sigue en el commit `1a1d0b2`. Quitarlo exige reescribir historia (`force push`): **decisión tuya**.
 - [ ] **Correo de la cuenta del curso** (`cursomlops@gmail.com`) en `00-Planificacion/classroom/` y `validar-antes-de-subir.md`; **rutas locales** (`C:\bk\…`) en notebooks del proyecto base y en informes de `00-Planificacion/*/_pico`. Decidir si `00-Planificacion` (notas internas del profesor) viaja a `main` o se queda en `develop`.
 - [ ] **Identificadores de la cuenta del curso** (proyecto `project-curso-ml-ia`, nº de proyecto, proveedor WIF) en las guías de Google Cloud: son los valores del profesor para el laboratorio; no son secretos, pero conviene decidir si se publican.
 - [ ] **`04-Proyecto-Base/comparar_fs.py`**: sin versionar; borrar.
 
 ## 4. Contenido que falta o está a medias
-- [ ] **Presentaciones** de los extras de **destilación** y **RAG** (tienen README y notebooks ejecutados en CPU, sin diapositivas).
+- [x] **Presentaciones** de los extras de **destilación** (32 diapositivas) y **RAG** (30) **[hecho 28/11]**, enlazadas en el índice de S5.
 - [ ] **Deck de teoría de S5** (hoy: `teoria/README.md` y las primeras diapositivas del laboratorio A).
 - [ ] **PDF de S3, S4 y S5** (al final de la última sesión; instalar `pypdf`).
 - [ ] **Capturas pendientes** de Composer (11) y Vertex (13), con su receta en `capturas-pendientes.md`.
