@@ -7,13 +7,18 @@ set -euo pipefail
 
 PROYECTO="project-curso-ml-ia"
 REGION="southamerica-west1"
-FACTURACION="010A93-71D9FB-551CC6"
+FACTURACION="${FACTURACION:-PON-AQUI-TU-ACCOUNT_ID}"
 REPO_GITHUB="helicr/curso-ml-ia-desarrollo-produccion"
 POOL="github"
 PROVEEDOR="github"
 SA_DESPLIEGUE="sa-github-despliegue"
 SA_SERVICIO="sa-cloudrun-retencion"
 
+if [ "$FACTURACION" = "PON-AQUI-TU-ACCOUNT_ID" ]; then
+  echo "Falta tu ACCOUNT_ID de facturacion. Mira el tuyo con:  gcloud billing accounts list"
+  echo "Y ponlo en la linea FACTURACION= de este script, o lanza:  FACTURACION=XXXXXX-XXXXXX-XXXXXX bash $0"
+  exit 1
+fi
 paso() { echo; echo "=== $*"; }
 
 paso "0 · Proyecto activo"

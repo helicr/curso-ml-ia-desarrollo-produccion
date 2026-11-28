@@ -10,7 +10,7 @@ set -euo pipefail
 
 PROYECTO="project-curso-ml-ia"
 REGION="southamerica-west1"
-FACTURACION="010A93-71D9FB-551CC6"
+FACTURACION="${FACTURACION:-PON-AQUI-TU-ACCOUNT_ID}"
 POOL="github"
 PROVEEDOR="github"
 SA_DESPLIEGUE="sa-github-despliegue"
@@ -19,6 +19,12 @@ SERVICIO="retencion-api"
 REPO_AR="curso"
 PRESUPUESTO="Curso ML e IA"
 DESVINCULAR_FACTURACION="${DESVINCULAR_FACTURACION:-no}"
+
+if [ "$FACTURACION" = "PON-AQUI-TU-ACCOUNT_ID" ]; then
+  echo "Falta tu ACCOUNT_ID de facturacion. Mira el tuyo con:  gcloud billing accounts list"
+  echo "Y ponlo en la linea FACTURACION= de este script, o lanza:  FACTURACION=XXXXXX-XXXXXX-XXXXXX bash $0"
+  exit 1
+fi
 
 paso() { echo; echo "=== $*"; }
 existe() { "$@" >/dev/null 2>&1; }

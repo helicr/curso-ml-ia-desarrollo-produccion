@@ -375,7 +375,7 @@ def construir():
 <div class="grid3">{cap('gcp-01-proyectos.webp', 235)}{cap('gcp-02-facturacion.webp', 235)}{cap('gcp-03-facturacion-proyecto.webp', 235)}</div>
 <div class="grid3" style="margin-top:8px">
  {mira(['Una **cuenta de Google** con Google Cloud activado (**prueba gratuita**): consola de Google Cloud.', f'Un **proyecto**: el del curso es `{PROYECTO}`. El tuyo puede tener **otro ID**: úsalo donde aquí aparezca el del profesor.', f'La región **`{REGION}`** (Santiago).'], '1 · Proyecto y región')}
- {mira(['Menú ☰ > **Facturación**: una cuenta **Activa**. Apunta su **ID** (el del profesor empieza por `010A93`).', 'Importe y duración de la prueba gratuita: **sin verificar**, consúltalo en la oferta vigente.'], '2 · La cuenta de facturación')}
+ {mira(['Menú ☰ > **Facturación**: una cuenta **Activa**. Apunta su **ID** (tiene la forma `XXXXXX-XXXXXX-XXXXXX`).', 'Importe y duración de la prueba gratuita: **sin verificar**, consúltalo en la oferta vigente.'], '2 · La cuenta de facturación')}
  {mira(['Un proyecto recién creado **no tiene facturación**: «Este proyecto no tiene cuenta de facturación».', 'No hace falta vincularla a mano: **el script del paso 3 lo hace**.'], '3 · El proyecto, sin vincular')}
 </div>''',
           'Requisitos. Primera captura: la lista de recursos, con la organización del curso y el proyecto project-curso-ml-ia; los otros dos proyectos son los que Google crea por defecto, no se usan. Segunda: la cuenta de facturación, activa y con gasto cero. Tercera: el proyecto aún sin cuenta vinculada; por eso el primer paso del script la vincula. El importe del crédito de la prueba gratuita no se muestra aquí: no está comprobado.')

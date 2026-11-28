@@ -445,3 +445,14 @@ def test_el_unico_usuario_de_github_que_aparece_es_el_de_las_capturas(html, guia
     for texto in (html, guia):
         usuarios = set(re.findall(r'github\.com/([\w-]+)/', texto)) | set(re.findall(r'ghcr\.io/([\w-]+)/', texto))
         assert usuarios <= {'helicr', '$USUARIO_GH'}, usuarios
+
+
+def test_ningun_id_de_facturacion_real_en_scripts_ni_en_la_presentacion():
+    """El ACCOUNT_ID de facturación es de cada persona: los scripts traen un marcador y una guarda, no el del profesor."""
+    patron = re.compile(r'\b[0-9A-F]{6}-[0-9A-F]{6}-[0-9A-F]{6}\b')
+    for nombre in ('preparar-gcp-s4.sh', 'borrar-gcp-s4.sh', 'index.html', 'guia.md', 'generar.py'):
+        assert not patron.search((AQUI / nombre).read_text(encoding='utf-8')), nombre
+    for nombre in ('preparar-gcp-s4.sh', 'borrar-gcp-s4.sh'):
+        s = (AQUI / nombre).read_text(encoding='utf-8')
+        assert 'FACTURACION="${FACTURACION:-PON-AQUI-TU-ACCOUNT_ID}"' in s, nombre
+        assert 'if [ "$FACTURACION" = "PON-AQUI-TU-ACCOUNT_ID" ]' in s and 'exit 1' in s, nombre
